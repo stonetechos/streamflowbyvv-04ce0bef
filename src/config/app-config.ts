@@ -11,6 +11,26 @@ import { DEFAULT_LOCALE, isSupportedLocale, type LocaleCode } from "@/shared/con
 
 import { env, isDevBuild, type AppEnvironment, type LogLevel } from "./env";
 
+/** Browser-visible connection settings. Never contains a secret. */
+export interface SupabaseClientConfig {
+  readonly url: string | null;
+  readonly publishableKey: string | null;
+  /** True only when both values are present and the client can be constructed. */
+  readonly isConfigured: boolean;
+}
+
+export interface VoiceClientConfig {
+  /** LiveKit server URL. Access tokens are never part of configuration. */
+  readonly serverUrl: string | null;
+  readonly isConfigured: boolean;
+}
+
+export interface NetworkConfig {
+  /** Base URL for the app's own HTTP surface. Empty string = same origin. */
+  readonly apiBaseUrl: string;
+  readonly defaultTimeoutMs: number;
+}
+
 export interface AppConfig {
   readonly appName: string;
   /** Logical environment. Distinct from build mode: staging is a production build. */
@@ -23,6 +43,9 @@ export interface AppConfig {
   readonly logLevel: LogLevel;
   readonly defaultLocale: LocaleCode;
   readonly errorReportingEnabled: boolean;
+  readonly supabase: SupabaseClientConfig;
+  readonly voice: VoiceClientConfig;
+  readonly network: NetworkConfig;
 }
 
 function resolveEnvironment(): AppEnvironment {
