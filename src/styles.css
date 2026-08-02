@@ -425,3 +425,27 @@
 .sf-po[data-mood="delighted"] .sf-po-eyes {
   animation-duration: 3.5s;
 }
+
+/* Sprint 2.2 moods — cadence changes only; no new elements, no new meaning. */
+.sf-po[data-mood="thinking"] .sf-po-head {
+  animation-duration: 6s;
+}
+
+.sf-po[data-mood="thinking"] .sf-po-ear-left,
+.sf-po[data-mood="thinking"] .sf-po-ear-right {
+  animation-duration: 4s;
+}
+
+.sf-po[data-mood="focused"] .sf-po-head {
+  animation-duration: 20s;
+}
+
+.sf-po[data-mood="focused"] .sf-po-body {
+  animation-duration:
+    5.5s,
+    1.6s;
+}
+
+.sf-po[data-mood="focused"] .sf-po-tail {
+  animation-duration: 10s;
+}

@@ -15,7 +15,17 @@
  */
 import { cn } from "@/lib/utils";
 
-export type PoMood = "calm" | "delighted";
+/**
+ * Sprint 2.2 moods. Po is still decorative: a mood only selects an idle
+ * animation and a mouth curve — it never implies speech, planning, or an
+ * opinion about what the room chose (Po Rule).
+ *
+ * - `calm` — waiting in the lobby
+ * - `thinking` — a host action is in flight
+ * - `delighted` — everyone is ready
+ * - `focused` — a provider has been chosen
+ */
+export type PoMood = "calm" | "thinking" | "delighted" | "focused";
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;
@@ -118,7 +128,13 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
           <circle cx="80" cy="59" r="2.2" fill="var(--color-foreground)" />
           <path
             className="sf-po-smile"
-            d={mood === "delighted" ? "M74 63 q6 7 12 0" : "M75 63 q5 4 10 0"}
+            d={
+            mood === "delighted"
+              ? "M74 63 q6 7 12 0"
+              : mood === "thinking"
+                ? "M75 64 q5 -2 10 0"
+                : "M75 63 q5 4 10 0"
+          }
             stroke="var(--color-foreground)"
             strokeWidth="2"
             strokeLinecap="round"
