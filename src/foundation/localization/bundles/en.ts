@@ -162,5 +162,15 @@ export const enBundle: LocaleBundle = {
     "error.sys.service_unavailable.title": "Not ready yet",
     "error.sys.persistence_unavailable.title": "Can't reach your data",
     "error.sys.conflict.title": "Someone got there first",
+  
+    "room.presence.online": "Online",
+    "room.presence.idle": "Idle",
+    "room.presence.away": "Away",
+    "room.presence.offline": "Offline",
+    "room.presence.last_seen": "seen {minutes}m ago",
+    "room.members.ready_count": "{ready} of {total} ready",
+    "po.banner.title": "Po is waiting with you",
+    "po.banner.waiting": "Resting under the tree until everyone arrives.",
+    "po.banner.all_ready": "Everyone is ready — Po looks pleased.",
   },
 };
