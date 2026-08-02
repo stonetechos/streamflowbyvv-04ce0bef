@@ -16,6 +16,26 @@ export {
   type SessionRepository,
 } from "./auth";
 export {
+  ACTIVITY_TIMELINE_PROJECTION,
+  ACTIVITY_TYPES,
+  ANALYTICS_EVENT_SINK,
+  EVENT_STORE_REPOSITORY,
+  REALTIME_EVENT_PUBLISHER,
+  RECENT_PARTNERS_PROJECTION,
+  type ActivityTimelineEntry,
+  type ActivityTimelineProjection,
+  type ActivityType,
+  type AnalyticsEventRecord,
+  type AnalyticsEventSinkRepository,
+  type EventAppendResult,
+  type EventPayloadRecord,
+  type EventStoreRepository,
+  type PartnerObservation,
+  type RealtimeEventPublisher,
+  type RecentPartnersProjection,
+  type StoredDomainEvent,
+} from "./events";
+export {
   createEntityMapper,
   defineMapper,
   mapPage,
