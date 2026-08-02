@@ -8,6 +8,7 @@
  * Idempotent: safe to import from any entry point.
  */
 import { registerAuthServices } from "@/domain/auth";
+import { registerDomainServices } from "@/domain/services";
 import { registerIdentityAdapter } from "@/infrastructure/identity";
 import { logger } from "@/foundation/logging";
 
@@ -21,6 +22,9 @@ export function composeApplication(): void {
   // but binding before first render avoids a needless unavailable verdict.
   const identityBound = registerIdentityAdapter();
   registerAuthServices();
+  // Sprint 1.6: orchestration services and the internal event bus. Bound here so
+  // nothing above Domain constructs a business service for itself.
+  registerDomainServices();
 
   if (!identityBound) {
     logger.warn("No identity adapter bound: backend is not configured", { module: "auth" });

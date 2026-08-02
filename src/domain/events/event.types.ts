@@ -37,7 +37,7 @@ export interface DomainEvent<TName extends EventName = EventName, TPayload = unk
   /** Groups everything caused by one user intent, including Po utterances. */
   readonly correlationId: CorrelationId;
   /** The event or command that directly caused this one. */
-  readonly causationId?: CausationId;
+  readonly causationId?: CausationId | undefined;
   /** Null for system-originated events. */
   readonly actorProfileId: string | null;
   readonly payload: Readonly<TPayload>;
@@ -46,10 +46,10 @@ export interface DomainEvent<TName extends EventName = EventName, TPayload = unk
 /** Everything the caller supplies; the bus derives sequence and occurredAt. */
 export interface EventMetadata {
   readonly correlationId: CorrelationId;
-  readonly causationId?: CausationId;
-  readonly actorProfileId?: string | null;
+  readonly causationId?: CausationId | undefined;
+  readonly actorProfileId?: string | null | undefined;
   /** Test/replay support only; defaults to the injected clock. */
-  readonly occurredAt?: string;
+  readonly occurredAt?: string | undefined;
 }
 
 export type EventHandler<E extends DomainEvent = DomainEvent> = (
