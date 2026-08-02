@@ -449,3 +449,62 @@
 .sf-po[data-mood="focused"] .sf-po-tail {
   animation-duration: 10s;
 }
+
+/*
+ * Sprint 2.3 countdown moods — cadence only, no new elements and no meaning
+ * beyond "something is happening". Reduced motion neutralises all of it.
+ */
+@keyframes sf-po-cheer {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-4px); }
+  70% { transform: translateY(-1px); }
+}
+
+@keyframes sf-po-sink {
+  0% { transform: translateY(0); }
+  60% { transform: translateY(2.5px) scale(0.99); }
+  100% { transform: translateY(0); }
+}
+
+.sf-po[data-mood="counting"] .sf-po-head {
+  animation-duration: 5s;
+}
+
+.sf-po[data-mood="counting"] .sf-po-eyes {
+  animation-duration: 2.6s;
+}
+
+.sf-po[data-mood="counting"] .sf-po-body {
+  animation-duration:
+    2.4s,
+    1.6s;
+}
+
+.sf-po[data-mood="counting"] .sf-po-tail {
+  animation-duration: 3s;
+}
+
+.sf-po[data-mood="celebrating"] .sf-po-body {
+  animation:
+    sf-po-cheer 0.9s var(--ease-emphasized) 3,
+    sf-po-breathe 3s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="celebrating"] .sf-po-ear-left,
+.sf-po[data-mood="celebrating"] .sf-po-ear-right {
+  animation-duration: 2.2s;
+}
+
+.sf-po[data-mood="disappointed"] .sf-po-body {
+  animation:
+    sf-po-sink 1.4s var(--ease-standard) 1,
+    sf-po-breathe 6s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="disappointed"] .sf-po-head {
+  animation-duration: 22s;
+}
+
+.sf-po[data-mood="disappointed"] .sf-po-tail {
+  animation-duration: 12s;
+}

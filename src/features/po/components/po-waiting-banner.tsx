@@ -23,6 +23,12 @@ export interface PoWaitingBannerProps {
   readonly isBusy?: boolean;
   /** The room now has a provider chosen. */
   readonly hasProvider?: boolean;
+  /** A countdown is running. */
+  readonly isCounting?: boolean;
+  /** The countdown reached zero. */
+  readonly hasCompleted?: boolean;
+  /** The countdown was cancelled or expired — a brief disappointed beat. */
+  readonly wasCancelled?: boolean;
   /** Changing this makes Po glance toward the roster (e.g. a new arrival). */
   readonly gazeToken?: string | null;
   readonly className?: string;
@@ -33,7 +39,16 @@ export function resolvePoWaitingMood(signals: {
   readonly allReady?: boolean;
   readonly isBusy?: boolean;
   readonly hasProvider?: boolean;
+  readonly isCounting?: boolean;
+  readonly hasCompleted?: boolean;
+  readonly wasCancelled?: boolean;
 }): PoMood {
+  // Countdown outranks every lobby signal: it is the thing everyone is
+  // watching. Cancellation wins over "counting" so the disappointed beat is
+  // never swallowed by a stale tick.
+  if (signals.wasCancelled) return "disappointed";
+  if (signals.hasCompleted) return "celebrating";
+  if (signals.isCounting) return "counting";
   if (signals.isBusy) return "thinking";
   if (signals.allReady) return "delighted";
   if (signals.hasProvider) return "focused";
@@ -45,17 +60,30 @@ const CAPTION_KEYS: Readonly<Record<PoMood, string>> = {
   thinking: "po.banner.thinking",
   delighted: "po.banner.all_ready",
   focused: "po.banner.provider_selected",
+  counting: "po.banner.counting",
+  celebrating: "po.banner.celebrating",
+  disappointed: "po.banner.cancelled",
 };
 
 export function PoWaitingBanner({
   allReady = false,
   isBusy = false,
   hasProvider = false,
+  isCounting = false,
+  hasCompleted = false,
+  wasCancelled = false,
   gazeToken = null,
   className,
 }: PoWaitingBannerProps) {
   const { t } = useTranslation();
-  const mood = resolvePoWaitingMood({ allReady, isBusy, hasProvider });
+  const mood = resolvePoWaitingMood({
+    allReady,
+    isBusy,
+    hasProvider,
+    isCounting,
+    hasCompleted,
+    wasCancelled,
+  });
 
   return (
     <aside

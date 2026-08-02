@@ -24,8 +24,17 @@ import { cn } from "@/lib/utils";
  * - `thinking` — a host action is in flight
  * - `delighted` — everyone is ready
  * - `focused` — a provider has been chosen
+ *
+ * Sprint 2.3 adds three countdown moods. They still only pick an animation
+ * cadence and a mouth curve — Po does not speak, plan, or know what a
+ * countdown is for (Po Rule).
+ *
+ * - `counting` — a countdown is running
+ * - `celebrating` — the countdown reached zero
+ * - `disappointed` — the countdown was cancelled; brief, then back to calm
  */
-export type PoMood = "calm" | "thinking" | "delighted" | "focused";
+export type PoMood =
+  "calm" | "thinking" | "delighted" | "focused" | "counting" | "celebrating" | "disappointed";
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;
@@ -104,8 +113,20 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
         />
 
         {/* Ears — independent, tiny movement. */}
-        <circle className="sf-po-ear sf-po-ear-left" cx="61" cy="42" r="9" fill="var(--color-foreground)" />
-        <circle className="sf-po-ear sf-po-ear-right" cx="99" cy="42" r="9" fill="var(--color-foreground)" />
+        <circle
+          className="sf-po-ear sf-po-ear-left"
+          cx="61"
+          cy="42"
+          r="9"
+          fill="var(--color-foreground)"
+        />
+        <circle
+          className="sf-po-ear sf-po-ear-right"
+          cx="99"
+          cy="42"
+          r="9"
+          fill="var(--color-foreground)"
+        />
 
         {/* Head. */}
         <g className="sf-po-head">
@@ -129,12 +150,14 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
           <path
             className="sf-po-smile"
             d={
-            mood === "delighted"
-              ? "M74 63 q6 7 12 0"
-              : mood === "thinking"
-                ? "M75 64 q5 -2 10 0"
-                : "M75 63 q5 4 10 0"
-          }
+              mood === "delighted" || mood === "celebrating"
+                ? "M74 63 q6 7 12 0"
+                : mood === "disappointed"
+                  ? "M75 65 q5 -4 10 0"
+                  : mood === "thinking" || mood === "counting"
+                    ? "M75 64 q5 -2 10 0"
+                    : "M75 63 q5 4 10 0"
+            }
             stroke="var(--color-foreground)"
             strokeWidth="2"
             strokeLinecap="round"

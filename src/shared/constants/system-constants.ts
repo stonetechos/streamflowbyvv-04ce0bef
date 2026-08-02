@@ -22,6 +22,25 @@ export const COUNTDOWN = Object.freeze({
   MAX_SECONDS: 60,
 });
 
+/**
+ * Countdown runtime cadence — Sprint 2.3 operational tuning.
+ *
+ * Foundation §14.1 fixes the countdown envelope (3–60s, default 5s) but leaves
+ * the runtime cadence to implementation, exactly as §14.3 does for presence.
+ * These values are operational, not normative, and are candidates for
+ * ratification by a future ADR.
+ *
+ * - `TICK_INTERVAL_MS` — UI refresh; sub-second so the last second is honest.
+ * - `EXPIRY_GRACE_MS` — how long a countdown may sit past its target before it
+ *   is retired as abandoned (a closed tab must not strand the room).
+ * - `ANNOUNCE_FROM_SECONDS` — the final seconds spoken to assistive tech.
+ */
+export const COUNTDOWN_RUNTIME = Object.freeze({
+  TICK_INTERVAL_MS: 250,
+  EXPIRY_GRACE_MS: 30 * SECOND_MS,
+  ANNOUNCE_FROM_SECONDS: 5,
+});
+
 /** Foundation §14.2 — Invitations. */
 export const INVITATION = Object.freeze({
   INVITE_EXPIRY_MS: 24 * HOUR_MS,

@@ -9,12 +9,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PoWaitingBanner } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
+import { useRoomCountdown } from "../use-room-countdown";
 import { useRoomSetup } from "../use-room-setup";
 import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
 import { MemberList } from "./member-list";
 import { MembershipActions } from "./membership-actions";
 import { RoomInfoCard } from "./room-info-card";
+import { CountdownPanel } from "./countdown-panel";
 import { RoomSetupCard } from "./room-setup-card";
 import { WaitingRoomLayout } from "./waiting-room-layout";
 
@@ -26,6 +28,14 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     actorProfileId: model.viewer.profileId,
     isHost: model.viewer.isHost,
     onChanged: model.refresh,
+  });
+
+  const countdown = useRoomCountdown({
+    roomId,
+    actorProfileId: model.viewer.profileId,
+    isHost: model.viewer.isHost,
+    durationSeconds: model.room?.countdownSeconds ?? 5,
+    enabled: model.status === "ready" && model.viewer.isMember,
   });
 
   if (model.status === "loading") {
@@ -71,9 +81,18 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             allReady={model.allReady}
             isBusy={setup.pending !== null || model.pending !== null}
             hasProvider={model.room?.providerId !== null}
+            isCounting={countdown.isLive}
+            hasCompleted={countdown.state === "completed"}
+            wasCancelled={countdown.state === "cancelled" || countdown.state === "expired"}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
+          <CountdownPanel
+            countdown={countdown}
+            isHost={model.viewer.isHost}
+            members={model.members}
+            hasProvider={room.providerId !== null}
+          />
           <MemberList members={model.members} />
           <RoomSetupCard
             setup={setup}
