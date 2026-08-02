@@ -44,6 +44,8 @@ export function resolveLocale(candidate: string | null | undefined): LocaleCode 
   if (!candidate) return DEFAULT_LOCALE;
   if (isSupportedLocale(candidate)) return candidate;
   const primary = candidate.split("-")[0]?.toLowerCase();
-  const match = SUPPORTED_LOCALE_CODES.find((code) => code.split("-")[0].toLowerCase() === primary);
+  const match = SUPPORTED_LOCALE_CODES.find(
+    (code) => code.split("-")[0]?.toLowerCase() === primary,
+  );
   return match ?? DEFAULT_LOCALE;
 }
