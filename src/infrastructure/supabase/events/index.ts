@@ -13,6 +13,7 @@ import {
   ANALYTICS_EVENT_SINK,
   EVENT_STORE_REPOSITORY,
   REALTIME_EVENT_PUBLISHER,
+  REALTIME_EVENT_SUBSCRIBER,
   RECENT_PARTNERS_PROJECTION,
 } from "@/repository/events";
 import { bindRepository, isRepositoryBound } from "@/repository/repository-registry";
@@ -22,6 +23,7 @@ import { createSupabaseActivityTimelineProjection } from "./supabase-activity-ti
 import { createSupabaseAnalyticsEventSink } from "./supabase-analytics-event-sink";
 import { createSupabaseEventStoreRepository } from "./supabase-event-store-repository";
 import { createSupabaseRealtimeEventPublisher } from "./supabase-realtime-event-publisher";
+import { createSupabaseRealtimeEventSubscriber } from "./supabase-realtime-event-subscriber";
 import { createSupabaseRecentPartnersProjection } from "./supabase-recent-partners-projection";
 
 export function registerSupabaseEventAdapter(connection?: DataConnection): boolean {
@@ -47,6 +49,10 @@ export function registerSupabaseEventAdapter(connection?: DataConnection): boole
   if (!isRepositoryBound(REALTIME_EVENT_PUBLISHER)) {
     bindRepository(REALTIME_EVENT_PUBLISHER, () => createSupabaseRealtimeEventPublisher(active));
   }
+  // Sprint 2.0: the inbound half, consumed by the Waiting Room through Domain.
+  if (!isRepositoryBound(REALTIME_EVENT_SUBSCRIBER)) {
+    bindRepository(REALTIME_EVENT_SUBSCRIBER, () => createSupabaseRealtimeEventSubscriber(active));
+  }
   return true;
 }
 
@@ -61,4 +67,5 @@ export { createSupabaseActivityTimelineProjection } from "./supabase-activity-ti
 export { createSupabaseAnalyticsEventSink } from "./supabase-analytics-event-sink";
 export { createSupabaseEventStoreRepository } from "./supabase-event-store-repository";
 export { createSupabaseRealtimeEventPublisher } from "./supabase-realtime-event-publisher";
+export { createSupabaseRealtimeEventSubscriber } from "./supabase-realtime-event-subscriber";
 export { createSupabaseRecentPartnersProjection } from "./supabase-recent-partners-projection";
