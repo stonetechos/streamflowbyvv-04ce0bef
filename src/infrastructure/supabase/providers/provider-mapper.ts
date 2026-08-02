@@ -23,10 +23,41 @@ import { REPOSITORY_ERRORS, RepositoryError } from "@/repository";
 
 import type { TableRow } from "../supabase.types";
 
-export type ProviderRow = TableRow<"providers">;
-export type ProviderCapabilityRow = TableRow<"provider_capabilities">;
-export type ProviderComplianceRuleRow = TableRow<"provider_compliance_rules">;
-export type ProviderPreferenceRow = TableRow<"provider_preferences">;
+/** Row shapes are the PROJECTIONS below, not the whole table. */
+export type ProviderRow = Pick<
+  TableRow<"providers">,
+  | "id"
+  | "code"
+  | "key"
+  | "display_name_key"
+  | "category"
+  | "homepage_url"
+  | "logo_asset_key"
+  | "is_enabled"
+  | "sort_order"
+  | "metadata"
+  | "deleted_at"
+>;
+export type ProviderCapabilityRow = Pick<
+  TableRow<"provider_capabilities">,
+  "id" | "provider_id" | "capability" | "support_level" | "notes_key" | "verified_at"
+>;
+export type ProviderComplianceRuleRow = Pick<
+  TableRow<"provider_compliance_rules">,
+  | "id"
+  | "provider_id"
+  | "rule_key"
+  | "action"
+  | "scope"
+  | "region_code"
+  | "rationale_key"
+  | "effective_from"
+  | "effective_until"
+>;
+export type ProviderPreferenceRow = Pick<
+  TableRow<"provider_preferences">,
+  "id" | "profile_id" | "provider_id" | "is_favorite" | "is_hidden" | "last_used_at"
+>;
 
 /** Explicit projections — no `select("*")` across the boundary (Foundation §10). */
 export const PROVIDER_COLUMNS =
