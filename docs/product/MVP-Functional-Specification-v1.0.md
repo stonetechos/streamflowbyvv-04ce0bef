@@ -390,7 +390,7 @@ Every error message is a localized string key, states a cause in plain language,
 ## 13. Localization
 
 - Every user-facing string is a translation key from day one — no hardcoded copy anywhere, enforced at code review.
-- Launch with two locales (English plus one), with runtime switching and no page reload.
+- Launch locales for v1.0 are **English (`en`)** and **Hindi (`hi-IN`)**, with runtime switching and no page reload. The localization system supports unlimited future locales without redesign (Foundation §17); adding a locale never requires a migration.
 - Fallback chain resolves to English for missing keys.
 - Locale-aware dates, durations, numbers and relative times.
 - Pluralization and gender-neutral phrasing support.
