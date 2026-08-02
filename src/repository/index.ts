@@ -32,6 +32,14 @@ export type {
   PersistenceSecurityCapabilities,
 } from "./persistence.types";
 export {
+  CODE_ALLOCATOR,
+  CODE_PREFIXES,
+  ROOM_UNIT_OF_WORK,
+  type CodeAllocator,
+  type CodePrefix,
+  type RoomUnitOfWork,
+} from "./rooms/room-support.types";
+export {
   INVITE_REPOSITORY,
   ROOM_MEMBER_REPOSITORY,
   ROOM_REPOSITORY,

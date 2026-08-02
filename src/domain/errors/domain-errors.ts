@@ -50,6 +50,36 @@ export const DOMAIN_ERRORS = Object.freeze({
     severity: "warning",
     retryable: false,
   },
+  ROOM_NOT_FOUND: {
+    code: "SF-ROOM-NOT-FOUND",
+    messageKey: "error.room.not_found",
+    severity: "warning",
+    retryable: false,
+  },
+  ROOM_FORBIDDEN: {
+    code: "SF-ROOM-FORBIDDEN",
+    messageKey: "error.room.forbidden",
+    severity: "warning",
+    retryable: false,
+  },
+  ROOM_ALREADY_MEMBER: {
+    code: "SF-ROOM-ALREADY-MEMBER",
+    messageKey: "error.room.already_member",
+    severity: "warning",
+    retryable: false,
+  },
+  ROOM_MEMBER_NOT_FOUND: {
+    code: "SF-ROOM-MEMBER-NOT-FOUND",
+    messageKey: "error.room.member_not_found",
+    severity: "warning",
+    retryable: false,
+  },
+  INVITE_NOT_FOUND: {
+    code: "SF-INVITE-NOT-FOUND",
+    messageKey: "error.invite.not_found",
+    severity: "warning",
+    retryable: false,
+  },
   INVITE_EXPIRED: {
     code: "SF-INVITE-EXPIRED",
     messageKey: "error.invite.expired",
