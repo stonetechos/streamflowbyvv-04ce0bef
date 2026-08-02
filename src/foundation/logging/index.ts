@@ -26,12 +26,13 @@ function createLogger(sink: LogSink, baseContext: LogContext = {}): Logger {
     error?: unknown,
   ) => {
     if (LEVEL_WEIGHT[level] < threshold) return;
+    const context_ = redact({ ...baseContext, ...context });
     sink.write({
       level,
       message,
-      error,
       timestamp: new Date().toISOString(),
-      context: redact({ ...baseContext, ...context }),
+      ...(context_ ? { context: context_ } : {}),
+      ...(error === undefined ? {} : { error }),
     });
   };
 
