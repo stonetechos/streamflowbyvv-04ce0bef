@@ -1,15 +1,24 @@
 /**
- * Database type surface — Sprint 1.1 §2.
+ * Database type surface — Sprint 1.2 §5.
  *
- * Sprint 1.1 ships NO migrations, so no generated schema types exist yet
- * (Build Rules §1: build only this sprint). `Database` is therefore an open
- * placeholder that generated types will replace verbatim in the sprint that
- * introduces the schema — every wrapper below is already generic over it, so
- * that replacement is a one-line change with no call-site churn.
+ * The Sprint 1.1 `any` placeholder is replaced by the generated schema types.
+ * Generation output is owned by the Cloud integration
+ * (`@/integrations/supabase/types`); infrastructure re-exports it so that the
+ * repository layer depends on this vendor-neutral module path only.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export type Database = any;
+export type { Json } from "@/integrations/supabase/types";
+import type { Database as GeneratedDatabase } from "@/integrations/supabase/types";
+
+export type Database = GeneratedDatabase;
+
+/** Convenience aliases for repository mapping (Sprint 1.2 §6). */
+export type PublicSchema = Database["public"];
+export type Tables = PublicSchema["Tables"];
+export type TableName = keyof Tables & string;
+export type TableRow<T extends TableName> = Tables[T]["Row"];
+export type TableInsert<T extends TableName> = Tables[T]["Insert"];
+export type TableUpdate<T extends TableName> = Tables[T]["Update"];
 
 export interface SupabaseConnectionConfig {
   readonly url: string;
