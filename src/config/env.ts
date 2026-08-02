@@ -20,12 +20,23 @@ export type AppEnvironment = (typeof APP_ENVIRONMENTS)[number];
 export const LOG_LEVELS = ["debug", "info", "warn", "error", "silent"] as const;
 export type LogLevel = (typeof LOG_LEVELS)[number];
 
+const urlLike = z.string().url();
+
 const envSchema = z.object({
   VITE_APP_ENV: z.enum(APP_ENVIRONMENTS).optional(),
   VITE_APP_NAME: z.string().min(1).optional(),
   VITE_LOG_LEVEL: z.enum(LOG_LEVELS).optional(),
   VITE_DEFAULT_LOCALE: z.string().min(2).optional(),
   VITE_ERROR_REPORTING_ENABLED: z.enum(["true", "false"]).optional(),
+
+  // Sprint 1.1 — infrastructure endpoints. All optional: the shell must boot
+  // with none of them present, and each subsystem reports itself unavailable
+  // rather than throwing at import time.
+  VITE_SUPABASE_URL: urlLike.optional(),
+  VITE_SUPABASE_PUBLISHABLE_KEY: z.string().min(1).optional(),
+  VITE_LIVEKIT_URL: z.string().min(1).optional(),
+  VITE_API_BASE_URL: z.string().min(1).optional(),
+  VITE_HTTP_TIMEOUT_MS: z.coerce.number().int().positive().max(120_000).optional(),
 });
 
 export type RawEnv = z.infer<typeof envSchema>;
