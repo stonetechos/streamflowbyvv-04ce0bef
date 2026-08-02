@@ -31,6 +31,14 @@ export {
 export type {
   ConnectionStatus,
   Database,
+  Json,
+  PublicSchema,
   SupabaseClientScope,
   SupabaseConnectionConfig,
+  TableInsert,
+  TableName,
+  TableRow,
+  Tables,
+  TableUpdate,
 } from "./supabase.types";
+
