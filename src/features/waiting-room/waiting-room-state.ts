@@ -5,7 +5,14 @@
  * Domain services so the ordering and labelling rules can be read — and later
  * tested — in one place.
  */
-import type { MemberPresence, RoomMember, WaitingRoomSnapshot } from "@/domain";
+import {
+  COUNTDOWN_SECONDS_METADATA_KEY,
+  normalizeCountdownSeconds,
+  type MemberPresence,
+  type MetadataBag,
+  type RoomMember,
+  type WaitingRoomSnapshot,
+} from "@/domain";
 
 import type {
   MemberPresenceView,
@@ -94,6 +101,15 @@ export function toMemberViews(
     });
 }
 
+/**
+ * The host's chosen countdown length. Absent or malformed metadata falls back
+ * to the specified default rather than to zero (System Constants).
+ */
+export function readCountdownSeconds(metadata: MetadataBag): number {
+  const raw = metadata[COUNTDOWN_SECONDS_METADATA_KEY];
+  return normalizeCountdownSeconds(typeof raw === "number" ? raw : Number.NaN);
+}
+
 export function toRoomSummary(snapshot: WaitingRoomSnapshot): RoomSummaryView {
   return {
     id: snapshot.room.id,
@@ -104,6 +120,8 @@ export function toRoomSummary(snapshot: WaitingRoomSnapshot): RoomSummaryView {
     joinedCount: snapshot.joinedCount,
     pendingInviteCount: snapshot.pendingInvites.length,
     scheduledStartAt: snapshot.room.scheduledStartAt,
+    providerId: snapshot.room.providerId,
+    countdownSeconds: readCountdownSeconds(snapshot.room.metadata),
   };
 }
 

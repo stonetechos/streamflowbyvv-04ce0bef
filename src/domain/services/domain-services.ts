@@ -19,6 +19,22 @@ import {
   PRESENCE_COORDINATOR,
 } from "../rooms/presence-coordinator";
 import {
+  createProviderCatalogService,
+  resolveProviderCatalogDependencies,
+  PROVIDER_CATALOG_SERVICE,
+} from "../providers/provider-catalog-service";
+import {
+  createProviderPreferenceService,
+  resolveProviderPreferenceDependencies,
+  PROVIDER_PREFERENCE_SERVICE,
+} from "../providers/provider-preference-service";
+import { createDeepLinkService, type DeepLinkService } from "../providers/deep-link-service";
+import {
+  createRoomSetupService,
+  resolveRoomSetupDependencies,
+  ROOM_SETUP_SERVICE,
+} from "../rooms/room-setup-service";
+import {
   createRoomReadModel,
   resolveRoomReadModelDependencies,
   ROOM_READ_MODEL,
@@ -70,6 +86,8 @@ export const FEATURE_FLAG_SERVICE =
 export const LOCALIZATION_SERVICE =
   createServiceToken<LocalizationDomainService>("LocalizationDomainService");
 export const COMPLIANCE_SERVICE = createServiceToken<ComplianceService>("ComplianceService");
+/** Sprint 2.2 — deep-link construction (URL building only, never launching). */
+export const DEEP_LINK_SERVICE = createServiceToken<DeepLinkService>("DeepLinkService");
 
 export interface DomainServiceOptions {
   readonly clock?: Clock;
@@ -119,6 +137,35 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
           resolvePresenceCoordinatorDependencies(resolveService(PRESENCE_SERVICE), () =>
             resolveService(CLOCK).now(),
           ),
+        ),
+    ],
+    // Sprint 2.2 — provider catalog, preferences, deep links, and room setup.
+    [
+      PROVIDER_CATALOG_SERVICE,
+      () =>
+        createProviderCatalogService(
+          resolveProviderCatalogDependencies(
+            resolveService(PROVIDER_SERVICE),
+            resolveService(COMPLIANCE_SERVICE),
+          ),
+        ),
+    ],
+    [
+      PROVIDER_PREFERENCE_SERVICE,
+      () => createProviderPreferenceService(resolveProviderPreferenceDependencies()),
+    ],
+    [DEEP_LINK_SERVICE, () => createDeepLinkService()],
+    [
+      ROOM_SETUP_SERVICE,
+      () =>
+        createRoomSetupService(
+          resolveRoomSetupDependencies({
+            catalog: resolveService(PROVIDER_CATALOG_SERVICE),
+            preferences: resolveService(PROVIDER_PREFERENCE_SERVICE),
+            compliance: resolveService(COMPLIANCE_SERVICE),
+            roomService: resolveService(ROOM_SERVICE),
+            clock: resolveService(CLOCK),
+          }),
         ),
     ],
     [PLAYBACK_SERVICE, () => createPlaybackService(context())],

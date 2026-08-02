@@ -79,6 +79,14 @@ export {
   type RoomPresenceRepository,
 } from "./rooms";
 export {
+  PROVIDER_CATALOG_REPOSITORY,
+  PROVIDER_CONTEXT_PREFERENCE_REPOSITORY,
+  PROVIDER_PREFERENCE_REPOSITORY,
+  type ProviderCatalogRepository,
+  type ProviderContextPreferenceRepository,
+  type ProviderPreferenceRepository,
+} from "./providers";
+export {
   REPOSITORY_ERRORS,
   RepositoryError,
   type RepositoryErrorContext,
