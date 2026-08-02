@@ -619,3 +619,29 @@ This document becomes the single source of truth for all future migrations and S
 - Schema changes require a numbered ADR referencing the affected tables.
 - Migrations are forward-only and must be traceable to a section of this document.
 - No table, column, or enum value ships without appearing here first.
+
+---
+
+## 12. Amendment Register — Documentation Consolidation v1.0
+
+Applied by the Documentation Consolidation v1.0 pass. Every entry implements an approved decision from the Specification Reconciliation Report v1.0. No section was renumbered, reorganized, or restyled.
+
+| # | Change | Section touched | ADR |
+|---|---|---|---|
+| 1 | `max_members` 2–8 documented as a schema envelope; v1 domain cap of 4 | §3.2 `rooms` | ADR-013 |
+| 2 | Read ownership note: `rooms.status` for lifecycle, `room_state.playback_status` for the watching screen | §3.2 `rooms`, `room_state` | ADR-004 |
+| 3 | Lifecycle label mapping and `abandoned` for inactivity auto-close referenced | §3.2, §5 | ADR-002 |
+| 4 | `sync_mode` documented as a room property, immutable during an open playback session | §3.2 `room_state`, §5 | ADR-003 |
+| 5 | Preference field ownership: region, default provider, voice behaviour vs. device-local, `font_scale` | §3.1 | ADR-005 |
+| 6 | `invite_channel` annotated — email invite is a `link` invite delivered by email | §5 | ADR-006 |
+| 7 | `notification_channel` annotated — `push` reserved and unemitted; toast, audio cue, banner are presentation modes | §5 | ADR-007 |
+| 8 | `po_session_status.awaiting_clarification` annotated as derived | §5 | ADR-008 |
+| 9 | `user_roles` table and `app_role` enum added; RLS row added | §3.11, §5, §9 | ADR-009 |
+| 10 | Block-during-active-room enforcement documented | §3.10 `blocked_users` | ADR-011 |
+| 11 | Retention invariant and fixed v1.0 retention values | §7 | ADR-012 |
+| 12 | `room_status.paused` and `room_role.co_host` annotated as reserved | §5 | ADR-004, deferred item |
+| 13 | Launch locales (`en`, `hi-IN`) referenced on `language_code` | §5 | Foundation §17 |
+| 14 | Timing, expiry, and retention defaults now resolve to Foundation §14 | §3.2, §7 | Foundation §14 |
+
+**Cross-references added:** Foundation Specification v1.0 §14, §15, §17; `docs/api/domain-event-catalog-v1.0.md`; `docs/foundation/storage-design-v1.0.md` (object storage for `profiles.avatar_url`).
+
