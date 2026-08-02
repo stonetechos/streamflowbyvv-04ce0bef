@@ -1,3 +1,5 @@
+export { PoWaitingBanner, type PoWaitingBannerProps } from "./components/po-waiting-banner";
+export { PoCompanion, type PoCompanionProps, type PoMood } from "./components/po-companion";
 export { PoProvider, usePo, type PoContextValue } from "./po-provider";
 export {
   getPoTool,
