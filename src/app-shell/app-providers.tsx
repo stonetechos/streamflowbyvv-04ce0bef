@@ -1,14 +1,17 @@
 /**
- * Root provider composition — Sprint 1.0 §2.
+ * Root provider composition — Sprint 1.0 §2, extended in Sprint 1.4.
  *
  * Order matters and is deliberate:
- *   Query → Accessibility → Localization → FeatureFlags → Po
- * Later providers may read earlier ones; never the reverse. Auth, Realtime,
- * Voice and Presence providers slot in below FeatureFlags in their own sprints.
+ *   Query → Accessibility → Localization → FeatureFlags → Auth → Po
+ * Later providers may read earlier ones; never the reverse. Auth sits below
+ * FeatureFlags (it registers its own flag) and above Po, which will one day
+ * need to know who is speaking. Realtime, Voice and Presence slot in below Auth
+ * in their own sprints.
  */
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
+import { AuthProvider } from "@/features/auth";
 import { PoProvider } from "@/features/po";
 import { AccessibilityProvider } from "@/foundation/accessibility";
 import { FeatureFlagProvider } from "@/foundation/feature-flags";
@@ -26,10 +29,13 @@ export function AppProviders({
       <AccessibilityProvider>
         <LocalizationProvider>
           <FeatureFlagProvider>
-            <PoProvider>{children}</PoProvider>
+            <AuthProvider>
+              <PoProvider>{children}</PoProvider>
+            </AuthProvider>
           </FeatureFlagProvider>
         </LocalizationProvider>
       </AccessibilityProvider>
     </QueryClientProvider>
   );
 }
+
