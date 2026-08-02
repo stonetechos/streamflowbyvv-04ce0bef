@@ -1,5 +1,5 @@
 /**
- * Po waiting banner — Sprint 2.1.
+ * Po waiting banner — Sprint 2.1, extended in Sprint 2.2.
  *
  * A lightweight strip that keeps the lobby warm while people gather. Po is a
  * visual companion in this sprint and nothing else: no planning, no tools, no
@@ -7,8 +7,9 @@
  * emits no event, and never blocks input — it is `aria-hidden` decoration with
  * a short polite caption beside it.
  *
- * `mood` and `gazeToken` are the entire contract, so a richer illustration or
- * animation engine can be dropped in later without touching callers.
+ * Sprint 2.2 adds two more lobby signals (a host action in flight, a provider
+ * chosen). They only pick an idle animation and a caption; Po still reacts to
+ * nothing it was not handed.
  */
 import { PoCompanion, type PoMood } from "./po-companion";
 
@@ -18,18 +19,43 @@ import { cn } from "@/lib/utils";
 export interface PoWaitingBannerProps {
   /** Po smiles once everyone in the room has signalled ready. */
   readonly allReady?: boolean;
+  /** A host decision is being saved. */
+  readonly isBusy?: boolean;
+  /** The room now has a provider chosen. */
+  readonly hasProvider?: boolean;
   /** Changing this makes Po glance toward the roster (e.g. a new arrival). */
   readonly gazeToken?: string | null;
   readonly className?: string;
 }
 
+/** Pure mapping from lobby signals to a mood. Order is the priority order. */
+export function resolvePoWaitingMood(signals: {
+  readonly allReady?: boolean;
+  readonly isBusy?: boolean;
+  readonly hasProvider?: boolean;
+}): PoMood {
+  if (signals.isBusy) return "thinking";
+  if (signals.allReady) return "delighted";
+  if (signals.hasProvider) return "focused";
+  return "calm";
+}
+
+const CAPTION_KEYS: Readonly<Record<PoMood, string>> = {
+  calm: "po.banner.waiting",
+  thinking: "po.banner.thinking",
+  delighted: "po.banner.all_ready",
+  focused: "po.banner.provider_selected",
+};
+
 export function PoWaitingBanner({
   allReady = false,
+  isBusy = false,
+  hasProvider = false,
   gazeToken = null,
   className,
 }: PoWaitingBannerProps) {
   const { t } = useTranslation();
-  const mood: PoMood = allReady ? "delighted" : "calm";
+  const mood = resolvePoWaitingMood({ allReady, isBusy, hasProvider });
 
   return (
     <aside
@@ -41,9 +67,7 @@ export function PoWaitingBanner({
       <PoCompanion mood={mood} gazeToken={gazeToken} />
       <div className="min-w-0">
         <p className="text-sm font-medium">{t("po.banner.title")}</p>
-        <p className="text-xs text-muted-foreground">
-          {t(allReady ? "po.banner.all_ready" : "po.banner.waiting")}
-        </p>
+        <p className="text-xs text-muted-foreground">{t(CAPTION_KEYS[mood])}</p>
       </div>
     </aside>
   );
