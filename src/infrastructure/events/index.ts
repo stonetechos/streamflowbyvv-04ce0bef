@@ -8,7 +8,8 @@
  *
  * No UI, no client listener, no websocket component is created here.
  */
-import { EVENT_BUS, ANALYTICS_SERVICE, resolveService } from "@/domain/services";
+import { ANALYTICS_SERVICE, EVENT_BUS } from "@/domain/services";
+import { resolveService } from "@/domain/service-registry";
 import { logger } from "@/foundation/logging";
 import {
   ACTIVITY_TIMELINE_PROJECTION,
