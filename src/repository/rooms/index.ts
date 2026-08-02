@@ -16,3 +16,11 @@ export {
   type RoomStateConcurrencyInfo,
   type RoomStateRepository,
 } from "./room-repository.types";
+export {
+  CODE_ALLOCATOR,
+  CODE_PREFIXES,
+  ROOM_UNIT_OF_WORK,
+  type CodeAllocator,
+  type CodePrefix,
+  type RoomUnitOfWork,
+} from "./room-support.types";

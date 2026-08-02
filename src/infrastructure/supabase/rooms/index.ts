@@ -12,6 +12,10 @@
  */
 import { bindRepository, isRepositoryBound } from "@/repository/repository-registry";
 import {
+  CODE_ALLOCATOR,
+  ROOM_UNIT_OF_WORK,
+} from "@/repository/rooms/room-support.types";
+import {
   INVITE_REPOSITORY,
   ROOM_MEMBER_REPOSITORY,
   ROOM_REPOSITORY,
@@ -19,10 +23,12 @@ import {
 } from "@/repository/rooms/room-repository.types";
 
 import { getBrowserDataConnection, type DataConnection } from "../connection";
+import { createSupabaseCodeAllocator } from "./supabase-code-allocator";
 import { createSupabaseInviteRepository } from "./supabase-invite-repository";
 import { createSupabaseRoomMemberRepository } from "./supabase-room-member-repository";
 import { createSupabaseRoomRepository } from "./supabase-room-repository";
 import { createSupabaseRoomStateRepository } from "./supabase-room-state-repository";
+import { createSupabaseRoomUnitOfWork } from "./supabase-unit-of-work";
 
 /** Binds the four room-cluster contracts. Returns false when unconfigured. */
 export function registerSupabaseRoomAdapter(connection?: DataConnection): boolean {
@@ -41,6 +47,14 @@ export function registerSupabaseRoomAdapter(connection?: DataConnection): boolea
   if (!isRepositoryBound(INVITE_REPOSITORY)) {
     bindRepository(INVITE_REPOSITORY, () => createSupabaseInviteRepository(active));
   }
+  // Sprint 1.8: code allocation (Database Spec §3.11) and the creation
+  // atomicity boundary.
+  if (!isRepositoryBound(CODE_ALLOCATOR)) {
+    bindRepository(CODE_ALLOCATOR, () => createSupabaseCodeAllocator(active));
+  }
+  if (!isRepositoryBound(ROOM_UNIT_OF_WORK)) {
+    bindRepository(ROOM_UNIT_OF_WORK, () => createSupabaseRoomUnitOfWork());
+  }
   return true;
 }
 
@@ -54,6 +68,8 @@ export {
   toRoomMember,
   toRoomState,
 } from "./room-mapper";
+export { createSupabaseCodeAllocator } from "./supabase-code-allocator";
+export { createSupabaseRoomUnitOfWork } from "./supabase-unit-of-work";
 export { createSupabaseInviteRepository } from "./supabase-invite-repository";
 export { createSupabaseRoomMemberRepository } from "./supabase-room-member-repository";
 export { createSupabaseRoomRepository } from "./supabase-room-repository";
