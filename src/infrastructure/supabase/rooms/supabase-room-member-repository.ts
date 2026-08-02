@@ -92,7 +92,7 @@ export function createSupabaseRoomMemberRepository(
         .eq("room_id", roomId);
       if (states?.length) builder = builder.in("state", [...states]);
 
-      const { total } = await runCountedQuery<RoomMemberRow>(
+      const { total } = await runCountedQuery<{ id: string }>(
         builder,
         context("countByRoom", roomId),
       );
