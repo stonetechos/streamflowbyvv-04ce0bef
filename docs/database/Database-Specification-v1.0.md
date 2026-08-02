@@ -84,10 +84,12 @@ Five separate tables instead of one wide table, so each can evolve, be cached, a
 - **Columns:** `id`, `code`, `name`, `host_profile_id` → `profiles.id`, `status` (enum `room_status`), `visibility` (enum `room_visibility`, v1 always `private`), `provider_id` → `providers.id` (nullable until chosen), `content_reference` (free text/URL the members agreed on — never credentials), `max_members` (default 4, MVP cap), `scheduled_start_at` (nullable, reserved for v1.1), `started_at`, `ended_at`, `join_code_hash` (nullable — hashed short join code, never plaintext), `join_code_expires_at`, `metadata`, audit + attribution set, `deleted_at`.
 - **Relationships:** N:1 `profiles` (host); N:1 `providers`; 1:N `room_members`, `invites`, `playback_sessions`, `voice_sessions`, `sync_events`; 1:1 `room_state`.
 - **Indexes:** unique(`code`), index(`host_profile_id`), index(`status`, `created_at desc`), partial index on `status IN ('lobby','active')` for the "my live rooms" query, index(`provider_id`).
-- **Constraints:** `max_members` between 2 and 8 (v1 policy enforces 4); `ended_at >= started_at`; host must also exist as a `room_members` row (enforced by application invariant + event check, not a DB trigger in v1).
+- **Constraints:** `max_members` between 2 and 8 — this range is a **schema envelope**, not a product statement; v1.0 domain policy enforces a cap of 4 (ADR-013, Foundation §14.3). `ended_at >= started_at`; host must also exist as a `room_members` row (enforced by application invariant + event check, not a DB trigger in v1).
 - **Soft delete:** Yes — rooms are user-authored and appear in activity history.
 - **Ownership:** `host_profile_id`.
 - **Extensibility:** `visibility` enum already supports future public/community rooms; `scheduled_start_at` reserved for scheduled parties.
+- **Consolidation notes (v1.0):** `status` is the authoritative read for lifecycle, listings, navigation, and RLS; playback pausing is read from `room_state.playback_status` and never from `rooms.status` (ADR-004). Product lifecycle labels map onto `status` per ADR-002. `join_code_expires_at` resolves to the join link expiry in Foundation §14.2; the inactivity timeout that produces `abandoned` resolves to Foundation §14.3.
+
 
 #### `room_members`
 - **Purpose:** Membership and role of a profile in a room (many-to-many resolution with attributes).
