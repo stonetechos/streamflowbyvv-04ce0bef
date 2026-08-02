@@ -75,7 +75,6 @@ export function isCountdownTerminal(state: CountdownRuntimeState): boolean {
 
 export function isCountdownRuntimeState(value: unknown): value is CountdownRuntimeState {
   return (
-    typeof value === "string" &&
-    (COUNTDOWN_RUNTIME_STATES as readonly string[]).includes(value)
+    typeof value === "string" && (COUNTDOWN_RUNTIME_STATES as readonly string[]).includes(value)
   );
 }

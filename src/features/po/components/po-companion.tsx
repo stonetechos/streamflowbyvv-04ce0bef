@@ -34,13 +34,7 @@ import { cn } from "@/lib/utils";
  * - `disappointed` — the countdown was cancelled; brief, then back to calm
  */
 export type PoMood =
-  | "calm"
-  | "thinking"
-  | "delighted"
-  | "focused"
-  | "counting"
-  | "celebrating"
-  | "disappointed";
+  "calm" | "thinking" | "delighted" | "focused" | "counting" | "celebrating" | "disappointed";
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;
@@ -119,8 +113,20 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
         />
 
         {/* Ears — independent, tiny movement. */}
-        <circle className="sf-po-ear sf-po-ear-left" cx="61" cy="42" r="9" fill="var(--color-foreground)" />
-        <circle className="sf-po-ear sf-po-ear-right" cx="99" cy="42" r="9" fill="var(--color-foreground)" />
+        <circle
+          className="sf-po-ear sf-po-ear-left"
+          cx="61"
+          cy="42"
+          r="9"
+          fill="var(--color-foreground)"
+        />
+        <circle
+          className="sf-po-ear sf-po-ear-right"
+          cx="99"
+          cy="42"
+          r="9"
+          fill="var(--color-foreground)"
+        />
 
         {/* Head. */}
         <g className="sf-po-head">
