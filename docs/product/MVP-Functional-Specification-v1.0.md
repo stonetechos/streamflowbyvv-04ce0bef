@@ -244,10 +244,14 @@ Created
 
 State rules for v1:
 - The host is authoritative for countdown, provider selection and closure.
-- A room with zero present participants auto-closes after the inactivity window.
-- Closed rooms are read-only and appear in Recent for a limited period.
+- A room with zero present participants auto-closes after the inactivity window (30 minutes, Foundation §14.3). Auto-close is recorded as `abandoned`; a host-ended room is recorded as `ended` (ADR-002).
+- Closed rooms are read-only and appear in Recent for 30 days (Foundation §14.3).
 - **Host migration is v1.1.** In v1, if the host leaves permanently, the room closes with notice to everyone.
-- Room capacity in v1 is four participants.
+- Room capacity in v1 is four participants, enforced in the domain layer; the schema permits 2–8 as a future envelope only (ADR-013).
+- **Lifecycle labels map onto persisted status (ADR-002):** Waiting Room = `lobby`, Watching = `active`, Paused = `paused`, Closed by host = `ended`, Auto-closed = `abandoned`. The watching screen reads playback condition from `room_state.playback_status`, never from the room's lifecycle status (ADR-004).
+- **Sync mode is a property of the room (ADR-003):** it is set from the selected provider and cannot change while a playback session is open. A participant who cannot use the controlled path is downgraded to the room's mode; the room is never changed to match one participant.
+- **Blocking during an active room (ADR-011):** a block takes effect immediately for future invites and joins, the in-progress room continues to its natural end, and the blocking user may leave at any time.
+- **Guest preview before the auth wall (ADR-010):** an unauthenticated visitor with a valid invite link sees only the room name, the inviter's display name and avatar, and the invite's validity — never the member list, provider, room state, or room code.
 
 ---
 
