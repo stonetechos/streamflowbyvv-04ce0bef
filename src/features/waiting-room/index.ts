@@ -19,6 +19,13 @@ export {
   type RoomSetupPendingAction,
   type UseRoomSetupInput,
 } from "./use-room-setup";
+export { CountdownPanel, type CountdownPanelProps } from "./components/countdown-panel";
+export {
+  useRoomCountdown,
+  type CountdownPendingAction,
+  type RoomCountdownModel,
+  type UseRoomCountdownInput,
+} from "./use-room-countdown";
 export { PresenceIndicator } from "./components/presence-indicator";
 export { useRoomPresence, type RoomPresenceModel } from "./use-room-presence";
 export { useWaitingRoom, type WaitingRoomModel } from "./use-waiting-room";
