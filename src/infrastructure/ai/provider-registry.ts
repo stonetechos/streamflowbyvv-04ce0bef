@@ -33,7 +33,8 @@ function createRegistry<T extends { providerId: string; isConfigured(): boolean 
     },
     get: (providerId) => adapters.get(providerId),
     list: () => Array.from(adapters.values()),
-    resolveDefault: () => adapters.values().find((adapter) => adapter.isConfigured()) ?? null,
+    resolveDefault: () =>
+      Array.from(adapters.values()).find((adapter) => adapter.isConfigured()) ?? null,
     reset: () => adapters.clear(),
   };
 }
