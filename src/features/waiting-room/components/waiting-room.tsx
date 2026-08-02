@@ -6,6 +6,7 @@
  */
 import { ErrorState, LoadingState } from "@/app-shell";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PoWaitingBanner } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
 import { useWaitingRoom } from "../use-waiting-room";
@@ -58,6 +59,10 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
       }
       primary={
         <>
+          <PoWaitingBanner
+            allReady={model.allReady}
+            gazeToken={model.lastArrivalProfileId}
+          />
           <RoomInfoCard room={room} isLive={model.isLive} />
           <MemberList members={model.members} />
         </>

@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/foundation/localization";
 
 import type { MemberView } from "../waiting-room.types";
+import { PresenceIndicator } from "./presence-indicator";
 
 export interface MemberListProps {
   readonly members: readonly MemberView[];
@@ -16,12 +17,18 @@ export interface MemberListProps {
 
 export function MemberList({ members }: MemberListProps) {
   const { t } = useTranslation();
+  const readyCount = members.filter((member) => member.isReady).length;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">
-          {t("room.members.title", { count: members.length })}
+        <CardTitle className="flex flex-wrap items-baseline justify-between gap-2 text-base">
+          <span>{t("room.members.title", { count: members.length })}</span>
+          {members.length > 0 ? (
+            <span className="text-xs font-normal text-muted-foreground">
+              {t("room.members.ready_count", { ready: readyCount, total: members.length })}
+            </span>
+          ) : null}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -54,20 +61,38 @@ function MemberRow({ member }: { member: MemberView }) {
         >
           {member.label.slice(0, 2)}
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 space-y-0.5">
           <p className="truncate text-sm font-medium">
             <span className="font-mono">{member.label}</span>
             {member.isViewer ? (
               <span className="ml-2 text-xs text-muted-foreground">{t("room.member.you")}</span>
             ) : null}
           </p>
-          <p className="text-xs text-muted-foreground">{t(`room.member_state.${member.state}`)}</p>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-xs text-muted-foreground">
+              {t(`room.member_state.${member.state}`)}
+            </span>
+            <PresenceIndicator
+              presence={member.presence}
+              lastSeenMinutes={member.lastSeenMinutes}
+            />
+          </div>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         {member.isHost ? <Badge variant="default">{t("room.member.host_badge")}</Badge> : null}
-        <Badge variant={member.isReady ? "secondary" : "outline"}>{t(readinessKey)}</Badge>
+        <Badge
+          variant={member.isReady ? "secondary" : "outline"}
+          className={
+            member.isReady ? "border-success/40 bg-success/12 text-success" : "text-muted-foreground"
+          }
+        >
+          <span aria-hidden="true" className="mr-1">
+            {member.isReady ? "\u2713" : "\u00b7"}
+          </span>
+          {t(readinessKey)}
+        </Badge>
       </div>
     </li>
   );
