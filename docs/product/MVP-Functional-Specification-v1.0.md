@@ -316,19 +316,20 @@ Rules:
 
 | Notification | Trigger | Channels in v1 |
 |---|---|---|
-| Invitation received | Someone invites you | In-app + toast + email |
-| Invitation accepted | Invitee joins | In-app + toast |
+| Invitation received | Someone invites you | In-app (toast) + email |
+| Invitation accepted | Invitee joins | In-app (toast) |
 | Invitation declined | Invitee declines | In-app |
-| Countdown started | Host starts the countdown | In-app + toast + audio cue |
+| Countdown started | Host starts the countdown | In-app (toast + audio cue) |
 | Participant joined | Someone enters the room | In-app (in-room) |
 | Participant left | Someone leaves | In-app (in-room) |
-| Room closed | Host ends the room or it times out | In-app + toast |
-| Voice disconnected | Voice session dropped | In-app + toast |
-| Reconnect required | Realtime connection lost | Persistent banner |
+| Room closed | Host ends the room or it times out | In-app (toast) |
+| Voice disconnected | Voice session dropped | In-app (toast) |
+| Reconnect required | Realtime connection lost | In-app (persistent banner) |
 | System announcement | Product or compliance notice | In-app |
 | Scheduled party reminder | Upcoming scheduled room | **v1.1** |
 
-Push notifications are **future**. Every category is individually mutable in Settings → Notifications.
+**Channels vs. presentation (ADR-007):** v1 has exactly two delivery channels — `in_app` and `email`. Toast, audio cue and persistent banner are *presentation modes* of the `in_app` channel, not separate channels, and are not independently subscribable. `push` exists in the schema as a reserved value and is emitted by no v1 code path. Every category is individually mutable in Settings → Notifications; presentation modes are not.
+
 
 ---
 
