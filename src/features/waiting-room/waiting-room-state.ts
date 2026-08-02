@@ -5,9 +5,15 @@
  * Domain services so the ordering and labelling rules can be read — and later
  * tested — in one place.
  */
-import type { RoomMember, WaitingRoomSnapshot } from "@/domain";
+import type { MemberPresence, RoomMember, WaitingRoomSnapshot } from "@/domain";
 
-import type { MemberView, RoomSummaryView, ViewerView, WaitingRoomError } from "./waiting-room.types";
+import type {
+  MemberPresenceView,
+  MemberView,
+  RoomSummaryView,
+  ViewerView,
+  WaitingRoomError,
+} from "./waiting-room.types";
 
 /** Host first, then joined members, then invitees; stable by join time. */
 const ROLE_WEIGHT: Record<string, number> = { host: 0, co_host: 1, guest: 2 };
@@ -23,10 +29,41 @@ export function memberLabel(profileId: string): string {
   return compact.length <= 6 ? compact.toUpperCase() : compact.slice(0, 6).toUpperCase();
 }
 
+/**
+ * Presence, collapsed for display. `unknown` is deliberate: when no presence
+ * store is bound the lobby says nothing rather than claiming everyone is away.
+ */
+export function toPresenceView(
+  presence: MemberPresence | undefined,
+  isTracking: boolean,
+): MemberPresenceView {
+  if (!isTracking) return "unknown";
+  if (!presence) return "offline";
+  if (presence.isOnline) return presence.status === "idle" ? "idle" : "online";
+  return presence.status === "disconnected" ? "away" : "offline";
+}
+
+/** Whole minutes since a heartbeat, floored; null when it is current. */
+export function minutesSince(lastSeenAt: string | null, now: number): number | null {
+  if (!lastSeenAt) return null;
+  const elapsed = now - Date.parse(lastSeenAt);
+  if (!Number.isFinite(elapsed) || elapsed < 60_000) return null;
+  return Math.floor(elapsed / 60_000);
+}
+
+export interface PresenceLookup {
+  readonly byProfileId: ReadonlyMap<string, MemberPresence>;
+  readonly isTracking: boolean;
+  readonly now: number;
+}
+
+const UNTRACKED: PresenceLookup = { byProfileId: new Map(), isTracking: false, now: 0 };
+
 export function toMemberViews(
   snapshot: WaitingRoomSnapshot,
   viewerProfileId: string | null,
   isReady: (member: RoomMember) => boolean,
+  presence: PresenceLookup = UNTRACKED,
 ): readonly MemberView[] {
   return [...snapshot.members]
     .sort(
@@ -35,7 +72,10 @@ export function toMemberViews(
         (ROLE_WEIGHT[left.role] ?? 9) - (ROLE_WEIGHT[right.role] ?? 9) ||
         (left.joinedAt ?? left.createdAt).localeCompare(right.joinedAt ?? right.createdAt),
     )
-    .map((member) => ({
+    .map((member) => {
+      const observed = presence.byProfileId.get(member.profileId);
+      const presenceView = toPresenceView(observed, presence.isTracking);
+      return {
       id: member.id,
       profileId: member.profileId,
       label: memberLabel(member.profileId),
@@ -44,7 +84,14 @@ export function toMemberViews(
       isHost: member.role === "host" || member.profileId === snapshot.room.hostProfileId,
       isReady: isReady(member),
       isViewer: member.profileId === viewerProfileId,
-    }));
+      presence: presenceView,
+      lastSeenAt: observed?.lastSeenAt ?? null,
+      lastSeenMinutes:
+        presenceView === "online" || presenceView === "unknown"
+          ? null
+          : minutesSince(observed?.lastSeenAt ?? null, presence.now),
+      };
+    });
 }
 
 export function toRoomSummary(snapshot: WaitingRoomSnapshot): RoomSummaryView {

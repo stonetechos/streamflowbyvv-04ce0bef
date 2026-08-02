@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/features/auth";
 import { logger } from "@/foundation/logging";
 
+import { useRoomPresence } from "./use-room-presence";
 import {
   toMemberViews,
   toRoomSummary,
@@ -45,6 +46,12 @@ export interface WaitingRoomModel {
   readonly pending: WaitingRoomPendingAction;
   /** True once a realtime transport is attached for this room. */
   readonly isLive: boolean;
+  /** True while a presence store is reporting liveness for this room. */
+  readonly isPresenceTracked: boolean;
+  /** Every joined member has signalled ready (and there is at least one). */
+  readonly allReady: boolean;
+  /** Profile id of the most recent arrival, for the Po companion's gaze. */
+  readonly lastArrivalProfileId: string | null;
   refresh(): void;
   join(): void;
   leave(): void;
@@ -171,20 +178,37 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     [readModel, run, snapshot],
   );
 
+  const presence = useRoomPresence(roomId, profileId, status === "ready");
+
   const isReady = useCallback(
     (member: RoomMember) => readModel?.isReady(member) ?? false,
     [readModel],
   );
 
+  const members = snapshot
+    ? toMemberViews(snapshot, profileId, isReady, {
+        byProfileId: presence.byProfileId,
+        isTracking: presence.isTracking,
+        now: Date.now(),
+      })
+    : [];
+  const joined = members.filter((member) => member.state === "joined");
+
   return {
     status,
     error,
     room: snapshot ? toRoomSummary(snapshot) : null,
-    members: snapshot ? toMemberViews(snapshot, profileId, isReady) : [],
+    members,
+    isPresenceTracked: presence.isTracking,
+    allReady: joined.length > 0 && joined.every((member) => member.isReady),
+    lastArrivalProfileId: joined.length > 0 ? (joined[joined.length - 1]?.profileId ?? null) : null,
     viewer: snapshot ? toViewerView(snapshot, profileId, isReady) : ABSENT_VIEWER,
     pending,
     isLive,
-    refresh: () => void load(),
+    refresh: () => {
+      void load();
+      presence.refresh();
+    },
     join,
     leave,
     setReady,

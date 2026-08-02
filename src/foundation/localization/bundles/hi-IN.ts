@@ -157,5 +157,15 @@ export const hiINBundle: LocaleBundle = {
     "error.sys.service_unavailable.title": "अभी तैयार नहीं",
     "error.sys.persistence_unavailable.title": "आपका डेटा नहीं मिल रहा",
     "error.sys.conflict.title": "कोई पहले बदल चुका है",
+  
+    "room.presence.online": "ऑनलाइन",
+    "room.presence.idle": "निष्क्रिय",
+    "room.presence.away": "दूर",
+    "room.presence.offline": "ऑफ़लाइन",
+    "room.presence.last_seen": "{minutes} मिनट पहले देखा गया",
+    "room.members.ready_count": "{total} में से {ready} तैयार",
+    "po.banner.title": "पो आपके साथ प्रतीक्षा कर रहा है",
+    "po.banner.waiting": "सबके आने तक पेड़ के नीचे विश्राम कर रहा है।",
+    "po.banner.all_ready": "सब तैयार हैं — पो प्रसन्न दिख रहा है।",
   },
 };

@@ -39,3 +39,13 @@ export {
   type RoomRealtimeUnsubscribe,
   type WaitingRoomSnapshot,
 } from "./room-read-model";
+export type { PresenceHeartbeat, RoomPresence } from "./presence.types";
+export {
+  createPresenceCoordinator,
+  resolvePresenceCoordinatorDependencies,
+  PRESENCE_COORDINATOR,
+  type MemberPresence,
+  type PresenceCoordinator,
+  type PresenceCoordinatorDependencies,
+  type RoomPresenceSnapshot,
+} from "./presence-coordinator";

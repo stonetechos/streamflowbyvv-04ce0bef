@@ -18,6 +18,9 @@ export interface WaitingRoomError {
   readonly messageKey: string;
 }
 
+/** Presence, as the lobby shows it. Derived in Domain, never guessed here. */
+export type MemberPresenceView = "online" | "idle" | "away" | "offline" | "unknown";
+
 export interface MemberView {
   readonly id: string;
   readonly profileId: string;
@@ -28,6 +31,11 @@ export interface MemberView {
   readonly isHost: boolean;
   readonly isReady: boolean;
   readonly isViewer: boolean;
+  readonly presence: MemberPresenceView;
+  /** ISO-8601 of the last heartbeat; null while presence is untracked. */
+  readonly lastSeenAt: string | null;
+  /** Whole minutes since the last heartbeat; null when online or untracked. */
+  readonly lastSeenMinutes: number | null;
 }
 
 export interface RoomSummaryView {

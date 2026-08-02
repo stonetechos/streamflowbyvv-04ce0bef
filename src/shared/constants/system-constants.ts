@@ -37,6 +37,20 @@ export const ROOM = Object.freeze({
   SCHEMA_MAX_MEMBERS: 8,
 });
 
+/**
+ * Presence heartbeat — Sprint 2.1 operational tuning.
+ *
+ * Foundation §14.3 fixes the room inactivity window (30 minutes) but leaves
+ * the heartbeat cadence to implementation. These two values are the only
+ * place that cadence is expressed; they are operational, not normative, and
+ * are candidates for ratification by a future ADR. `STALE_AFTER_MS` is three
+ * missed beats — one lost beat must not blink a member offline.
+ */
+export const PRESENCE = Object.freeze({
+  HEARTBEAT_INTERVAL_MS: 20 * SECOND_MS,
+  STALE_AFTER_MS: 60 * SECOND_MS,
+});
+
 /** Foundation §14.4 — Retention. ADR-012 invariant: projections < domain events. */
 export const RETENTION = Object.freeze({
   DOMAIN_EVENTS_MS: 730 * DAY_MS, // 24 months

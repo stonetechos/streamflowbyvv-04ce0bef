@@ -335,3 +335,93 @@
     top: 1rem;
   }
 }
+
+/*
+ * Po companion — Sprint 2.1.
+ *
+ * Pure CSS idle life: breathing, blinking, ears, tail, and an occasional
+ * glance. Transform/opacity only, so the whole banner stays compositor-bound
+ * on mobile. The global reduced-motion rules above neutralise all of it.
+ */
+@keyframes sf-po-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-1.2px) scale(1.012); }
+}
+
+@keyframes sf-po-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.08); }
+}
+
+@keyframes sf-po-ear-left {
+  0%, 88%, 100% { transform: rotate(0deg); }
+  92% { transform: rotate(-7deg); }
+}
+
+@keyframes sf-po-ear-right {
+  0%, 70%, 100% { transform: rotate(0deg); }
+  75% { transform: rotate(7deg); }
+}
+
+@keyframes sf-po-tail {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-1.5px) translateY(1px); }
+}
+
+@keyframes sf-po-look-around {
+  0%, 60%, 100% { transform: translateX(0) rotate(0deg); }
+  70% { transform: translateX(-2px) rotate(-2deg); }
+  85% { transform: translateX(2px) rotate(2deg); }
+}
+
+@keyframes sf-po-glance {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2.5px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes sf-po-canopy {
+  0%, 100% { transform: rotate(-0.6deg); }
+  50% { transform: rotate(0.8deg); }
+}
+
+.sf-po .sf-po-head {
+  transform-origin: 80px 62px;
+  animation: sf-po-look-around 13s var(--ease-standard) infinite;
+}
+
+.sf-po .sf-po-eyes {
+  transform-origin: 80px 48px;
+  animation: sf-po-blink 6s var(--ease-standard) infinite;
+}
+
+.sf-po .sf-po-ear-left {
+  transform-origin: 61px 42px;
+  animation: sf-po-ear-left 9s var(--ease-standard) infinite;
+}
+
+.sf-po .sf-po-ear-right {
+  transform-origin: 99px 42px;
+  animation: sf-po-ear-right 11s var(--ease-standard) infinite;
+}
+
+.sf-po .sf-po-tail {
+  animation: sf-po-tail 7s var(--ease-standard) infinite;
+}
+
+.sf-po .sf-po-canopy {
+  transform-origin: 124px 52px;
+  animation: sf-po-canopy 8s var(--ease-standard) infinite;
+}
+
+/* Breathing, plus a one-shot glance replayed whenever Po is re-keyed. */
+.sf-po .sf-po-body {
+  transform-origin: 80px 96px;
+  animation:
+    sf-po-breathe 4.5s var(--ease-standard) infinite,
+    sf-po-glance 1.6s var(--ease-emphasized) 1;
+}
+
+.sf-po[data-mood="delighted"] .sf-po-eyes {
+  animation-duration: 3.5s;
+}

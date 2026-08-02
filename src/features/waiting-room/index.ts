@@ -8,15 +8,20 @@ export { RoomInfoCard } from "./components/room-info-card";
 export { MemberList } from "./components/member-list";
 export { MembershipActions } from "./components/membership-actions";
 export { InviteSummary } from "./components/invite-summary";
+export { PresenceIndicator } from "./components/presence-indicator";
+export { useRoomPresence, type RoomPresenceModel } from "./use-room-presence";
 export { useWaitingRoom, type WaitingRoomModel } from "./use-waiting-room";
 export {
   memberLabel,
+  minutesSince,
+  toPresenceView,
   toMemberViews,
   toRoomSummary,
   toViewerView,
   toWaitingRoomError,
 } from "./waiting-room-state";
 export type {
+  MemberPresenceView,
   MemberView,
   RoomSummaryView,
   ViewerView,

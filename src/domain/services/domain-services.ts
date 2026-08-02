@@ -14,6 +14,11 @@ import {
   type RoomFlowService,
 } from "../rooms/room-flow-service";
 import {
+  createPresenceCoordinator,
+  resolvePresenceCoordinatorDependencies,
+  PRESENCE_COORDINATOR,
+} from "../rooms/presence-coordinator";
+import {
   createRoomReadModel,
   resolveRoomReadModelDependencies,
   ROOM_READ_MODEL,
@@ -107,6 +112,15 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
         ),
     ],
     [ROOM_READ_MODEL, () => createRoomReadModel(resolveRoomReadModelDependencies())],
+    [
+      PRESENCE_COORDINATOR,
+      () =>
+        createPresenceCoordinator(
+          resolvePresenceCoordinatorDependencies(resolveService(PRESENCE_SERVICE), () =>
+            resolveService(CLOCK).now(),
+          ),
+        ),
+    ],
     [PLAYBACK_SERVICE, () => createPlaybackService(context())],
     [SYNC_SERVICE, () => createSyncService(context())],
     [VOICE_SERVICE, () => createVoiceService(context())],
