@@ -64,6 +64,24 @@ function resolveDefaultLocale(): LocaleCode {
   return candidate && isSupportedLocale(candidate) ? candidate : DEFAULT_LOCALE;
 }
 
+function resolveSupabase(): SupabaseClientConfig {
+  const url = env.VITE_SUPABASE_URL ?? null;
+  const publishableKey = env.VITE_SUPABASE_PUBLISHABLE_KEY ?? null;
+  return Object.freeze({ url, publishableKey, isConfigured: Boolean(url && publishableKey) });
+}
+
+function resolveVoice(): VoiceClientConfig {
+  const serverUrl = env.VITE_LIVEKIT_URL ?? null;
+  return Object.freeze({ serverUrl, isConfigured: Boolean(serverUrl) });
+}
+
+function resolveNetwork(): NetworkConfig {
+  return Object.freeze({
+    apiBaseUrl: env.VITE_API_BASE_URL ?? "",
+    defaultTimeoutMs: env.VITE_HTTP_TIMEOUT_MS ?? 15_000,
+  });
+}
+
 function buildConfig(): AppConfig {
   const environment = resolveEnvironment();
   return Object.freeze({
@@ -78,6 +96,9 @@ function buildConfig(): AppConfig {
     errorReportingEnabled:
       env.VITE_ERROR_REPORTING_ENABLED === "true" ||
       (env.VITE_ERROR_REPORTING_ENABLED === undefined && environment !== "development"),
+    supabase: resolveSupabase(),
+    voice: resolveVoice(),
+    network: resolveNetwork(),
   });
 }
 
