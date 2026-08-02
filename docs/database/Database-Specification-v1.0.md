@@ -390,9 +390,10 @@ Modeled as application-level enums mirrored by lookup/check constraints — **no
 |---|---|
 | `profile_status` | `active`, `suspended`, `deactivated`, `deleted` |
 | `visibility_scope` | `everyone`, `recent_partners`, `nobody` |
-| `room_status` | `lobby`, `active`, `paused`, `ended`, `abandoned` |
+| `room_status` | `lobby`, `active`, `paused` (reserved — v1 does not write it; see ADR-004), `ended`, `abandoned` |
 | `room_visibility` | `private` (v1), `link` (v1), `public` (reserved), `community` (reserved) |
-| `room_role` | `host`, `co_host`, `guest` |
+| `room_role` | `host`, `co_host` (reserved — no v1 journey creates one), `guest` |
+
 | `membership_state` | `invited`, `joined`, `left`, `removed` |
 | `presence_status` | `online`, `idle`, `buffering`, `disconnected`, `offline` |
 | `playback_status` | `idle`, `ready`, `counting_down`, `playing`, `paused`, `buffering`, `ended` |
@@ -401,9 +402,10 @@ Modeled as application-level enums mirrored by lookup/check constraints — **no
 | `playback_event_type` | `play`, `pause`, `seek`, `rate_change`, `countdown_started`, `countdown_fired`, `ended` |
 | `sync_event_type` | `drift_measured`, `resync_requested`, `resync_applied`, `countdown_scheduled`, `countdown_fired`, `clock_offset_updated` |
 | `invite_status` | `pending`, `accepted`, `declined`, `expired`, `revoked` |
-| `invite_channel` | `in_app`, `link` |
+| `invite_channel` | `in_app`, `link` — an email invite in v1 is a `link` invite delivered by email (ADR-006) |
 | `notification_type` | `room_invite`, `invite_accepted`, `room_starting`, `countdown_started`, `member_joined`, `member_left`, `voice_started`, `provider_status_changed`, `system_announcement` |
-| `notification_channel` | `in_app`, `push`, `email` |
+| `notification_channel` | `in_app`, `push` (reserved — emitted by no v1 code path; see ADR-007), `email`. Toast, audio cue, and persistent banner are presentation modes of `in_app`, never channels |
+
 | `delivery_status` | `queued`, `sent`, `delivered`, `failed`, `suppressed` |
 | `voice_status` | `provisioning`, `active`, `degraded`, `ended`, `failed` |
 | `voice_participant_status` | `connecting`, `connected`, `reconnecting`, `disconnected` |
@@ -418,8 +420,10 @@ Modeled as application-level enums mirrored by lookup/check constraints — **no
 | `assignment_source` | `manual`, `percentage_bucket`, `internal_tester` |
 | `accessibility_mode` | `default`, `reduced_motion`, `high_contrast`, `screen_reader_optimized` |
 | `theme_mode` | `system`, `light`, `dark` |
-| `language_code` | BCP-47 strings, validated against `localization_strings` — **not** a fixed enum, so new languages never require a migration |
-| `po_session_status` | `active`, `awaiting_clarification`, `completed`, `failed`, `cancelled`, `expired` |
+| `language_code` | BCP-47 strings, validated against `localization_strings` — **not** a fixed enum, so new languages never require a migration. v1.0 launch locales: `en`, `hi-IN` (Foundation §17) |
+| `app_role` | `admin`, `moderator`, `user` — platform privilege, stored only in `user_roles` (ADR-009) |
+| `po_session_status` | `active`, `awaiting_clarification` (derived from open `po_clarifications` rows; see ADR-008), `completed`, `failed`, `cancelled`, `expired` |
+
 | `po_turn_role` | `user`, `assistant`, `system`, `tool` |
 | `po_plan_status` | `draft`, `awaiting_confirmation`, `approved`, `executing`, `completed`, `failed`, `abandoned` |
 | `clarification_status` | `pending`, `answered`, `timed_out`, `cancelled` |
