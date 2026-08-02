@@ -6,6 +6,16 @@
  * above import from here and must stay portable.
  */
 export {
+  AUTH_IDENTITY_REPOSITORY,
+  AUTH_REPOSITORY,
+  ROLE_REPOSITORY,
+  SESSION_REPOSITORY,
+  type AuthIdentityRepository,
+  type AuthRepository,
+  type RoleRepository,
+  type SessionRepository,
+} from "./auth";
+export {
   createEntityMapper,
   defineMapper,
   mapPage,
