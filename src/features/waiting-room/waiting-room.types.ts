@@ -47,6 +47,10 @@ export interface RoomSummaryView {
   readonly joinedCount: number;
   readonly pendingInviteCount: number;
   readonly scheduledStartAt: string | null;
+  /** Provider the host has chosen for this room, if any (Sprint 2.2). */
+  readonly providerId: string | null;
+  /** Stored countdown length in seconds; clamped to the system envelope. */
+  readonly countdownSeconds: number;
 }
 
 export interface ViewerView {

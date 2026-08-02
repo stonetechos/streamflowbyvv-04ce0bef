@@ -104,6 +104,8 @@ export function toRoomSummary(snapshot: WaitingRoomSnapshot): RoomSummaryView {
     joinedCount: snapshot.joinedCount,
     pendingInviteCount: snapshot.pendingInvites.length,
     scheduledStartAt: snapshot.room.scheduledStartAt,
+    providerId: snapshot.room.providerId,
+    countdownSeconds: readCountdownSeconds(snapshot.room.metadata),
   };
 }
 
