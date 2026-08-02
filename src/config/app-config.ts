@@ -11,11 +11,17 @@ import { DEFAULT_LOCALE, isSupportedLocale, type LocaleCode } from "@/shared/con
 
 import { env, isDevBuild, type AppEnvironment, type LogLevel } from "./env";
 
-/** Browser-visible connection settings. Never contains a secret. */
-export interface SupabaseClientConfig {
-  readonly url: string | null;
-  readonly publishableKey: string | null;
-  /** True only when both values are present and the client can be constructed. */
+/**
+ * Browser-visible persistence connection settings. Never contains a secret.
+ *
+ * Sprint 1.3 §1: named for the role, not the vendor. The environment variable
+ * names remain provider-specific because the hosting platform owns them; the
+ * shape the application reads does not.
+ */
+export interface PersistenceClientConfig {
+  readonly endpointUrl: string | null;
+  readonly publicKey: string | null;
+  /** True only when both values are present and an adapter can be constructed. */
   readonly isConfigured: boolean;
 }
 
@@ -43,7 +49,7 @@ export interface AppConfig {
   readonly logLevel: LogLevel;
   readonly defaultLocale: LocaleCode;
   readonly errorReportingEnabled: boolean;
-  readonly supabase: SupabaseClientConfig;
+  readonly persistence: PersistenceClientConfig;
   readonly voice: VoiceClientConfig;
   readonly network: NetworkConfig;
 }
@@ -64,10 +70,14 @@ function resolveDefaultLocale(): LocaleCode {
   return candidate && isSupportedLocale(candidate) ? candidate : DEFAULT_LOCALE;
 }
 
-function resolveSupabase(): SupabaseClientConfig {
-  const url = env.VITE_SUPABASE_URL ?? null;
-  const publishableKey = env.VITE_SUPABASE_PUBLISHABLE_KEY ?? null;
-  return Object.freeze({ url, publishableKey, isConfigured: Boolean(url && publishableKey) });
+function resolvePersistence(): PersistenceClientConfig {
+  const endpointUrl = env.VITE_SUPABASE_URL ?? null;
+  const publicKey = env.VITE_SUPABASE_PUBLISHABLE_KEY ?? null;
+  return Object.freeze({
+    endpointUrl,
+    publicKey,
+    isConfigured: Boolean(endpointUrl && publicKey),
+  });
 }
 
 function resolveVoice(): VoiceClientConfig {
@@ -96,7 +106,7 @@ function buildConfig(): AppConfig {
     errorReportingEnabled:
       env.VITE_ERROR_REPORTING_ENABLED === "true" ||
       (env.VITE_ERROR_REPORTING_ENABLED === undefined && environment !== "development"),
-    supabase: resolveSupabase(),
+    persistence: resolvePersistence(),
     voice: resolveVoice(),
     network: resolveNetwork(),
   });

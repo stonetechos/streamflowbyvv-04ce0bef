@@ -9,7 +9,7 @@ export {
   appConfig,
   type AppConfig,
   type NetworkConfig,
-  type SupabaseClientConfig,
+  type PersistenceClientConfig,
   type VoiceClientConfig,
 } from "./app-config";
 export {
