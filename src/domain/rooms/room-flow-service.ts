@@ -152,7 +152,7 @@ export interface RoomFlowDependencies {
 }
 
 /** Sequential fallback when no adapter offers a real transaction boundary. */
-const PASSTHROUGH_UNIT_OF_WORK: RoomUnitOfWork = { run: (work) => work() };
+const PASSTHROUGH_UNIT_OF_WORK: RoomUnitOfWork = { run: <T>(work: () => Promise<T>) => work() };
 
 /** Resolves the repository cluster lazily so an unconfigured backend still boots. */
 export function resolveRoomFlowDependencies(

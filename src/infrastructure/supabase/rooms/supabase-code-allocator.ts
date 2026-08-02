@@ -32,7 +32,7 @@ export function createSupabaseCodeAllocator(connection: DataConnection): CodeAll
         throw toRepositoryError(error as never, context);
       }
       if (typeof data !== "string" || data.length === 0) {
-        throw new RepositoryError(REPOSITORY_ERRORS.FAILED, context);
+        throw new RepositoryError(REPOSITORY_ERRORS.QUERY_FAILED, context);
       }
       return data;
     },

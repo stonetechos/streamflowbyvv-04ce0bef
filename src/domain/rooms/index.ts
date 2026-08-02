@@ -18,3 +18,13 @@ export type {
   RoomStateDraft,
   RoomStatePatch,
 } from "./room.types";
+export {
+  createRoomFlowService,
+  resolveRoomFlowDependencies,
+  type ComplianceContext,
+  type InviteCreationRequest,
+  type RoomCreationRequest,
+  type RoomCreationResult,
+  type RoomFlowDependencies,
+  type RoomFlowService,
+} from "./room-flow-service";
