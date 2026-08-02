@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthSignOutRouteImport } from './routes/auth.sign-out'
+import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,6 +46,12 @@ const AuthSignOutRoute = AuthSignOutRouteImport.update({
   path: '/sign-out',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthenticatedRoomsRoomIdRoute =
+  AuthenticatedRoomsRoomIdRouteImport.update({
+    id: '/rooms/$roomId',
+    path: '/rooms/$roomId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -52,12 +59,14 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/': typeof AuthIndexRoute
+  '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AuthenticatedAccountRoute
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth': typeof AuthIndexRoute
+  '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -67,12 +76,14 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/': typeof AuthIndexRoute
+  '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/account' | '/auth/sign-out' | '/auth/'
+  fullPaths:
+    '/' | '/auth' | '/account' | '/auth/sign-out' | '/auth/' | '/rooms/$roomId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/auth/sign-out' | '/auth'
+  to: '/' | '/account' | '/auth/sign-out' | '/auth' | '/rooms/$roomId'
   id:
     | '__root__'
     | '/'
@@ -81,6 +92,7 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/auth/sign-out'
     | '/auth/'
+    | '/_authenticated/rooms/$roomId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -133,15 +145,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignOutRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_authenticated/rooms/$roomId': {
+      id: '/_authenticated/rooms/$roomId'
+      path: '/rooms/$roomId'
+      fullPath: '/rooms/$roomId'
+      preLoaderRoute: typeof AuthenticatedRoomsRoomIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedRoomsRoomIdRoute: typeof AuthenticatedRoomsRoomIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedRoomsRoomIdRoute: AuthenticatedRoomsRoomIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
