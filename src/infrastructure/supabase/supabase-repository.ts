@@ -11,11 +11,12 @@ import { REPOSITORY_ERRORS, RepositoryError } from "@/repository";
 
 import type { DataConnection } from "./connection";
 import { runCountedQuery } from "./query-wrapper";
+import type { TableName } from "./supabase.types";
 
 export interface SupabaseRepositoryOptions<TRow, TEntity> {
   readonly connection: DataConnection;
-  /** Physical table name. The only place it is ever written. */
-  readonly table: string;
+  /** Physical table name, constrained to the generated schema (Sprint 1.2 §6). */
+  readonly table: TableName;
   /** Aggregate name used in errors and logs — domain terms, not table terms. */
   readonly aggregate: string;
   readonly mapper: RowMapper<TRow, TEntity>;
