@@ -1,24 +1,54 @@
-# StreamFlow — Documentation Consolidation v1.0 (Approved — awaiting build mode)
+## Git Discipline v1.0 — Memory Update Plan
 
-Writes are still blocked; the workspace toggle is set to Plan. Please switch it to **Build** and I will execute the following exactly as approved, with no restyling, no reorganization, and no new ADRs beyond ADR-013.
+### Goal
+Formalize the Git Discipline rules as a project-level constraint that amends the current Build Rules v1.0 change discipline without modifying the frozen `Build-Rules-v1.0.md` document.
 
-## Locked product decisions (applied throughout)
+### Scope
+- Create `mem://constraints/git-discipline.md` with the six rules and their reconciliation with Build Rules §6.
+- Update `mem://index.md` to reference the new constraint.
+- No changes to `docs/development/Build-Rules-v1.0.md` and no new ADR, per the "Memory only" change-control requirement.
 
-- **Launch locales:** English (`en`), Hindi (`hi-IN`). Localization must support unlimited future languages without redesign — locales are data, `language_code` stays BCP-47 validated (never a fixed enum), layout primitives direction-aware, CLDR plural categories.
-- **System constants (fixed):** countdown default 5s, range 3–60s; invite expiry 24h; join link expiry 24h; room inactivity timeout 30 min; recent room retention 30 days; domain event retention 24 months; projection retention 90 days; Po session retention 30 days; analytics retention 12 months; sync bands Excellent ≤100 ms, Good 101–250 ms, Warning 251–500 ms, Re-sync Required >500 ms.
+### Reconciliation with Build Rules v1.0 §26
+The frozen Build Rules v1.0 rule 26 says: *"Keep commits small, modular, and reversible. One concern per commit, each independently revertable."*
+Git Discipline v1.0 reconciles this as:
 
-## Work items
+- During a sprint: keep local branch commits small, modular, and reversible (one concern per commit).
+- At the sprint boundary: squash the local branch into one public commit per sprint.
+- Never rewrite the history of a completed sprint.
+- Never modify the scope of a completed sprint unless fixing a defect.
+- Keep the repository portable to standard Git tooling.
+- Never depend on Lovable-only Git features.
 
-1. **`docs/foundation/Foundation-Specification-v1.0.md`** — author the cited tie-breaker: layering, 13 domain services, repositories, event bus, Provider SDK, feature flags, local-first, cross-cutting strategies, security and legal compliance, database standards, documentation structure, mandatory workflow, plus normative sections for System Constants, Clock Synchronization, Error Taxonomy and localization key grammar, Localization (en + hi-IN), Local-First Cache, Rate-Limit Policy, Accepted Assumptions.
-2. **Companion contracts** — `docs/api/domain-event-catalog-v1.0.md`, `docs/api/po-tool-registry.md`, `docs/foundation/storage-design-v1.0.md`.
-3. **ADR-002 … ADR-013** — room lifecycle mapping · sync mode per room · read ownership · preference field ownership · email invite model · channels vs presentation modes · Po clarification precedence · admin authorization table · guest preview scope · block-during-active-room · retention invariant · room capacity envelope.
-4. **Amend the MVP Functional Specification** — numbering, identity and cross-references preserved; each change annotated with its ADR; Amendment Register appended.
-5. **Amend the Database Specification** — same rules; enum annotations, ownership notes, authorization table, RLS row, retention rule, constants cross-references; Amendment Register appended.
-6. **`docs/development/Build-Rules-v1.0.md`** — the governing rules for all future Build Mode work, exactly as listed.
-7. **`docs/README.md`** — document map, precedence order, status, change control.
+### Memory file content
 
-Any further issue discovered mid-consolidation is recorded as a **Deferred Observation** with a reason, not resolved.
+`mem://constraints/git-discipline.md`:
 
-## Deliverables on completion
+```text
+---
+name: Git Discipline v1.0
+description: Amends Build Rules v1.0 §6 by requiring one public commit per sprint while keeping local commits small, modular, and reversible; prohibits rewriting completed sprint history and Lovable-only Git features.
+type: constraint
+---
+Git Discipline v1.0 — StreamFlow by Vedora Vision
 
-1. Updated document list. 2. Cross-reference validation. 3. Remaining deferred items and deferred observations. 4. Final implementation readiness assessment, with the freeze statement if every blocking documentation issue is closed.
+- Commit only when the sprint is complete.
+- One sprint = one public commit.
+- Local commits during a sprint must remain small, modular, and reversible (one concern per commit).
+- Never rewrite previous sprint history.
+- Never modify completed sprint scope unless fixing a defect.
+- Keep the repository portable to standard Git tooling.
+- Never depend on Lovable-only Git features.
+
+Note: This memory constraint conceptually amends Build Rules v1.0 §6. Because Build Rules v1.0 is frozen and change-controlled only via ADR, and per project decision this change is stored in memory only, the source file `docs/development/Build-Rules-v1.0.md` remains unchanged.
+```
+
+### Index update
+
+Add to `mem://index.md` under **Memories**:
+
+```text
+- [Git Discipline v1.0](mem://constraints/git-discipline.md) — Amends Build Rules v1.0 §6; one public commit per sprint, local commits stay small and reversible.
+```
+
+### Outcome
+After approval, the constraint will be part of the automatically-applied project memory. Every future Build Mode sprint will be committed as one public commit at the sprint boundary, while local work remains small and reversible. The frozen documentation set is not touched.
