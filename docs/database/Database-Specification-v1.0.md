@@ -492,6 +492,8 @@ Modeled as application-level enums mirrored by lookup/check constraints — **no
 
 Rules: audit tables are append-only; `updated_by` is always the acting profile, never a service account impersonating a user; system actions record `actor_profile_id = NULL` with an explicit `actor_role`.
 
+**Retention invariant (ADR-012):** projection retention must never exceed `domain_events` retention, otherwise rebuildability silently becomes false. v1.0 values are fixed in Foundation §14.4 — `domain_events` 24 months, projections (`activity_timeline`, `recent_partners`) 90 days, Po sessions 30 days, analytics 12 months. Retention jobs are ordered so no projection is purged ahead of a schedule that would break rebuild. The normative event contracts are in `docs/api/domain-event-catalog-v1.0.md`.
+
 ---
 
 ## 8. Performance
