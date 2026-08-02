@@ -173,7 +173,7 @@ export const enBundle: LocaleBundle = {
     "po.banner.waiting": "Resting under the tree until everyone arrives.",
     "po.banner.all_ready": "Everyone is ready — Po looks pleased.",
     "po.banner.thinking": "Po tilts an ear while the host sorts things out.",
-    "po.banner.provider_selected": "Po settles in â the room knows what it's watching.",
+    "po.banner.provider_selected": "Po settles in — the room knows what it's watching.",
 
     "common.save": "Save",
     "common.saving": "Saving…",
@@ -203,7 +203,7 @@ export const enBundle: LocaleBundle = {
     "compliance.rationale.no_redistribution": "Video never passes through StreamFlow. Nothing is copied or re-shared.",
     "compliance.rationale.no_credentials": "StreamFlow never asks for or stores your account details.",
     "compliance.rationale.region_restricted": "Availability depends on your region and your own subscription.",
-    "compliance.rationale.manual_sync_only": "Playback stays in your hands â we only coordinate the moment you press play.",
+    "compliance.rationale.manual_sync_only": "Playback stays in your hands — we only coordinate the moment you press play.",
     "compliance.rationale.unverified": "We haven't verified this service's terms yet.",
 
     "room.setup.title": "Before you watch",
