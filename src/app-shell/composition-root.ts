@@ -9,6 +9,7 @@
  */
 import { registerAuthServices } from "@/domain/auth";
 import { registerDomainServices } from "@/domain/services";
+import { registerEventInfrastructure } from "@/infrastructure/events";
 import { registerIdentityAdapter } from "@/infrastructure/identity";
 import { registerRoomAdapter } from "@/infrastructure/rooms";
 import { logger } from "@/foundation/logging";
@@ -28,11 +29,17 @@ export function composeApplication(): void {
   // Sprint 1.6: orchestration services and the internal event bus. Bound here so
   // nothing above Domain constructs a business service for itself.
   registerDomainServices();
+  // Sprint 1.9: event persistence, projections, analytics sink, and the
+  // outbound realtime publisher. After the bus exists, before first publish.
+  const eventsBound = registerEventInfrastructure();
 
   if (!identityBound) {
     logger.warn("No identity adapter bound: backend is not configured", { module: "auth" });
   }
   if (!roomsBound) {
     logger.warn("No room adapter bound: backend is not configured", { module: "rooms" });
+  }
+  if (!eventsBound) {
+    logger.warn("No event adapter bound: backend is not configured", { module: "events" });
   }
 }

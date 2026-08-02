@@ -33,6 +33,13 @@ export const hiINBundle: LocaleBundle = {
     "error.net.unreachable": "हम StreamFlow तक नहीं पहुँच सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
     "error.net.bad_response": "हमें एक अनपेक्षित उत्तर मिला। कृपया फिर कोशिश करें।",
     "error.net.server_error": "StreamFlow में अभी कुछ दिक्कत है। थोड़ी देर बाद कोशिश करें।",
+    // Sprint 1.9 — गतिविधि टाइमलाइन सारांश (Foundation §13).
+    "activity.room_created": "आपने एक रूम बनाया।",
+    "activity.room_joined": "आप एक रूम में शामिल हुए।",
+    "activity.room_ended": "एक वॉच सेशन समाप्त हुआ।",
+    "activity.invite_sent": "आपने एक आमंत्रण भेजा।",
+    "activity.invite_accepted": "एक आमंत्रण स्वीकार किया गया।",
+    "activity.voice_joined": "आप वॉइस चैट में शामिल हुए।",
     // Sprint 1.6 — साझा डोमेन त्रुटि वर्गीकरण (Foundation §16.1).
     "error.sys.invalid_input": "यह अनुरोध मान्य नहीं था, इसलिए कुछ नहीं बदला।",
     "error.sys.service_unavailable": "StreamFlow का यह हिस्सा अभी तैयार नहीं है। कृपया फिर कोशिश करें।",

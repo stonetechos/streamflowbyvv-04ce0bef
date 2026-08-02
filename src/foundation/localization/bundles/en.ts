@@ -38,6 +38,13 @@ export const enBundle: LocaleBundle = {
     "error.net.unreachable": "We couldn't reach StreamFlow. Check your connection and try again.",
     "error.net.bad_response": "We received an unexpected response. Please try again.",
     "error.net.server_error": "StreamFlow is having trouble right now. Please try again shortly.",
+    // Sprint 1.9 — activity timeline summaries (Foundation §13: keys, not strings).
+    "activity.room_created": "You created a room.",
+    "activity.room_joined": "You joined a room.",
+    "activity.room_ended": "A watch session ended.",
+    "activity.invite_sent": "You sent an invite.",
+    "activity.invite_accepted": "An invite was accepted.",
+    "activity.voice_joined": "You joined voice chat.",
     // Sprint 1.6 — shared domain error taxonomy (Foundation §16.1).
     "error.sys.invalid_input": "That request wasn't valid, so nothing was changed.",
     "error.sys.service_unavailable": "That part of StreamFlow isn't ready yet. Please try again.",
