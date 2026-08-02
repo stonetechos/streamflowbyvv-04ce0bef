@@ -24,5 +24,8 @@ export {
 } from "./projection.types";
 export {
   REALTIME_EVENT_PUBLISHER,
+  REALTIME_EVENT_SUBSCRIBER,
+  type RealtimeEventListener,
   type RealtimeEventPublisher,
+  type RealtimeEventSubscriber,
 } from "./realtime.types";

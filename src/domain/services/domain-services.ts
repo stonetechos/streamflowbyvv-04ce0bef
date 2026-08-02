@@ -14,6 +14,11 @@ import {
   type RoomFlowService,
 } from "../rooms/room-flow-service";
 import {
+  createRoomReadModel,
+  resolveRoomReadModelDependencies,
+  ROOM_READ_MODEL,
+} from "../rooms/room-read-model";
+import {
   bindService,
   createServiceToken,
   isServiceBound,
@@ -101,6 +106,7 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
           }),
         ),
     ],
+    [ROOM_READ_MODEL, () => createRoomReadModel(resolveRoomReadModelDependencies())],
     [PLAYBACK_SERVICE, () => createPlaybackService(context())],
     [SYNC_SERVICE, () => createSyncService(context())],
     [VOICE_SERVICE, () => createVoiceService(context())],

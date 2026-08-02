@@ -21,6 +21,7 @@ export {
   ANALYTICS_EVENT_SINK,
   EVENT_STORE_REPOSITORY,
   REALTIME_EVENT_PUBLISHER,
+  REALTIME_EVENT_SUBSCRIBER,
   RECENT_PARTNERS_PROJECTION,
   type ActivityTimelineEntry,
   type ActivityTimelineProjection,
@@ -31,7 +32,9 @@ export {
   type EventPayloadRecord,
   type EventStoreRepository,
   type PartnerObservation,
+  type RealtimeEventListener,
   type RealtimeEventPublisher,
+  type RealtimeEventSubscriber,
   type RecentPartnersProjection,
   type StoredDomainEvent,
 } from "./events";
