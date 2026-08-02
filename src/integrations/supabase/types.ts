@@ -348,6 +348,7 @@ export type Database = {
           id: string
           occurred_at: string
           payload: Json
+          sequence: number | null
         }
         Insert: {
           actor_profile_id?: string | null
@@ -361,6 +362,7 @@ export type Database = {
           id?: string
           occurred_at?: string
           payload?: Json
+          sequence?: number | null
         }
         Update: {
           actor_profile_id?: string | null
@@ -374,6 +376,7 @@ export type Database = {
           id?: string
           occurred_at?: string
           payload?: Json
+          sequence?: number | null
         }
         Relationships: [
           {
