@@ -39,6 +39,16 @@ export {
   type RoomRealtimeUnsubscribe,
   type WaitingRoomSnapshot,
 } from "./room-read-model";
+export {
+  createRoomSetupService,
+  resolveRoomSetupDependencies,
+  COUNTDOWN_SECONDS_METADATA_KEY,
+  ROOM_SETUP_SERVICE,
+  type RoomSetupDependencies,
+  type RoomSetupService,
+  type SelectProviderRequest,
+  type SelectProviderResult,
+} from "./room-setup-service";
 export type { PresenceHeartbeat, RoomPresence } from "./presence.types";
 export {
   createPresenceCoordinator,

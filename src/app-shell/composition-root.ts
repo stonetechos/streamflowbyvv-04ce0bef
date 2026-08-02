@@ -11,6 +11,7 @@ import { registerAuthServices } from "@/domain/auth";
 import { registerDomainServices } from "@/domain/services";
 import { registerEventInfrastructure } from "@/infrastructure/events";
 import { registerIdentityAdapter } from "@/infrastructure/identity";
+import { registerProviderAdapter } from "@/infrastructure/providers";
 import { registerRoomAdapter } from "@/infrastructure/rooms";
 import { logger } from "@/foundation/logging";
 
@@ -25,6 +26,8 @@ export function composeApplication(): void {
   const identityBound = registerIdentityAdapter();
   // Sprint 1.7: room, room-state, room-member, and invite persistence.
   const roomsBound = registerRoomAdapter();
+  // Sprint 2.2: provider catalog, capability matrix, compliance rules, prefs.
+  const providersBound = registerProviderAdapter();
   registerAuthServices();
   // Sprint 1.6: orchestration services and the internal event bus. Bound here so
   // nothing above Domain constructs a business service for itself.
@@ -38,6 +41,9 @@ export function composeApplication(): void {
   }
   if (!roomsBound) {
     logger.warn("No room adapter bound: backend is not configured", { module: "rooms" });
+  }
+  if (!providersBound) {
+    logger.warn("No provider adapter bound: backend is not configured", { module: "providers" });
   }
   if (!eventsBound) {
     logger.warn("No event adapter bound: backend is not configured", { module: "events" });

@@ -45,6 +45,7 @@ export type { DomainServiceContext, Intent } from "./service-context";
 export {
   ANALYTICS_SERVICE,
   CLOCK,
+  DEEP_LINK_SERVICE,
   COMPLIANCE_SERVICE,
   EVENT_BUS,
   FEATURE_FLAG_SERVICE,
