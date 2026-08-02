@@ -14,6 +14,11 @@ import {
   type RoomFlowService,
 } from "../rooms/room-flow-service";
 import {
+  createRoomReadModel,
+  resolveRoomReadModelDependencies,
+  ROOM_READ_MODEL,
+} from "../rooms/room-read-model";
+import {
   bindService,
   createServiceToken,
   isServiceBound,
