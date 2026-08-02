@@ -94,4 +94,3 @@ export function resolveProviderPreferenceDependencies(): ProviderPreferenceDepen
 export const PROVIDER_PREFERENCE_SERVICE = createServiceToken<ProviderPreferenceService>(
   "ProviderPreferenceService",
 );
-export const DEEP_LINK_SERVICE_NAME = "DeepLinkService" as const;
