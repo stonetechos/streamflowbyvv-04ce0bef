@@ -14,6 +14,11 @@ import {
   type RoomFlowService,
 } from "../rooms/room-flow-service";
 import {
+  createCountdownCoordinator,
+  resolveCountdownCoordinatorDependencies,
+  COUNTDOWN_COORDINATOR,
+} from "../rooms/countdown-coordinator";
+import {
   createPresenceCoordinator,
   resolvePresenceCoordinatorDependencies,
   PRESENCE_COORDINATOR,
@@ -137,6 +142,17 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
           resolvePresenceCoordinatorDependencies(resolveService(PRESENCE_SERVICE), () =>
             resolveService(CLOCK).now(),
           ),
+        ),
+    ],
+    // Sprint 2.3 — countdown runtime, provider-agnostic and playback-free.
+    [
+      COUNTDOWN_COORDINATOR,
+      () =>
+        createCountdownCoordinator(
+          resolveCountdownCoordinatorDependencies({
+            events: resolveService(EVENT_BUS),
+            clock: resolveService(CLOCK),
+          }),
         ),
     ],
     // Sprint 2.2 — provider catalog, preferences, deep links, and room setup.
