@@ -550,6 +550,7 @@ Roles referenced: **self** (the owning profile), **room member**, **room host**,
 
 | Table | Owner | Read | Insert | Update | Delete |
 |---|---|---|---|---|---|
+| `user_roles` (ADR-009) | system | self (own rows) and the security-definer role-check function | system only | system only | system only |
 | `profiles` | self | self (full); other users see a public subset (display_name, handle, avatar) unless blocked | system on signup | self | soft-delete by self; hard by admin/erasure |
 | `*_preferences` (5) | self | self only | self | self | self |
 | `rooms` | host | members + invitees | authenticated user | host / co-host | host (soft); admin (hard) |
