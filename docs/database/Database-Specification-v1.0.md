@@ -75,6 +75,8 @@ Five separate tables instead of one wide table, so each can evolve, be cached, a
 
 - **Indexes:** unique(`profile_id`) on each.
 - **Note:** `privacy_preferences.po_memory_opt_in` and `analytics_opt_in` are the enforcement inputs for §3.9 and §3.8 writes.
+- **Field ownership (ADR-005):** `localization_preferences.region_code` is the single source of the user's region and the input ComplianceService reads — region is never duplicated onto provider rows. Default provider is a single nullable provider reference per user, never a repeated per-provider flag. Portable voice behaviour (join-muted, push-to-talk, auto-join) belongs with `privacy_preferences` alongside `voice_auto_join`; default microphone and speaker are **device-local and never persisted**. `font_scale` is owned by `accessibility_preferences`; surfacing it on an Appearance settings page is a UI placement, not a second field.
+
 
 ### 3.2 Rooms
 
@@ -120,6 +122,8 @@ Five separate tables instead of one wide table, so each can evolve, be cached, a
 - **Constraints:** `position_ms >= 0`; `playback_rate > 0`; `version` monotonically increases.
 - **Soft delete:** No.
 - **Ownership:** Room host (and co-host) write; all members read.
+- **Consolidation notes (v1.0):** `sync_mode` is a property of the room, set from the selected provider at provider-selection time and immutable while a playback session is open; participants downgrade to the room's mode, the room never changes to match a participant (ADR-003). `playback_status` is the authoritative read for the watching screen (ADR-004). `countdown_target_at` durations resolve to Foundation §14.1; `clock_offset_ms` correction follows Foundation §15.
+
 - **Extensibility:** `sync_mode` allows verified provider remote-control plugins in v2 without schema change.
 
 #### `invites`
