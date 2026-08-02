@@ -75,6 +75,8 @@ export {
   type RoomRepository,
   type RoomStateConcurrencyInfo,
   type RoomStateRepository,
+  ROOM_PRESENCE_REPOSITORY,
+  type RoomPresenceRepository,
 } from "./rooms";
 export {
   REPOSITORY_ERRORS,

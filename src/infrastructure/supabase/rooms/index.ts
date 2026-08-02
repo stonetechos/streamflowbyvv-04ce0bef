@@ -15,6 +15,7 @@ import {
   CODE_ALLOCATOR,
   ROOM_UNIT_OF_WORK,
 } from "@/repository/rooms/room-support.types";
+import { ROOM_PRESENCE_REPOSITORY } from "@/repository/rooms/presence-repository.types";
 import {
   INVITE_REPOSITORY,
   ROOM_MEMBER_REPOSITORY,
@@ -26,6 +27,7 @@ import { getBrowserDataConnection, type DataConnection } from "../connection";
 import { createSupabaseCodeAllocator } from "./supabase-code-allocator";
 import { createSupabaseInviteRepository } from "./supabase-invite-repository";
 import { createSupabaseRoomMemberRepository } from "./supabase-room-member-repository";
+import { createSupabaseRoomPresenceRepository } from "./supabase-room-presence-repository";
 import { createSupabaseRoomRepository } from "./supabase-room-repository";
 import { createSupabaseRoomStateRepository } from "./supabase-room-state-repository";
 import { createSupabaseRoomUnitOfWork } from "./supabase-unit-of-work";
@@ -46,6 +48,12 @@ export function registerSupabaseRoomAdapter(connection?: DataConnection): boolea
   }
   if (!isRepositoryBound(INVITE_REPOSITORY)) {
     bindRepository(INVITE_REPOSITORY, () => createSupabaseInviteRepository(active));
+  }
+  // Sprint 2.1: ephemeral liveness, separate from durable membership.
+  if (!isRepositoryBound(ROOM_PRESENCE_REPOSITORY)) {
+    bindRepository(ROOM_PRESENCE_REPOSITORY, () =>
+      createSupabaseRoomPresenceRepository(active),
+    );
   }
   // Sprint 1.8: code allocation (Database Spec §3.11) and the creation
   // atomicity boundary.
@@ -72,5 +80,10 @@ export { createSupabaseCodeAllocator } from "./supabase-code-allocator";
 export { createSupabaseRoomUnitOfWork } from "./supabase-unit-of-work";
 export { createSupabaseInviteRepository } from "./supabase-invite-repository";
 export { createSupabaseRoomMemberRepository } from "./supabase-room-member-repository";
+export {
+  createSupabaseRoomPresenceRepository,
+  toRoomPresence,
+  ROOM_PRESENCE_COLUMNS,
+} from "./supabase-room-presence-repository";
 export { createSupabaseRoomRepository } from "./supabase-room-repository";
 export { createSupabaseRoomStateRepository } from "./supabase-room-state-repository";
