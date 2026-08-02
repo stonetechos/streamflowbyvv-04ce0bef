@@ -9,6 +9,11 @@ import { createEventBus, type EventBus } from "@/domain/events/event-bus";
 import { systemClock, type Clock } from "@/domain/events/event.types";
 
 import {
+  createRoomFlowService,
+  resolveRoomFlowDependencies,
+  type RoomFlowService,
+} from "../rooms/room-flow-service";
+import {
   bindService,
   createServiceToken,
   isServiceBound,
@@ -39,6 +44,8 @@ export const CLOCK = createServiceToken<Clock>("Clock");
 export const EVENT_BUS = createServiceToken<EventBus>("EventBus");
 
 export const ROOM_SERVICE = createServiceToken<RoomService>("RoomService");
+/** Sprint 1.8 — room business flow, wired to the room repositories. */
+export const ROOM_FLOW_SERVICE = createServiceToken<RoomFlowService>("RoomFlowService");
 export const PLAYBACK_SERVICE = createServiceToken<PlaybackService>("PlaybackService");
 export const SYNC_SERVICE = createServiceToken<SyncService>("SyncService");
 export const VOICE_SERVICE = createServiceToken<VoiceService>("VoiceService");
@@ -80,6 +87,20 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
     () => unknown,
   ][] = [
     [ROOM_SERVICE, () => createRoomService(context())],
+    [
+      ROOM_FLOW_SERVICE,
+      () =>
+        createRoomFlowService(
+          // Repositories resolve here, at first use, so an unconfigured backend
+          // still boots and only a real call reports unavailability.
+          resolveRoomFlowDependencies({
+            roomService: resolveService(ROOM_SERVICE),
+            invitationService: resolveService(INVITATION_SERVICE),
+            complianceService: resolveService(COMPLIANCE_SERVICE),
+            clock: resolveService(CLOCK),
+          }),
+        ),
+    ],
     [PLAYBACK_SERVICE, () => createPlaybackService(context())],
     [SYNC_SERVICE, () => createSyncService(context())],
     [VOICE_SERVICE, () => createVoiceService(context())],
