@@ -32,12 +32,8 @@ export function createHttpVoiceTokenProvider(
 ): VoiceTokenProvider {
   return {
     async issue(request) {
-      const response = await http.request<VoiceGrant>({
-        method: "POST",
-        path,
-        body: request,
-      });
-      return response.data;
+      const response = await http.post<VoiceGrant>(path, request);
+      return response.body;
     },
   };
 }
