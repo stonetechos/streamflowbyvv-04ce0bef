@@ -28,3 +28,14 @@ export {
   type RoomFlowDependencies,
   type RoomFlowService,
 } from "./room-flow-service";
+export {
+  createRoomReadModel,
+  resolveRoomReadModelDependencies,
+  READINESS_METADATA_KEY,
+  ROOM_READ_MODEL,
+  type RoomReadModel,
+  type RoomReadModelDependencies,
+  type RoomRealtimeNotice,
+  type RoomRealtimeUnsubscribe,
+  type WaitingRoomSnapshot,
+} from "./room-read-model";
