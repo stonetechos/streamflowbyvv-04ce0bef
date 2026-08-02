@@ -59,3 +59,15 @@ export {
   type PresenceCoordinatorDependencies,
   type RoomPresenceSnapshot,
 } from "./presence-coordinator";
+export {
+  createCountdownCoordinator,
+  resolveCountdownCoordinatorDependencies,
+  COUNTDOWN_COORDINATOR,
+  COUNTDOWN_REASONS,
+  type CountdownActorRequest,
+  type CountdownCoordinator,
+  type CountdownCoordinatorDependencies,
+  type CountdownStartRequest,
+  type CountdownTickSignal,
+  type CountdownTickUnsubscribe,
+} from "./countdown-coordinator";
