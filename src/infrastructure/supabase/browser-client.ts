@@ -19,10 +19,10 @@ let client: SupabaseClient<Database> | null = null;
 export function getBrowserSupabaseClient(): SupabaseClient<Database> | null {
   if (client) return client;
 
-  const { url, publishableKey, isConfigured } = appConfig.supabase;
-  if (!isConfigured || !url || !publishableKey) return null;
+  const { endpointUrl, publicKey, isConfigured } = appConfig.persistence;
+  if (!isConfigured || !endpointUrl || !publicKey) return null;
 
-  client = createClient<Database>(url, publishableKey, {
+  client = createClient<Database>(endpointUrl, publicKey, {
     auth: {
       // Session handling belongs to the auth module (Sprint 1.2). The transport
       // defaults are declared here so that module changes no options.
@@ -38,11 +38,12 @@ export function getBrowserSupabaseClient(): SupabaseClient<Database> | null {
 }
 
 export function getBrowserConnectionStatus(): ConnectionStatus {
-  const { url, isConfigured } = appConfig.supabase;
+  const { endpointUrl, isConfigured } = appConfig.persistence;
   return {
     isConfigured,
     scope: "browser",
-    host: url ? new URL(url).host : null,
+    driver: "postgres",
+    host: endpointUrl ? new URL(endpointUrl).host : null,
   };
 }
 

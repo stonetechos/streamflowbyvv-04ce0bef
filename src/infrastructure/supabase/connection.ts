@@ -7,15 +7,18 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { REPOSITORY_ERRORS, RepositoryError } from "@/repository";
+import { REPOSITORY_ERRORS, RepositoryError, type PersistenceConnection } from "@/repository";
 
 import { getBrowserConnectionStatus, getBrowserSupabaseClient } from "./browser-client";
 import type { ConnectionStatus, Database } from "./supabase.types";
 
-export interface DataConnection {
+/**
+ * Adapter-side connection. It satisfies the neutral `PersistenceConnection`
+ * contract and adds the driver client, which never leaves Infrastructure
+ * (Sprint 1.3 §1).
+ */
+export interface DataConnection extends PersistenceConnection {
   readonly status: ConnectionStatus;
-  /** True when a client can be obtained without throwing. */
-  isAvailable(): boolean;
   /** Throws `SF-SYS-PERSISTENCE-UNAVAILABLE` when not configured. */
   client(): SupabaseClient<Database>;
 }

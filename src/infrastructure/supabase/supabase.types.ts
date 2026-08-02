@@ -7,6 +7,12 @@
  * repository layer depends on this vendor-neutral module path only.
  */
 
+import type {
+  PersistenceAdapterDescriptor,
+  PersistenceConnectionStatus,
+  PersistenceScope,
+} from "@/repository";
+
 export type { Json } from "@/integrations/supabase/types";
 import type { Database as GeneratedDatabase } from "@/integrations/supabase/types";
 
@@ -28,12 +34,19 @@ export interface SupabaseConnectionConfig {
   readonly headers?: Readonly<Record<string, string>>;
 }
 
-/** Reported by every connection so callers can degrade instead of throwing. */
-export interface ConnectionStatus {
-  readonly isConfigured: boolean;
-  readonly scope: SupabaseClientScope;
-  /** Host only — the key is never exposed, logged, or serialized. */
-  readonly host: string | null;
-}
+/**
+ * Connection status is the neutral Repository shape (Sprint 1.3 §1); the alias
+ * exists so adapter code keeps its local vocabulary without redefining it.
+ */
+export type ConnectionStatus = PersistenceConnectionStatus;
+export type SupabaseClientScope = PersistenceScope;
 
-export type SupabaseClientScope = "browser" | "server" | "service";
+/** Descriptor published by this adapter (Sprint 1.3 §5). */
+export const SUPABASE_ADAPTER: PersistenceAdapterDescriptor = Object.freeze({
+  id: "postgres-supabase",
+  driver: "postgres",
+  security: Object.freeze({
+    enforcesRowLevelSecurity: true,
+    enforcesPrincipalScoping: true,
+  }),
+});

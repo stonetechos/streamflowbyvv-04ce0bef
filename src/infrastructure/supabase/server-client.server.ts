@@ -60,6 +60,8 @@ export function getServerConnectionStatus(): ConnectionStatus {
   return {
     isConfigured: Boolean(url && environment.SUPABASE_PUBLISHABLE_KEY),
     scope: "server",
+    driver: "postgres",
     host: url ? new URL(url).host : null,
   };
 }
+

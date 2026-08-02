@@ -2209,6 +2209,7 @@ export type Database = {
     }
     Functions: {
       allocate_code: { Args: { _prefix: string }; Returns: string }
+      current_auth_user_id: { Args: never; Returns: string }
       current_profile_id: { Args: never; Returns: string }
       has_role: {
         Args: { _profile_id: string; _role: string }
