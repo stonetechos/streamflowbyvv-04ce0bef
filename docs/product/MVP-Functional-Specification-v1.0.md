@@ -335,18 +335,21 @@ Rules:
 
 ## 10. Settings pages
 
-| Page | Contents |
-|---|---|
-| Profile | Display name, avatar, email, account deletion entry point |
-| Language | UI language, preferred audio language, preferred subtitle language |
-| Appearance | Theme, text size |
-| Voice | Default microphone and speaker, join muted, push-to-talk |
-| Notifications | Per-category toggles and channel choice |
-| Accessibility | Reduced motion, high contrast, large text, captions preference |
-| Privacy | Presence visibility, activity history, data export, account deletion |
-| Provider Preferences | Favourites, region, default provider |
-| Po Preferences | Enable/disable, voice-only or text-only, saved memories with edit, export and delete |
-| Future AI Settings | Reserved page, hidden behind a feature flag in v1 |
+| Page | Contents | Field ownership (ADR-005) |
+|---|---|---|
+| Profile | Display name, avatar, email, account deletion entry point | `profiles` |
+| Language | UI language, preferred audio language, preferred subtitle language | `localization_preferences` |
+| Appearance | Theme; text size is surfaced here but owned by Accessibility | `appearance_preferences`; `font_scale` from `accessibility_preferences` |
+| Voice | Join muted, push-to-talk, auto-join; default microphone and speaker | Portable behaviour persisted with `privacy_preferences`; **device selection is device-local and never persisted** |
+| Notifications | Per-category toggles and channel choice (`in_app`, `email` only) | `notification_preferences` |
+| Accessibility | Reduced motion, high contrast, large text (`font_scale`), captions preference | `accessibility_preferences` |
+| Privacy | Presence visibility, activity history, data export, account deletion | `privacy_preferences` |
+| Provider Preferences | Favourites, default provider (single value); **region is shown read-only here and owned by Language** | `localization_preferences.region_code` is the single source of region |
+| Po Preferences | Enable/disable, voice-only or text-only, saved memories with edit, export and delete | `privacy_preferences.po_memory_opt_in` + `po_preference_memories` |
+| Future AI Settings | Reserved page, hidden behind a feature flag in v1 | — |
+
+No preference value is defined in two places. A page may *display* a field owned by another page, but only one page writes it.
+
 
 ---
 
