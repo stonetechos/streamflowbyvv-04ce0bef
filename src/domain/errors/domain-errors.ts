@@ -1,0 +1,136 @@
+/**
+ * Shared domain error taxonomy — Sprint 1.6 §5.
+ *
+ * Traceability: Foundation §16.1 grammar `SF-<DOMAIN>-<CONDITION>`. These are
+ * the conditions the orchestration services in this sprint can actually raise —
+ * nothing speculative. Feature sprints add their own descriptors next to the
+ * module that raises them (Build Rules §21).
+ */
+import { AppError, type AppErrorDescriptor } from "@/shared/constants/error-taxonomy";
+
+export const DOMAIN_ERRORS = Object.freeze({
+  /** Input violated a documented invariant before any state changed. */
+  INVALID_INPUT: {
+    code: "SF-SYS-INVALID-INPUT",
+    messageKey: "error.sys.invalid_input",
+    severity: "warning",
+    retryable: false,
+  },
+  /** A required collaborator is not bound at the composition root. */
+  SERVICE_UNAVAILABLE: {
+    code: "SF-SYS-SERVICE-UNAVAILABLE",
+    messageKey: "error.sys.service_unavailable",
+    severity: "error",
+    retryable: true,
+    recoveryActionKey: "error.action.retry",
+  },
+  /** Foundation §19 rate-limit policy. */
+  RATE_LIMITED: {
+    code: "SF-SYS-RATE-LIMITED",
+    messageKey: "error.sys.rate_limited",
+    severity: "warning",
+    retryable: true,
+    recoveryActionKey: "error.action.retry",
+  },
+  ROOM_CAPACITY_EXCEEDED: {
+    code: "SF-ROOM-CAPACITY-EXCEEDED",
+    messageKey: "error.room.capacity_exceeded",
+    severity: "warning",
+    retryable: false,
+  },
+  ROOM_INVALID_TRANSITION: {
+    code: "SF-ROOM-INVALID-TRANSITION",
+    messageKey: "error.room.invalid_transition",
+    severity: "error",
+    retryable: false,
+  },
+  ROOM_NOT_ACTIVE: {
+    code: "SF-ROOM-NOT-ACTIVE",
+    messageKey: "error.room.not_active",
+    severity: "warning",
+    retryable: false,
+  },
+  INVITE_EXPIRED: {
+    code: "SF-INVITE-EXPIRED",
+    messageKey: "error.invite.expired",
+    severity: "warning",
+    retryable: false,
+  },
+  INVITE_NOT_PENDING: {
+    code: "SF-INVITE-NOT-PENDING",
+    messageKey: "error.invite.not_pending",
+    severity: "warning",
+    retryable: false,
+  },
+  SYNC_COUNTDOWN_OUT_OF_RANGE: {
+    code: "SF-SYNC-COUNTDOWN-OUT-OF-RANGE",
+    messageKey: "error.sync.countdown_out_of_range",
+    severity: "warning",
+    retryable: false,
+  },
+  SYNC_RESYNC_REQUIRED: {
+    code: "SF-SYNC-RESYNC-REQUIRED",
+    messageKey: "error.sync.resync_required",
+    severity: "warning",
+    retryable: true,
+    recoveryActionKey: "error.action.retry",
+  },
+  VOICE_SESSION_NOT_ACTIVE: {
+    code: "SF-VOICE-SESSION-NOT-ACTIVE",
+    messageKey: "error.voice.session_not_active",
+    severity: "warning",
+    retryable: false,
+  },
+  PROVIDER_CAPABILITY_UNSUPPORTED: {
+    code: "SF-PROVIDER-CAPABILITY-UNSUPPORTED",
+    messageKey: "error.provider.capability_unsupported",
+    severity: "warning",
+    retryable: false,
+  },
+  COMPLIANCE_ACTION_BLOCKED: {
+    code: "SF-COMPLIANCE-ACTION-BLOCKED",
+    messageKey: "error.compliance.action_blocked",
+    severity: "error",
+    retryable: false,
+  },
+}) satisfies Record<string, AppErrorDescriptor>;
+
+export type DomainErrorKey = keyof typeof DOMAIN_ERRORS;
+
+export interface DomainErrorContext {
+  /** Service method that refused, e.g. `RoomService.joinMember`. */
+  readonly operation: string;
+  /** Aggregate the refusal is about. Never user content, never a credential. */
+  readonly aggregateId?: string;
+}
+
+export class DomainError extends AppError {
+  readonly context: DomainErrorContext;
+
+  constructor(
+    descriptor: AppErrorDescriptor,
+    context: DomainErrorContext,
+    options?: { cause?: unknown },
+  ) {
+    super(descriptor, options);
+    this.name = "DomainError";
+    this.context = context;
+  }
+}
+
+export function domainError(
+  key: DomainErrorKey,
+  context: DomainErrorContext,
+  options?: { cause?: unknown },
+): DomainError {
+  return new DomainError(DOMAIN_ERRORS[key], context, options);
+}
+
+/** Guard helper: raises `INVALID_INPUT` when a documented invariant fails. */
+export function assertDomain(
+  condition: boolean,
+  key: DomainErrorKey,
+  context: DomainErrorContext,
+): asserts condition {
+  if (!condition) throw domainError(key, context);
+}
