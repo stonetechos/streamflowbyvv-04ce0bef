@@ -9,6 +9,7 @@
  */
 import { registerAuthServices } from "@/domain/auth";
 import { registerDomainServices } from "@/domain/services";
+import { registerEventInfrastructure } from "@/infrastructure/events";
 import { registerIdentityAdapter } from "@/infrastructure/identity";
 import { registerRoomAdapter } from "@/infrastructure/rooms";
 import { logger } from "@/foundation/logging";
