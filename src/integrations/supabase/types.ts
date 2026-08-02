@@ -595,6 +595,53 @@ export type Database = {
           },
         ]
       }
+      languages: {
+        Row: {
+          code: string
+          created_at: string
+          direction: string
+          english_name: string
+          fallback_code: string | null
+          is_enabled: boolean
+          is_launch_locale: boolean
+          native_name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          direction?: string
+          english_name: string
+          fallback_code?: string | null
+          is_enabled?: boolean
+          is_launch_locale?: boolean
+          native_name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          direction?: string
+          english_name?: string
+          fallback_code?: string | null
+          is_enabled?: boolean
+          is_launch_locale?: boolean
+          native_name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "languages_fallback_code_fkey"
+            columns: ["fallback_code"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       localization_preferences: {
         Row: {
           auto_detect_enabled: boolean
