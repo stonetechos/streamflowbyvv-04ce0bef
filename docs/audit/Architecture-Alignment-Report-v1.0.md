@@ -1,8 +1,10 @@
 # StreamFlow by Vedora Vision — Architecture Alignment Report v1.0
 
-Audit only. No document modified. Documents inspected in this session: `docs/adr/ADR-001-po-agent.md` (158 lines), `docs/product/MVP-Functional-Specification-v1.0.md` (423 lines), `docs/database/Database-Specification-v1.0.md` (606 lines).
+**Type:** Pre-development audit · **Status:** Complete · **Modifies:** nothing — all four approved documents are frozen and untouched.
 
-**Verified finding up front:** the Foundation Specification v1.0 does **not** exist as a file in this repository. A search of the whole project returns "Foundation" only as inbound *references* from the other three documents. The other three depend on it by section number (§2, §6, §7, §10, §14, §16, §17, §18, §19, §20) and declare it the tie-breaker for all conflicts. My understanding of it below is reconstructed from those references and from project memory, not read from source. This is the single largest readiness gap and is carried into §11 and §12.
+Documents inspected: `docs/adr/ADR-001-po-agent.md` (158 lines), `docs/product/MVP-Functional-Specification-v1.0.md` (423 lines), `docs/database/Database-Specification-v1.0.md` (606 lines).
+
+**Verified finding up front:** the Foundation Specification v1.0 does **not** exist as a file in this repository. A search of the whole project returns "Foundation" only as inbound *references* from the other three documents. Those three depend on it by section number (§2, §6, §7, §10, §14, §16, §17, §18, §19, §20) and declare it the tie-breaker for all conflicts. The understanding of it below is reconstructed from those references and from project memory, not read from source. This is the single largest readiness gap and is carried into §11 and §12.
 
 ---
 
@@ -168,19 +170,19 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 
 ## 11. Internal Contradictions, Ambiguities, Missing Definitions, Assumptions
 
-**Contradictions**
+### Contradictions
 
 1. **`room_status` vs. the documented room lifecycle.** The Database Spec enumerates `lobby, active, paused, ended, abandoned`; the MVP Spec's lifecycle names `Created → Waiting Room → … → Closed`. "Waiting Room" ≠ `lobby` and "Closed" ≠ `ended` are unmapped, and the MVP mentions inactivity auto-close without saying whether that is `ended` or `abandoned`.
 2. **Provider preferences duplicated across owners.** MVP §10 puts "region" and "default provider" in Provider Preferences; the Database Spec's `provider_preferences` has only `is_favorite`, `is_hidden`, `last_used_at`, with no region or default column, and no other table holds them.
 3. **Voice settings have no home.** MVP §10 Voice page specifies default microphone, default speaker, join-muted, and push-to-talk. No preference table in the Database Spec has these columns; `appearance_preferences` and `privacy_preferences.voice_auto_join` cover only part.
-4. **Room capacity default.** Database Spec sets `rooms.max_members` default 4 with a check between 2 and 8 "v1 policy enforces 4"; MVP states four flatly and lists larger rooms as v2 — the 2–8 range permits a state the product forbids.
+4. **Room capacity default.** Database Spec sets `rooms.max_members` default 4 with a check between 2 and 8 ("v1 policy enforces 4"); MVP states four flatly and lists larger rooms as v2 — the 2–8 range permits a state the product forbids.
 5. **Text size / font scale placement.** MVP puts "text size" under Appearance; the Database Spec puts `font_scale` under `accessibility_preferences`.
 6. **Email invites to non-users.** MVP §3.7 allows inviting by email; `invites.invitee_profile_id` requires an existing profile for direct invites and there is no email column, so an email invite to a stranger has no representation other than a link invite.
 7. **Notification channels.** MVP §9 lists in-app, toast, email, audio cue, and persistent banner; the DB enum `notification_channel` is `in_app, push, email` — toast, audio cue, and banner are presentation modes with no model, and `push` exists in the enum while MVP declares push notifications future.
 8. **Po session status vs. clarification.** `po_session_status` includes `awaiting_clarification` while `po_clarifications.status` also has `pending`; two sources of truth for the same condition, with no stated precedence.
 9. **`room_state.playback_status` vs. `rooms.status`.** Both carry `paused`; which one the UI reads for a paused room is unspecified.
 
-**Ambiguities**
+### Ambiguities
 
 10. Drift tolerance is referenced repeatedly ("within the drift tolerance", "drift beyond tolerance") but never quantified.
 11. Countdown default duration, invite expiry, join-code expiry, inactivity timeout, and rate-limit thresholds are all referenced without values.
@@ -189,10 +191,10 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 14. `analytics_events.anonymous_id` lifetime and scope (device, session, install) is undefined.
 15. "Recent for a limited period" for closed rooms has no duration.
 16. "Two launch locales (English plus one)" — the second locale is never named, which blocks RTL and pluralization decisions.
-17. The `blocked_users` enforcement points are listed but the behaviour when a block occurs *during* an active shared room is unspecified.
+17. The `blocked_users` enforcement points are listed, but the behaviour when a block occurs *during* an active shared room is unspecified.
 18. Guest room preview scope — what an unauthenticated visitor may see of a private room before the auth wall.
 
-**Missing definitions**
+### Missing definitions
 
 19. **The Foundation Specification v1.0 file itself.** Verified absent from the repository while being cited by section number as the tie-breaker for all conflicts.
 20. The admin/moderator authorization table is required by Database Spec security rule 6 ("a separate authorization table … checked via a security-definer function") but is not in the entity catalog; MVP reserves the roles.
@@ -205,11 +207,11 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 27. Email delivery provider and template ownership for verification, reset, and invites.
 28. The local-first IndexedDB cache contents and the reconciliation rules on reconnect.
 
-**Assumptions in the documents**
+### Assumptions in the documents
 
 29. That the host's client is reliable enough to be the sync authority, with no host migration in v1.
 30. That users will comply with the countdown cue within tolerance — a human, not technical, guarantee.
-31. That per-user check-constraint enums will be kept in lockstep with application constants by review alone.
+31. That check-constraint enums will be kept in lockstep with application constants by review alone.
 32. That `activity_timeline` and `recent_partners` remain fully rebuildable from `domain_events`, which requires event retention to exceed projection lifetime (24 months is stated for events; nothing is stated for projections).
 33. That Supabase Realtime is sufficient for countdown-grade timing fan-out.
 34. That deep links reliably open the provider's native app on mobile.
@@ -231,7 +233,7 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 
 **Justification.** The conceptual work is genuinely done — the product knows what it is, the legal posture is designed in rather than bolted on, the layering is enforceable, and the schema is portable and honest about what it defers. What is missing is not thinking but *artifacts and constants*: the Foundation document, the event catalog, the tool contracts, and roughly a dozen numeric thresholds that implementation cannot invent without silently making product decisions. The listed contradictions are all small and mechanically resolvable, but resolving them in code rather than in documents would fork the specification on day one.
 
-**Required before Build Mode**
+### Required before Build Mode
 
 1. Commit the Foundation Specification v1.0 to `docs/` — nothing else can be conflict-resolved without it.
 2. A reconciliation ADR resolving contradictions 1–9 (room status mapping, preference table coverage for voice/region/default provider, capacity range, text-size ownership, email-invite representation, notification channels vs. presentation modes, Po clarification precedence).
@@ -250,10 +252,10 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 
 Handed only this repository, a senior architect who had never seen StreamFlow would understand the product, the legal posture, and the schema — and would still be unable to build it as intended, because five things live only in the authoring context:
 
-1. **The Foundation Specification itself.** Every other document defers to sections of a file that isn't here. They would be forced to reconstruct §2, §6, §7, §10, §14, §16, §17, §18, §19, §20 by inference, exactly as I did in this audit, and their reconstruction would differ from mine.
+1. **The Foundation Specification itself.** Every other document defers to sections of a file that isn't here. They would be forced to reconstruct §2, §6, §7, §10, §14, §16, §17, §18, §19, §20 by inference, and their reconstruction would differ from this one.
 2. **The event contracts.** The whole architecture is event-driven, and the events are named but never specified — so their `domain_events` payloads, and therefore every projection and every replay, would be invented.
 3. **Every threshold that defines "working".** Drift tolerance decides whether the product succeeds or fails; it is not written down. Nor are timeouts, expiries, countdown bounds, or rate limits.
 4. **The rationale behind the deliberate omissions.** The documents say host migration, friends, and text chat are v1.1 — they do not say the omissions are load-bearing for a four-person, host-authoritative, manual-sync room. A newcomer would read them as backlog and might helpfully "improve" the room model, breaking the MVP thesis.
-5. **The intended feel.** Nothing describes the visual identity, tone of Po's voice, or the emotional target of the countdown moment — the product's one genuinely delightful beat. That has never been specified in any of the four documents.
+5. **The intended feel.** Nothing describes the visual identity, the tone of Po's voice, or the emotional target of the countdown moment — the product's one genuinely delightful beat. That has never been specified in any of the four documents.
 
-Recommended next step: freeze the Foundation Specification into the repository and issue the reconciliation ADR before any module is opened.
+**Recommended next step:** freeze the Foundation Specification into the repository and issue the reconciliation ADR before any module is opened.
