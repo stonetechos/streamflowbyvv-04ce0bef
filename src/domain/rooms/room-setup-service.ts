@@ -105,7 +105,10 @@ export function createRoomSetupService(deps: RoomSetupDependencies): RoomSetupSe
     async selectProvider(request, intent) {
       const store = requireRooms(rooms, "selectProvider");
       const room = await store.findById(request.roomId);
-      if (!room) throw domainError("ROOM_NOT_FOUND", { aggregateId: request.roomId });
+      if (!room) throw domainError("ROOM_NOT_FOUND", {
+          operation: "RoomSetupService.selectProvider",
+          aggregateId: request.roomId,
+        });
       if (room.hostProfileId !== request.actorProfileId) {
         throw domainError("ROOM_FORBIDDEN", {
           operation: "RoomSetupService.selectProvider",
@@ -116,7 +119,10 @@ export function createRoomSetupService(deps: RoomSetupDependencies): RoomSetupSe
       const snapshot = await catalog.load({ profileId: request.actorProfileId });
       const option = catalog.find(snapshot, request.providerId);
       if (!option) {
-        throw domainError("PROVIDER_UNAVAILABLE", { aggregateId: request.providerId });
+        throw domainError("PROVIDER_CAPABILITY_UNSUPPORTED", {
+          operation: "RoomSetupService.selectProvider:unknown",
+          aggregateId: request.providerId,
+        });
       }
 
       // The verdict is issued (and recorded) here, not merely inspected:
@@ -143,7 +149,10 @@ export function createRoomSetupService(deps: RoomSetupDependencies): RoomSetupSe
       );
       compliance.assertAllowed(verdict, option.provider.id);
       if (!option.isSelectable) {
-        throw domainError("PROVIDER_UNAVAILABLE", { aggregateId: option.provider.id });
+        throw domainError("PROVIDER_CAPABILITY_UNSUPPORTED", {
+          operation: "RoomSetupService.selectProvider:not_selectable",
+          aggregateId: option.provider.id,
+        });
       }
 
       const updated = await store.update(room.id, {
@@ -174,7 +183,10 @@ export function createRoomSetupService(deps: RoomSetupDependencies): RoomSetupSe
     async setCountdownSeconds(roomId, seconds, actorProfileId) {
       const store = requireRooms(rooms, "setCountdownSeconds");
       const room = await store.findById(roomId);
-      if (!room) throw domainError("ROOM_NOT_FOUND", { aggregateId: roomId });
+      if (!room) throw domainError("ROOM_NOT_FOUND", {
+          operation: "RoomSetupService.setCountdownSeconds",
+          aggregateId: roomId,
+        });
       if (room.hostProfileId !== actorProfileId) {
         throw domainError("ROOM_FORBIDDEN", {
           operation: "RoomSetupService.setCountdownSeconds",
