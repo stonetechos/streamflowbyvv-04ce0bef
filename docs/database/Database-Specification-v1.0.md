@@ -354,12 +354,14 @@ All Po tables are hard-gated by `privacy_preferences.po_memory_opt_in` for anyth
 - **Constraints:** `blocker_profile_id <> blocked_profile_id`.
 - **Soft delete:** No — unblocking deletes the row (an audit event is emitted).
 - **Ownership:** Blocker; the blocked user must never be able to read this table.
-- **Enforcement:** Invite creation, presence exposure, and room join checks all consult this table.
+- **Enforcement:** Invite creation, presence exposure, and room join checks all consult this table. A block created while both parties share an active room takes effect immediately for future invites and joins; the in-progress room continues to its natural end and the blocked party is never informed (ADR-011).
 
 ### 3.11 Platform Support Tables
 
+- **`user_roles`** (added by ADR-009) — `id`, `profile_id` → `profiles.id`, `role` (enum `app_role`), audit set. Unique(`profile_id`, `role`). The sole authority on platform privilege. Read only through a security-definer role-check function; never writable from the client; **never** represented as a column on `profiles`. Room roles (`host`, `co_host`, `guest`) are membership attributes and are unrelated to this table.
 - **`code_sequences`** — `id`, `prefix` (unique), `current_value`, `padding_width`, audit set. Allocates human-readable codes atomically. Admin/system only.
 - **`schema_migrations`** — managed by the migration tool; forward-only ledger. Documented here for completeness only.
+
 
 ---
 
