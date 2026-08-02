@@ -17,6 +17,13 @@ import { AccessibilityProvider } from "@/foundation/accessibility";
 import { FeatureFlagProvider } from "@/foundation/feature-flags";
 import { LocalizationProvider } from "@/foundation/localization";
 
+import { composeApplication } from "./composition-root";
+
+// Sprint 1.5 §9: bind adapters to contracts before the first render, so the
+// auth provider resolves a real session repository on mount.
+composeApplication();
+
+
 export function AppProviders({
   queryClient,
   children,

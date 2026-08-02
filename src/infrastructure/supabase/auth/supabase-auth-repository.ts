@@ -36,6 +36,7 @@ export function createSupabaseAuthRepository(connection: DataConnection): AuthRe
     async signUp(request: SignUpRequest): Promise<AuthOutcome> {
       assertAvailable("signUp");
 
+      const redirectTo = toRedirectUrl("/auth");
       const { data, error } = await auth().signUp({
         email: request.email,
         password: request.password,
@@ -43,10 +44,11 @@ export function createSupabaseAuthRepository(connection: DataConnection): AuthRe
           // Profile provisioning is owned by the database (Database Spec §2);
           // these values are carried for the provisioning path, not stored here.
           data: { display_name: request.displayName, locale: request.locale },
-          ...(toRedirectUrl("/auth") ? { emailRedirectTo: toRedirectUrl("/auth") } : {}),
+          ...(redirectTo ? { emailRedirectTo: redirectTo } : {}),
         },
       });
       if (error) throw toAuthError(error, "signUp");
+
 
       const session = await resolveDomainSession(connection, data.session, "signUp");
       return session
