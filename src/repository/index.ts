@@ -32,6 +32,20 @@ export type {
   PersistenceSecurityCapabilities,
 } from "./persistence.types";
 export {
+  INVITE_REPOSITORY,
+  ROOM_MEMBER_REPOSITORY,
+  ROOM_REPOSITORY,
+  ROOM_STATE_REPOSITORY,
+  type InviteQuery,
+  type InviteRepository,
+  type RoomMemberQuery,
+  type RoomMemberRepository,
+  type RoomQuery,
+  type RoomRepository,
+  type RoomStateConcurrencyInfo,
+  type RoomStateRepository,
+} from "./rooms";
+export {
   REPOSITORY_ERRORS,
   RepositoryError,
   type RepositoryErrorContext,
