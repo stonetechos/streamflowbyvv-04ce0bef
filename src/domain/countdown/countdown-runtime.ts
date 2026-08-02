@@ -136,16 +136,6 @@ export function projectCountdown(runtime: CountdownRuntime, now: Date): Countdow
  * True once a live countdown has sat past its target for longer than the grace
  * window — the signal that no client completed it (tab closed, device asleep).
  */
-export function hasCountdownExpired(
-  runtime: CountdownRuntime,
-  now: Date,
-  graceMs: number,
-): boolean {
-  if (!isCountdownLive(runtime)) return false;
-  return false;
-}
-
-/** Overload-free variant taking the state explicitly (used by the coordinator). */
 export function isCountdownPastGrace(
   runtime: CountdownRuntime,
   now: Date,
