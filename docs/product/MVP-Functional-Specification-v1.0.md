@@ -429,3 +429,44 @@ Two people, on different networks and different devices, complete this run witho
 sign up → create room → invite → join → voice connected → countdown → watch a full title in manual sync → recover from one deliberate disconnection → end room
 
 with no unexplained error, every string localized, the whole flow operable by keyboard and screen reader, and every provider action passing through the ComplianceService.
+
+Sync quality during the run must hold at Good or better (≤250 ms) with any excursion above 500 ms triggering the re-sync prompt (Foundation §14.5).
+
+---
+
+## 17. Product constants referenced by this document
+
+Normative values live in **Foundation Specification v1.0 §14** and are reproduced here for reading convenience only. If the two ever differ, Foundation wins.
+
+| Constant | v1.0 value |
+|---|---|
+| Default countdown | 5 seconds |
+| Countdown range | 3–60 seconds |
+| Invite expiry | 24 hours |
+| Join link expiry | 24 hours |
+| Room inactivity timeout | 30 minutes |
+| Recent room retention | 30 days |
+| Sync quality — Excellent | ≤100 ms |
+| Sync quality — Good | 101–250 ms |
+| Sync quality — Warning | 251–500 ms |
+| Sync quality — Re-sync required | >500 ms |
+
+---
+
+## 18. Amendment Register — Documentation Consolidation v1.0
+
+| # | Change | Section | ADR |
+|---|---|---|---|
+| 1 | Lifecycle labels mapped to persisted status; auto-close is `abandoned` | §5 | ADR-002 |
+| 2 | Sync mode declared a room property, immutable during playback; participants downgrade | §5 | ADR-003 |
+| 3 | Watching screen reads `room_state.playback_status`, not room lifecycle | §5 | ADR-004 |
+| 4 | Settings pages given explicit field ownership; region owned by Language; audio devices device-local | §10 | ADR-005 |
+| 5 | Notification channels reduced to `in_app` and `email`; toast, audio cue, banner reclassified as presentation | §9 | ADR-007 |
+| 6 | Guest preview scope before the auth wall stated | §5 | ADR-010 |
+| 7 | Block-during-active-room behaviour stated | §5 | ADR-011 |
+| 8 | Room capacity 4 stated as domain policy over a wider schema envelope | §5 | ADR-013 |
+| 9 | Launch locales fixed to `en` and `hi-IN` | §13 | Foundation §17 |
+| 10 | Inactivity timeout, Recent retention, and sync quality thresholds resolved to fixed values | §5, §16, §17 | Foundation §14 |
+
+Email invites (ADR-006) are, in v1, link invites delivered by email — no change to any journey in §3, recorded here for traceability.
+
