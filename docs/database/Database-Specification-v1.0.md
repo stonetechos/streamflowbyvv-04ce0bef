@@ -75,6 +75,8 @@ Five separate tables instead of one wide table, so each can evolve, be cached, a
 
 - **Indexes:** unique(`profile_id`) on each.
 - **Note:** `privacy_preferences.po_memory_opt_in` and `analytics_opt_in` are the enforcement inputs for §3.9 and §3.8 writes.
+- **Field ownership (ADR-005):** `localization_preferences.region_code` is the single source of the user's region and the input ComplianceService reads — region is never duplicated onto provider rows. Default provider is a single nullable provider reference per user, never a repeated per-provider flag. Portable voice behaviour (join-muted, push-to-talk, auto-join) belongs with `privacy_preferences` alongside `voice_auto_join`; default microphone and speaker are **device-local and never persisted**. `font_scale` is owned by `accessibility_preferences`; surfacing it on an Appearance settings page is a UI placement, not a second field.
+
 
 ### 3.2 Rooms
 
@@ -84,10 +86,12 @@ Five separate tables instead of one wide table, so each can evolve, be cached, a
 - **Columns:** `id`, `code`, `name`, `host_profile_id` → `profiles.id`, `status` (enum `room_status`), `visibility` (enum `room_visibility`, v1 always `private`), `provider_id` → `providers.id` (nullable until chosen), `content_reference` (free text/URL the members agreed on — never credentials), `max_members` (default 4, MVP cap), `scheduled_start_at` (nullable, reserved for v1.1), `started_at`, `ended_at`, `join_code_hash` (nullable — hashed short join code, never plaintext), `join_code_expires_at`, `metadata`, audit + attribution set, `deleted_at`.
 - **Relationships:** N:1 `profiles` (host); N:1 `providers`; 1:N `room_members`, `invites`, `playback_sessions`, `voice_sessions`, `sync_events`; 1:1 `room_state`.
 - **Indexes:** unique(`code`), index(`host_profile_id`), index(`status`, `created_at desc`), partial index on `status IN ('lobby','active')` for the "my live rooms" query, index(`provider_id`).
-- **Constraints:** `max_members` between 2 and 8 (v1 policy enforces 4); `ended_at >= started_at`; host must also exist as a `room_members` row (enforced by application invariant + event check, not a DB trigger in v1).
+- **Constraints:** `max_members` between 2 and 8 — this range is a **schema envelope**, not a product statement; v1.0 domain policy enforces a cap of 4 (ADR-013, Foundation §14.3). `ended_at >= started_at`; host must also exist as a `room_members` row (enforced by application invariant + event check, not a DB trigger in v1).
 - **Soft delete:** Yes — rooms are user-authored and appear in activity history.
 - **Ownership:** `host_profile_id`.
 - **Extensibility:** `visibility` enum already supports future public/community rooms; `scheduled_start_at` reserved for scheduled parties.
+- **Consolidation notes (v1.0):** `status` is the authoritative read for lifecycle, listings, navigation, and RLS; playback pausing is read from `room_state.playback_status` and never from `rooms.status` (ADR-004). Product lifecycle labels map onto `status` per ADR-002. `join_code_expires_at` resolves to the join link expiry in Foundation §14.2; the inactivity timeout that produces `abandoned` resolves to Foundation §14.3.
+
 
 #### `room_members`
 - **Purpose:** Membership and role of a profile in a room (many-to-many resolution with attributes).
@@ -118,6 +122,8 @@ Five separate tables instead of one wide table, so each can evolve, be cached, a
 - **Constraints:** `position_ms >= 0`; `playback_rate > 0`; `version` monotonically increases.
 - **Soft delete:** No.
 - **Ownership:** Room host (and co-host) write; all members read.
+- **Consolidation notes (v1.0):** `sync_mode` is a property of the room, set from the selected provider at provider-selection time and immutable while a playback session is open; participants downgrade to the room's mode, the room never changes to match a participant (ADR-003). `playback_status` is the authoritative read for the watching screen (ADR-004). `countdown_target_at` durations resolve to Foundation §14.1; `clock_offset_ms` correction follows Foundation §15.
+
 - **Extensibility:** `sync_mode` allows verified provider remote-control plugins in v2 without schema change.
 
 #### `invites`
@@ -348,12 +354,14 @@ All Po tables are hard-gated by `privacy_preferences.po_memory_opt_in` for anyth
 - **Constraints:** `blocker_profile_id <> blocked_profile_id`.
 - **Soft delete:** No — unblocking deletes the row (an audit event is emitted).
 - **Ownership:** Blocker; the blocked user must never be able to read this table.
-- **Enforcement:** Invite creation, presence exposure, and room join checks all consult this table.
+- **Enforcement:** Invite creation, presence exposure, and room join checks all consult this table. A block created while both parties share an active room takes effect immediately for future invites and joins; the in-progress room continues to its natural end and the blocked party is never informed (ADR-011).
 
 ### 3.11 Platform Support Tables
 
+- **`user_roles`** (added by ADR-009) — `id`, `profile_id` → `profiles.id`, `role` (enum `app_role`), audit set. Unique(`profile_id`, `role`). The sole authority on platform privilege. Read only through a security-definer role-check function; never writable from the client; **never** represented as a column on `profiles`. Room roles (`host`, `co_host`, `guest`) are membership attributes and are unrelated to this table.
 - **`code_sequences`** — `id`, `prefix` (unique), `current_value`, `padding_width`, audit set. Allocates human-readable codes atomically. Admin/system only.
 - **`schema_migrations`** — managed by the migration tool; forward-only ledger. Documented here for completeness only.
+
 
 ---
 
@@ -384,9 +392,10 @@ Modeled as application-level enums mirrored by lookup/check constraints — **no
 |---|---|
 | `profile_status` | `active`, `suspended`, `deactivated`, `deleted` |
 | `visibility_scope` | `everyone`, `recent_partners`, `nobody` |
-| `room_status` | `lobby`, `active`, `paused`, `ended`, `abandoned` |
+| `room_status` | `lobby`, `active`, `paused` (reserved — v1 does not write it; see ADR-004), `ended`, `abandoned` |
 | `room_visibility` | `private` (v1), `link` (v1), `public` (reserved), `community` (reserved) |
-| `room_role` | `host`, `co_host`, `guest` |
+| `room_role` | `host`, `co_host` (reserved — no v1 journey creates one), `guest` |
+
 | `membership_state` | `invited`, `joined`, `left`, `removed` |
 | `presence_status` | `online`, `idle`, `buffering`, `disconnected`, `offline` |
 | `playback_status` | `idle`, `ready`, `counting_down`, `playing`, `paused`, `buffering`, `ended` |
@@ -395,9 +404,10 @@ Modeled as application-level enums mirrored by lookup/check constraints — **no
 | `playback_event_type` | `play`, `pause`, `seek`, `rate_change`, `countdown_started`, `countdown_fired`, `ended` |
 | `sync_event_type` | `drift_measured`, `resync_requested`, `resync_applied`, `countdown_scheduled`, `countdown_fired`, `clock_offset_updated` |
 | `invite_status` | `pending`, `accepted`, `declined`, `expired`, `revoked` |
-| `invite_channel` | `in_app`, `link` |
+| `invite_channel` | `in_app`, `link` — an email invite in v1 is a `link` invite delivered by email (ADR-006) |
 | `notification_type` | `room_invite`, `invite_accepted`, `room_starting`, `countdown_started`, `member_joined`, `member_left`, `voice_started`, `provider_status_changed`, `system_announcement` |
-| `notification_channel` | `in_app`, `push`, `email` |
+| `notification_channel` | `in_app`, `push` (reserved — emitted by no v1 code path; see ADR-007), `email`. Toast, audio cue, and persistent banner are presentation modes of `in_app`, never channels |
+
 | `delivery_status` | `queued`, `sent`, `delivered`, `failed`, `suppressed` |
 | `voice_status` | `provisioning`, `active`, `degraded`, `ended`, `failed` |
 | `voice_participant_status` | `connecting`, `connected`, `reconnecting`, `disconnected` |
@@ -412,8 +422,10 @@ Modeled as application-level enums mirrored by lookup/check constraints — **no
 | `assignment_source` | `manual`, `percentage_bucket`, `internal_tester` |
 | `accessibility_mode` | `default`, `reduced_motion`, `high_contrast`, `screen_reader_optimized` |
 | `theme_mode` | `system`, `light`, `dark` |
-| `language_code` | BCP-47 strings, validated against `localization_strings` — **not** a fixed enum, so new languages never require a migration |
-| `po_session_status` | `active`, `awaiting_clarification`, `completed`, `failed`, `cancelled`, `expired` |
+| `language_code` | BCP-47 strings, validated against `localization_strings` — **not** a fixed enum, so new languages never require a migration. v1.0 launch locales: `en`, `hi-IN` (Foundation §17) |
+| `app_role` | `admin`, `moderator`, `user` — platform privilege, stored only in `user_roles` (ADR-009) |
+| `po_session_status` | `active`, `awaiting_clarification` (derived from open `po_clarifications` rows; see ADR-008), `completed`, `failed`, `cancelled`, `expired` |
+
 | `po_turn_role` | `user`, `assistant`, `system`, `tool` |
 | `po_plan_status` | `draft`, `awaiting_confirmation`, `approved`, `executing`, `completed`, `failed`, `abandoned` |
 | `clarification_status` | `pending`, `answered`, `timed_out`, `cancelled` |
@@ -480,6 +492,8 @@ Modeled as application-level enums mirrored by lookup/check constraints — **no
 
 Rules: audit tables are append-only; `updated_by` is always the acting profile, never a service account impersonating a user; system actions record `actor_profile_id = NULL` with an explicit `actor_role`.
 
+**Retention invariant (ADR-012):** projection retention must never exceed `domain_events` retention, otherwise rebuildability silently becomes false. v1.0 values are fixed in Foundation §14.4 — `domain_events` 24 months, projections (`activity_timeline`, `recent_partners`) 90 days, Po sessions 30 days, analytics 12 months. Retention jobs are ordered so no projection is purged ahead of a schedule that would break rebuild. The normative event contracts are in `docs/api/domain-event-catalog-v1.0.md`.
+
 ---
 
 ## 8. Performance
@@ -536,6 +550,7 @@ Roles referenced: **self** (the owning profile), **room member**, **room host**,
 
 | Table | Owner | Read | Insert | Update | Delete |
 |---|---|---|---|---|---|
+| `user_roles` (ADR-009) | system | self (own rows) and the security-definer role-check function | system only | system only | system only |
 | `profiles` | self | self (full); other users see a public subset (display_name, handle, avatar) unless blocked | system on signup | self | soft-delete by self; hard by admin/erasure |
 | `*_preferences` (5) | self | self only | self | self | self |
 | `rooms` | host | members + invitees | authenticated user | host / co-host | host (soft); admin (hard) |
@@ -604,3 +619,29 @@ This document becomes the single source of truth for all future migrations and S
 - Schema changes require a numbered ADR referencing the affected tables.
 - Migrations are forward-only and must be traceable to a section of this document.
 - No table, column, or enum value ships without appearing here first.
+
+---
+
+## 12. Amendment Register — Documentation Consolidation v1.0
+
+Applied by the Documentation Consolidation v1.0 pass. Every entry implements an approved decision from the Specification Reconciliation Report v1.0. No section was renumbered, reorganized, or restyled.
+
+| # | Change | Section touched | ADR |
+|---|---|---|---|
+| 1 | `max_members` 2–8 documented as a schema envelope; v1 domain cap of 4 | §3.2 `rooms` | ADR-013 |
+| 2 | Read ownership note: `rooms.status` for lifecycle, `room_state.playback_status` for the watching screen | §3.2 `rooms`, `room_state` | ADR-004 |
+| 3 | Lifecycle label mapping and `abandoned` for inactivity auto-close referenced | §3.2, §5 | ADR-002 |
+| 4 | `sync_mode` documented as a room property, immutable during an open playback session | §3.2 `room_state`, §5 | ADR-003 |
+| 5 | Preference field ownership: region, default provider, voice behaviour vs. device-local, `font_scale` | §3.1 | ADR-005 |
+| 6 | `invite_channel` annotated — email invite is a `link` invite delivered by email | §5 | ADR-006 |
+| 7 | `notification_channel` annotated — `push` reserved and unemitted; toast, audio cue, banner are presentation modes | §5 | ADR-007 |
+| 8 | `po_session_status.awaiting_clarification` annotated as derived | §5 | ADR-008 |
+| 9 | `user_roles` table and `app_role` enum added; RLS row added | §3.11, §5, §9 | ADR-009 |
+| 10 | Block-during-active-room enforcement documented | §3.10 `blocked_users` | ADR-011 |
+| 11 | Retention invariant and fixed v1.0 retention values | §7 | ADR-012 |
+| 12 | `room_status.paused` and `room_role.co_host` annotated as reserved | §5 | ADR-004, deferred item |
+| 13 | Launch locales (`en`, `hi-IN`) referenced on `language_code` | §5 | Foundation §17 |
+| 14 | Timing, expiry, and retention defaults now resolve to Foundation §14 | §3.2, §7 | Foundation §14 |
+
+**Cross-references added:** Foundation Specification v1.0 §14, §15, §17; `docs/api/domain-event-catalog-v1.0.md`; `docs/foundation/storage-design-v1.0.md` (object storage for `profiles.avatar_url`).
+

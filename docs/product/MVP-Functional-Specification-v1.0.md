@@ -244,10 +244,14 @@ Created
 
 State rules for v1:
 - The host is authoritative for countdown, provider selection and closure.
-- A room with zero present participants auto-closes after the inactivity window.
-- Closed rooms are read-only and appear in Recent for a limited period.
+- A room with zero present participants auto-closes after the inactivity window (30 minutes, Foundation §14.3). Auto-close is recorded as `abandoned`; a host-ended room is recorded as `ended` (ADR-002).
+- Closed rooms are read-only and appear in Recent for 30 days (Foundation §14.3).
 - **Host migration is v1.1.** In v1, if the host leaves permanently, the room closes with notice to everyone.
-- Room capacity in v1 is four participants.
+- Room capacity in v1 is four participants, enforced in the domain layer; the schema permits 2–8 as a future envelope only (ADR-013).
+- **Lifecycle labels map onto persisted status (ADR-002):** Waiting Room = `lobby`, Watching = `active`, Paused = `paused`, Closed by host = `ended`, Auto-closed = `abandoned`. The watching screen reads playback condition from `room_state.playback_status`, never from the room's lifecycle status (ADR-004).
+- **Sync mode is a property of the room (ADR-003):** it is set from the selected provider and cannot change while a playback session is open. A participant who cannot use the controlled path is downgraded to the room's mode; the room is never changed to match one participant.
+- **Blocking during an active room (ADR-011):** a block takes effect immediately for future invites and joins, the in-progress room continues to its natural end, and the blocking user may leave at any time.
+- **Guest preview before the auth wall (ADR-010):** an unauthenticated visitor with a valid invite link sees only the room name, the inviter's display name and avatar, and the invite's validity — never the member list, provider, room state, or room code.
 
 ---
 
@@ -312,36 +316,40 @@ Rules:
 
 | Notification | Trigger | Channels in v1 |
 |---|---|---|
-| Invitation received | Someone invites you | In-app + toast + email |
-| Invitation accepted | Invitee joins | In-app + toast |
+| Invitation received | Someone invites you | In-app (toast) + email |
+| Invitation accepted | Invitee joins | In-app (toast) |
 | Invitation declined | Invitee declines | In-app |
-| Countdown started | Host starts the countdown | In-app + toast + audio cue |
+| Countdown started | Host starts the countdown | In-app (toast + audio cue) |
 | Participant joined | Someone enters the room | In-app (in-room) |
 | Participant left | Someone leaves | In-app (in-room) |
-| Room closed | Host ends the room or it times out | In-app + toast |
-| Voice disconnected | Voice session dropped | In-app + toast |
-| Reconnect required | Realtime connection lost | Persistent banner |
+| Room closed | Host ends the room or it times out | In-app (toast) |
+| Voice disconnected | Voice session dropped | In-app (toast) |
+| Reconnect required | Realtime connection lost | In-app (persistent banner) |
 | System announcement | Product or compliance notice | In-app |
 | Scheduled party reminder | Upcoming scheduled room | **v1.1** |
 
-Push notifications are **future**. Every category is individually mutable in Settings → Notifications.
+**Channels vs. presentation (ADR-007):** v1 has exactly two delivery channels — `in_app` and `email`. Toast, audio cue and persistent banner are *presentation modes* of the `in_app` channel, not separate channels, and are not independently subscribable. `push` exists in the schema as a reserved value and is emitted by no v1 code path. Every category is individually mutable in Settings → Notifications; presentation modes are not.
+
 
 ---
 
 ## 10. Settings pages
 
-| Page | Contents |
-|---|---|
-| Profile | Display name, avatar, email, account deletion entry point |
-| Language | UI language, preferred audio language, preferred subtitle language |
-| Appearance | Theme, text size |
-| Voice | Default microphone and speaker, join muted, push-to-talk |
-| Notifications | Per-category toggles and channel choice |
-| Accessibility | Reduced motion, high contrast, large text, captions preference |
-| Privacy | Presence visibility, activity history, data export, account deletion |
-| Provider Preferences | Favourites, region, default provider |
-| Po Preferences | Enable/disable, voice-only or text-only, saved memories with edit, export and delete |
-| Future AI Settings | Reserved page, hidden behind a feature flag in v1 |
+| Page | Contents | Field ownership (ADR-005) |
+|---|---|---|
+| Profile | Display name, avatar, email, account deletion entry point | `profiles` |
+| Language | UI language, preferred audio language, preferred subtitle language | `localization_preferences` |
+| Appearance | Theme; text size is surfaced here but owned by Accessibility | `appearance_preferences`; `font_scale` from `accessibility_preferences` |
+| Voice | Join muted, push-to-talk, auto-join; default microphone and speaker | Portable behaviour persisted with `privacy_preferences`; **device selection is device-local and never persisted** |
+| Notifications | Per-category toggles and channel choice (`in_app`, `email` only) | `notification_preferences` |
+| Accessibility | Reduced motion, high contrast, large text (`font_scale`), captions preference | `accessibility_preferences` |
+| Privacy | Presence visibility, activity history, data export, account deletion | `privacy_preferences` |
+| Provider Preferences | Favourites, default provider (single value); **region is shown read-only here and owned by Language** | `localization_preferences.region_code` is the single source of region |
+| Po Preferences | Enable/disable, voice-only or text-only, saved memories with edit, export and delete | `privacy_preferences.po_memory_opt_in` + `po_preference_memories` |
+| Future AI Settings | Reserved page, hidden behind a feature flag in v1 | — |
+
+No preference value is defined in two places. A page may *display* a field owned by another page, but only one page writes it.
+
 
 ---
 
@@ -382,7 +390,7 @@ Every error message is a localized string key, states a cause in plain language,
 ## 13. Localization
 
 - Every user-facing string is a translation key from day one — no hardcoded copy anywhere, enforced at code review.
-- Launch with two locales (English plus one), with runtime switching and no page reload.
+- Launch locales for v1.0 are **English (`en`)** and **Hindi (`hi-IN`)**, with runtime switching and no page reload. The localization system supports unlimited future locales without redesign (Foundation §17); adding a locale never requires a migration.
 - Fallback chain resolves to English for missing keys.
 - Locale-aware dates, durations, numbers and relative times.
 - Pluralization and gender-neutral phrasing support.
@@ -421,3 +429,44 @@ Two people, on different networks and different devices, complete this run witho
 sign up → create room → invite → join → voice connected → countdown → watch a full title in manual sync → recover from one deliberate disconnection → end room
 
 with no unexplained error, every string localized, the whole flow operable by keyboard and screen reader, and every provider action passing through the ComplianceService.
+
+Sync quality during the run must hold at Good or better (≤250 ms) with any excursion above 500 ms triggering the re-sync prompt (Foundation §14.5).
+
+---
+
+## 17. Product constants referenced by this document
+
+Normative values live in **Foundation Specification v1.0 §14** and are reproduced here for reading convenience only. If the two ever differ, Foundation wins.
+
+| Constant | v1.0 value |
+|---|---|
+| Default countdown | 5 seconds |
+| Countdown range | 3–60 seconds |
+| Invite expiry | 24 hours |
+| Join link expiry | 24 hours |
+| Room inactivity timeout | 30 minutes |
+| Recent room retention | 30 days |
+| Sync quality — Excellent | ≤100 ms |
+| Sync quality — Good | 101–250 ms |
+| Sync quality — Warning | 251–500 ms |
+| Sync quality — Re-sync required | >500 ms |
+
+---
+
+## 18. Amendment Register — Documentation Consolidation v1.0
+
+| # | Change | Section | ADR |
+|---|---|---|---|
+| 1 | Lifecycle labels mapped to persisted status; auto-close is `abandoned` | §5 | ADR-002 |
+| 2 | Sync mode declared a room property, immutable during playback; participants downgrade | §5 | ADR-003 |
+| 3 | Watching screen reads `room_state.playback_status`, not room lifecycle | §5 | ADR-004 |
+| 4 | Settings pages given explicit field ownership; region owned by Language; audio devices device-local | §10 | ADR-005 |
+| 5 | Notification channels reduced to `in_app` and `email`; toast, audio cue, banner reclassified as presentation | §9 | ADR-007 |
+| 6 | Guest preview scope before the auth wall stated | §5 | ADR-010 |
+| 7 | Block-during-active-room behaviour stated | §5 | ADR-011 |
+| 8 | Room capacity 4 stated as domain policy over a wider schema envelope | §5 | ADR-013 |
+| 9 | Launch locales fixed to `en` and `hi-IN` | §13 | Foundation §17 |
+| 10 | Inactivity timeout, Recent retention, and sync quality thresholds resolved to fixed values | §5, §16, §17 | Foundation §14 |
+
+Email invites (ADR-006) are, in v1, link invites delivered by email — no change to any journey in §3, recorded here for traceability.
+
