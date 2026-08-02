@@ -9,16 +9,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PoWaitingBanner } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
+import { useRoomSetup } from "../use-room-setup";
 import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
 import { MemberList } from "./member-list";
 import { MembershipActions } from "./membership-actions";
 import { RoomInfoCard } from "./room-info-card";
+import { RoomSetupCard } from "./room-setup-card";
 import { WaitingRoomLayout } from "./waiting-room-layout";
 
 export function WaitingRoom({ roomId }: { roomId: string }) {
   const { t } = useTranslation();
   const model = useWaitingRoom(roomId);
+  const setup = useRoomSetup({
+    roomId,
+    actorProfileId: model.viewer.profileId,
+    isHost: model.viewer.isHost,
+    onChanged: model.refresh,
+  });
 
   if (model.status === "loading") {
     return (
@@ -61,10 +69,18 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
         <>
           <PoWaitingBanner
             allReady={model.allReady}
+            isBusy={setup.pending !== null || model.pending !== null}
+            hasProvider={model.room?.providerId !== null}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
           <MemberList members={model.members} />
+          <RoomSetupCard
+            setup={setup}
+            isHost={model.viewer.isHost}
+            selectedProviderId={room.providerId}
+            countdownSeconds={room.countdownSeconds}
+          />
         </>
       }
       secondary={
