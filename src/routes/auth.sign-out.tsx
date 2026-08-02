@@ -21,14 +21,13 @@ function SignOutPage() {
   const navigate = useNavigate();
   const [message, setMessage] = useState<string | null>(null);
 
-  const handleSignOut = useCallback(async () => {
+  const handleSignOut = useCallback(async (): Promise<void> => {
     try {
       await auth.signOut();
       await navigate({ to: "/", replace: true });
-    } catch (error) {
+    } catch {
       logger.warn("Sign out unavailable", { module: "auth" });
       setMessage(t("error.auth.provider_unavailable"));
-      return error;
     }
   }, [auth, navigate, t]);
 
