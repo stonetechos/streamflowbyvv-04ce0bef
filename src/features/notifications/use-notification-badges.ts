@@ -154,25 +154,34 @@ export function useNotificationBadges(viewerProfileId: string | null): Notificat
     };
   }, [home, social, token, viewerProfileId]);
 
-  const markInvitesSeen = useCallback(async () => {
-    if (!home || !viewerProfileId) return;
-    try {
-      const snapshot = await home.loadHome(viewerProfileId);
-      const ids = snapshot.answeredInvites.map((entry) => entry.invite.id);
-      seenRef.current = Array.from(new Set([...ids, ...seenRef.current]));
-      writeSeen(seenRef.current);
-      refresh();
-    } catch (error) {
-      logger.warn("Marking invitations seen failed", { module: MODULE, error });
-    }
-  }, [home, refresh, viewerProfileId]);
+  // Stable identity: screens call this from an effect, so it must not change
+  // when the counts do, or the effect would re-run itself in a loop.
+  const homeRef = useRef(home);
+  homeRef.current = home;
+  const viewerRef = useRef(viewerProfileId);
+  viewerRef.current = viewerProfileId;
+
+  const markInvitesSeen = useCallback(() => {
+    const readModel = homeRef.current;
+    const viewer = viewerRef.current;
+    if (!readModel || !viewer) return;
+    void (async () => {
+      try {
+        const snapshot = await readModel.loadHome(viewer);
+        const ids = snapshot.answeredInvites.map((entry) => entry.invite.id);
+        const unseen = ids.filter((id) => !seenRef.current.includes(id));
+        if (unseen.length === 0) return;
+        seenRef.current = [...unseen, ...seenRef.current];
+        writeSeen(seenRef.current);
+        setToken((value) => value + 1);
+      } catch (error) {
+        logger.warn("Marking invitations seen failed", { module: MODULE, error });
+      }
+    })();
+  }, []);
 
   return useMemo(
-    () => ({
-      ...counts,
-      refresh,
-      markInvitesSeen: () => void markInvitesSeen(),
-    }),
+    () => ({ ...counts, refresh, markInvitesSeen }),
     [counts, markInvitesSeen, refresh],
   );
 }
