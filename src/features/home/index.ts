@@ -6,4 +6,5 @@ export { RoomListSection, type RoomListSectionProps } from "./components/room-li
 export { RoomEntryCards } from "./components/room-entry-cards";
 export { ProvidersSection } from "./components/providers-section";
 export { FriendsPlaceholder, UpcomingPartiesPlaceholder } from "./components/home-placeholders";
+export { HomeQuickSettings } from "./components/home-quick-settings";
 export { HomeSkeleton } from "./components/home-skeleton";
