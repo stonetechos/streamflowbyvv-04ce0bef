@@ -24,7 +24,10 @@ export function createSupabaseRecentPartnerReadRepository(
   });
 
   return {
-    async listForProfile(profileId: EntityId, limit: number): Promise<readonly RecentPartnerRecord[]> {
+    async listForProfile(
+      profileId: EntityId,
+      limit: number,
+    ): Promise<readonly RecentPartnerRecord[]> {
       requireAvailable(connection, context("listForProfile", profileId));
       const rows = await runQuery<RecentPartnerRow[]>(
         connection

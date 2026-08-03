@@ -27,6 +27,7 @@ import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
 import { Route as AuthenticatedPeopleProfileIdRouteImport } from './routes/_authenticated.people.$profileId'
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
 import { Route as ApiPublicTimeRouteImport } from './routes/api/public/time'
+import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice/token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -119,6 +120,11 @@ const ApiPublicTimeRoute = ApiPublicTimeRouteImport.update({
   path: '/api/public/time',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVoiceTokenRoute = ApiVoiceTokenRouteImport.update({
+  id: '/api/voice/token',
+  path: '/api/voice/token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
+  '/api/voice/token': typeof ApiVoiceTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
+  '/api/voice/token': typeof ApiVoiceTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/_authenticated/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
+  '/api/voice/token': typeof ApiVoiceTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/people/$profileId'
     | '/rooms/$roomId'
     | '/api/public/time'
+    | '/api/voice/token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/people/$profileId'
     | '/rooms/$roomId'
     | '/api/public/time'
+    | '/api/voice/token'
   id:
     | '__root__'
     | '/'
@@ -236,6 +247,7 @@ export interface FileRouteTypes {
     | '/_authenticated/people/$profileId'
     | '/_authenticated/rooms/$roomId'
     | '/api/public/time'
+    | '/api/voice/token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -243,6 +255,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   ApiPublicTimeRoute: typeof ApiPublicTimeRoute
+  ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTimeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/voice/token': {
+      id: '/api/voice/token'
+      path: '/api/voice/token'
+      fullPath: '/api/voice/token'
+      preLoaderRoute: typeof ApiVoiceTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -436,6 +456,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   ApiPublicTimeRoute: ApiPublicTimeRoute,
+  ApiVoiceTokenRoute: ApiVoiceTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

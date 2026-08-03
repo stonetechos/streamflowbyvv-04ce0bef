@@ -19,3 +19,17 @@ export {
   resetVoiceRegistry,
   resolveVoiceAdapter,
 } from "./voice-registry";
+// Milestone G — the LiveKit transport, device enumeration, and the grant seam.
+export { registerVoiceInfrastructure, resolveVoiceTokenProvider } from "./register";
+export {
+  VoiceTokenError,
+  createSessionVoiceTokenProvider,
+  VOICE_TOKEN_PATH,
+} from "./supabase-voice-token-provider";
+export {
+  isMediaDeviceSelectionSupported,
+  listAudioDevices,
+  subscribeToDeviceChanges,
+  type AudioDeviceKind,
+  type AudioDeviceOption,
+} from "./media-devices";

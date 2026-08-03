@@ -766,3 +766,139 @@
 .sf-po[data-mood="happy"] .sf-po-ear-right {
   animation-duration: 3.5s;
 }
+
+/* ==========================================================================
+   Milestone G — voice, room transitions, and Po's watch-party moods.
+   Every rule here is decoration; the reduced-motion block above neutralises
+   all of it without changing a single meaning on screen.
+   ========================================================================== */
+
+@keyframes sf-voice-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-primary) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in oklch, var(--color-primary) 0%, transparent);
+  }
+}
+
+.sf-voice-speaking {
+  animation: sf-voice-pulse 1.4s var(--ease-standard) infinite;
+}
+
+@keyframes sf-member-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sf-member-enter {
+  animation: sf-member-in 0.32s var(--ease-emphasized) both;
+}
+
+@keyframes sf-screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sf-screen-enter {
+  animation: sf-screen-in 0.42s var(--ease-emphasized) both;
+}
+
+.sf-watch-bar {
+  animation: sf-screen-in 0.36s var(--ease-emphasized) both;
+}
+
+/* Po — listening: ears forward, head still, ripples breathing. */
+@keyframes sf-po-listen-ripple {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translateX(2px);
+  }
+}
+
+.sf-po[data-mood="listening"] .sf-po-listen {
+  transform-origin: 100px 50px;
+  animation: sf-po-listen-ripple 1.8s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="listening"] .sf-po-head {
+  animation: sf-po-breathe 6s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="listening"] .sf-po-ear-left,
+.sf-po[data-mood="listening"] .sf-po-ear-right {
+  animation-duration: 4s;
+}
+
+/* Po — watching together: settled, slow, content. */
+.sf-po[data-mood="watching"] .sf-po-body {
+  animation: sf-po-breathe 6.5s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="watching"] .sf-po-eyes {
+  animation-duration: 9s;
+}
+
+.sf-po[data-mood="watching"] .sf-po-tail {
+  animation-duration: 11s;
+}
+
+/* Po — sleeping: the room went quiet, so Po does too. */
+@keyframes sf-po-doze {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(2px) rotate(-2deg);
+  }
+}
+
+@keyframes sf-po-snooze {
+  0% {
+    opacity: 0;
+    transform: translate(0, 4px);
+  }
+  40% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(6px, -10px);
+  }
+}
+
+.sf-po[data-mood="sleeping"] .sf-po-body {
+  animation: sf-po-breathe 8s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="sleeping"] .sf-po-head {
+  transform-origin: 80px 62px;
+  animation: sf-po-doze 8s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="sleeping"] .sf-po-eyes {
+  opacity: 0;
+}
+
+.sf-po[data-mood="sleeping"] .sf-po-sleep {
+  animation: sf-po-snooze 3.6s var(--ease-standard) infinite;
+}

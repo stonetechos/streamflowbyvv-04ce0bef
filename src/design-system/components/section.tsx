@@ -31,9 +31,7 @@ export function SectionHeader({
         <Heading className="font-display text-lg font-semibold tracking-tight sm:text-xl">
           {title}
         </Heading>
-        {description ? (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        ) : null}
+        {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>

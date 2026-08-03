@@ -30,10 +30,7 @@ export function SkeletonCard({ lines = 3, className }: { lines?: number; classNa
       <Skeleton className="h-5 w-1/3" />
       <div className="mt-4 space-y-2.5">
         {Array.from({ length: lines }, (_, index) => (
-          <Skeleton
-            key={index}
-            className={cn("h-3.5", index === lines - 1 ? "w-2/3" : "w-full")}
-          />
+          <Skeleton key={index} className={cn("h-3.5", index === lines - 1 ? "w-2/3" : "w-full")} />
         ))}
       </div>
     </div>

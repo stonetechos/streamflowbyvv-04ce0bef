@@ -64,7 +64,9 @@ export function createSupabaseProfileDirectoryRepository(
       return row ? toDirectoryRecord(row) : null;
     },
 
-    async findManyByIds(profileIds: readonly EntityId[]): Promise<readonly DirectoryProfileRecord[]> {
+    async findManyByIds(
+      profileIds: readonly EntityId[],
+    ): Promise<readonly DirectoryProfileRecord[]> {
       if (profileIds.length === 0) return [];
       requireAvailable(connection, context("findManyByIds"));
       const rows = await runQuery<DirectoryRow[]>(

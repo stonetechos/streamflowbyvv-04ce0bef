@@ -52,6 +52,14 @@ export interface VoiceAdapter {
   disconnect(): Promise<void>;
   setMuted(muted: boolean): Promise<void>;
   setInputDevice(deviceId: string): Promise<void>;
+  /**
+   * Milestone G — optional capabilities. Both are optional so a transport that
+   * cannot express them stays a valid adapter and the feature degrades rather
+   * than breaking (Foundation §8).
+   */
+  setOutputDevice?(deviceId: string): Promise<void>;
+  /** Silences every remote participant locally; the mic is unaffected. */
+  setDeafened?(deafened: boolean): Promise<void>;
   listParticipants(): readonly VoiceParticipant[];
   getStats(): VoiceRoomStats;
   /** Returns an unsubscribe function. */
