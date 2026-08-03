@@ -142,8 +142,9 @@ export function createReadyCoordinator(deps: ReadyCoordinatorDependencies): Read
 
   return {
     evaluate(input) {
-      const observedAt = clock.now();
-      const nowMs = Date.parse(observedAt);
+      const observedAtDate = clock.now();
+      const observedAt = observedAtDate.toISOString();
+      const nowMs = observedAtDate.getTime();
       const joined = input.participants.filter((participant) => participant.isJoined);
 
       const ready = joined.filter((participant) => participant.isReady);
@@ -230,6 +231,6 @@ export function createReadyCoordinator(deps: ReadyCoordinatorDependencies): Read
 
     isCountdownAvailable: (snapshot) => snapshot.countdownAvailable,
 
-    hasReadyTimedOut: (waitingSinceMs) => timedOut(waitingSinceMs, Date.parse(clock.now())),
+    hasReadyTimedOut: (waitingSinceMs) => timedOut(waitingSinceMs, clock.now().getTime()),
   };
 }
