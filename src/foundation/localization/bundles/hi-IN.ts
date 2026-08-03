@@ -83,6 +83,8 @@ export const hiINBundle: LocaleBundle = {
     "error.sys.constraint_violation": "ये विवरण सहेजे नहीं जा सके। इन्हें जाँचकर फिर कोशिश करें।",
     "error.action.retry": "फिर से कोशिश करें",
     "error.action.go_home": "होम पर जाएँ",
+    "error.action.leave_other_room": "पहले दूसरा रूम छोड़ें",
+
     "error.reference.label": "संदर्भ कोड",
 
     "error.auth.provider_unavailable.title": "साइन-इन अभी उपलब्ध नहीं है",
