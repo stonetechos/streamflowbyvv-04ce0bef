@@ -82,6 +82,8 @@ import {
   resolveHomeReadModelDependencies,
   HOME_READ_MODEL,
 } from "../rooms/home-read-model";
+import { createProfileService, PROFILE_SERVICE } from "../profiles/profile-service";
+
 
 import {
   bindService,
