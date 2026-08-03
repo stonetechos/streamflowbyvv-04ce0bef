@@ -9,6 +9,7 @@ export {
   type PoMood,
   type PoSize,
 } from "./components/po-companion";
+export { PoConsole } from "./components/po-console";
 export { PoProvider, usePo, type PoContextValue } from "./po-provider";
 export {
   PoReactionProvider,

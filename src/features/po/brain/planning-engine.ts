@@ -15,12 +15,7 @@
  *   permission itself (Build Rules §1).
  */
 import { PO_DESTINATIONS } from "./po-lexicon";
-import type {
-  PoPlanResult,
-  PoPlanned,
-  PoPlannedStep,
-  PoResolvedIntent,
-} from "./po-brain.types";
+import type { PoPlanResult, PoPlanned, PoPlannedStep, PoResolvedIntent } from "./po-brain.types";
 import { findPoMemory } from "./po-memory";
 import { loadPoHome, loadPoProviders, resolvePoPerson } from "./po-context";
 import { getPoRuntime, type PoRoomControls } from "./po-runtime";
@@ -54,7 +49,13 @@ function plan(
 ): PoPlanResult {
   return {
     kind: "plan",
-    plan: { id: planId(), intent, steps, summaryKey, ...(summaryValues ? { summaryValues } : {}) } satisfies PoPlanned,
+    plan: {
+      id: planId(),
+      intent,
+      steps,
+      summaryKey,
+      ...(summaryValues ? { summaryValues } : {}),
+    } satisfies PoPlanned,
   };
 }
 
@@ -113,9 +114,14 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
     case "room.create": {
       const name = text(intent, "room_name");
       if (!name) return clarify("room_name", "po.ask.room_name");
-      return plan(intent, [step("room.create", { name }, "po.done.room_created")], "po.plan.room_create", {
-        name,
-      });
+      return plan(
+        intent,
+        [step("room.create", { name }, "po.done.room_created")],
+        "po.plan.room_create",
+        {
+          name,
+        },
+      );
     }
 
     case "room.join_by_code": {
@@ -130,10 +136,18 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
     }
 
     case "room.leave":
-      return plan(intent, [step("room.leave", {}, "po.done.room_left", true)], "po.plan.room_leave");
+      return plan(
+        intent,
+        [step("room.leave", {}, "po.done.room_left", true)],
+        "po.plan.room_leave",
+      );
 
     case "room.close":
-      return plan(intent, [step("room.close", {}, "po.done.room_closed", true)], "po.plan.room_close");
+      return plan(
+        intent,
+        [step("room.close", {}, "po.done.room_closed", true)],
+        "po.plan.room_close",
+      );
 
     case "room.set_ready": {
       const ready = intent.slots["ready"];
@@ -183,7 +197,8 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
       const home = await loadPoHome(profileId);
       const pending = home?.pendingInvites ?? [];
       if (pending.length === 0) return refuse("po.refuse.no_invites");
-      if (pending.length > 1) return refuse("po.refuse.invite_ambiguous", { count: pending.length });
+      if (pending.length > 1)
+        return refuse("po.refuse.invite_ambiguous", { count: pending.length });
       const only = pending[0];
       if (!only) return refuse("po.refuse.no_invites");
       const accepting = intent.name === "invite.accept";
@@ -263,7 +278,13 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
       }
       return plan(
         intent,
-        [step("room.select_provider", { providerId: option.provider.id }, "po.done.provider_selected")],
+        [
+          step(
+            "room.select_provider",
+            { providerId: option.provider.id },
+            "po.done.provider_selected",
+          ),
+        ],
         "po.plan.provider_select",
         { name: hint },
       );
@@ -291,11 +312,7 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
       return plan(intent, [step("sync.get_quality", {}, "po.answer.sync")], "po.plan.read");
 
     case "sync.resync":
-      return plan(
-        intent,
-        [step("sync.request_resync", {}, "po.done.resynced")],
-        "po.plan.resync",
-      );
+      return plan(intent, [step("sync.request_resync", {}, "po.done.resynced")], "po.plan.resync");
 
     /* ── Social ────────────────────────────────────────────────────────── */
     case "friend.list":
@@ -353,9 +370,14 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
     case "memory.remember": {
       const note = text(intent, "note");
       if (!note) return clarify("note", "po.ask.note");
-      return plan(intent, [step("memory.store", { summary: note }, "po.done.remembered")], "po.plan.remember", {
-        note,
-      });
+      return plan(
+        intent,
+        [step("memory.store", { summary: note }, "po.done.remembered")],
+        "po.plan.remember",
+        {
+          note,
+        },
+      );
     }
 
     case "memory.list":
@@ -367,7 +389,13 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
       if (!found) return refuse("po.refuse.memory_unknown");
       return plan(
         intent,
-        [step("memory.delete", { memoryId: found.id, summary: found.summary }, "po.done.forgotten")],
+        [
+          step(
+            "memory.delete",
+            { memoryId: found.id, summary: found.summary },
+            "po.done.forgotten",
+          ),
+        ],
         "po.plan.forget",
         { note: found.summary },
       );

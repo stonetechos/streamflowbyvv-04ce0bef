@@ -48,9 +48,10 @@ export function extractSeconds(text: string): number | null {
   const digits = /(\d{1,3})\s*(?:seconds?|secs?|s)\b/i.exec(text);
   if (digits?.[1]) return Number.parseInt(digits[1], 10);
 
-  const words = new RegExp(`\\b(${Object.keys(NUMBER_WORDS).join("|")})\\b\\s*(?:seconds?|secs?)`, "i").exec(
-    text,
-  );
+  const words = new RegExp(
+    `\\b(${Object.keys(NUMBER_WORDS).join("|")})\\b\\s*(?:seconds?|secs?)`,
+    "i",
+  ).exec(text);
   const word = words?.[1]?.toLowerCase();
   if (word && word in NUMBER_WORDS) return NUMBER_WORDS[word] as number;
 
@@ -58,7 +59,9 @@ export function extractSeconds(text: string): number | null {
   const bare = /\bin\s+(\d{1,3})\b/i.exec(text);
   if (bare?.[1]) return Number.parseInt(bare[1], 10);
 
-  const bareWord = new RegExp(`\\bin\\s+(${Object.keys(NUMBER_WORDS).join("|")})\\b`, "i").exec(text);
+  const bareWord = new RegExp(`\\bin\\s+(${Object.keys(NUMBER_WORDS).join("|")})\\b`, "i").exec(
+    text,
+  );
   const bw = bareWord?.[1]?.toLowerCase();
   if (bw && bw in NUMBER_WORDS) return NUMBER_WORDS[bw] as number;
 
@@ -346,7 +349,10 @@ export const PO_INTENT_RULES: readonly IntentRule[] = [
   {
     name: "sync.status",
     category: "informational",
-    patterns: [/\b(sync|synchronis|synchroniz|drift|clock)\b.*\b(status|health|how|good|ok)\b/i, /\bare we in sync\b/i],
+    patterns: [
+      /\b(sync|synchronis|synchroniz|drift|clock)\b.*\b(status|health|how|good|ok)\b/i,
+      /\bare we in sync\b/i,
+    ],
   },
 
   // ── Social ──────────────────────────────────────────────────────────────
@@ -358,7 +364,10 @@ export const PO_INTENT_RULES: readonly IntentRule[] = [
   {
     name: "friend.request",
     category: "informational",
-    patterns: [/\b(add|befriend|send a (friend )?request to)\b\s+\S+/i, /\bfriend request\b.*\bto\b/i],
+    patterns: [
+      /\b(add|befriend|send a (friend )?request to)\b\s+\S+/i,
+      /\bfriend request\b.*\bto\b/i,
+    ],
     required: ["person"],
     extract: (text) => slots({ person: extractPerson(text) }),
   },
@@ -415,7 +424,9 @@ export const PO_INTENT_RULES: readonly IntentRule[] = [
   {
     name: "navigate.to",
     category: "informational",
-    patterns: [/\b(open|go to|take me to|show me)\b\s+(the\s+)?(home|people|friends|invites|invitations|settings|account)\b/i],
+    patterns: [
+      /\b(open|go to|take me to|show me)\b\s+(the\s+)?(home|people|friends|invites|invitations|settings|account)\b/i,
+    ],
     required: ["destination"],
     extract: (text) => slots({ destination: extractDestination(text) }),
   },

@@ -84,7 +84,10 @@ export function subscribeToPoRuntime(listener: () => void): () => void {
 }
 
 export function setPoActor(actor: PoActor): void {
-  if (runtime.actor.profileId === actor.profileId && runtime.actor.displayName === actor.displayName) {
+  if (
+    runtime.actor.profileId === actor.profileId &&
+    runtime.actor.displayName === actor.displayName
+  ) {
     return;
   }
   runtime = { ...runtime, actor };

@@ -741,7 +741,8 @@ export const enBundle: LocaleBundle = {
     "po.console.send": "Send",
     "po.console.open": "Open Po",
     "po.console.close": "Close Po",
-    "po.console.empty": "Try \u201ccreate a room called Movie Night\u201d or \u201cset the countdown to 10 seconds\u201d.",
+    "po.console.empty":
+      "Try \u201ccreate a room called Movie Night\u201d or \u201cset the countdown to 10 seconds\u201d.",
     "po.console.thinking": "Po is working on it.",
     "po.console.unavailable": "Po is not available right now.",
     "po.console.yes": "Yes",
@@ -788,7 +789,8 @@ export const enBundle: LocaleBundle = {
     "po.done.navigated": "Opening {destination}.",
 
     "po.answer.overview": "{liveRoomCount} live rooms, {pendingInviteCount} invitations waiting.",
-    "po.answer.room_status": "{roomName}: {memberCount} here, {readyCount} ready, countdown {countdownSeconds}s.",
+    "po.answer.room_status":
+      "{roomName}: {memberCount} here, {readyCount} ready, countdown {countdownSeconds}s.",
     "po.answer.recent_rooms": "Recent rooms: {names}.",
     "po.answer.pending_invites": "You have {count} invitations waiting.",
     "po.answer.providers": "You can pick from {count} services here.",
@@ -796,9 +798,11 @@ export const enBundle: LocaleBundle = {
     "po.answer.friends": "{friendCount} friends, {incomingCount} requests waiting.",
     "po.answer.partners": "You watch most often with {names}.",
     "po.answer.search": "Found {count}: {names}.",
-    "po.answer.settings": "Auto-join voice is {voiceAutoJoin}, join muted is {voiceJoinMuted}, memory is {poMemoryOptIn}.",
+    "po.answer.settings":
+      "Auto-join voice is {voiceAutoJoin}, join muted is {voiceJoinMuted}, memory is {poMemoryOptIn}.",
     "po.answer.memories": "I remember {count} things: {summaries}.",
-    "po.answer.capabilities": "I can set up rooms, invites, countdowns, voice and settings \u2014 {toolCount} things in total.",
+    "po.answer.capabilities":
+      "I can set up rooms, invites, countdowns, voice and settings \u2014 {toolCount} things in total.",
 
     "po.refuse.unknown": "I can't do that yet.",
     "po.refuse.signed_out": "Sign in first and I can help.",
@@ -807,7 +811,8 @@ export const enBundle: LocaleBundle = {
     "po.refuse.person_unknown": "I couldn't find anyone called {term}.",
     "po.refuse.person_ambiguous": "More than one person matches {term}. Which one?",
     "po.refuse.no_invites": "You have no invitations waiting.",
-    "po.refuse.invite_ambiguous": "You have {count} invitations. Open the invitations screen to choose.",
+    "po.refuse.invite_ambiguous":
+      "You have {count} invitations. Open the invitations screen to choose.",
     "po.refuse.no_provider": "Pick a service for the room first.",
     "po.refuse.sync_not_ready": "Sync hasn't settled yet. Give it a moment.",
     "po.refuse.providers_unavailable": "I can't read the service list right now.",

@@ -142,7 +142,11 @@ export async function resolvePoPerson(
   if (exact.length === 1 && exact[0]) {
     const person = exact[0];
     return {
-      match: { profileId: person.profileId, displayName: person.displayName, handle: person.handle },
+      match: {
+        profileId: person.profileId,
+        displayName: person.displayName,
+        handle: person.handle,
+      },
       ambiguous: false,
     };
   }
@@ -153,7 +157,11 @@ export async function resolvePoPerson(
   if (partial.length === 1 && partial[0]) {
     const person = partial[0];
     return {
-      match: { profileId: person.profileId, displayName: person.displayName, handle: person.handle },
+      match: {
+        profileId: person.profileId,
+        displayName: person.displayName,
+        handle: person.handle,
+      },
       ambiguous: false,
     };
   }

@@ -136,10 +136,9 @@ function profileService() {
 /* Catalog                                                             */
 /* ------------------------------------------------------------------ */
 
-function define<TInput, TOutput>(tool: PoToolDescriptor<TInput, TOutput>): PoToolDescriptor<
-  TInput,
-  TOutput
-> {
+function define<TInput, TOutput>(
+  tool: PoToolDescriptor<TInput, TOutput>,
+): PoToolDescriptor<TInput, TOutput> {
   return tool;
 }
 

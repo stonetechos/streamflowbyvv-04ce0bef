@@ -121,12 +121,7 @@ export interface PoStepOutcome {
 }
 
 export type PoOutcomeStatus =
-  | "answered"
-  | "executed"
-  | "asked"
-  | "refused"
-  | "failed"
-  | "cancelled";
+  "answered" | "executed" | "asked" | "refused" | "failed" | "cancelled";
 
 export interface PoOutcome {
   readonly status: PoOutcomeStatus;
