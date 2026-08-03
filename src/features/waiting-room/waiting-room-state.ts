@@ -13,6 +13,8 @@ import {
   type RoomMember,
   type WaitingRoomSnapshot,
 } from "@/domain";
+import { AppError } from "@/shared/constants/error-taxonomy";
+
 
 import type {
   MemberPresenceView,
