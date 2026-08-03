@@ -76,7 +76,7 @@ export interface ProfileServiceDependencies {
 
 function require_<T>(token: RepositoryToken<T>, operation: string): T {
   if (!isRepositoryBound(token)) {
-    throw domainError("UNAVAILABLE", { operation });
+    throw domainError("SERVICE_UNAVAILABLE", { operation });
   }
   return resolveRepository(token);
 }
@@ -101,7 +101,7 @@ export function createProfileService(deps: ProfileServiceDependencies): ProfileS
   async function load(profileId: EntityId, operation: string): Promise<ProfileRecord> {
     const record = await profiles(operation).findById(profileId);
     if (!record) {
-      throw domainError("NOT_FOUND", { operation, aggregateId: profileId });
+      throw domainError("PROFILE_NOT_FOUND", { operation, aggregateId: profileId });
     }
     return record;
   }

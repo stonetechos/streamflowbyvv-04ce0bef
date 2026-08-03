@@ -26,8 +26,8 @@ export const DOMAIN_ERRORS = Object.freeze({
   },
   /** Milestone E — a profile row the caller is entitled to read is absent. */
   PROFILE_NOT_FOUND: {
-    code: "SF-USER-PROFILE-NOT-FOUND",
-    messageKey: "error.user.profile_not_found",
+    code: "SF-SYS-PROFILE-NOT-FOUND",
+    messageKey: "error.sys.profile_not_found",
     severity: "error",
     retryable: false,
     recoveryActionKey: "error.action.go_home",
