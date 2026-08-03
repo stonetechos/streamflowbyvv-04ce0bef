@@ -145,6 +145,13 @@ export const enBundle: LocaleBundle = {
     "auth.verify.sent": "We've sent a verification link to {email}.",
     "auth.verify.hint": "Open it on this device to finish setting up your account.",
     "auth.sign_up.have_account": "Already have an account?",
+    "auth.sign_up.title": "Create your StreamFlow account",
+    "auth.sign_up.subtitle": "One account, every room you host or join.",
+    "auth.forgot_password.title": "Reset your password",
+    "auth.forgot_password.subtitle": "We'll email you a link to choose a new one.",
+    "auth.verify.title": "Verify your email",
+    "auth.verify.subtitle": "One click and you're in.",
+
     "auth.validation.email_required": "Enter your email address.",
     "auth.validation.email_invalid": "That doesn't look like an email address.",
     "auth.validation.password_required": "Enter your password.",
