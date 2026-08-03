@@ -236,7 +236,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
           </ul>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setPendingConnect(null)}>
-              {t("common.cancel")}
+              {t("provider.connect.cancel")}
             </Button>
             <Button
               onClick={() => {
