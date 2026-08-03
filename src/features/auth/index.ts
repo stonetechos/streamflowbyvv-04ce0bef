@@ -28,3 +28,11 @@ export {
   validateRoomCode,
 } from "./auth-validation";
 export { toAuthErrorPresentation, useAuthForm, type UseAuthFormResult } from "./use-auth-form";
+export {
+  claimDestination,
+  clearDestination,
+  isResumablePath,
+  readDestination,
+  rememberCurrentDestination,
+  rememberDestination,
+} from "./pending-destination";

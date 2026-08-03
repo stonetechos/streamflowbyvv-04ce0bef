@@ -25,6 +25,8 @@ const IDLE: AuthFormState = Object.freeze({ pending: false, errorKey: null, erro
 interface TaxonomyShaped {
   readonly messageKey?: unknown;
   readonly code?: unknown;
+  /** Taxonomy errors carry their descriptor rather than spreading it. */
+  readonly descriptor?: { readonly messageKey?: unknown; readonly code?: unknown };
 }
 
 /**
@@ -37,8 +39,19 @@ export function toAuthErrorPresentation(error: unknown): {
   errorCode: string;
 } {
   const candidate = error as TaxonomyShaped | null;
-  const messageKey = typeof candidate?.messageKey === "string" ? candidate.messageKey : null;
-  const code = typeof candidate?.code === "string" ? candidate.code : null;
+  const descriptor = candidate?.descriptor;
+  const messageKey =
+    typeof candidate?.messageKey === "string"
+      ? candidate.messageKey
+      : typeof descriptor?.messageKey === "string"
+        ? descriptor.messageKey
+        : null;
+  const code =
+    typeof candidate?.code === "string"
+      ? candidate.code
+      : typeof descriptor?.code === "string"
+        ? descriptor.code
+        : null;
 
   if (messageKey && code) return { errorKey: messageKey, errorCode: code };
 
@@ -47,6 +60,7 @@ export function toAuthErrorPresentation(error: unknown): {
     errorCode: AUTH_ERRORS.PROVIDER_UNAVAILABLE.code,
   };
 }
+
 
 export interface UseAuthFormResult extends AuthFormState {
   /** Runs `action`, tracking pending state and capturing any failure. */
