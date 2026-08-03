@@ -51,9 +51,14 @@ export interface AuthContextValue extends AuthState {
   signIn: (credentials: AuthCredentials) => Promise<AuthOutcome>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
+  /** Sends a reset link. Milestone E — the recovery journey (MVP §3.4). */
+  requestPasswordReset: (email: string, returnPath: string) => Promise<void>;
+  /** Re-sends the verification email for an address awaiting confirmation. */
+  resendVerification: (email: string) => Promise<void>;
   hasRole: (role: AppRole) => boolean;
   can: (permission: Permission) => boolean;
 }
+
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
