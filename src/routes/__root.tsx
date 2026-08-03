@@ -85,18 +85,20 @@ function RootComponent() {
   );
 }
 
+/**
+ * Sprint J.3 — a missed route renders *inside* the root component, so the
+ * providers and the app chrome are already mounted. Wrapping again produced a
+ * second header, a second "skip to main content" link, and a second set of
+ * providers on every 404.
+ */
 function RootNotFound() {
   const router = useRouter();
   return (
-    <AppProviders queryClient={router.options.context.queryClient}>
-      <AppLayout>
-        <ErrorState
-          code="SF-SYS-ROUTE-NOT-FOUND"
-          messageKey="error.sys.route_not_found"
-          onGoHome={() => router.navigate({ to: "/" })}
-        />
-      </AppLayout>
-    </AppProviders>
+    <ErrorState
+      code="SF-SYS-ROUTE-NOT-FOUND"
+      messageKey="error.sys.route_not_found"
+      onGoHome={() => router.navigate({ to: "/" })}
+    />
   );
 }
 

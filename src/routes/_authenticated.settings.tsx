@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { SectionHeader } from "@/design-system/components";
 import { useAuth } from "@/features/auth";
@@ -49,12 +49,13 @@ function SettingsRoute() {
       <SettingsPanel profileId={auth.session?.identity.profileId ?? null} />
 
       <SectionHeader title={t("settings.session.title")} />
-      <a
-        href="/auth/sign-out"
+      {/* Sprint J.3 — client navigation; a raw href reloaded the whole app. */}
+      <Link
+        to="/auth/sign-out"
         className="inline-flex min-h-12 items-center rounded-xl border border-border px-5 text-sm font-medium transition-colors hover:bg-accent"
       >
         {t("auth.action.sign_out")}
-      </a>
+      </Link>
     </div>
   );
 }
