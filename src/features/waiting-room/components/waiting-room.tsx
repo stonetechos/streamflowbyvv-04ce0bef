@@ -4,9 +4,20 @@
  * Composes the lobby from the hook's model and resolves loading, error, and
  * empty states in one place so no child has to know about them.
  */
+import { useMemo } from "react";
+
 import { ErrorState, LoadingState } from "@/app-shell";
+import type { SyncHealth } from "@/domain";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PoWaitingBanner } from "@/features/po";
+import { useProfile } from "@/features/profiles";
+import {
+  readVoiceDevicePreferences,
+  useVoiceSession,
+  VoicePanel,
+  type VoiceIndicatorState,
+} from "@/features/voice";
+import { WatchPartyScreen } from "@/features/watch-party";
 import { useTranslation } from "@/foundation/localization";
 
 import { usePlaybackSync } from "../use-playback-sync";
@@ -101,6 +112,42 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     setReady: model.setReady,
   });
 
+  // Milestone G — voice. Preferences decide whether the call is joined for
+  // the member; the transport decides nothing about the room.
+  const profile = useProfile(model.viewer.profileId);
+  const devicePreferences = useMemo(() => readVoiceDevicePreferences(), []);
+  const voice = useVoiceSession({
+    roomId,
+    profileId: model.viewer.profileId,
+    displayName: profile.profile?.displayName ?? t("room.member.you"),
+    enabled: model.status === "ready" && model.viewer.isMember,
+    autoJoin: profile.settings?.privacy.voiceAutoJoin ?? false,
+    joinMuted: profile.settings?.privacy.voiceJoinMuted ?? true,
+    inputDeviceId: devicePreferences.inputDeviceId,
+    outputDeviceId: devicePreferences.outputDeviceId,
+  });
+
+  // Per-member voice and clock standing, keyed by profile so the roster can
+  // stay a pure renderer.
+  const voiceByProfileId = useMemo(() => {
+    const map = new Map<string, VoiceIndicatorState>();
+    for (const member of voice.members) {
+      map.set(
+        member.profileId,
+        member.isMuted ? "muted" : member.isSpeaking ? "speaking" : "listening",
+      );
+    }
+    return map;
+  }, [voice.members]);
+
+  const syncByProfileId = useMemo(() => {
+    const map = new Map<string, SyncHealth>();
+    for (const participant of roomSync.snapshot?.participants ?? []) {
+      map.set(participant.profileId, participant.health);
+    }
+    return map;
+  }, [roomSync.snapshot]);
+
   if (model.status === "loading") {
     return (
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
@@ -127,6 +174,28 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
   // Readiness and seat availability are Domain answers; this screen only
   // forwards them (Milestone D.5).
   const readySnapshot = ready.snapshot;
+
+  // Milestone G — the countdown is over and the room has an anchor: this is a
+  // watch party now, not a lobby. The transition is a screen swap, not a
+  // route change, so voice and presence are never torn down.
+  if (playback.runtime?.startedAt && playback.runtime.state !== "ended") {
+    return (
+      <WatchPartyScreen
+        room={room}
+        members={model.members}
+        providerName={providerLaunch.plan?.providerName ?? room.providerId}
+        startedAt={playback.runtime.startedAt}
+        clockOffsetMs={sync.snapshot?.offsetMs ?? 0}
+        voice={voice}
+        playbackSync={playbackSync}
+        clockSync={sync}
+        voiceByProfileId={voiceByProfileId}
+        syncByProfileId={syncByProfileId}
+        onLeave={model.leave}
+        isLeaving={model.pending === "leave"}
+      />
+    );
+  }
 
   return (
     <WaitingRoomLayout
@@ -202,6 +271,8 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             members={model.members}
             readyCount={readySnapshot?.readyCount ?? 0}
             readyTotal={readySnapshot?.participantCount ?? 0}
+            voiceByProfileId={voiceByProfileId}
+            syncByProfileId={syncByProfileId}
           />
           <RoomSetupCard
             setup={setup}
@@ -213,6 +284,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
       }
       secondary={
         <>
+          <VoicePanel voice={voice} />
           <ReadyConfirmationCard ready={ready} />
           <MembershipActions
             viewer={model.viewer}
