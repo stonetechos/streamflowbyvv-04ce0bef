@@ -315,6 +315,10 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
     [NOTIFICATION_SERVICE, () => createNotificationService(context())],
     [ANALYTICS_SERVICE, () => createAnalyticsService(context())],
     [USER_SERVICE, () => createUserService(context())],
+    // Milestone E: profile and preference orchestration, on top of USER_SERVICE
+    // so every profile edit still emits its documented domain event.
+    [PROFILE_SERVICE, () => createProfileService({ users: resolveService(USER_SERVICE) })],
+
     [PROVIDER_SERVICE, () => createProviderService(context())],
     [FEATURE_FLAG_SERVICE, () => createFeatureFlagDomainService(context())],
     [LOCALIZATION_SERVICE, () => createLocalizationDomainService(context())],
