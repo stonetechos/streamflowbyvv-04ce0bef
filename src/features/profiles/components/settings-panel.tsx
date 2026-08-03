@@ -19,6 +19,7 @@ import {
   type AvatarPreset,
 } from "@/design-system/components";
 import { validateDisplayName } from "@/features/auth";
+import { VoiceSettingsSection } from "@/features/voice";
 import { useAccessibility } from "@/foundation/accessibility";
 import { useLocalization, useTranslation } from "@/foundation/localization";
 import { THEME_CHOICES, useTheme } from "@/foundation/theme";
