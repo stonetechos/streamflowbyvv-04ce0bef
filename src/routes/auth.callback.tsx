@@ -16,8 +16,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButton } from "@/design-system/components";
-import { AuthShell, useAuth } from "@/features/auth";
-import { claimCallbackPayload, traceCallback } from "@/features/auth/auth-callback-trace";
+import { AuthShell, claimCallbackPayload, traceCallback, useAuth } from "@/features/auth";
 import { useTranslation } from "@/foundation/localization";
 
 
@@ -69,7 +68,7 @@ function readCallbackParams(): CallbackParams {
     error: read("error") ?? read("error_description"),
     errorCode: read("error_code"),
     hasToken: credential !== null,
-    fingerprint: `${read("type") ?? "-"}:${credential ? credential.length : 0}:${credential?.slice(0, 6) ?? "-"}`,
+    fingerprint: `${read("type") ?? "-"}:${credential ? credential.length : 0}`,
   };
 }
 
