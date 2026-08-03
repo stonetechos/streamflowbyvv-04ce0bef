@@ -52,14 +52,14 @@ export function ShareStartCard() {
       </ol>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-2 sm:flex-row sm:items-end">
-        <TextField
-          id="share-link"
-          label={t("home.share.paste_label")}
-          placeholder={t("home.share.paste_placeholder")}
-          value={link}
-          onChange={(event) => setLink(event.target.value)}
-          className="flex-1"
-        />
+        <div className="flex-1">
+          <TextField
+            label={t("home.share.paste_label")}
+            placeholder={t("home.share.paste_placeholder")}
+            value={link}
+            onChange={(event) => setLink(event.target.value)}
+          />
+        </div>
         <ActionButton type="submit" size="sm" disabled={link.trim().length === 0}>
           {t("home.share.paste_action")}
         </ActionButton>
