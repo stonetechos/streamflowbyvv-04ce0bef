@@ -27,7 +27,6 @@ import {
   type SyncSnapshot,
 } from "@/domain";
 import { logger } from "@/foundation/logging";
-import { useTranslation } from "@/foundation/localization";
 import { SYNC_RUNTIME } from "@/shared/constants/system-constants";
 
 const MODULE = "waiting-room-clock-sync";

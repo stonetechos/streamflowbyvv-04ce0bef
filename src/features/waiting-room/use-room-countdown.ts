@@ -62,6 +62,12 @@ export interface UseRoomCountdownInput {
   readonly isHost: boolean;
   readonly durationSeconds: number;
   readonly enabled: boolean;
+  /**
+   * Sprint 2.6 — the Foundation §15 gate, owned by `RoomSyncCoordinator`. It
+   * throws when the room is in the Re-sync Required band. This hook calls it
+   * and reports the refusal; it never decides eligibility itself.
+   */
+  readonly assertSyncEligible?: () => void;
 }
 
 const IDLE_STATE: CountdownRuntimeState = "idle";
@@ -72,6 +78,7 @@ export function useRoomCountdown({
   isHost,
   durationSeconds,
   enabled,
+  assertSyncEligible,
 }: UseRoomCountdownInput): RoomCountdownModel {
   const { t } = useTranslation();
   const announce = useAnnouncer();
@@ -245,10 +252,22 @@ export function useRoomCountdown({
 
   const start = useCallback(() => {
     if (!coordinator || !actorProfileId || !isHost) return;
-    void run("start", () =>
-      coordinator.start({ roomId, actorProfileId, durationSeconds }, intent()),
-    );
-  }, [actorProfileId, coordinator, durationSeconds, intent, isHost, roomId, run]);
+    void run("start", async () => {
+      // The gate runs inside the same action so a refusal surfaces exactly
+      // like any other Domain error, with no local interpretation.
+      assertSyncEligible?.();
+      return coordinator.start({ roomId, actorProfileId, durationSeconds }, intent());
+    });
+  }, [
+    actorProfileId,
+    assertSyncEligible,
+    coordinator,
+    durationSeconds,
+    intent,
+    isHost,
+    roomId,
+    run,
+  ]);
 
   const cancel = useCallback(() => {
     if (!coordinator || !actorProfileId || !isHost) return;
@@ -257,10 +276,20 @@ export function useRoomCountdown({
 
   const restart = useCallback(() => {
     if (!coordinator || !actorProfileId || !isHost) return;
-    void run("restart", () =>
-      coordinator.restart({ roomId, actorProfileId, durationSeconds }, intent()),
-    );
-  }, [actorProfileId, coordinator, durationSeconds, intent, isHost, roomId, run]);
+    void run("restart", async () => {
+      assertSyncEligible?.();
+      return coordinator.restart({ roomId, actorProfileId, durationSeconds }, intent());
+    });
+  }, [
+    actorProfileId,
+    assertSyncEligible,
+    coordinator,
+    durationSeconds,
+    intent,
+    isHost,
+    roomId,
+    run,
+  ]);
 
   return {
     state: runtime?.state ?? IDLE_STATE,
