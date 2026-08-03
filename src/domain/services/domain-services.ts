@@ -24,6 +24,11 @@ import {
   PLAYBACK_COORDINATOR,
 } from "../rooms/playback-coordinator";
 import {
+  createClockSyncService,
+  resolveClockSyncDependencies,
+  CLOCK_SYNC_SERVICE,
+} from "../sync/clock-sync-service";
+import {
   createPresenceCoordinator,
   resolvePresenceCoordinatorDependencies,
   PRESENCE_COORDINATOR,
@@ -190,6 +195,17 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
         ),
     ],
     [PLAYBACK_SERVICE, () => createPlaybackService(context())],
+    // Sprint 2.5 — clock synchronization and drift classification only.
+    [
+      CLOCK_SYNC_SERVICE,
+      () =>
+        createClockSyncService(
+          resolveClockSyncDependencies({
+            sync: resolveService(SYNC_SERVICE),
+            clock: resolveService(CLOCK),
+          }),
+        ),
+    ],
     // Sprint 2.4 — playback orchestration: intent only, no provider control.
     [
       PLAYBACK_COORDINATOR,

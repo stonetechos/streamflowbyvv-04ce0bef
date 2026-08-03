@@ -13,6 +13,7 @@ import { registerEventInfrastructure } from "@/infrastructure/events";
 import { registerIdentityAdapter } from "@/infrastructure/identity";
 import { registerProviderAdapter } from "@/infrastructure/providers";
 import { registerRoomAdapter } from "@/infrastructure/rooms";
+import { registerTimeAdapter } from "@/infrastructure/time";
 import { logger } from "@/foundation/logging";
 
 let composed = false;
@@ -28,6 +29,8 @@ export function composeApplication(): void {
   const roomsBound = registerRoomAdapter();
   // Sprint 2.2: provider catalog, capability matrix, compliance rules, prefs.
   const providersBound = registerProviderAdapter();
+  // Sprint 2.5: the server-time reference behind clock synchronization.
+  const timeBound = registerTimeAdapter();
   registerAuthServices();
   // Sprint 1.6: orchestration services and the internal event bus. Bound here so
   // nothing above Domain constructs a business service for itself.
@@ -44,6 +47,9 @@ export function composeApplication(): void {
   }
   if (!providersBound) {
     logger.warn("No provider adapter bound: backend is not configured", { module: "providers" });
+  }
+  if (!timeBound) {
+    logger.warn("No time adapter bound: clock synchronization is unavailable", { module: "sync" });
   }
   if (!eventsBound) {
     logger.warn("No event adapter bound: backend is not configured", { module: "events" });
