@@ -6,7 +6,12 @@
  */
 import { Link } from "@tanstack/react-router";
 
-import { Avatar, EmptyState, SectionHeader } from "@/design-system/components";
+import {
+  Avatar,
+  EmptyState,
+  SectionHeader,
+  type AvatarPreset,
+} from "@/design-system/components";
 import { useTranslation } from "@/foundation/localization";
 
 import type { SocialModel } from "@/features/social";
