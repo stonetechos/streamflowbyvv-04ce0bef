@@ -147,24 +147,21 @@ export function toViewerView(
 
 /** Maps a thrown value onto the error taxonomy without guessing a cause. */
 export function toWaitingRoomError(error: unknown): WaitingRoomError {
+  // Sprint J.1.5 — the domain already decided the reason and carries its own
+  // localization key. Presentation reads that decision instead of re-deriving
+  // it from a code table that silently goes stale.
+  if (error instanceof AppError) {
+    return {
+      code: error.code,
+      messageKey: error.descriptor.messageKey ?? "error.sys.unexpected",
+    };
+  }
+
   const raw =
     error instanceof Error
       ? ((error as Error & { code?: string }).code ?? error.message)
       : String(error);
   const code = /^SF-[A-Z]+-[A-Z-]+$/.test(raw) ? raw : "SF-SYS-UNEXPECTED";
-
-  const known: Record<string, string> = {
-    "SF-ROOM-NOT-FOUND": "error.room.not_found",
-    "SF-ROOM-MEMBER-NOT-FOUND": "error.room.member_not_found",
-    "SF-ROOM-CAPACITY-EXCEEDED": "error.room.capacity_exceeded",
-    "SF-ROOM-FORBIDDEN": "error.room.forbidden",
-    "SF-ROOM-ALREADY-MEMBER": "error.room.already_member",
-    "SF-ROOM-NOT-ACTIVE": "error.room.not_active",
-    "SF-SYS-SERVICE-UNAVAILABLE": "error.sys.service_unavailable",
-    "SF-SYS-PERSISTENCE-UNAVAILABLE": "error.sys.persistence_unavailable",
-    "SF-SYS-CONFLICT": "error.sys.conflict",
-    "SF-SYNC-RESYNC-REQUIRED": "error.sync.resync_required",
-  };
-
-  return { code, messageKey: known[code] ?? "error.sys.unexpected" };
+  return { code, messageKey: "error.sys.unexpected" };
 }
+
