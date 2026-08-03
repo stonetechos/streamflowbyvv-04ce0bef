@@ -35,12 +35,12 @@ export function HomeHero({
         }}
       />
 
-      <div className="flex items-center justify-between gap-6">
+      <div className="flex items-center justify-between gap-4 sm:gap-6">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t("common.app.name")}
           </p>
-          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h1 className="mt-3 font-display text-2xl font-semibold tracking-tight sm:text-4xl">
             {t("home.greeting", { name: displayName })}
           </h1>
           <p className="mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
@@ -50,7 +50,7 @@ export function HomeHero({
           </p>
         </div>
 
-        <PoCompanion mood={mood} className="hidden h-28 w-40 shrink-0 sm:block" />
+        <PoCompanion mood={mood} className="h-20 w-28 shrink-0 sm:h-28 sm:w-40" />
       </div>
     </Surface>
   );

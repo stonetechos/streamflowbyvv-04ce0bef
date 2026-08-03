@@ -67,17 +67,17 @@ export function WatchPartyScreen({
   return (
     <section
       aria-label={t("watch_party.region_label")}
-      className="sf-screen-enter mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:py-12"
+      className="sf-screen-enter mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-12"
     >
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t("watch_party.eyebrow")}
           </p>
-          <h1 className="mt-1 truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h1 className="mt-2 truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">
             {room.name}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-2 inline-flex items-center rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
             {providerName
               ? t("watch_party.watching_on", { provider: providerName })
               : t("watch_party.no_provider")}
@@ -86,7 +86,7 @@ export function WatchPartyScreen({
         <PoCompanion mood="watching" size="sm" />
       </header>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <div className="min-w-0 space-y-6">
           <Surface padding="lg" tone="glass" className="space-y-5">
             <SharedElapsedTimer elapsed={elapsed} />
@@ -114,7 +114,7 @@ export function WatchPartyScreen({
           />
         </div>
 
-        <aside className="space-y-6">
+        <aside className="space-y-6 lg:sticky lg:top-20">
           <VoicePanel voice={voice} />
           <Surface padding="lg" className="space-y-3">
             <h2 className="font-display text-base font-semibold">{t("watch_party.leave.title")}</h2>
