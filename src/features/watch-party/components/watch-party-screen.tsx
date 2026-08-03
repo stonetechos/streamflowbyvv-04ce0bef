@@ -114,7 +114,7 @@ export function WatchPartyScreen({
           />
         </div>
 
-        <aside className="space-y-6">
+        <aside className="space-y-6 lg:sticky lg:top-20">
           <VoicePanel voice={voice} />
           <Surface padding="lg" className="space-y-3">
             <h2 className="font-display text-base font-semibold">{t("watch_party.leave.title")}</h2>
