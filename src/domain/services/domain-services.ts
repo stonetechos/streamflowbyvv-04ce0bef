@@ -68,6 +68,11 @@ import {
   ROOM_SETUP_SERVICE,
 } from "../rooms/room-setup-service";
 import {
+  createReadyCoordinator,
+  resolveReadyCoordinatorDependencies,
+  READY_COORDINATOR,
+} from "../rooms/ready-coordinator";
+import {
   createRoomReadModel,
   resolveRoomReadModelDependencies,
   ROOM_READ_MODEL,
@@ -272,6 +277,17 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
             clockSync: resolveService(CLOCK_SYNC_SERVICE),
             roomSync: resolveService(ROOM_SYNC_COORDINATOR),
             sync: resolveService(SYNC_SERVICE),
+            clock: resolveService(CLOCK),
+          }),
+        ),
+    ],
+    // Sprint 2.9 — the single authority for readiness and countdown offering.
+    [
+      READY_COORDINATOR,
+      () =>
+        createReadyCoordinator(
+          resolveReadyCoordinatorDependencies({
+            roomSync: resolveService(ROOM_SYNC_COORDINATOR),
             clock: resolveService(CLOCK),
           }),
         ),
