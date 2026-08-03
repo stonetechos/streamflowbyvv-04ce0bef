@@ -15,7 +15,6 @@ import {
 } from "@/domain";
 import { AppError } from "@/shared/constants/error-taxonomy";
 
-
 import type {
   MemberPresenceView,
   MemberView,
@@ -166,4 +165,3 @@ export function toWaitingRoomError(error: unknown): WaitingRoomError {
   const code = /^SF-[A-Z]+-[A-Z-]+$/.test(raw) ? raw : "SF-SYS-UNEXPECTED";
   return { code, messageKey: "error.sys.unexpected" };
 }
-

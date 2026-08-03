@@ -49,7 +49,6 @@ interface FactsRow extends DiscoveryRow {
   readonly viewer_other_room_id: string | null;
 }
 
-
 /**
  * The generated schema types do not describe database functions, so the cast is
  * confined to this adapter. The call stays attached to the client — a detached
@@ -96,9 +95,11 @@ export function createSupabaseRoomDiscoveryRepository(
 
   return {
     async discoverByCode(code: EntityCode): Promise<RoomDiscovery | null> {
-      const row = (await callRpc(DISCOVER_FUNCTION, { _code: code }, "discoverByCode")) as
-        | DiscoveryRow
-        | null;
+      const row = (await callRpc(
+        DISCOVER_FUNCTION,
+        { _code: code },
+        "discoverByCode",
+      )) as DiscoveryRow | null;
       return row ? toDiscovery(row) : null;
     },
 
@@ -128,5 +129,4 @@ export function createSupabaseRoomDiscoveryRepository(
       };
     },
   };
-
 }

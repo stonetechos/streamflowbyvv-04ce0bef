@@ -38,7 +38,6 @@ export function JoinByCodeCard({ home }: { home: HomeModel }) {
       // else entirely (ended, full, already in another room).
       setCodeError(t(refusalMessageKey(home.error, "home.join.not_found")));
     }
-
   }
 
   return (

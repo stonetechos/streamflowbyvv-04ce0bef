@@ -82,7 +82,6 @@ export {
   type RoomAdmissionLookup,
   type RoomDiscovery,
   type RoomDiscoveryRepository,
-
 } from "./rooms";
 export {
   PROVIDER_CATALOG_REPOSITORY,

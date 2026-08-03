@@ -76,6 +76,5 @@ export interface RoomAdmissionFacts extends RoomDiscovery {
   readonly viewerOtherRoomId: EntityId | null;
 }
 
-
 export const ROOM_DISCOVERY_REPOSITORY: RepositoryToken<RoomDiscoveryRepository> =
   createRepositoryToken<RoomDiscoveryRepository>("RoomDiscoveryRepository");

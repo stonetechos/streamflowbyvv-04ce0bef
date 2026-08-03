@@ -55,7 +55,6 @@ import {
   type RoomMemberRepository,
   type RoomAdmissionFacts,
   type RoomDiscovery,
-
   type RoomDiscoveryRepository,
   type RoomQuery,
   type RoomRepository,
@@ -403,7 +402,6 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       throw domainError("ROOM_NOT_FOUND", { operation });
     },
 
-
     listRooms: (query) => rooms.list(query),
 
     async endRoom({ roomId, actorProfileId, endReason = "host_ended" }, intent) {
@@ -503,7 +501,6 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       return updated;
     },
 
-
     async removeMember({ roomId, profileId, actorProfileId }, intent) {
       const operation = "RoomFlowService.removeMember";
       const room = await requireRoom(roomId, operation);
@@ -577,7 +574,6 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       if (!roomService.hasCapacity(occupied, room.maxMembers)) {
         throw domainError("ROOM_CAPACITY_EXCEEDED", { operation, aggregateId: room.id });
       }
-
 
       const code = await codes.allocate(CODE_PREFIXES.INVITE);
       const expiresAt = invitationService.expiryFor(clock.now()).toISOString();
