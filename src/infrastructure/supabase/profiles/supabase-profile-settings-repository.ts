@@ -29,10 +29,7 @@ const AGGREGATE = "profile_settings";
 interface PreferenceTableAccess {
   from(table: string): {
     select(columns: string): {
-      eq(
-        column: string,
-        value: string,
-      ): { maybeSingle(): PromiseLike<PostgrestLike<unknown>> };
+      eq(column: string, value: string): { maybeSingle(): PromiseLike<PostgrestLike<unknown>> };
     };
     upsert(
       values: Record<string, unknown>,
@@ -40,7 +37,6 @@ interface PreferenceTableAccess {
     ): PromiseLike<PostgrestLike<unknown>>;
   };
 }
-
 
 interface AppearanceRow {
   theme_mode: string;
@@ -107,7 +103,6 @@ export function createSupabaseProfileSettingsRepository(
         >,
         context(`read:${table}`, profileId),
       );
-
 
     const [appearance, notifications, privacy, localization, accessibility] = await Promise.all([
       scoped<AppearanceRow>("appearance_preferences", "theme_mode, density, compact_room_layout"),
@@ -197,7 +192,6 @@ export function createSupabaseProfileSettingsRepository(
           context(`write:${table}`, profileId),
         );
 
-
       const writes: Promise<void>[] = [];
 
       if (patch.appearance) {
@@ -241,9 +235,7 @@ export function createSupabaseProfileSettingsRepository(
             ...(value.analyticsOptIn === undefined
               ? {}
               : { analytics_opt_in: value.analyticsOptIn }),
-            ...(value.poMemoryOptIn === undefined
-              ? {}
-              : { po_memory_opt_in: value.poMemoryOptIn }),
+            ...(value.poMemoryOptIn === undefined ? {} : { po_memory_opt_in: value.poMemoryOptIn }),
             ...(value.voiceAutoJoin === undefined ? {} : { voice_auto_join: value.voiceAutoJoin }),
             ...(value.voiceJoinMuted === undefined
               ? {}

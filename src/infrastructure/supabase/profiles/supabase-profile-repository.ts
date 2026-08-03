@@ -5,12 +5,7 @@
  * handle-availability lookup is the one deliberate exception and reads a
  * single non-sensitive column so it cannot be used to enumerate people.
  */
-import type {
-  EntityId,
-  ProfileRecord,
-  ProfileRecordPatch,
-  ProfileRepository,
-} from "@/repository";
+import type { EntityId, ProfileRecord, ProfileRecordPatch, ProfileRepository } from "@/repository";
 
 import type { DataConnection } from "../connection";
 import { runMaybe, runQuery } from "../query-wrapper";

@@ -57,7 +57,6 @@ export function composeApplication(): void {
     logger.warn("No profile adapter bound: backend is not configured", { module: "profiles" });
   }
   if (!timeBound) {
-
     logger.warn("No time adapter bound: clock synchronization is unavailable", { module: "sync" });
   }
   if (!eventsBound) {
