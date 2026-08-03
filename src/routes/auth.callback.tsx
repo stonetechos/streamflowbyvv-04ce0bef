@@ -13,11 +13,13 @@
  * session arrives through the auth provider like any other sign-in.
  */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButton } from "@/design-system/components";
 import { AuthShell, useAuth } from "@/features/auth";
+import { claimCallbackPayload, traceCallback } from "@/features/auth/auth-callback-trace";
 import { useTranslation } from "@/foundation/localization";
+
 
 export const Route = createFileRoute("/auth/callback")({
   head: () => ({
