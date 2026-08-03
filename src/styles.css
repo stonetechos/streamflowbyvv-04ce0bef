@@ -947,3 +947,97 @@
     animation: none;
   }
 }
+
+/*
+ * Boot screen — the mark travels right to left while the veil lifts.
+ * Sized with clamp() so it reads the same on a small phone and a wide desktop.
+ */
+@keyframes sf-boot-veil {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes sf-boot-travel {
+  0% {
+    opacity: 0;
+    transform: translate3d(38vw, 0, 0);
+  }
+  28% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  62% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-42vw, 0, 0);
+  }
+}
+
+@keyframes sf-boot-chevron-lead {
+  0% {
+    opacity: 0;
+    transform: translate3d(14%, 0, 0);
+  }
+  40%,
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.sf-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--color-background);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+  animation: sf-boot-veil 1.6s var(--ease-standard, ease) forwards;
+}
+
+.sf-boot-mark {
+  width: clamp(7.5rem, 34vw, 15rem);
+  height: auto;
+  animation: sf-boot-travel 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.sf-boot-chevron--back {
+  fill: var(--color-primary);
+}
+
+.sf-boot-chevron--front {
+  fill: var(--color-info);
+  animation: sf-boot-chevron-lead 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (min-width: 1024px) {
+  .sf-boot-mark {
+    width: clamp(11rem, 16vw, 18rem);
+  }
+}
+
+.sf-boot[data-reduced="true"],
+.sf-boot[data-reduced="true"] .sf-boot-mark,
+.sf-boot[data-reduced="true"] .sf-boot-chevron--front {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-boot,
+  .sf-boot-mark,
+  .sf-boot-chevron--front {
+    animation: none;
+  }
+}
