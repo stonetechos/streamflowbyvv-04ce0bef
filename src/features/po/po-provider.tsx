@@ -39,13 +39,14 @@ import {
   type PoBrainState,
 } from "./brain/po-brain";
 import type {
+  PoExecutionPhase,
   PoMessage,
   PoOutcome,
   PoPendingQuestion,
   PoStepOutcome,
   PoTurn,
 } from "./brain/po-brain.types";
-import { setPoActor, setPoNavigator } from "./brain/po-runtime";
+import { setPoActor, setPoNavigator, setPoRoute } from "./brain/po-runtime";
 import { registerPoBrainTools } from "./brain/tool-catalog";
 import { listPoTools } from "./tool-registry";
 import type { PoSessionStatus, PoUtterance } from "./po.types";
@@ -66,6 +67,8 @@ export interface PoContextValue {
   readonly awaitingConfirmation: boolean;
   /** Steps of the most recent run, for the execution progress surface. */
   readonly steps: readonly PoStepOutcome[];
+  /** Milestone H1.5 §5 — where the current turn is, for execution feedback. */
+  readonly phase: PoExecutionPhase | null;
   readonly lastOutcome: PoOutcome | null;
   readonly lastUtterance: PoUtterance | null;
   submitUtterance: (text: string, source?: PoUtterance["source"]) => Promise<void>;
@@ -78,6 +81,18 @@ const PoContext = createContext<PoContextValue | null>(null);
 
 const CANCELLED_MESSAGE: PoMessage = { key: "po.done.cancelled" };
 
+/** Milestone H1.5 §5 — the session status each reported phase corresponds to. */
+const PHASE_STATUS: Record<PoExecutionPhase, PoSessionStatus> = {
+  thinking: "interpreting",
+  planning: "planning",
+  executing: "executing",
+  awaiting_clarification: "awaiting_confirmation",
+  awaiting_confirmation: "awaiting_confirmation",
+  completed: "idle",
+  cancelled: "idle",
+  failed: "idle",
+};
+
 export function PoProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
   const router = useRouter();
@@ -85,6 +100,7 @@ export function PoProvider({ children }: { children: ReactNode }) {
   const [brain, setBrain] = useState<PoBrainState>(EMPTY_BRAIN_STATE);
   const [status, setStatus] = useState<PoSessionStatus>("idle");
   const [steps, setSteps] = useState<readonly PoStepOutcome[]>([]);
+  const [phase, setPhase] = useState<PoExecutionPhase | null>(null);
   const [lastOutcome, setLastOutcome] = useState<PoOutcome | null>(null);
   const [lastUtterance, setLastUtterance] = useState<PoUtterance | null>(null);
 
@@ -114,6 +130,13 @@ export function PoProvider({ children }: { children: ReactNode }) {
     });
   }, [router]);
 
+  // Milestone H1.5 §1 — Po follows the person around the app, so it knows the
+  // screen they are on without being told.
+  const currentPath = router.state.location.pathname;
+  useEffect(() => {
+    setPoRoute(currentPath);
+  }, [currentPath]);
+
   const submitUtterance = useCallback(
     async (text: string, source: PoUtterance["source"] = "text") => {
       const said = text.trim();
@@ -123,11 +146,16 @@ export function PoProvider({ children }: { children: ReactNode }) {
       generation.current = turn;
 
       setLastUtterance({ text: said, source, receivedAt: new Date().toISOString() });
-      setStatus("planning");
+      setStatus("interpreting");
+      setPhase("thinking");
       setSteps([]);
 
       try {
-        const result = await handlePoUtterance(brainRef.current, said);
+        const result = await handlePoUtterance(brainRef.current, said, (next) => {
+          if (generation.current !== turn) return;
+          setPhase(next);
+          setStatus(PHASE_STATUS[next]);
+        });
         // A cancel (or a newer utterance) landed while this was running.
         if (generation.current !== turn) return;
 
@@ -135,10 +163,12 @@ export function PoProvider({ children }: { children: ReactNode }) {
         setSteps(result.outcome.steps);
         setLastOutcome(result.outcome);
         setStatus(result.outcome.status === "asked" ? "awaiting_confirmation" : "idle");
+        if (result.outcome.status !== "asked") setPhase(null);
       } catch (cause) {
         if (generation.current !== turn) return;
         logger.error("Po turn failed", { module: MODULE, cause });
         setStatus("idle");
+        setPhase("failed");
         setLastOutcome({ status: "failed", message: { key: "po.fail.generic" }, steps: [] });
       }
     },
@@ -149,6 +179,7 @@ export function PoProvider({ children }: { children: ReactNode }) {
     generation.current += 1;
     setBrain((current) => ({ ...resetPoBrain(), conversation: current.conversation }));
     setStatus("idle");
+    setPhase("cancelled");
     setSteps([]);
     setLastOutcome({ status: "cancelled", message: CANCELLED_MESSAGE, steps: [] });
   }, []);
@@ -157,6 +188,7 @@ export function PoProvider({ children }: { children: ReactNode }) {
     generation.current += 1;
     setBrain(resetPoBrain());
     setStatus("idle");
+    setPhase(null);
     setSteps([]);
     setLastOutcome(null);
     setLastUtterance(null);
@@ -166,11 +198,12 @@ export function PoProvider({ children }: { children: ReactNode }) {
     () => ({
       status,
       isAvailable: toolCount > 0,
-      isBusy: status === "planning" || status === "executing",
+      isBusy: status === "interpreting" || status === "planning" || status === "executing",
       turns: brain.conversation.turns,
       pending: brain.conversation.pending,
       awaitingConfirmation: brain.conversation.pending?.kind === "confirmation",
       steps,
+      phase,
       lastOutcome,
       lastUtterance,
       submitUtterance,
@@ -183,6 +216,7 @@ export function PoProvider({ children }: { children: ReactNode }) {
       brain.conversation.turns,
       brain.conversation.pending,
       steps,
+      phase,
       lastOutcome,
       lastUtterance,
       submitUtterance,
