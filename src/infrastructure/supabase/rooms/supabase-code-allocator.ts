@@ -21,13 +21,17 @@ export function createSupabaseCodeAllocator(connection: DataConnection): CodeAll
       requireAvailable(connection, context);
 
       // The generated schema types do not describe database functions; the cast
-      // is confined to this adapter and never leaves Infrastructure.
-      const rpc = connection.client().rpc as unknown as (
-        name: string,
-        args: Record<string, unknown>,
-      ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+      // is confined to this adapter and never leaves Infrastructure. The call
+      // stays attached to the client — a detached `rpc` reference loses `this`.
+      const client = connection.client() as unknown as {
+        rpc(
+          name: string,
+          args: Record<string, unknown>,
+        ): PromiseLike<{ data: unknown; error: { message: string } | null }>;
+      };
 
-      const { data, error } = await rpc(ALLOCATE_CODE_FUNCTION, { _prefix: prefix });
+      const { data, error } = await client.rpc(ALLOCATE_CODE_FUNCTION, { _prefix: prefix });
+
       if (error) {
         throw toRepositoryError(error as never, context);
       }

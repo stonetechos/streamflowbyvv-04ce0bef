@@ -1,0 +1,14 @@
+GRANT EXECUTE ON FUNCTION public.allocate_code(text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.allocate_code(text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.current_profile_id() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.current_auth_user_id() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_room_member(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_room_host(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_room_controller(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_voice_session_member(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_block_between(uuid, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_platform_admin() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.owns_po_plan(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.owns_po_session(uuid) TO authenticated;
