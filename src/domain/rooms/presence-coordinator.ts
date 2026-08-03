@@ -148,5 +148,4 @@ export function resolvePresenceCoordinatorDependencies(
   };
 }
 
-export const PRESENCE_COORDINATOR =
-  createServiceToken<PresenceCoordinator>("PresenceCoordinator");
+export const PRESENCE_COORDINATOR = createServiceToken<PresenceCoordinator>("PresenceCoordinator");

@@ -9,7 +9,12 @@
 import type { CatalogEvent, EventBus, Unsubscribe } from "@/domain/events";
 import type { RealtimeEventPublisher } from "@/repository";
 
-import { createOrderedDispatcher, createReplayGuard, eventKey, type OrderedDispatcher } from "./event-dispatch";
+import {
+  createOrderedDispatcher,
+  createReplayGuard,
+  eventKey,
+  type OrderedDispatcher,
+} from "./event-dispatch";
 import { toStoredEvent } from "./event-serializer";
 
 export interface RealtimePublisherSubscriberOptions {

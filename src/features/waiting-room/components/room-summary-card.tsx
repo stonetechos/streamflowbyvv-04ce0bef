@@ -73,13 +73,13 @@ export function RoomSummaryCard({
           </div>
           <div>
             <dt className="text-xs text-muted-foreground">{t("room.summary.synchronization")}</dt>
-            <dd className="font-medium">{t(HEALTH_KEYS[sync.health] ?? "room.sync.health.unknown")}</dd>
+            <dd className="font-medium">
+              {t(HEALTH_KEYS[sync.health] ?? "room.sync.health.unknown")}
+            </dd>
           </div>
           <div>
             <dt className="text-xs text-muted-foreground">{t("room.summary.provider")}</dt>
-            <dd className="font-medium">
-              {providerId ?? t("room.summary.provider_missing")}
-            </dd>
+            <dd className="font-medium">{providerId ?? t("room.summary.provider_missing")}</dd>
           </div>
         </dl>
 

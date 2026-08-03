@@ -28,9 +28,7 @@ import {
 
 const AGGREGATE = "room_state";
 
-export function createSupabaseRoomStateRepository(
-  connection: DataConnection,
-): RoomStateRepository {
+export function createSupabaseRoomStateRepository(connection: DataConnection): RoomStateRepository {
   const context = (operation: string, entityId?: string) => ({
     aggregate: AGGREGATE,
     operation,

@@ -7,19 +7,19 @@
 
 ## 1. Objective
 
-Build the authentication *architecture* only. No identity provider is connected. Supabase Auth, OAuth, and secrets are explicitly out of scope. The module must compile, typecheck, build and run with **zero** authentication implementations bound — and must say so honestly rather than pretending to sign anyone in.
+Build the authentication _architecture_ only. No identity provider is connected. Supabase Auth, OAuth, and secrets are explicitly out of scope. The module must compile, typecheck, build and run with **zero** authentication implementations bound — and must say so honestly rather than pretending to sign anyone in.
 
 ---
 
 ## 2. Layer map
 
-| Layer | Files | Vendor-aware |
-|---|---|---|
-| Presentation | `src/routes/auth.tsx`, `auth.index.tsx`, `auth.sign-out.tsx`, `_authenticated.tsx`, `_authenticated.account.tsx` | No |
-| Feature | `src/features/auth/` — provider, state machine, route guard, feature flag | No |
-| Domain | `src/domain/auth/` — models, errors, authorization model, SessionService, AuthorizationService, PermissionService | No |
-| Repository | `src/repository/auth/` — `AuthRepository`, `SessionRepository`, `RoleRepository`, `AuthIdentityRepository` + DI tokens | No |
-| Infrastructure | *none this sprint* — deliberately empty | — |
+| Layer          | Files                                                                                                                  | Vendor-aware |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Presentation   | `src/routes/auth.tsx`, `auth.index.tsx`, `auth.sign-out.tsx`, `_authenticated.tsx`, `_authenticated.account.tsx`       | No           |
+| Feature        | `src/features/auth/` — provider, state machine, route guard, feature flag                                              | No           |
+| Domain         | `src/domain/auth/` — models, errors, authorization model, SessionService, AuthorizationService, PermissionService      | No           |
+| Repository     | `src/repository/auth/` — `AuthRepository`, `SessionRepository`, `RoleRepository`, `AuthIdentityRepository` + DI tokens | No           |
+| Infrastructure | _none this sprint_ — deliberately empty                                                                                | —            |
 
 The Infrastructure row being empty is the point: the module is complete without it.
 

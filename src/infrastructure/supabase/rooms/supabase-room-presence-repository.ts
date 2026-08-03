@@ -97,11 +97,7 @@ export function createSupabaseRoomPresenceRepository(
       return (rows ?? []).map(toRoomPresence);
     },
 
-    async release(
-      roomId: EntityId,
-      profileId: EntityId,
-      connectionId: string,
-    ): Promise<void> {
+    async release(roomId: EntityId, profileId: EntityId, connectionId: string): Promise<void> {
       requireAvailable(connection, context("release", roomId));
       await runCommand(
         table()

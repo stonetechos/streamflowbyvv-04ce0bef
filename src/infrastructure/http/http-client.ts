@@ -13,12 +13,7 @@ import {
   descriptorForStatus,
   type HttpErrorContext,
 } from "./http-error";
-import {
-  DEFAULT_RETRY_POLICY,
-  backoffDelayMs,
-  retryAfterMs,
-  shouldRetry,
-} from "./retry-policy";
+import { DEFAULT_RETRY_POLICY, backoffDelayMs, retryAfterMs, shouldRetry } from "./retry-policy";
 import type {
   ErrorInterceptor,
   HttpClient,

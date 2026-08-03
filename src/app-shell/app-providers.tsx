@@ -23,7 +23,6 @@ import { composeApplication } from "./composition-root";
 // auth provider resolves a real session repository on mount.
 composeApplication();
 
-
 export function AppProviders({
   queryClient,
   children,
@@ -45,4 +44,3 @@ export function AppProviders({
     </QueryClientProvider>
   );
 }
-

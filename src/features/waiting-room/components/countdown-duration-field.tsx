@@ -37,9 +37,7 @@ export function CountdownDurationField({
 
   const parsed = Number.parseInt(draft, 10);
   const isValid =
-    Number.isFinite(parsed) &&
-    parsed >= COUNTDOWN.MIN_SECONDS &&
-    parsed <= COUNTDOWN.MAX_SECONDS;
+    Number.isFinite(parsed) && parsed >= COUNTDOWN.MIN_SECONDS && parsed <= COUNTDOWN.MAX_SECONDS;
   const isDirty = isValid && parsed !== seconds;
 
   return (

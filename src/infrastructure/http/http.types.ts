@@ -49,9 +49,7 @@ export interface RetryPolicy {
 export type RequestInterceptor = (request: HttpRequest) => Promise<HttpRequest> | HttpRequest;
 
 /** Runs after a response is received, successful or not. */
-export type ResponseInterceptor = (
-  response: HttpResponse,
-) => Promise<HttpResponse> | HttpResponse;
+export type ResponseInterceptor = (response: HttpResponse) => Promise<HttpResponse> | HttpResponse;
 
 /** Runs when a request fails to produce a response (network, timeout, abort). */
 export type ErrorInterceptor = (error: unknown, request: HttpRequest) => Promise<void> | void;

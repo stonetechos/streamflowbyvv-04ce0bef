@@ -19,7 +19,14 @@ export const PO_INTENT_CATEGORIES = [
 ] as const;
 export type PoIntentCategory = (typeof PO_INTENT_CATEGORIES)[number];
 
-export type PoSessionStatus = "idle" | "listening" | "interpreting" | "planning" | "awaiting_confirmation" | "executing" | "error";
+export type PoSessionStatus =
+  | "idle"
+  | "listening"
+  | "interpreting"
+  | "planning"
+  | "awaiting_confirmation"
+  | "executing"
+  | "error";
 
 export interface PoUtterance {
   readonly text: string;

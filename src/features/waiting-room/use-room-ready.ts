@@ -80,10 +80,7 @@ export function useRoomReady({
   const announcedCountdown = useRef(false);
   const announcedReminder = useRef(false);
 
-  const joined = useMemo(
-    () => members.filter((member) => member.state === "joined"),
-    [members],
-  );
+  const joined = useMemo(() => members.filter((member) => member.state === "joined"), [members]);
 
   const participants: readonly ReadyParticipantInput[] = useMemo(() => {
     const now = Date.now();

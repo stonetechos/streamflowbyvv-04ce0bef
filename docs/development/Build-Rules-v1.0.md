@@ -1,7 +1,7 @@
 # Build Rules v1.0 — StreamFlow by Vedora Vision
 
 **Status:** Frozen (v1.0). Governing document for every future Build Mode prompt.
-**Authority:** Subordinate to the Foundation Specification v1.0, which remains the tie-breaker on architecture. These rules govern *how* implementation happens, not *what* the product is.
+**Authority:** Subordinate to the Foundation Specification v1.0, which remains the tie-breaker on architecture. These rules govern _how_ implementation happens, not _what_ the product is.
 **Change control:** Amended only by a numbered ADR in `docs/adr/`.
 
 ---
@@ -66,4 +66,4 @@
 
 ---
 
-*These rules apply to every Build Mode prompt from Documentation v1.0 freeze onward.*
+_These rules apply to every Build Mode prompt from Documentation v1.0 freeze onward._

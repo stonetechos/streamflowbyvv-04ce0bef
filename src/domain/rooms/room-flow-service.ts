@@ -26,10 +26,7 @@ import type {
   RoomMember,
   RoomState,
 } from "@/domain/rooms/room.types";
-import type {
-  ComplianceRule,
-  ComplianceService,
-} from "@/domain/services/compliance-service";
+import type { ComplianceRule, ComplianceService } from "@/domain/services/compliance-service";
 import type { InvitationService } from "@/domain/services/invitation-service";
 import type { RoomService } from "@/domain/services/room-service";
 import type { Intent } from "@/domain/services/service-context";
@@ -155,14 +152,12 @@ export interface RoomFlowDependencies {
 const PASSTHROUGH_UNIT_OF_WORK: RoomUnitOfWork = { run: <T>(work: () => Promise<T>) => work() };
 
 /** Resolves the repository cluster lazily so an unconfigured backend still boots. */
-export function resolveRoomFlowDependencies(
-  services: {
-    roomService: RoomService;
-    invitationService: InvitationService;
-    complianceService: ComplianceService;
-    clock: Clock;
-  },
-): RoomFlowDependencies {
+export function resolveRoomFlowDependencies(services: {
+  roomService: RoomService;
+  invitationService: InvitationService;
+  complianceService: ComplianceService;
+  clock: Clock;
+}): RoomFlowDependencies {
   return {
     rooms: resolveRepository(ROOM_REPOSITORY),
     roomStates: resolveRepository(ROOM_STATE_REPOSITORY),
@@ -232,7 +227,8 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     }
 
     const occupied = await members.countByRoom(room.id, OCCUPYING_STATES);
-    const seats = existing && OCCUPYING_STATES.includes(existing.state as "invited") ? occupied - 1 : occupied;
+    const seats =
+      existing && OCCUPYING_STATES.includes(existing.state as "invited") ? occupied - 1 : occupied;
 
     // Capacity is decided by RoomService; the event it returns is the record.
     await roomService.joinMember(
@@ -366,10 +362,12 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
         throw domainError("ROOM_INVALID_TRANSITION", { operation, aggregateId: roomId });
       }
 
-      await roomService.changeStatus(
-        { roomId, fromStatus: room.status, toStatus: room.status, reason: "archived" },
-        intent,
-      ).catch(() => undefined);
+      await roomService
+        .changeStatus(
+          { roomId, fromStatus: room.status, toStatus: room.status, reason: "archived" },
+          intent,
+        )
+        .catch(() => undefined);
 
       // Archiving is the documented soft delete (Database Spec §4).
       await rooms.remove(roomId);
@@ -410,7 +408,10 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       }
 
       const updated = await members.update(member.id, { state: "removed", leftAt: nowIso() });
-      await roomService.removeMember({ roomId, profileId, removedByProfileId: actorProfileId }, intent);
+      await roomService.removeMember(
+        { roomId, profileId, removedByProfileId: actorProfileId },
+        intent,
+      );
       return updated;
     },
 

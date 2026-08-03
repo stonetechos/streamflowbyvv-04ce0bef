@@ -64,4 +64,3 @@ export function getServerConnectionStatus(): ConnectionStatus {
     host: url ? new URL(url).host : null,
   };
 }
-

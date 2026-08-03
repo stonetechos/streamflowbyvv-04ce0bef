@@ -4,18 +4,10 @@
  * Pure, framework-free implementation: the React provider is a thin wrapper so
  * the same resolution logic can be reused outside the Presentation layer.
  */
-import {
-  FALLBACK_LOCALE,
-  getLocaleDescriptor,
-  type LocaleCode,
-} from "@/shared/constants/locales";
+import { FALLBACK_LOCALE, getLocaleDescriptor, type LocaleCode } from "@/shared/constants/locales";
 
 import { LOCALE_BUNDLES } from "./bundles";
-import type {
-  LocalizationService,
-  TranslationKey,
-  TranslationValues,
-} from "./localization.types";
+import type { LocalizationService, TranslationKey, TranslationValues } from "./localization.types";
 
 const INTERPOLATION = /\{(\w+)\}/g;
 

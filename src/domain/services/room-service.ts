@@ -79,8 +79,7 @@ export function createRoomService(context: DomainServiceContext): RoomService {
   const canTransition = (from: RoomStatus, to: RoomStatus): boolean =>
     ALLOWED_TRANSITIONS[from].includes(to);
 
-  const hasCapacity = (count: number, maxMembers = ROOM.MAX_MEMBERS): boolean =>
-    count < maxMembers;
+  const hasCapacity = (count: number, maxMembers = ROOM.MAX_MEMBERS): boolean => count < maxMembers;
 
   return {
     canTransition,

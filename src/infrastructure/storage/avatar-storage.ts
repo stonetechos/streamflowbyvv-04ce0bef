@@ -62,7 +62,9 @@ export function createAvatarStorage(files: FileStorage): AvatarStorage {
         contentType,
         upsert: true,
       });
-      return files.getPublicUrl(object) ?? files.createSignedUrl({ ...ref, expiresInSeconds: 3600 });
+      return (
+        files.getPublicUrl(object) ?? files.createSignedUrl({ ...ref, expiresInSeconds: 3600 })
+      );
     },
     remove: (userId, extension) => files.remove(avatarPath(userId, extension)),
   };

@@ -17,7 +17,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   PLAYBACK_COORDINATOR,
-  ROOM_READ_MODEL,
   isServiceBound,
   resolveService,
   type CountdownRuntimeState,
@@ -28,6 +27,8 @@ import {
 import { useAnnouncer } from "@/foundation/accessibility";
 import { logger } from "@/foundation/logging";
 import { useTranslation } from "@/foundation/localization";
+
+import { useRoomRealtime } from "./use-room-realtime";
 
 import { toWaitingRoomError } from "./waiting-room-state";
 import type { WaitingRoomError } from "./waiting-room.types";
@@ -76,10 +77,6 @@ export function useRoomPlayback({
     () => (isServiceBound(PLAYBACK_COORDINATOR) ? resolveService(PLAYBACK_COORDINATOR) : null),
     [],
   );
-  const readModel = useMemo(
-    () => (isServiceBound(ROOM_READ_MODEL) ? resolveService(ROOM_READ_MODEL) : null),
-    [],
-  );
 
   const [runtime, setRuntime] = useState<PlaybackRuntime | null>(null);
   const [snapshot, setSnapshot] = useState<PlaybackSnapshot | null>(null);
@@ -118,30 +115,11 @@ export function useRoomPlayback({
     void load();
   }, [load]);
 
-  // Realtime, consumed through Domain exactly as the roster does: a notice
-  // means "re-read", never "trust this payload".
-  useEffect(() => {
-    if (!readModel || !available) return;
-    let detach: (() => void) | null = null;
-    let cancelled = false;
-
-    void readModel
-      .subscribeToRoom(roomId, () => {
-        void load();
-      })
-      .then((unsubscribe) => {
-        if (cancelled) {
-          unsubscribe();
-          return;
-        }
-        detach = unsubscribe;
-      });
-
-    return () => {
-      cancelled = true;
-      detach?.();
-    };
-  }, [available, load, readModel, roomId]);
+  // Milestone D.5 — the room's single shared subscription, coalesced by the
+  // hub. A notice still means "re-read", never "trust this payload".
+  useRoomRealtime(roomId, available, () => {
+    void load();
+  });
 
   // The one transition this sprint owns: countdown completed -> room ready.
   // Only the owner's client writes it; everyone else observes the result.

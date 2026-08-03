@@ -7,11 +7,7 @@ export {
   type AvatarValidationFailure,
   type AvatarValidationResult,
 } from "./avatar-storage";
-export {
-  createMemoryCacheStorage,
-  type CacheEntry,
-  type CacheStorage,
-} from "./cache-storage";
+export { createMemoryCacheStorage, type CacheEntry, type CacheStorage } from "./cache-storage";
 export type {
   FileStorage,
   SignedUrlRequest,

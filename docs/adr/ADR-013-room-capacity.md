@@ -11,7 +11,7 @@ The Database Spec sets `rooms.max_members` default 4 with a check between 2 and 
 
 ## Decision
 
-- **Schema envelope:** `max_members` keeps its default of 4 and its check constraint of 2–8. The check is documented as a *future envelope*, not a product statement.
+- **Schema envelope:** `max_members` keeps its default of 4 and its check constraint of 2–8. The check is documented as a _future envelope_, not a product statement.
 - **Domain cap:** RoomService enforces a maximum of **4 members** in v1.0 (Foundation §14.3). Any value above 4 is unreachable in v1 by policy, not by schema.
 - An attempt to exceed the cap returns `SF-ROOM-INVALID-CAPACITY`.
 

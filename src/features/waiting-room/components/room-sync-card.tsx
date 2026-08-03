@@ -6,8 +6,8 @@
  * blocked, the host reads exactly why here rather than guessing from a
  * disabled button.
  *
- * Pure presentation. It classifies nothing: every value shown was decided by
- * `RoomSyncCoordinator`. Spoken updates come from the hook's announcer, so
+ * Pure presentation. It classifies nothing: the health verdict comes from
+ * `RoomSyncCoordinator` and the readiness counts from `ReadyCoordinator`. Spoken updates come from the hook's announcer, so
  * this card has no live region of its own.
  */
 import { Badge } from "@/components/ui/badge";
@@ -31,15 +31,18 @@ const HEALTH_VARIANTS: Readonly<Record<SyncHealth, BadgeVariant>> = Object.freez
 export interface RoomSyncCardProps {
   readonly sync: RoomSyncModel;
   readonly isHost: boolean;
+  /** From `ReadyCoordinator`, the sole authority for readiness counts. */
+  readonly readyCount: number;
+  readonly waitingCount: number;
 }
 
-export function RoomSyncCard({ sync, isHost }: RoomSyncCardProps) {
+export function RoomSyncCard({ sync, isHost, readyCount, waitingCount }: RoomSyncCardProps) {
   const { t } = useTranslation();
 
   const counts: readonly { key: string; value: number }[] = [
-    { key: "room.room_sync.count.ready", value: sync.readyCount },
+    { key: "room.room_sync.count.ready", value: readyCount },
     { key: "room.room_sync.count.synced", value: sync.syncedCount },
-    { key: "room.room_sync.count.waiting", value: sync.waitingCount },
+    { key: "room.room_sync.count.waiting", value: waitingCount },
   ];
 
   return (

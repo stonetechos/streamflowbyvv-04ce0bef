@@ -52,9 +52,7 @@ export interface EventMetadata {
   readonly occurredAt?: string | undefined;
 }
 
-export type EventHandler<E extends DomainEvent = DomainEvent> = (
-  event: E,
-) => void | Promise<void>;
+export type EventHandler<E extends DomainEvent = DomainEvent> = (event: E) => void | Promise<void>;
 
 export type Unsubscribe = () => void;
 

@@ -1,15 +1,18 @@
 ## Git Discipline v1.0 — Memory Update Plan
 
 ### Goal
+
 Formalize the Git Discipline rules as a project-level constraint that amends the current Build Rules v1.0 change discipline without modifying the frozen `Build-Rules-v1.0.md` document.
 
 ### Scope
+
 - Create `mem://constraints/git-discipline.md` with the six rules and their reconciliation with Build Rules §6.
 - Update `mem://index.md` to reference the new constraint.
 - No changes to `docs/development/Build-Rules-v1.0.md` and no new ADR, per the "Memory only" change-control requirement.
 
 ### Reconciliation with Build Rules v1.0 §26
-The frozen Build Rules v1.0 rule 26 says: *"Keep commits small, modular, and reversible. One concern per commit, each independently revertable."*
+
+The frozen Build Rules v1.0 rule 26 says: _"Keep commits small, modular, and reversible. One concern per commit, each independently revertable."_
 Git Discipline v1.0 reconciles this as:
 
 - During a sprint: keep local branch commits small, modular, and reversible (one concern per commit).
@@ -51,4 +54,5 @@ Add to `mem://index.md` under **Memories**:
 ```
 
 ### Outcome
+
 After approval, the constraint will be part of the automatically-applied project memory. Every future Build Mode sprint will be committed as one public commit at the sprint boundary, while local work remains small and reversible. The frozen documentation set is not touched.

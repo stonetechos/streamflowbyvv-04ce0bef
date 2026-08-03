@@ -10,9 +10,7 @@ import type { PoToolDescriptor } from "./po.types";
 
 const tools = new Map<string, PoToolDescriptor<never, unknown>>();
 
-export function registerPoTool<TInput, TOutput>(
-  tool: PoToolDescriptor<TInput, TOutput>,
-): void {
+export function registerPoTool<TInput, TOutput>(tool: PoToolDescriptor<TInput, TOutput>): void {
   if (tools.has(tool.name)) {
     throw new Error(`Po tool already registered: ${tool.name}`);
   }

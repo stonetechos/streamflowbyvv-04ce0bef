@@ -9,10 +9,7 @@
  * The four bands and their thresholds are Foundation §14.5, read through the
  * shared constants module so no number is restated here (Build Rules §10).
  */
-import {
-  SYNC_QUALITY_BANDS,
-  type SyncQualityBand,
-} from "@/shared/constants/system-constants";
+import { SYNC_QUALITY_BANDS, type SyncQualityBand } from "@/shared/constants/system-constants";
 
 import type { ClockOffset, SyncHealth } from "./sync.types";
 

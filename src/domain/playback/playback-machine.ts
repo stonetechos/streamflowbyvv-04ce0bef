@@ -74,10 +74,7 @@ const TRANSITIONS: Readonly<
   error: { reset: "idle", queue: "queued" },
 });
 
-export function canPlaybackTransition(
-  from: PlaybackMachineState,
-  action: PlaybackAction,
-): boolean {
+export function canPlaybackTransition(from: PlaybackMachineState, action: PlaybackAction): boolean {
   return TRANSITIONS[from][action] !== undefined;
 }
 

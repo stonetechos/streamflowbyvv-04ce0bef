@@ -33,10 +33,7 @@ import { createServiceToken } from "@/domain/service-registry";
 import type { Intent } from "@/domain/services/service-context";
 import type { SyncService } from "@/domain/services/sync-service";
 import type { ClockSyncService } from "@/domain/sync/clock-sync-service";
-import type {
-  RoomSyncCoordinator,
-  RoomSyncSnapshot,
-} from "@/domain/sync/room-sync-coordinator";
+import type { RoomSyncCoordinator, RoomSyncSnapshot } from "@/domain/sync/room-sync-coordinator";
 import { isHealthSatisfactory, requiresResync } from "@/domain/sync/drift-engine";
 
 import {
@@ -99,9 +96,7 @@ export interface PlaybackSyncEngineDependencies {
   readonly clock: Clock;
 }
 
-export function createPlaybackSyncEngine(
-  deps: PlaybackSyncEngineDependencies,
-): PlaybackSyncEngine {
+export function createPlaybackSyncEngine(deps: PlaybackSyncEngineDependencies): PlaybackSyncEngine {
   const { clockSync, roomSync, sync, clock } = deps;
 
   const anchorOf = (runtime: PlaybackRuntime | null): PlaybackAnchor | null => {
@@ -112,9 +107,7 @@ export function createPlaybackSyncEngine(
     return createPlaybackAnchor({
       roomId: runtime.roomId,
       positionMs: runtime.positionMs,
-      serverInstantMs: Number.isFinite(anchorMs)
-        ? anchorMs
-        : clockSync.serverNowMs(runtime.roomId),
+      serverInstantMs: Number.isFinite(anchorMs) ? anchorMs : clockSync.serverNowMs(runtime.roomId),
       anchorAt: runtime.anchorAt,
       isAdvancing: runtime.state === "playing",
       durationMs: runtime.durationMs,

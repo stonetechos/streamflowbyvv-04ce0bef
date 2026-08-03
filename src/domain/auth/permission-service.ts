@@ -29,9 +29,7 @@ export interface PermissionService {
   require(profileId: EntityId, permission: Permission): Promise<void>;
 }
 
-export function createPermissionService(
-  authorization: AuthorizationService,
-): PermissionService {
+export function createPermissionService(authorization: AuthorizationService): PermissionService {
   const permissionsFor = (roles: readonly AppRole[]): readonly Permission[] => {
     const set = new Set<Permission>();
     for (const role of roles) {
@@ -56,7 +54,10 @@ export function createPermissionService(
     require: async (profileId, permission) => {
       const verdict = await authorize(profileId, permission);
       if (!verdict.allowed) {
-        throw authError("PERMISSION_DENIED", { operation: `require:${permission}`, subjectId: profileId });
+        throw authError("PERMISSION_DENIED", {
+          operation: `require:${permission}`,
+          subjectId: profileId,
+        });
       }
     },
   };

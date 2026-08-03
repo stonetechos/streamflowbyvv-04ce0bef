@@ -6,7 +6,15 @@
  * layout works from the first commit. Persisting the choice to
  * `localization_preferences` belongs to the Settings module, not this sprint.
  */
-import { createContext, use, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { logger } from "@/foundation/logging";
 import {

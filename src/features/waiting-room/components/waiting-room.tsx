@@ -66,8 +66,6 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     enabled: model.status === "ready" && model.viewer.isMember,
   });
 
-
-
   // Sprint 2.8 — where to send this member. Local to the viewer: StreamFlow
   // cannot observe whether anyone's provider actually opened.
   const providerLaunch = useProviderLaunch({
@@ -126,7 +124,9 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
   }
 
   const room = model.room;
-  const canJoin = room.status === "lobby" && room.joinedCount < room.capacity;
+  // Readiness and seat availability are Domain answers; this screen only
+  // forwards them (Milestone D.5).
+  const readySnapshot = ready.snapshot;
 
   return (
     <WaitingRoomLayout
@@ -143,7 +143,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
       primary={
         <>
           <PoWaitingBanner
-            allReady={model.allReady}
+            allReady={readySnapshot?.everyoneReady ?? false}
             isBusy={setup.pending !== null || model.pending !== null}
             hasProvider={model.room?.providerId !== null}
             isCounting={countdown.isLive}
@@ -156,14 +156,14 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             hasRoomRecovered={roomSync.justRecovered}
             needsSyncEncouragement={playbackSync.needsEncouragement}
             isSynchronizationReady={playbackSync.justBecameReady}
-            someoneBecameReady={(ready.snapshot?.readyCount ?? 0) > 0}
-            isEveryoneReady={ready.snapshot?.everyoneReady ?? false}
-            isWaitingForMembers={(ready.snapshot?.waitingCount ?? 0) > 0}
+            someoneBecameReady={(readySnapshot?.readyCount ?? 0) > 0}
+            isEveryoneReady={readySnapshot?.everyoneReady ?? false}
+            isWaitingForMembers={(readySnapshot?.waitingCount ?? 0) > 0}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
           <ManualPlayReminder
-            isDue={ready.snapshot?.manualPlayReminderDue ?? false}
+            isDue={readySnapshot?.manualPlayReminderDue ?? false}
             hasCountdownFinished={countdown.state === "completed"}
           />
           <RoomSummaryCard
@@ -178,7 +178,9 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isHost={model.viewer.isHost}
             members={model.members}
             hasProvider={room.providerId !== null}
-            canStartCountdown={roomSync.canStartCountdown && (ready.snapshot?.countdownAvailable ?? false)}
+            canStartCountdown={
+              roomSync.canStartCountdown && (readySnapshot?.countdownAvailable ?? false)
+            }
             blockReasonKey={roomSync.blockReasonKey}
             hasSyncAdvisory={roomSync.hasAdvisory}
           />
@@ -189,9 +191,18 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             countdownCompleted={countdown.state === "completed"}
             sync={playbackSync}
           />
-          <RoomSyncCard sync={roomSync} isHost={model.viewer.isHost} />
+          <RoomSyncCard
+            sync={roomSync}
+            isHost={model.viewer.isHost}
+            readyCount={readySnapshot?.readyCount ?? 0}
+            waitingCount={readySnapshot?.waitingCount ?? 0}
+          />
           <SyncHealthCard sync={sync} />
-          <MemberList members={model.members} />
+          <MemberList
+            members={model.members}
+            readyCount={readySnapshot?.readyCount ?? 0}
+            readyTotal={readySnapshot?.participantCount ?? 0}
+          />
           <RoomSetupCard
             setup={setup}
             isHost={model.viewer.isHost}
@@ -206,7 +217,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           <MembershipActions
             viewer={model.viewer}
             pending={model.pending}
-            canJoin={canJoin}
+            canJoin={model.viewer.canJoin}
             onJoin={model.join}
             onLeave={model.leave}
           />

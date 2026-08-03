@@ -13,13 +13,13 @@ The Database Specification enumerates `room_status` as `lobby, active, paused, e
 
 The persisted `room_status` enum is the single normative state machine. MVP lifecycle names are presentation labels mapped 1:1 onto it.
 
-| Product label | Persisted `room_status` |
-|---|---|
-| Waiting Room | `lobby` |
-| Watching | `active` |
-| Paused | `paused` |
-| Closed by host | `ended` |
-| Auto-closed on inactivity | `abandoned` |
+| Product label             | Persisted `room_status` |
+| ------------------------- | ----------------------- |
+| Waiting Room              | `lobby`                 |
+| Watching                  | `active`                |
+| Paused                    | `paused`                |
+| Closed by host            | `ended`                 |
+| Auto-closed on inactivity | `abandoned`             |
 
 **Inactivity auto-close resolves to `abandoned`**, fired after the Foundation §14.3 timeout with zero present participants.
 

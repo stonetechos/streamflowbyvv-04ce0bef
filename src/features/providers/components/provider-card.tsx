@@ -28,7 +28,10 @@ export interface ProviderCardProps {
   onToggleFavorite(providerId: string, favorite: boolean): void;
 }
 
-const BADGE_VARIANT: Record<ProviderOptionView["selectionClass"], "default" | "secondary" | "outline" | "destructive"> = {
+const BADGE_VARIANT: Record<
+  ProviderOptionView["selectionClass"],
+  "default" | "secondary" | "outline" | "destructive"
+> = {
   supported: "default",
   manual_sync: "secondary",
   unverified: "outline",
@@ -69,9 +72,7 @@ export function ProviderCard({
           <Badge variant={BADGE_VARIANT[option.selectionClass]}>
             {t(selectionClassLabelKey(option.selectionClass))}
           </Badge>
-          {option.isDefault ? (
-            <Badge variant="outline">{t("provider.badge.default")}</Badge>
-          ) : null}
+          {option.isDefault ? <Badge variant="outline">{t("provider.badge.default")}</Badge> : null}
           {isSelected ? <Check aria-hidden="true" className="size-4 text-primary" /> : null}
         </span>
         <span
@@ -97,9 +98,12 @@ export function ProviderCard({
           size="icon"
           className="absolute right-2 top-2"
           aria-pressed={option.isFavorite}
-          aria-label={t(option.isFavorite ? "provider.action.unfavorite" : "provider.action.favorite", {
-            provider: name,
-          })}
+          aria-label={t(
+            option.isFavorite ? "provider.action.unfavorite" : "provider.action.favorite",
+            {
+              provider: name,
+            },
+          )}
           onClick={() => onToggleFavorite(option.id, !option.isFavorite)}
         >
           <Star

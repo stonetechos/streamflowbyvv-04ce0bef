@@ -10,11 +10,7 @@
  */
 
 export type VoiceConnectionState =
-  | "disconnected"
-  | "connecting"
-  | "connected"
-  | "reconnecting"
-  | "failed";
+  "disconnected" | "connecting" | "connected" | "reconnecting" | "failed";
 
 /** Mirrors the sync-quality bands so the UI uses one vocabulary. */
 export type VoiceQuality = "excellent" | "good" | "poor" | "unknown";

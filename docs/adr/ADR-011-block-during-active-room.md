@@ -7,7 +7,7 @@
 
 ## Context
 
-The `blocked_users` enforcement points were listed, but the behaviour when a block occurs *during* an active shared room was unspecified.
+The `blocked_users` enforcement points were listed, but the behaviour when a block occurs _during_ an active shared room was unspecified.
 
 ## Decision
 

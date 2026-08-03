@@ -24,14 +24,14 @@ Everything that does not serve that sentence is deferred. Because no provider is
 
 ## 2. User types
 
-| Type | v1.0 capability |
-|---|---|
-| Guest | Open an invite link, see a room preview, must sign up or sign in to join |
-| Registered User | Profile, rooms, recent partners, settings, Po |
-| Room Host | Creates the room, owns countdown and provider choice, can remove participants, ends the room |
-| Room Participant | Joins, confirms readiness, uses voice, self-reports sync state |
-| Administrator | **Future** — role reserved in the data model; no admin surface in v1 |
-| Moderator | **Future** — role reserved only |
+| Type             | v1.0 capability                                                                              |
+| ---------------- | -------------------------------------------------------------------------------------------- |
+| Guest            | Open an invite link, see a room preview, must sign up or sign in to join                     |
+| Registered User  | Profile, rooms, recent partners, settings, Po                                                |
+| Room Host        | Creates the room, owns countdown and provider choice, can remove participants, ends the room |
+| Room Participant | Joins, confirms readiness, uses voice, self-reports sync state                               |
+| Administrator    | **Future** — role reserved in the data model; no admin surface in v1                         |
+| Moderator        | **Future** — role reserved only                                                              |
 
 ---
 
@@ -40,6 +40,7 @@ Everything that does not serve that sentence is deferred. Because no provider is
 Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected result · Possible errors · Recovery behaviour.
 
 ### 3.1 Sign Up
+
 - **Goal:** Create an account.
 - **Entry:** Landing page, invite link, Po prompt.
 - **Flow:** Email + password (or magic link) → verification email → verify → display name, avatar, language → land on Home.
@@ -48,6 +49,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Inline field errors, resend verification, retry with input preserved. A pending invite is remembered and resumed automatically after verification.
 
 ### 3.2 Sign In
+
 - **Goal:** Return to the account.
 - **Entry:** Landing page, invite link, expired session redirect.
 - **Flow:** Credentials → session established → return to intended destination.
@@ -56,6 +58,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Generic failure message (no account enumeration), resend verification, visible cooldown timer, retry once online.
 
 ### 3.3 Forgot Password
+
 - **Goal:** Regain access.
 - **Entry:** Sign-in screen.
 - **Flow:** Enter email → reset link → set new password → automatic sign-in.
@@ -64,6 +67,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Request a new link. The confirmation message is always neutral and identical regardless of whether the email exists.
 
 ### 3.4 Create Profile
+
 - **Goal:** Be recognisable to friends.
 - **Entry:** Post-signup step or Settings → Profile.
 - **Flow:** Display name → avatar → language → timezone.
@@ -72,6 +76,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Name suggestions, size and format guidance, skip-and-continue with sensible defaults.
 
 ### 3.5 Create Room
+
 - **Goal:** A space to watch together.
 - **Entry:** Home button, or Po ("create a room").
 - **Flow:** Optional room name → visibility is private-only in v1 → optional provider intent → room created in **Waiting Room** state with a shareable invite.
@@ -80,6 +85,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Sign in and resume creation, cooldown message with remaining time, queue creation until connectivity returns.
 
 ### 3.6 Join Room
+
 - **Goal:** Get into a friend's room.
 - **Entry:** Invite link, in-app notification, Recent rooms.
 - **Flow:** Open link → guests hit the auth wall with the invite preserved → membership validated → enter Waiting Room → microphone permission prompt (skippable) → mark **Ready**.
@@ -88,6 +94,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Prompt to request a fresh invite from the host; a closed room shows a terminal state with a "create your own room" action.
 
 ### 3.7 Invite Friend
+
 - **Goal:** Bring someone in.
 - **Entry:** Waiting Room → Invite.
 - **Flow:** Pick from recent partners or enter an email/handle → in-app and email invite sent → status shown as pending / accepted / declined.
@@ -96,6 +103,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Fall back to a copyable invite link.
 
 ### 3.8 Accept Invitation / Decline Invitation
+
 - **Goal:** Respond to an invite.
 - **Entry:** Notification centre, email, direct link.
 - **Flow (accept):** Continue into the Join Room flow. **(decline):** Invite closed, host informed.
@@ -104,6 +112,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Clear terminal state plus an "ask the host to re-invite me" action.
 
 ### 3.9 Share Invite Link
+
 - **Goal:** Invite someone outside the app.
 - **Entry:** Waiting Room → Share.
 - **Flow:** Copy link, or use the native share sheet. The link carries the room reference and a token with an expiry.
@@ -112,6 +121,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Show the raw link in a selectable field.
 
 ### 3.10 Enable Voice Chat / Disable Voice Chat
+
 - **Goal:** Talk while watching.
 - **Entry:** Waiting Room, or the in-room control bar.
 - **Flow (enable):** Request microphone permission → join the voice session → connected indicator appears. **(disable):** Leave voice, remain in the room.
@@ -120,6 +130,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Browser-specific permission instructions, device picker, retry. **The room stays fully usable without voice.**
 
 ### 3.11 Leave Room
+
 - **Goal:** Exit without ending it for others.
 - **Entry:** In-room menu.
 - **Flow:** Confirm → leave voice → presence updated → return Home.
@@ -128,6 +139,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Presence is reconciled server-side by heartbeat timeout.
 
 ### 3.12 End Room
+
 - **Goal:** Close the session for everyone.
 - **Entry:** Host-only in-room menu.
 - **Flow:** Confirm → all participants notified → everyone returned Home → room becomes read-only closed.
@@ -136,6 +148,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Permission explanation; retry on reconnect.
 
 ### 3.13 Rejoin After Disconnect
+
 - **Goal:** Get back into the session.
 - **Entry:** Automatic on connectivity restore.
 - **Flow:** Loss detected → offline banner and offline mode → on restore, room state re-fetched, realtime and voice re-joined, position re-anchored → resume.
@@ -144,6 +157,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Explicit outcome screen for each case — never a silent dead room.
 
 ### 3.14 Countdown Experience
+
 - **Goal:** Everyone presses play at the same instant.
 - **Entry:** Host action, once participants are Ready.
 - **Flow:** Host sets a duration (default from preference) → all clients show a counter anchored to server time → at zero, a clear "Play now" cue with an audio ping and haptics where available.
@@ -152,6 +166,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Host can cancel or restart; a late joiner is included in the next countdown.
 
 ### 3.15 Playback Synchronization (manual-sync mode)
+
 - **Goal:** Stay together through the title.
 - **Entry:** Immediately after the countdown cue.
 - **Flow:** Each user plays in their own provider tab or app. The room shows a shared elapsed timer as the reference. Anyone can raise "I'm behind" or "I'm ahead" → the host triggers a re-sync countdown or announces a target timestamp.
@@ -160,6 +175,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** One-tap re-sync countdown from any participant's request.
 
 ### 3.16 Manual Sync Experience (pause / resume / seek)
+
 - **Goal:** Interrupt and restart together.
 - **Entry:** Any participant's Pause request.
 - **Flow:** Pause request broadcasts a prompt to everyone → all pause in their own player → Resume runs through a short countdown. A seek is announced as a target timestamp, then re-synced by countdown.
@@ -168,6 +184,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Their sync state shows as unconfirmed; the host re-runs the countdown.
 
 ### 3.17 Provider Selection
+
 - **Goal:** Agree on where to watch.
 - **Entry:** Waiting Room, or Po.
 - **Flow:** Choose from the provider matrix → the ComplianceService verdict is shown inline (mode and limits) → title entered manually, or via search where legally available → deep link opened in the user's own session.
@@ -176,6 +193,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Plain-language explanation and suggested alternative providers.
 
 ### 3.18 Subtitle Selection / Audio Language Selection
+
 - **Goal:** Everyone watches with compatible tracks.
 - **Entry:** Waiting Room, Settings, or Po.
 - **Flow:** In v1 these are **preferences and shared room announcements** ("Hindi audio, English subtitles") that each user applies in their own player. StreamFlow does not control provider tracks.
@@ -184,6 +202,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** The participant flags it; the room note is updated to an available combination.
 
 ### 3.19 Settings
+
 - **Goal:** Tune the experience.
 - **Entry:** Avatar menu → Settings.
 - **Flow:** Navigate the pages in §10; changes apply immediately; language switches at runtime.
@@ -192,6 +211,7 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 - **Recovery:** Optimistic UI with rollback and a retry action.
 
 ### 3.20 Logout
+
 - **Goal:** End the session on this device.
 - **Entry:** Avatar menu.
 - **Flow:** Confirm if in an active room → leave the room and voice → clear session and caches → landing page.
@@ -204,21 +224,25 @@ Each journey is stated as: Goal · Entry point · Step-by-step flow · Expected 
 ## 4. Feature classification
 
 ### MVP — v1.0
+
 Email authentication and password reset · profile · private rooms · invite links and direct invites · Waiting Room with readiness · server-anchored synchronized countdown · manual-sync playback coordination with drift re-sync · voice chat (mute, device selection, quality indicator) · presence · in-app and email notifications · provider matrix with compliance verdicts and deep links · Po via text and voice for the core intents · settings including accessibility and privacy · localization framework with two launch locales · analytics · offline banner and reconnect · PWA install.
 
 **Why:** this is the minimum set that produces one complete, successful shared viewing session.
 
 ### Version 1.1
+
 Recent partners promoted to real friends and friend requests · scheduled watch parties with reminders · richer Po memory management UI · Android Capacitor build · per-room text chat lane · host migration · additional locales.
 
 **Why:** strengthens retention and convenience, but nothing here is required for a first successful session.
 
 ### Version 2
+
 Verified provider plugins with true remote control where legally cleared · rooms larger than four · video chat · shared playlists · watch history · communities.
 
 **Why:** each depends on provider validation, scale work, or an entirely new product domain.
 
 ### Future
+
 AI recommendations · calendar integration · smart-TV and home-automation control · third-party plugin ecosystem · moderation and administration consoles · public discoverable rooms.
 
 **Why:** these expand the product beyond the core promise and require governance, partnerships, or legal clearance that does not exist yet.
@@ -243,6 +267,7 @@ Created
 ```
 
 State rules for v1:
+
 - The host is authoritative for countdown, provider selection and closure.
 - A room with zero present participants auto-closes after the inactivity window (30 minutes, Foundation §14.3). Auto-close is recorded as `abandoned`; a host-ended room is recorded as `ended` (ADR-002).
 - Closed rooms are read-only and appear in Recent for 30 days (Foundation §14.3).
@@ -260,6 +285,7 @@ State rules for v1:
 Po's architecture, intent pipeline, tool contract and guardrails are defined in ADR-001 and unchanged here. This section states only the scope exposed to users in v1.
 
 ### Included in v1
+
 - **Voice input** (press-to-talk) and **text input**, both entering the same intent pipeline.
 - **Intent understanding** for: create a room, invite people, start a countdown, change the countdown duration, search or choose a provider, explain the sync steps, announce audio/subtitle preferences, leave or end the room, open settings.
 - **Clarification** — Po asks a targeted question when a required slot is missing rather than guessing.
@@ -271,6 +297,7 @@ Po's architecture, intent pipeline, tool contract and guardrails are defined in 
 - **Opt-in preference memory** with view, edit and delete in Settings.
 
 ### Reserved for future versions
+
 Recommendations and taste modelling · conversation summaries · scheduling and calendar tools · conversational languages beyond the launch locales · proactive unsolicited suggestions · full-app accessibility narration · smart-TV and home-automation tools · tools supplied by third-party plugins.
 
 Per ADR-001, all of the above are added as **new tools and adapters**, never as modifications to Po Core.
@@ -281,18 +308,19 @@ Per ADR-001, all of the above are added as **new tools and adapters**, never as 
 
 Classification vocabulary: **Supported** (StreamFlow may control playback) · **Manual Sync** (countdown coordination and deep link only) · **Experimental** (behind a flag, opt-in, may break) · **Unverified** (listed but not legally or technically validated) · **Unavailable** (refused).
 
-| Provider | v1.0 status | What v1 actually does |
-|---|---|---|
-| YouTube | **Supported** | True synchronized playback via the public embed/API, within its terms |
-| Local media file | **Supported** | The user's own file, synchronized locally |
-| Netflix | **Manual Sync** | Countdown plus deep link only — no control, no scraping, no DRM interaction |
-| Prime Video | **Manual Sync** | Same |
-| Disney+ / Hotstar | **Manual Sync** | Same |
-| SonyLIV | **Manual Sync** | Same |
-| Any other named service | **Unverified** | Listed for coordination, manual sync only, clearly labelled unverified |
-| Anything requiring a DRM, geo, subscription or paywall workaround | **Unavailable** | Refused with an explanation |
+| Provider                                                          | v1.0 status     | What v1 actually does                                                       |
+| ----------------------------------------------------------------- | --------------- | --------------------------------------------------------------------------- |
+| YouTube                                                           | **Supported**   | True synchronized playback via the public embed/API, within its terms       |
+| Local media file                                                  | **Supported**   | The user's own file, synchronized locally                                   |
+| Netflix                                                           | **Manual Sync** | Countdown plus deep link only — no control, no scraping, no DRM interaction |
+| Prime Video                                                       | **Manual Sync** | Same                                                                        |
+| Disney+ / Hotstar                                                 | **Manual Sync** | Same                                                                        |
+| SonyLIV                                                           | **Manual Sync** | Same                                                                        |
+| Any other named service                                           | **Unverified**  | Listed for coordination, manual sync only, clearly labelled unverified      |
+| Anything requiring a DRM, geo, subscription or paywall workaround | **Unavailable** | Refused with an explanation                                                 |
 
 Rules:
+
 - No provider is assumed controllable. Every non-YouTube entry begins as **Unverified** and may only be promoted by a recorded legal validation (Foundation §19).
 - **Experimental** is reserved for providers that pass validation but whose integration is not yet stable; no provider ships in this state in v1.
 - Every provider action passes through the ComplianceService before it reaches the user.
@@ -314,60 +342,58 @@ Rules:
 
 ## 9. Notifications
 
-| Notification | Trigger | Channels in v1 |
-|---|---|---|
-| Invitation received | Someone invites you | In-app (toast) + email |
-| Invitation accepted | Invitee joins | In-app (toast) |
-| Invitation declined | Invitee declines | In-app |
-| Countdown started | Host starts the countdown | In-app (toast + audio cue) |
-| Participant joined | Someone enters the room | In-app (in-room) |
-| Participant left | Someone leaves | In-app (in-room) |
-| Room closed | Host ends the room or it times out | In-app (toast) |
-| Voice disconnected | Voice session dropped | In-app (toast) |
-| Reconnect required | Realtime connection lost | In-app (persistent banner) |
-| System announcement | Product or compliance notice | In-app |
-| Scheduled party reminder | Upcoming scheduled room | **v1.1** |
+| Notification             | Trigger                            | Channels in v1             |
+| ------------------------ | ---------------------------------- | -------------------------- |
+| Invitation received      | Someone invites you                | In-app (toast) + email     |
+| Invitation accepted      | Invitee joins                      | In-app (toast)             |
+| Invitation declined      | Invitee declines                   | In-app                     |
+| Countdown started        | Host starts the countdown          | In-app (toast + audio cue) |
+| Participant joined       | Someone enters the room            | In-app (in-room)           |
+| Participant left         | Someone leaves                     | In-app (in-room)           |
+| Room closed              | Host ends the room or it times out | In-app (toast)             |
+| Voice disconnected       | Voice session dropped              | In-app (toast)             |
+| Reconnect required       | Realtime connection lost           | In-app (persistent banner) |
+| System announcement      | Product or compliance notice       | In-app                     |
+| Scheduled party reminder | Upcoming scheduled room            | **v1.1**                   |
 
-**Channels vs. presentation (ADR-007):** v1 has exactly two delivery channels — `in_app` and `email`. Toast, audio cue and persistent banner are *presentation modes* of the `in_app` channel, not separate channels, and are not independently subscribable. `push` exists in the schema as a reserved value and is emitted by no v1 code path. Every category is individually mutable in Settings → Notifications; presentation modes are not.
-
+**Channels vs. presentation (ADR-007):** v1 has exactly two delivery channels — `in_app` and `email`. Toast, audio cue and persistent banner are _presentation modes_ of the `in_app` channel, not separate channels, and are not independently subscribable. `push` exists in the schema as a reserved value and is emitted by no v1 code path. Every category is individually mutable in Settings → Notifications; presentation modes are not.
 
 ---
 
 ## 10. Settings pages
 
-| Page | Contents | Field ownership (ADR-005) |
-|---|---|---|
-| Profile | Display name, avatar, email, account deletion entry point | `profiles` |
-| Language | UI language, preferred audio language, preferred subtitle language | `localization_preferences` |
-| Appearance | Theme; text size is surfaced here but owned by Accessibility | `appearance_preferences`; `font_scale` from `accessibility_preferences` |
-| Voice | Join muted, push-to-talk, auto-join; default microphone and speaker | Portable behaviour persisted with `privacy_preferences`; **device selection is device-local and never persisted** |
-| Notifications | Per-category toggles and channel choice (`in_app`, `email` only) | `notification_preferences` |
-| Accessibility | Reduced motion, high contrast, large text (`font_scale`), captions preference | `accessibility_preferences` |
-| Privacy | Presence visibility, activity history, data export, account deletion | `privacy_preferences` |
-| Provider Preferences | Favourites, default provider (single value); **region is shown read-only here and owned by Language** | `localization_preferences.region_code` is the single source of region |
-| Po Preferences | Enable/disable, voice-only or text-only, saved memories with edit, export and delete | `privacy_preferences.po_memory_opt_in` + `po_preference_memories` |
-| Future AI Settings | Reserved page, hidden behind a feature flag in v1 | — |
+| Page                 | Contents                                                                                              | Field ownership (ADR-005)                                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Profile              | Display name, avatar, email, account deletion entry point                                             | `profiles`                                                                                                        |
+| Language             | UI language, preferred audio language, preferred subtitle language                                    | `localization_preferences`                                                                                        |
+| Appearance           | Theme; text size is surfaced here but owned by Accessibility                                          | `appearance_preferences`; `font_scale` from `accessibility_preferences`                                           |
+| Voice                | Join muted, push-to-talk, auto-join; default microphone and speaker                                   | Portable behaviour persisted with `privacy_preferences`; **device selection is device-local and never persisted** |
+| Notifications        | Per-category toggles and channel choice (`in_app`, `email` only)                                      | `notification_preferences`                                                                                        |
+| Accessibility        | Reduced motion, high contrast, large text (`font_scale`), captions preference                         | `accessibility_preferences`                                                                                       |
+| Privacy              | Presence visibility, activity history, data export, account deletion                                  | `privacy_preferences`                                                                                             |
+| Provider Preferences | Favourites, default provider (single value); **region is shown read-only here and owned by Language** | `localization_preferences.region_code` is the single source of region                                             |
+| Po Preferences       | Enable/disable, voice-only or text-only, saved memories with edit, export and delete                  | `privacy_preferences.po_memory_opt_in` + `po_preference_memories`                                                 |
+| Future AI Settings   | Reserved page, hidden behind a feature flag in v1                                                     | —                                                                                                                 |
 
-No preference value is defined in two places. A page may *display* a field owned by another page, but only one page writes it.
-
+No preference value is defined in two places. A page may _display_ a field owned by another page, but only one page writes it.
 
 ---
 
 ## 11. Error states
 
-| Error | Cause | User message | Recovery |
-|---|---|---|---|
-| Internet lost | Connection dropped | "You're offline. We'll reconnect you." | Offline banner, cached room shell, automatic re-sync on restore |
-| Provider unsupported | ComplianceService verdict is Unavailable | "We can't control playback on X — here's how to watch together anyway." | Offer the manual-sync countdown flow |
-| Invitation expired | Token past expiry or revoked | "This invite has expired." | Ask the host for a new invite |
-| Authentication failed | Bad credentials or expired session | "We couldn't sign you in." | Retry, reset password, re-authenticate preserving the destination |
-| Voice failure | Token, device or service error | "Voice isn't connecting right now." | Retry, device picker, continue without voice |
-| Sync failure | Drift beyond tolerance or a missed cue | "You may be out of sync." | One-tap re-sync countdown |
-| Countdown cancelled | Host cancelled, or a participant dropped | "The host cancelled the countdown." | Host restarts when everyone is ready |
-| User removed | Host removed the participant | "You were removed from this room." | Return Home; no automatic re-entry |
-| Permission denied | Not a member, or not the host | "You don't have permission to do that." | Explain who can, offer to ask the host |
-| Microphone permission denied | Browser or OS block | "We need microphone access for voice chat." | Browser-specific instructions, continue without voice |
-| Unsupported browser | Missing WebRTC or media APIs | "This browser can't run voice chat." | List supported browsers, allow the no-voice mode |
+| Error                        | Cause                                    | User message                                                            | Recovery                                                          |
+| ---------------------------- | ---------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Internet lost                | Connection dropped                       | "You're offline. We'll reconnect you."                                  | Offline banner, cached room shell, automatic re-sync on restore   |
+| Provider unsupported         | ComplianceService verdict is Unavailable | "We can't control playback on X — here's how to watch together anyway." | Offer the manual-sync countdown flow                              |
+| Invitation expired           | Token past expiry or revoked             | "This invite has expired."                                              | Ask the host for a new invite                                     |
+| Authentication failed        | Bad credentials or expired session       | "We couldn't sign you in."                                              | Retry, reset password, re-authenticate preserving the destination |
+| Voice failure                | Token, device or service error           | "Voice isn't connecting right now."                                     | Retry, device picker, continue without voice                      |
+| Sync failure                 | Drift beyond tolerance or a missed cue   | "You may be out of sync."                                               | One-tap re-sync countdown                                         |
+| Countdown cancelled          | Host cancelled, or a participant dropped | "The host cancelled the countdown."                                     | Host restarts when everyone is ready                              |
+| User removed                 | Host removed the participant             | "You were removed from this room."                                      | Return Home; no automatic re-entry                                |
+| Permission denied            | Not a member, or not the host            | "You don't have permission to do that."                                 | Explain who can, offer to ask the host                            |
+| Microphone permission denied | Browser or OS block                      | "We need microphone access for voice chat."                             | Browser-specific instructions, continue without voice             |
+| Unsupported browser          | Missing WebRTC or media APIs             | "This browser can't run voice chat."                                    | List supported browsers, allow the no-voice mode                  |
 
 Every error message is a localized string key, states a cause in plain language, and offers exactly one primary recovery action.
 
@@ -438,35 +464,34 @@ Sync quality during the run must hold at Good or better (≤250 ms) with any exc
 
 Normative values live in **Foundation Specification v1.0 §14** and are reproduced here for reading convenience only. If the two ever differ, Foundation wins.
 
-| Constant | v1.0 value |
-|---|---|
-| Default countdown | 5 seconds |
-| Countdown range | 3–60 seconds |
-| Invite expiry | 24 hours |
-| Join link expiry | 24 hours |
-| Room inactivity timeout | 30 minutes |
-| Recent room retention | 30 days |
-| Sync quality — Excellent | ≤100 ms |
-| Sync quality — Good | 101–250 ms |
-| Sync quality — Warning | 251–500 ms |
-| Sync quality — Re-sync required | >500 ms |
+| Constant                        | v1.0 value   |
+| ------------------------------- | ------------ |
+| Default countdown               | 5 seconds    |
+| Countdown range                 | 3–60 seconds |
+| Invite expiry                   | 24 hours     |
+| Join link expiry                | 24 hours     |
+| Room inactivity timeout         | 30 minutes   |
+| Recent room retention           | 30 days      |
+| Sync quality — Excellent        | ≤100 ms      |
+| Sync quality — Good             | 101–250 ms   |
+| Sync quality — Warning          | 251–500 ms   |
+| Sync quality — Re-sync required | >500 ms      |
 
 ---
 
 ## 18. Amendment Register — Documentation Consolidation v1.0
 
-| # | Change | Section | ADR |
-|---|---|---|---|
-| 1 | Lifecycle labels mapped to persisted status; auto-close is `abandoned` | §5 | ADR-002 |
-| 2 | Sync mode declared a room property, immutable during playback; participants downgrade | §5 | ADR-003 |
-| 3 | Watching screen reads `room_state.playback_status`, not room lifecycle | §5 | ADR-004 |
-| 4 | Settings pages given explicit field ownership; region owned by Language; audio devices device-local | §10 | ADR-005 |
-| 5 | Notification channels reduced to `in_app` and `email`; toast, audio cue, banner reclassified as presentation | §9 | ADR-007 |
-| 6 | Guest preview scope before the auth wall stated | §5 | ADR-010 |
-| 7 | Block-during-active-room behaviour stated | §5 | ADR-011 |
-| 8 | Room capacity 4 stated as domain policy over a wider schema envelope | §5 | ADR-013 |
-| 9 | Launch locales fixed to `en` and `hi-IN` | §13 | Foundation §17 |
-| 10 | Inactivity timeout, Recent retention, and sync quality thresholds resolved to fixed values | §5, §16, §17 | Foundation §14 |
+| #   | Change                                                                                                       | Section      | ADR            |
+| --- | ------------------------------------------------------------------------------------------------------------ | ------------ | -------------- |
+| 1   | Lifecycle labels mapped to persisted status; auto-close is `abandoned`                                       | §5           | ADR-002        |
+| 2   | Sync mode declared a room property, immutable during playback; participants downgrade                        | §5           | ADR-003        |
+| 3   | Watching screen reads `room_state.playback_status`, not room lifecycle                                       | §5           | ADR-004        |
+| 4   | Settings pages given explicit field ownership; region owned by Language; audio devices device-local          | §10          | ADR-005        |
+| 5   | Notification channels reduced to `in_app` and `email`; toast, audio cue, banner reclassified as presentation | §9           | ADR-007        |
+| 6   | Guest preview scope before the auth wall stated                                                              | §5           | ADR-010        |
+| 7   | Block-during-active-room behaviour stated                                                                    | §5           | ADR-011        |
+| 8   | Room capacity 4 stated as domain policy over a wider schema envelope                                         | §5           | ADR-013        |
+| 9   | Launch locales fixed to `en` and `hi-IN`                                                                     | §13          | Foundation §17 |
+| 10  | Inactivity timeout, Recent retention, and sync quality thresholds resolved to fixed values                   | §5, §16, §17 | Foundation §14 |
 
 Email invites (ADR-006) are, in v1, link invites delivered by email — no change to any journey in §3, recorded here for traceability.
-

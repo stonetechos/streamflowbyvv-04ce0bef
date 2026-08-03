@@ -5,11 +5,7 @@
  * by `RoomService`; `countByRoom` exists so Domain can be given the number it
  * needs without reaching into storage itself.
  */
-import type {
-  RoomMember,
-  RoomMemberDraft,
-  RoomMemberPatch,
-} from "@/domain/rooms/room.types";
+import type { RoomMember, RoomMemberDraft, RoomMemberPatch } from "@/domain/rooms/room.types";
 import type { MembershipState } from "@/domain/shared/domain-enums";
 import type {
   RoomMemberQuery,
@@ -51,10 +47,7 @@ export function createSupabaseRoomMemberRepository(
       return row ? toRoomMember(row) : null;
     },
 
-    async findByRoomAndProfile(
-      roomId: EntityId,
-      profileId: EntityId,
-    ): Promise<RoomMember | null> {
+    async findByRoomAndProfile(roomId: EntityId, profileId: EntityId): Promise<RoomMember | null> {
       requireAvailable(connection, context("findByRoomAndProfile", roomId));
       const row = await runMaybe<RoomMemberRow>(
         table()
@@ -69,9 +62,7 @@ export function createSupabaseRoomMemberRepository(
 
     async listByRoom(roomId: EntityId, query?: RoomMemberQuery): Promise<Page<RoomMember>> {
       requireAvailable(connection, context("listByRoom", roomId));
-      let builder = table()
-        .select(ROOM_MEMBER_COLUMNS, { count: "exact" })
-        .eq("room_id", roomId);
+      let builder = table().select(ROOM_MEMBER_COLUMNS, { count: "exact" }).eq("room_id", roomId);
       if (query?.states?.length) builder = builder.in("state", [...query.states]);
 
       return paginateRows<RoomMemberRow, RoomMember>({
@@ -82,14 +73,9 @@ export function createSupabaseRoomMemberRepository(
       });
     },
 
-    async countByRoom(
-      roomId: EntityId,
-      states?: readonly MembershipState[],
-    ): Promise<number> {
+    async countByRoom(roomId: EntityId, states?: readonly MembershipState[]): Promise<number> {
       requireAvailable(connection, context("countByRoom", roomId));
-      let builder = table()
-        .select("id", { count: "exact", head: true })
-        .eq("room_id", roomId);
+      let builder = table().select("id", { count: "exact", head: true }).eq("room_id", roomId);
       if (states?.length) builder = builder.in("state", [...states]);
 
       const { total } = await runCountedQuery<{ id: string }>(
@@ -111,11 +97,7 @@ export function createSupabaseRoomMemberRepository(
     async update(id: EntityId, patch: RoomMemberPatch): Promise<RoomMember> {
       requireAvailable(connection, context("update", id));
       const row = await runQuery<RoomMemberRow>(
-        table()
-          .update(toRoomMemberUpdate(patch))
-          .eq("id", id)
-          .select(ROOM_MEMBER_COLUMNS)
-          .single(),
+        table().update(toRoomMemberUpdate(patch)).eq("id", id).select(ROOM_MEMBER_COLUMNS).single(),
         context("update", id),
       );
       return toRoomMember(row);

@@ -14,11 +14,11 @@ Infrastructure knows which engine is deployed.
 
 ### 1. Vendor-neutral persistence contracts (`src/repository/`)
 
-| File | Contract |
-| --- | --- |
+| File                   | Contract                                                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `persistence.types.ts` | `PersistenceDriverKind`, `PersistenceScope`, `PersistenceConnectionStatus`, `PersistenceConnection`, `PersistenceAdapterDescriptor`, `PersistenceRecord` |
-| `mapping.ts` | `EntityMapper`, `defineMapper`, `mapRecords`, `mapPage` |
-| `index.ts` | Single public surface for the layer |
+| `mapping.ts`           | `EntityMapper`, `defineMapper`, `mapRecords`, `mapPage`                                                                                                  |
+| `index.ts`             | Single public surface for the layer                                                                                                                      |
 
 No file in `src/repository/` imports a driver, a generated schema type, or the
 integration folder.
@@ -48,13 +48,13 @@ by structural typing alone.
 
 ### 5. Migration portability audit
 
-| Construct | Verdict |
-| --- | --- |
-| Tables, columns, constraints, indexes, triggers | Portable PostgreSQL |
-| `gen_random_uuid()`, `jsonb`, `timestamptz`, `citext` | Portable (contrib) |
-| RLS policies and `SECURITY DEFINER` helpers | Portable |
-| `GRANT ... TO authenticated / anon / service_role` | Role names are a hosting convention; roles can be created on any server |
-| `auth.uid()` | **Was** the only hard coupling — one call site |
+| Construct                                             | Verdict                                                                 |
+| ----------------------------------------------------- | ----------------------------------------------------------------------- |
+| Tables, columns, constraints, indexes, triggers       | Portable PostgreSQL                                                     |
+| `gen_random_uuid()`, `jsonb`, `timestamptz`, `citext` | Portable (contrib)                                                      |
+| RLS policies and `SECURITY DEFINER` helpers           | Portable                                                                |
+| `GRANT ... TO authenticated / anon / service_role`    | Role names are a hosting convention; roles can be created on any server |
+| `auth.uid()`                                          | **Was** the only hard coupling — one call site                          |
 
 Migration 010 replaces that call site with `public.current_auth_user_id()`,
 which uses hosted auth when the schema is present and falls back to the standard

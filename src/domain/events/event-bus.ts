@@ -7,7 +7,12 @@
  * (persistence, Realtime fan-out, analytics) subscribe later — the bus knows
  * nothing about them.
  */
-import { describeEvent, isKnownEvent, type DomainEventName, type DomainEventPayloads } from "./event-catalog";
+import {
+  describeEvent,
+  isKnownEvent,
+  type DomainEventName,
+  type DomainEventPayloads,
+} from "./event-catalog";
 import {
   systemClock,
   type Clock,
@@ -69,8 +74,7 @@ export function createEventBus(options: EventBusOptions = {}): EventBus {
   const sequences = new Map<string, number>();
 
   const nextSequence = (aggregateId: string): number => {
-    const current =
-      sequences.get(aggregateId) ?? options.sequenceSeed?.(aggregateId) ?? 0;
+    const current = sequences.get(aggregateId) ?? options.sequenceSeed?.(aggregateId) ?? 0;
     const next = current + 1;
     sequences.set(aggregateId, next);
     return next;
@@ -86,10 +90,7 @@ export function createEventBus(options: EventBusOptions = {}): EventBus {
   };
 
   const dispatch = async (event: CatalogEvent): Promise<void> => {
-    const targets = [
-      ...(handlers.get(event.eventName) ?? []),
-      ...(handlers.get("*") ?? []),
-    ];
+    const targets = [...(handlers.get(event.eventName) ?? []), ...(handlers.get("*") ?? [])];
     for (const handler of targets) {
       try {
         await handler(event);

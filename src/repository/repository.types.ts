@@ -53,8 +53,7 @@ export interface WriteRepository<TEntity, TId = EntityId, TCreate = TEntity> {
 }
 
 export interface Repository<TEntity, TId = EntityId, TCreate = TEntity>
-  extends ReadRepository<TEntity, TId>,
-    WriteRepository<TEntity, TId, TCreate> {}
+  extends ReadRepository<TEntity, TId>, WriteRepository<TEntity, TId, TCreate> {}
 
 /** Maps a persistence row to a domain entity. The only place row shape is known. */
 export interface RowMapper<TRow, TEntity> {

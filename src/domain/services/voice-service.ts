@@ -54,8 +54,7 @@ export interface VoiceService {
 export function createVoiceService(context: DomainServiceContext): VoiceService {
   const { events } = context;
 
-  const isJoinable = (status: VoiceStatus): boolean =>
-    status === "active" || status === "degraded";
+  const isJoinable = (status: VoiceStatus): boolean => status === "active" || status === "degraded";
 
   return {
     isJoinable,

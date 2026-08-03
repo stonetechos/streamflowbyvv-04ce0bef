@@ -137,9 +137,9 @@ ComplianceService is consulted before any provider-sensitive tool executes; Po h
 
 ## 13. Consequences
 
-*Positive:* natural-language control of the whole product; capability growth is additive; provider lock-in avoided; compliance enforced at the single existing authority; Po is removable without breaking StreamFlow.
+_Positive:_ natural-language control of the whole product; capability growth is additive; provider lock-in avoided; compliance enforced at the single existing authority; Po is removable without breaking StreamFlow.
 
-*Negative / accepted:* an extra abstraction layer over model calls; prompt and registry assets must be maintained and reviewed; latency budgets and model cost need monitoring; clarification-first behaviour trades some speed for correctness — an accepted trade.
+_Negative / accepted:_ an extra abstraction layer over model calls; prompt and registry assets must be maintained and reviewed; latency budgets and model cost need monitoring; clarification-first behaviour trades some speed for correctness — an accepted trade.
 
 ## 14. Alternatives rejected
 

@@ -20,8 +20,10 @@ import {
 import { useAuth } from "@/features/auth";
 import { logger } from "@/foundation/logging";
 
+import { useCoarseNow } from "./use-coarse-now";
 import { useRoomClockSync, type RoomClockSyncModel } from "./use-room-clock-sync";
 import { useRoomPresence } from "./use-room-presence";
+import { useRoomRealtime } from "./use-room-realtime";
 import { useRoomSync, type RoomSyncModel } from "./use-room-sync";
 import {
   toMemberViews,
@@ -53,8 +55,6 @@ export interface WaitingRoomModel {
   readonly isPresenceTracked: boolean;
   /** Live presence rows by profile, for the synchronization pipeline. */
   readonly presenceByProfileId: ReadonlyMap<string, MemberPresence>;
-  /** Every joined member has signalled ready (and there is at least one). */
-  readonly allReady: boolean;
   /** Profile id of the most recent arrival, for the Po companion's gaze. */
   readonly lastArrivalProfileId: string | null;
   /** This device's own clock estimate (Sprint 2.5). */
@@ -70,12 +70,15 @@ export interface WaitingRoomModel {
   setReady(ready: boolean): void;
 }
 
+const EMPTY_MEMBERS: readonly MemberView[] = Object.freeze([]);
+
 const ABSENT_VIEWER: ViewerView = {
   profileId: null,
   memberId: null,
   isMember: false,
   isHost: false,
   isReady: false,
+  canJoin: false,
 };
 
 function newIntent(actorProfileId: string) {
@@ -90,7 +93,6 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
   const [status, setStatus] = useState<WaitingRoomStatus>("loading");
   const [error, setError] = useState<WaitingRoomError | null>(null);
   const [pending, setPending] = useState<WaitingRoomPendingAction>(null);
-  const [isLive, setIsLive] = useState(false);
   const mounted = useRef(true);
 
   const readModel = useMemo(
@@ -126,31 +128,11 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     };
   }, [load]);
 
-  // Sprint 1.9 realtime, consumed through Domain: a notice means "re-read".
-  useEffect(() => {
-    if (!readModel) return;
-    let detach: (() => void) | null = null;
-    let cancelled = false;
-
-    void readModel
-      .subscribeToRoom(roomId, () => {
-        void load();
-      })
-      .then((unsubscribe) => {
-        if (cancelled) {
-          unsubscribe();
-          return;
-        }
-        detach = unsubscribe;
-        setIsLive(true);
-      });
-
-    return () => {
-      cancelled = true;
-      setIsLive(false);
-      detach?.();
-    };
-  }, [load, readModel, roomId]);
+  // Milestone D.5: one shared subscription per room. A coalesced notice still
+  // means "re-read" — the hub only guarantees it happens once.
+  const realtime = useRoomRealtime(roomId, Boolean(readModel), () => {
+    void load();
+  });
 
   const run = useCallback(
     async (action: Exclude<WaitingRoomPendingAction, null>, operation: () => Promise<unknown>) => {
@@ -208,19 +190,43 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     latencyMs: clockSync.snapshot?.offset?.latencyMs ?? null,
   });
 
+  // Held in a ref so `refresh` stays stable across renders.
+  const presenceRefresh = useRef(presence.refresh);
+  presenceRefresh.current = presence.refresh;
+
   const isReady = useCallback(
     (member: RoomMember) => readModel?.isReady(member) ?? false,
     [readModel],
   );
 
-  const members = snapshot
-    ? toMemberViews(snapshot, profileId, isReady, {
-        byProfileId: presence.byProfileId,
-        isTracking: presence.isTracking,
-        now: Date.now(),
-      })
-    : [];
-  const joined = members.filter((member) => member.state === "joined");
+  // Milestone D.5 — every projection below is memoized and derives "now" from
+  // a coarse beat rather than the render itself. A render must never mint new
+  // roster identities, or the hooks that consume them re-evaluate forever.
+  const now = useCoarseNow();
+
+  const members = useMemo(
+    () =>
+      snapshot
+        ? toMemberViews(snapshot, profileId, isReady, {
+            byProfileId: presence.byProfileId,
+            isTracking: presence.isTracking,
+            now,
+          })
+        : EMPTY_MEMBERS,
+    [isReady, now, presence.byProfileId, presence.isTracking, profileId, snapshot],
+  );
+
+  const joined = useMemo(() => members.filter((member) => member.state === "joined"), [members]);
+
+  const room = useMemo(() => (snapshot ? toRoomSummary(snapshot) : null), [snapshot]);
+  const viewer = useMemo(
+    () => (snapshot ? toViewerView(snapshot, profileId, isReady) : ABSENT_VIEWER),
+    [isReady, profileId, snapshot],
+  );
+  const lastArrivalProfileId = useMemo(
+    () => (joined.length > 0 ? (joined[joined.length - 1]?.profileId ?? null) : null),
+    [joined],
+  );
 
   const roomSync = useRoomSync({
     roomId,
@@ -232,24 +238,25 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     enabled: status === "ready" && Boolean(viewerIsMember),
   });
 
+  const refresh = useCallback(() => {
+    void load();
+    presenceRefresh.current();
+  }, [load]);
+
   return {
     status,
     error,
-    room: snapshot ? toRoomSummary(snapshot) : null,
+    room,
     members,
     isPresenceTracked: presence.isTracking,
     presenceByProfileId: presence.byProfileId,
-    allReady: joined.length > 0 && joined.every((member) => member.isReady),
-    lastArrivalProfileId: joined.length > 0 ? (joined[joined.length - 1]?.profileId ?? null) : null,
+    lastArrivalProfileId,
     clockSync,
     roomSync,
-    viewer: snapshot ? toViewerView(snapshot, profileId, isReady) : ABSENT_VIEWER,
+    viewer,
     pending,
-    isLive,
-    refresh: () => {
-      void load();
-      presence.refresh();
-    },
+    isLive: realtime.isLive,
+    refresh,
     join,
     leave,
     setReady,

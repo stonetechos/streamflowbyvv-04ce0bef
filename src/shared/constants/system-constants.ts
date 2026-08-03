@@ -137,8 +137,6 @@ export const PLAYBACK_SYNC_RUNTIME = Object.freeze({
   RECOVERY_WINDOW_MS: 8 * SECOND_MS,
 });
 
-
-
 export const SYNC_QUALITY = ["excellent", "good", "warning", "resync_required"] as const;
 export type SyncQualityBand = (typeof SYNC_QUALITY)[number];
 

@@ -9,7 +9,11 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 import { logger } from "@/foundation/logging";
-import type { RealtimeEventListener, RealtimeEventSubscriber, StoredDomainEvent } from "@/repository";
+import type {
+  RealtimeEventListener,
+  RealtimeEventSubscriber,
+  StoredDomainEvent,
+} from "@/repository";
 
 import type { DataConnection } from "../connection";
 

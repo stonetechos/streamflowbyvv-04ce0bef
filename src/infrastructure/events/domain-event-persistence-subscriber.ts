@@ -10,7 +10,12 @@ import type { CatalogEvent, EventBus, Unsubscribe } from "@/domain/events";
 import { logger } from "@/foundation/logging";
 import type { EventStoreRepository } from "@/repository";
 
-import { createOrderedDispatcher, createReplayGuard, eventKey, type OrderedDispatcher } from "./event-dispatch";
+import {
+  createOrderedDispatcher,
+  createReplayGuard,
+  eventKey,
+  type OrderedDispatcher,
+} from "./event-dispatch";
 import { toStoredEvent } from "./event-serializer";
 
 export interface EventPersistenceSubscriberOptions {

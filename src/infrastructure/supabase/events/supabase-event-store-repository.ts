@@ -6,7 +6,12 @@
  * index turns a duplicate append into a reported no-op instead of a second
  * row, so redelivery after a reconnect is harmless.
  */
-import { REPOSITORY_ERRORS, type EventAppendResult, type EventStoreRepository, type StoredDomainEvent } from "@/repository";
+import {
+  REPOSITORY_ERRORS,
+  type EventAppendResult,
+  type EventStoreRepository,
+  type StoredDomainEvent,
+} from "@/repository";
 
 import type { DataConnection } from "../connection";
 import { toRepositoryError } from "../error-mapping";

@@ -9,7 +9,12 @@
 import type { CatalogEvent, EventBus, Unsubscribe } from "@/domain/events";
 import type { PartnerObservation, RecentPartnersProjection } from "@/repository";
 
-import { createOrderedDispatcher, createReplayGuard, eventKey, type OrderedDispatcher } from "./event-dispatch";
+import {
+  createOrderedDispatcher,
+  createReplayGuard,
+  eventKey,
+  type OrderedDispatcher,
+} from "./event-dispatch";
 import { payloadStrings } from "./event-serializer";
 
 /** Expands a completed session into directed partner pairings. Pure. */

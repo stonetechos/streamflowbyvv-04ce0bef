@@ -7,10 +7,7 @@
  */
 import { domainError } from "@/domain/errors/domain-errors";
 import type { CatalogEvent } from "@/domain/events/event-bus";
-import {
-  SYNC_QUALITY_BANDS,
-  type SyncQualityBand,
-} from "@/shared/constants/system-constants";
+import { SYNC_QUALITY_BANDS, type SyncQualityBand } from "@/shared/constants/system-constants";
 
 import type { DomainServiceContext, Intent } from "./service-context";
 

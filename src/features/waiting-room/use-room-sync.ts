@@ -45,9 +45,7 @@ export interface RoomSyncModel {
   readonly snapshot: RoomSyncSnapshot | null;
   readonly health: SyncHealth;
   readonly participantCount: number;
-  readonly readyCount: number;
   readonly syncedCount: number;
-  readonly waitingCount: number;
   /** Foundation §15 — false only while the room needs a re-measure. */
   readonly canStartCountdown: boolean;
   /** Translation key explaining a block, or null when the countdown is free. */
@@ -108,7 +106,6 @@ export function useRoomSync({
           const presence = presenceByProfileId.get(member.profileId);
           return {
             profileId: member.profileId,
-            isReady: member.isReady,
             isOnline: presence?.isOnline ?? member.presence === "unknown",
             clockOffsetMs: presence?.clockOffsetMs ?? null,
             latencyMs: presence?.latencyMs ?? null,
@@ -159,19 +156,32 @@ export function useRoomSync({
 
   // Realtime fan-out over the existing foundation: the host re-publishes the
   // room's weakest deviation as the existing `DriftMeasured` catalog event.
+  //
+  // Milestone D.5 — publication is keyed on the health band, never on snapshot
+  // identity. Re-evaluating the same band, however often, publishes nothing.
+  const snapshotRef = useRef<RoomSyncSnapshot | null>(null);
+  snapshotRef.current = snapshot;
+  const lastPublishedHealth = useRef<SyncHealth | null>(null);
+
   useEffect(() => {
-    if (!coordinator || !available || !isHost || !actorProfileId || !snapshot) return;
-    if (snapshot.worstDeviationMs === null) return;
+    if (!coordinator || !available || !isHost || !actorProfileId) {
+      lastPublishedHealth.current = null;
+      return;
+    }
+    const current = snapshotRef.current;
+    if (!current || current.worstDeviationMs === null) return;
+    if (lastPublishedHealth.current === health) return;
+    lastPublishedHealth.current = health;
+
     void coordinator
-      .publishRoomHealth(snapshot, {
+      .publishRoomHealth(current, {
         correlationId: crypto.randomUUID(),
         actorProfileId,
       })
       .catch((cause: unknown) => {
         logger.warn("Room health publish failed", { module: MODULE, roomId, error: cause });
       });
-    // Republished on band changes only, not on every re-evaluation.
-  }, [actorProfileId, available, coordinator, health, isHost, roomId, snapshot]);
+  }, [actorProfileId, available, coordinator, health, isHost, roomId]);
 
   const assertCountdownEligible = useCallback(() => {
     if (!coordinator || !snapshot) return;
@@ -182,18 +192,13 @@ export function useRoomSync({
     snapshot,
     health,
     participantCount: snapshot?.participantCount ?? 0,
-    readyCount: snapshot?.readyCount ?? 0,
     syncedCount: snapshot?.syncedCount ?? 0,
-    waitingCount: snapshot?.waitingCount ?? 0,
     canStartCountdown: snapshot ? snapshot.canStartCountdown : true,
-    blockReasonKey: snapshot?.blockReason
-      ? `room.room_sync.block.${snapshot.blockReason}`
-      : null,
+    blockReasonKey: snapshot?.blockReason ? `room.room_sync.block.${snapshot.blockReason}` : null,
     hasAdvisory: snapshot?.hasAdvisory ?? false,
     needsResync: requiresResync(health),
     justRecovered,
-    isPlaybackEligible:
-      coordinator && snapshot ? coordinator.isPlaybackEligible(snapshot) : true,
+    isPlaybackEligible: coordinator && snapshot ? coordinator.isPlaybackEligible(snapshot) : true,
     isAvailable: available && coordinator !== null && coordinator.isAvailable(),
     assertCountdownEligible,
   };

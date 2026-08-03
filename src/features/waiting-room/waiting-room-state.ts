@@ -83,20 +83,20 @@ export function toMemberViews(
       const observed = presence.byProfileId.get(member.profileId);
       const presenceView = toPresenceView(observed, presence.isTracking);
       return {
-      id: member.id,
-      profileId: member.profileId,
-      label: memberLabel(member.profileId),
-      role: member.role,
-      state: member.state,
-      isHost: member.role === "host" || member.profileId === snapshot.room.hostProfileId,
-      isReady: isReady(member),
-      isViewer: member.profileId === viewerProfileId,
-      presence: presenceView,
-      lastSeenAt: observed?.lastSeenAt ?? null,
-      lastSeenMinutes:
-        presenceView === "online" || presenceView === "unknown"
-          ? null
-          : minutesSince(observed?.lastSeenAt ?? null, presence.now),
+        id: member.id,
+        profileId: member.profileId,
+        label: memberLabel(member.profileId),
+        role: member.role,
+        state: member.state,
+        isHost: member.role === "host" || member.profileId === snapshot.room.hostProfileId,
+        isReady: isReady(member),
+        isViewer: member.profileId === viewerProfileId,
+        presence: presenceView,
+        lastSeenAt: observed?.lastSeenAt ?? null,
+        lastSeenMinutes:
+          presenceView === "online" || presenceView === "unknown"
+            ? null
+            : minutesSince(observed?.lastSeenAt ?? null, presence.now),
       };
     });
 }
@@ -138,6 +138,9 @@ export function toViewerView(
     isMember: membership?.state === "joined",
     isHost: membership?.role === "host" || snapshot.room.hostProfileId === viewerProfileId,
     isReady: membership ? isReady(membership) : false,
+    // Carried verbatim from the Domain snapshot: Presentation never evaluates
+    // lifecycle or capacity for itself (Milestone D.5).
+    canJoin: snapshot.canViewerJoin,
   };
 }
 

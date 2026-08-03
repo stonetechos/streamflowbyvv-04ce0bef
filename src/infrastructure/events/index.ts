@@ -98,8 +98,14 @@ export {
   type ReplayGuard,
 } from "./event-dispatch";
 export { toStoredEvent } from "./event-serializer";
-export { createActivityTimelineSubscriber, toActivityEntries } from "./activity-timeline-subscriber";
+export {
+  createActivityTimelineSubscriber,
+  toActivityEntries,
+} from "./activity-timeline-subscriber";
 export { createAnalyticsSinkSubscriber, toAnalyticsEvent } from "./analytics-sink-subscriber";
 export { createEventPersistenceSubscriber } from "./domain-event-persistence-subscriber";
 export { createRealtimePublisherSubscriber } from "./realtime-publisher-subscriber";
-export { createRecentPartnersSubscriber, toPartnerObservations } from "./recent-partners-subscriber";
+export {
+  createRecentPartnersSubscriber,
+  toPartnerObservations,
+} from "./recent-partners-subscriber";

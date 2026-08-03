@@ -13,14 +13,14 @@ Three ownership conflicts: MVP put "region" and "default provider" under Provide
 
 **One owner per field.**
 
-| Field | Owner | Note |
-|---|---|---|
-| `is_favorite`, `is_hidden`, `last_used_at` | `provider_preferences` (per user, per provider) | Unchanged |
-| Region | `localization_preferences.region_code` | Single source; ComplianceService reads it |
-| Default provider | A single nullable provider reference on the user's provider-scoped preferences | Singleton per user, never a repeated flag |
-| Join-muted, push-to-talk, voice auto-join | `privacy_preferences` (portable voice behaviour, alongside existing `voice_auto_join`) | Follows the user across devices |
-| Default microphone, default speaker | **Device-local storage only** | Never persisted to the database |
-| `font_scale` | `accessibility_preferences` | Storage owner |
+| Field                                      | Owner                                                                                  | Note                                      |
+| ------------------------------------------ | -------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `is_favorite`, `is_hidden`, `last_used_at` | `provider_preferences` (per user, per provider)                                        | Unchanged                                 |
+| Region                                     | `localization_preferences.region_code`                                                 | Single source; ComplianceService reads it |
+| Default provider                           | A single nullable provider reference on the user's provider-scoped preferences         | Singleton per user, never a repeated flag |
+| Join-muted, push-to-talk, voice auto-join  | `privacy_preferences` (portable voice behaviour, alongside existing `voice_auto_join`) | Follows the user across devices           |
+| Default microphone, default speaker        | **Device-local storage only**                                                          | Never persisted to the database           |
+| `font_scale`                               | `accessibility_preferences`                                                            | Storage owner                             |
 
 The Appearance settings page may surface the accessibility `font_scale` control. That is a UI placement, not a second field.
 

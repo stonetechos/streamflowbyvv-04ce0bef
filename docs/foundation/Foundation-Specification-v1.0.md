@@ -12,14 +12,14 @@
 
 StreamFlow is a coordination layer that lets two or more people watch the same content at the same time using their own accounts on their own devices. Media never passes through StreamFlow. The product's value is timing, presence, voice, and intent — not delivery.
 
-| Principle | Rule |
-|---|---|
-| Vendor neutrality | Domain logic never names a vendor. Supabase, LiveKit, and AI providers exist only behind Infrastructure adapters. |
-| Portability | The codebase must run unchanged in Cursor, Claude Code, VS Code, Windsurf, Emergent, and a standard React toolchain. |
-| Legality first | Every provider-touching path passes through ComplianceService. Exactly one place to audit. |
-| Explicitness | Unspecified behaviour is a defect, not a freedom. Constants live in §14, not in code. |
-| One module at a time | Architecture → Review → Freeze → Build One Module. |
-| Traceability | Nothing ships that cannot be traced to a section of an approved document. |
+| Principle            | Rule                                                                                                                 |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Vendor neutrality    | Domain logic never names a vendor. Supabase, LiveKit, and AI providers exist only behind Infrastructure adapters.    |
+| Portability          | The codebase must run unchanged in Cursor, Claude Code, VS Code, Windsurf, Emergent, and a standard React toolchain. |
+| Legality first       | Every provider-touching path passes through ComplianceService. Exactly one place to audit.                           |
+| Explicitness         | Unspecified behaviour is a defect, not a freedom. Constants live in §14, not in code.                                |
+| One module at a time | Architecture → Review → Freeze → Build One Module.                                                                   |
+| Traceability         | Nothing ships that cannot be traced to a section of an approved document.                                            |
 
 ---
 
@@ -45,21 +45,21 @@ Infrastructure Supabase, LiveKit, AI providers, storage, IndexedDB, HTTP. The on
 
 ## 3. Domain Services
 
-| Service | Responsibility |
-|---|---|
-| RoomService | Room lifecycle, membership, capacity, host authority, closure. |
-| PlaybackService | Playback sessions, countdowns, position anchoring, pause/resume/seek coordination. |
-| SyncService | Clock offset estimation, drift measurement, re-sync decisions (§15). |
-| VoiceService | Voice session lifecycle, participant state, quality reporting. Never persists tokens. |
-| InvitationService | Invite creation, delivery request, acceptance, expiry, revocation. |
-| PresenceService | Heartbeats, connection state, stale sweeping. |
-| NotificationService | Notification creation, channel selection, delivery status, quiet hours. |
-| AnalyticsService | Consent-gated event emission; no PII. |
-| UserService | Profiles, handles, preferences, blocking, account lifecycle. |
-| ProviderService | Provider catalog, capabilities, status history. Never controls a provider directly. |
-| FeatureFlagService | Flag evaluation and assignment. |
-| LocalizationService | Locale resolution, key lookup, plural and direction rules (§17). |
-| ComplianceService | Single authority on what is permitted, per provider, per region, as of a date. Holds veto. |
+| Service             | Responsibility                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| RoomService         | Room lifecycle, membership, capacity, host authority, closure.                             |
+| PlaybackService     | Playback sessions, countdowns, position anchoring, pause/resume/seek coordination.         |
+| SyncService         | Clock offset estimation, drift measurement, re-sync decisions (§15).                       |
+| VoiceService        | Voice session lifecycle, participant state, quality reporting. Never persists tokens.      |
+| InvitationService   | Invite creation, delivery request, acceptance, expiry, revocation.                         |
+| PresenceService     | Heartbeats, connection state, stale sweeping.                                              |
+| NotificationService | Notification creation, channel selection, delivery status, quiet hours.                    |
+| AnalyticsService    | Consent-gated event emission; no PII.                                                      |
+| UserService         | Profiles, handles, preferences, blocking, account lifecycle.                               |
+| ProviderService     | Provider catalog, capabilities, status history. Never controls a provider directly.        |
+| FeatureFlagService  | Flag evaluation and assignment.                                                            |
+| LocalizationService | Locale resolution, key lookup, plural and direction rules (§17).                           |
+| ComplianceService   | Single authority on what is permitted, per provider, per region, as of a date. Holds veto. |
 
 **Compliance supremacy.** No service, feature, or agent may perform a provider-sensitive action without a ComplianceService verdict. Po holds no rules of its own.
 
@@ -108,7 +108,7 @@ Normative cache and reconciliation rules are in §18. Principle: the app remains
 
 **Analytics.** Consent-gated, no PII, no free-text content. `anonymous_id` is per-install, regenerated on data clear and on opt-out, never joined to a profile after identification.
 
-**Notifications.** `in_app`, `push`, `email` are *channels* (delivery transports). Toast, audio cue, and persistent banner are *presentation modes* of the `in_app` channel and are never modelled as channels. `push` is reserved and emitted by no v1 code path (ADR-007).
+**Notifications.** `in_app`, `push`, `email` are _channels_ (delivery transports). Toast, audio cue, and persistent banner are _presentation modes_ of the `in_app` channel and are never modelled as channels. `push` is reserved and emitted by no v1 code path (ADR-007).
 
 **Localization.** See §17.
 
@@ -164,41 +164,46 @@ docs/
 Fixed product decisions, superseded only by a future ADR. Every default in the Database Specification and every user-facing duration in the MVP Specification resolves to a value here.
 
 ### 14.1 Countdown
-| Constant | Value | Configurable |
-|---|---|---|
-| Default countdown duration | 5 seconds | Yes, per user preference |
-| Allowed countdown range | 3–60 seconds | Fixed |
+
+| Constant                   | Value        | Configurable             |
+| -------------------------- | ------------ | ------------------------ |
+| Default countdown duration | 5 seconds    | Yes, per user preference |
+| Allowed countdown range    | 3–60 seconds | Fixed                    |
 
 ### 14.2 Invitations
-| Constant | Value | Configurable |
-|---|---|---|
-| Invite expiry | 24 hours | Fixed |
-| Join link expiry | 24 hours | Fixed |
+
+| Constant         | Value    | Configurable |
+| ---------------- | -------- | ------------ |
+| Invite expiry    | 24 hours | Fixed        |
+| Join link expiry | 24 hours | Fixed        |
 
 ### 14.3 Rooms
-| Constant | Value | Configurable |
-|---|---|---|
-| Room inactivity timeout | 30 minutes with zero present participants | Fixed |
-| Recent room retention (read-only in Recent) | 30 days | Fixed |
-| Room capacity, v1 domain-enforced | 4 members | Fixed (schema envelope 2–8, ADR-013) |
+
+| Constant                                    | Value                                     | Configurable                         |
+| ------------------------------------------- | ----------------------------------------- | ------------------------------------ |
+| Room inactivity timeout                     | 30 minutes with zero present participants | Fixed                                |
+| Recent room retention (read-only in Recent) | 30 days                                   | Fixed                                |
+| Room capacity, v1 domain-enforced           | 4 members                                 | Fixed (schema envelope 2–8, ADR-013) |
 
 ### 14.4 Retention
-| Data | Retention |
-|---|---|
-| `domain_events` | 24 months |
-| Projections (`activity_timeline`, `recent_partners`) | 90 days |
-| Po sessions and conversations | 30 days |
-| Analytics events | 12 months |
+
+| Data                                                 | Retention |
+| ---------------------------------------------------- | --------- |
+| `domain_events`                                      | 24 months |
+| Projections (`activity_timeline`, `recent_partners`) | 90 days   |
+| Po sessions and conversations                        | 30 days   |
+| Analytics events                                     | 12 months |
 
 **Retention invariant (ADR-012):** projection retention must never exceed `domain_events` retention. 90 days < 24 months holds.
 
 ### 14.5 Synchronization quality bands
-| Band | Offset / drift | Product behaviour |
-|---|---|---|
-| Excellent | ≤ 100 ms | Quality badge only |
-| Good | 101–250 ms | Green badge; no action |
-| Warning | 251–500 ms | Amber badge; re-sync offered |
-| Re-sync required | > 500 ms | Red badge; re-sync prompted |
+
+| Band             | Offset / drift | Product behaviour            |
+| ---------------- | -------------- | ---------------------------- |
+| Excellent        | ≤ 100 ms       | Quality badge only           |
+| Good             | 101–250 ms     | Green badge; no action       |
+| Warning          | 251–500 ms     | Amber badge; re-sync offered |
+| Re-sync required | > 500 ms       | Red badge; re-sync prompted  |
 
 These are simultaneously engineering targets and product constants. No alternative values may be invented.
 
@@ -223,11 +228,13 @@ These are simultaneously engineering targets and product constants. No alternati
 ## 16. Error Taxonomy and Localization Key Grammar (normative)
 
 ### 16.1 Error code grammar
+
 `SF-<DOMAIN>-<CONDITION>` — uppercase, hyphen-separated, stable forever once shipped. Domains: `AUTH`, `ROOM`, `INVITE`, `SYNC`, `VOICE`, `PROVIDER`, `COMPLIANCE`, `PO`, `NET`, `SYS`.
 
 Every error carries `code`, `message_key`, `severity` (`info`, `warning`, `error`, `fatal`), `retryable`, and an optional `recovery_action_key`.
 
 ### 16.2 Localization key grammar
+
 `<area>.<feature>.<element>.<variant>` — lowercase, dot-separated, ASCII. Reserved areas: `common`, `auth`, `room`, `invite`, `sync`, `voice`, `provider`, `compliance`, `po`, `settings`, `notification`, `error`, `a11y`.
 
 - `notifications.title_key` and `notifications.body_key` resolve under `notification.*`.
@@ -250,14 +257,14 @@ Every error carries `code`, `message_key`, `severity` (`info`, `warning`, `error
 
 **Store.** IndexedDB, one versioned database, one object store per cached aggregate.
 
-| Cached aggregate | Contents | TTL |
-|---|---|---|
-| Profile and preferences | Own profile and the five preference rows | Until changed; refreshed on app start |
-| Room shell | Rooms the user is a member of: code, name, status, members | 30 days, aligned to §14.3 |
-| Playback reference | Last known `room_state` snapshot for an open room | Session only |
-| Provider catalog | Providers, capabilities, current status | 24 hours |
-| Localization bundles | Active locale strings | Until bundle version changes |
-| Feature flags | Last evaluated flags | 1 hour |
+| Cached aggregate        | Contents                                                   | TTL                                   |
+| ----------------------- | ---------------------------------------------------------- | ------------------------------------- |
+| Profile and preferences | Own profile and the five preference rows                   | Until changed; refreshed on app start |
+| Room shell              | Rooms the user is a member of: code, name, status, members | 30 days, aligned to §14.3             |
+| Playback reference      | Last known `room_state` snapshot for an open room          | Session only                          |
+| Provider catalog        | Providers, capabilities, current status                    | 24 hours                              |
+| Localization bundles    | Active locale strings                                      | Until bundle version changes          |
+| Feature flags           | Last evaluated flags                                       | 1 hour                                |
 
 **Reconciliation on reconnect.** The server is authoritative for room, membership, playback, and compliance state — the cached copy is discarded on conflict, never merged. Only user-authored preference writes made while offline are replayed, last-write-wins by client timestamp, and only if the profile still exists. Room state is never replayed from cache: it is re-fetched, the clock offset is re-measured, and the position is re-anchored from `room_state.anchor_server_time` + `position_ms`. Voice is re-joined, never restored.
 
@@ -269,14 +276,14 @@ Every error carries `code`, `message_key`, `severity` (`info`, `warning`, `error
 
 Enforced in the Domain layer in front of the repository, so every caller — UI, Po, or API — is limited identically. Per profile unless stated.
 
-| Surface | Limit |
-|---|---|
-| Room creation | 10 per hour |
-| Invite creation | 30 per hour, 10 per room |
-| Join attempts by code | 20 per hour |
-| Re-sync requests | 12 per room per hour |
-| Po turns | 60 per hour |
-| Notification email sends | 20 per day |
+| Surface                  | Limit                    |
+| ------------------------ | ------------------------ |
+| Room creation            | 10 per hour              |
+| Invite creation          | 30 per hour, 10 per room |
+| Join attempts by code    | 20 per hour              |
+| Re-sync requests         | 12 per room per hour     |
+| Po turns                 | 60 per hour              |
+| Notification email sends | 20 per day               |
 
 Exceeding a limit returns an `SF-<DOMAIN>-RATE-LIMITED` error with a `recovery_action_key`. Values are constants under §14 change control.
 
@@ -292,4 +299,4 @@ Exceeding a limit returns an `SF-<DOMAIN>-RATE-LIMITED` error with a `recovery_a
 
 ---
 
-*End of Foundation Specification v1.0. Frozen.*
+_End of Foundation Specification v1.0. Frozen._

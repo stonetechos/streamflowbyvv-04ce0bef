@@ -17,7 +17,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   COUNTDOWN_COORDINATOR,
-  ROOM_READ_MODEL,
   isServiceBound,
   resolveService,
   type CountdownProjection,
@@ -27,6 +26,8 @@ import {
 import { useAnnouncer } from "@/foundation/accessibility";
 import { logger } from "@/foundation/logging";
 import { useTranslation } from "@/foundation/localization";
+
+import { useRoomRealtime } from "./use-room-realtime";
 import { COUNTDOWN_RUNTIME } from "@/shared/constants/system-constants";
 
 import { toWaitingRoomError } from "./waiting-room-state";
@@ -87,10 +88,6 @@ export function useRoomCountdown({
     () => (isServiceBound(COUNTDOWN_COORDINATOR) ? resolveService(COUNTDOWN_COORDINATOR) : null),
     [],
   );
-  const readModel = useMemo(
-    () => (isServiceBound(ROOM_READ_MODEL) ? resolveService(ROOM_READ_MODEL) : null),
-    [],
-  );
 
   const [runtime, setRuntime] = useState<CountdownRuntime | null>(null);
   const [projection, setProjection] = useState<CountdownProjection | null>(null);
@@ -129,30 +126,11 @@ export function useRoomCountdown({
     void load();
   }, [load]);
 
-  // Realtime, consumed through Domain exactly as the roster does: a notice
-  // means "re-read", never "trust this payload".
-  useEffect(() => {
-    if (!readModel || !available) return;
-    let detach: (() => void) | null = null;
-    let cancelled = false;
-
-    void readModel
-      .subscribeToRoom(roomId, () => {
-        void load();
-      })
-      .then((unsubscribe) => {
-        if (cancelled) {
-          unsubscribe();
-          return;
-        }
-        detach = unsubscribe;
-      });
-
-    return () => {
-      cancelled = true;
-      detach?.();
-    };
-  }, [available, load, readModel, roomId]);
+  // Milestone D.5 — the room's single shared subscription, coalesced by the
+  // hub. A notice still means "re-read", never "trust this payload".
+  useRoomRealtime(roomId, available, () => {
+    void load();
+  });
 
   // The local ticker. It derives nothing itself: every value comes back from
   // the Domain projection against the server-written target instant.

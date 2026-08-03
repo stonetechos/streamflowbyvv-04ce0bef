@@ -30,10 +30,7 @@ export interface ProviderCatalogModel {
   toggleFavorite(providerId: string, favorite: boolean): void;
 }
 
-export function useProviderCatalog(
-  profileId: string | null,
-  enabled = true,
-): ProviderCatalogModel {
+export function useProviderCatalog(profileId: string | null, enabled = true): ProviderCatalogModel {
   const [status, setStatus] = useState<ProviderCatalogStatus>("loading");
   const [options, setOptions] = useState<readonly ProviderOptionView[]>([]);
   const [regionCode, setRegionCode] = useState("");
@@ -41,7 +38,8 @@ export function useProviderCatalog(
   const mounted = useRef(true);
 
   const catalog = useMemo(
-    () => (isServiceBound(PROVIDER_CATALOG_SERVICE) ? resolveService(PROVIDER_CATALOG_SERVICE) : null),
+    () =>
+      isServiceBound(PROVIDER_CATALOG_SERVICE) ? resolveService(PROVIDER_CATALOG_SERVICE) : null,
     [],
   );
 

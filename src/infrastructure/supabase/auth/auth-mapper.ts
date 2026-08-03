@@ -103,7 +103,11 @@ export function toAuthError(
   const message = (error.message ?? "").toLowerCase();
 
   let key: AuthErrorKey = "PROVIDER_UNAVAILABLE";
-  if (status === 429 || code === "over_request_rate_limit" || code === "over_email_send_rate_limit") {
+  if (
+    status === 429 ||
+    code === "over_request_rate_limit" ||
+    code === "over_email_send_rate_limit"
+  ) {
     key = "RATE_LIMITED";
   } else if (code === "email_not_confirmed" || message.includes("email not confirmed")) {
     key = "EMAIL_NOT_VERIFIED";

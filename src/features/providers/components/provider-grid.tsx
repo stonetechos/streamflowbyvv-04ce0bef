@@ -57,7 +57,11 @@ export function ProviderGrid({
   }
 
   return (
-    <div role="radiogroup" aria-label={t("provider.list.label")} className="grid gap-3 sm:grid-cols-2">
+    <div
+      role="radiogroup"
+      aria-label={t("provider.list.label")}
+      className="grid gap-3 sm:grid-cols-2"
+    >
       {options.map((option) => (
         <ProviderCard
           key={option.id}

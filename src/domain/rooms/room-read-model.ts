@@ -14,6 +14,7 @@
  * reaches past Domain to a transport (Foundation §2/§4).
  */
 import { createServiceToken } from "@/domain/service-registry";
+import type { RoomService } from "@/domain/services/room-service";
 import type { MembershipState } from "@/domain/shared/domain-enums";
 import {
   INVITE_REPOSITORY,
@@ -37,6 +38,13 @@ export const READINESS_METADATA_KEY = "waiting_room_ready";
 /** Membership states that occupy a seat in the lobby. */
 const LOBBY_STATES: readonly MembershipState[] = ["invited", "joined"];
 
+/**
+ * Room statuses a member may still be admitted into (ADR-002). Mirrors the
+ * rule `RoomFlowService` enforces on the write path; stated once, here, so
+ * Presentation never has to decide whether a seat is available.
+ */
+const JOINABLE_STATUSES: readonly string[] = ["lobby", "active"];
+
 /** A realtime notice, stripped to what a view may legitimately react to. */
 export interface RoomRealtimeNotice {
   readonly eventName: string;
@@ -53,6 +61,12 @@ export interface WaitingRoomSnapshot {
   readonly pendingInvites: readonly Invite[];
   readonly viewerMembership: RoomMember | null;
   readonly joinedCount: number;
+  /**
+   * Whether this viewer may still take a seat. Decided here from the same
+   * lifecycle and capacity rules the write path enforces (ADR-002, ADR-013),
+   * so no hook or component evaluates business capacity for itself.
+   */
+  readonly canViewerJoin: boolean;
 }
 
 export interface RoomReadModel {
@@ -74,10 +88,15 @@ export interface RoomReadModelDependencies {
   readonly invites: InviteRepository;
   /** Absent when the deployment has no realtime transport bound. */
   readonly realtime: RealtimeEventSubscriber | null;
+  /** Owner of the capacity rule (ADR-013). Consulted, never re-implemented. */
+  readonly roomService: RoomService;
 }
 
-export function resolveRoomReadModelDependencies(): RoomReadModelDependencies {
+export function resolveRoomReadModelDependencies(
+  roomService: RoomService,
+): RoomReadModelDependencies {
   return {
+    roomService,
     rooms: resolveRepository(ROOM_REPOSITORY),
     members: resolveRepository(ROOM_MEMBER_REPOSITORY),
     invites: resolveRepository(INVITE_REPOSITORY),
@@ -92,10 +111,9 @@ function withReadiness(metadata: MetadataBag, ready: boolean): MetadataBag {
 }
 
 export function createRoomReadModel(deps: RoomReadModelDependencies): RoomReadModel {
-  const { rooms, members, invites, realtime } = deps;
+  const { rooms, members, invites, realtime, roomService } = deps;
 
-  const isReady = (member: RoomMember): boolean =>
-    member.metadata[READINESS_METADATA_KEY] === true;
+  const isReady = (member: RoomMember): boolean => member.metadata[READINESS_METADATA_KEY] === true;
 
   return {
     async loadWaitingRoom(roomId, viewerProfileId) {
@@ -107,16 +125,28 @@ export function createRoomReadModel(deps: RoomReadModelDependencies): RoomReadMo
       const memberPage = await members.listByRoom(roomId, { states: LOBBY_STATES });
       const invitePage = await invites.listByRoom(roomId, { statuses: ["pending"] });
       const roster = memberPage.items;
+      const viewerMembership =
+        viewerProfileId === null
+          ? null
+          : (roster.find((member) => member.profileId === viewerProfileId) ?? null);
+
+      // Capacity is RoomService's rule; a seat already held by this viewer is
+      // not a seat they need to take again.
+      const occupied = roster.filter((member) => LOBBY_STATES.includes(member.state)).length;
+      const seats =
+        viewerMembership && LOBBY_STATES.includes(viewerMembership.state) ? occupied - 1 : occupied;
+      const canViewerJoin =
+        viewerMembership?.state !== "joined" &&
+        JOINABLE_STATUSES.includes(room.status) &&
+        roomService.hasCapacity(seats, room.maxMembers);
 
       return Object.freeze({
         room,
         members: roster,
         pendingInvites: invitePage.items,
-        viewerMembership:
-          viewerProfileId === null
-            ? null
-            : (roster.find((member) => member.profileId === viewerProfileId) ?? null),
+        viewerMembership,
         joinedCount: roster.filter((member) => member.state === "joined").length,
+        canViewerJoin,
       });
     },
 

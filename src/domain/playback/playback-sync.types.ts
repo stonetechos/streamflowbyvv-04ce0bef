@@ -133,10 +133,7 @@ export interface PlaybackCorrection {
 
 /** Why a correction class was chosen. Machine-readable; UI maps to copy. */
 export type PlaybackCorrectionReason =
-  | "within_tolerance"
-  | "soft_eligible"
-  | "hard_eligible"
-  | "not_measured";
+  "within_tolerance" | "soft_eligible" | "hard_eligible" | "not_measured";
 
 /**
  * The synchronization decision for a room. This is the entire decision space
