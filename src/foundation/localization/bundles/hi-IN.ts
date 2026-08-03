@@ -499,11 +499,28 @@ export const hiINBundle: LocaleBundle = {
     "common.action.refresh": "रिफ़्रेश करें",
     "common.action.save": "सहेजें",
     "common.badge.coming_soon": "जल्द आ रहा है",
-    "landing.headline": "साथ देखें, बिल्कुल एक साथ।",
+    "landing.headline": "साथ देखें, बिल्कुल एक साथ सिंक में।",
     "landing.subheadline":
-      "StreamFlow आपके अपने सब्सक्रिप्शन पर सबका प्लेबैक एक साथ रखता है — साझा काउंटडाउन, लाइव वॉइस, और कुछ भी दोबारा स्ट्रीम नहीं।",
+      "हर कोई अपनी ही स्ट्रीमिंग सदस्यता पर देखता है, और StreamFlow सबका प्लेबैक सिंक में रखता है — साथ में लाइव वॉइस चैट। कोई भी कंटेंट दोबारा स्ट्रीम नहीं होता।",
     "landing.cta.primary": "खाता बनाएँ",
     "landing.cta.secondary": "साइन इन करें",
+    "landing.card.together.title": "साथ देखें",
+    "landing.card.together.body": "दोस्तों के साथ वही फ़िल्म या एपिसोड, रियल टाइम में देखें।",
+    "landing.card.subscription.title": "अपनी ही सदस्यता इस्तेमाल करें",
+    "landing.card.subscription.body":
+      "हर कोई अपने Netflix, Prime Video, Disney+, JioHotstar या अन्य समर्थित खाते पर देखता है।",
+    "landing.card.voice.title": "लाइव वॉइस और काउंटडाउन",
+    "landing.card.voice.body":
+      "बिल्ट-इन वॉइस चैट से जुड़े रहें, और साझा काउंटडाउन सबको एक साथ तैयार करता है।",
+    "landing.how.title": "StreamFlow कैसे काम करता है",
+    "landing.how.description": "ऐप खोलने से लेकर साथ में प्ले दबाने तक, तीन कदम।",
+    "landing.how.step": "चरण {step}",
+    "landing.how.step1": "अपनी स्ट्रीमिंग सेवा चुनें।",
+    "landing.how.step2": "रूम कोड या इनवाइट लिंक से दोस्तों को बुलाएँ।",
+    "landing.how.step3":
+      "हर कोई अपने ही खाते पर देखता है और StreamFlow सबको सिंक में रखता है।",
+    "landing.services.title": "उन सेवाओं के साथ जो आप पहले से इस्तेमाल करते हैं",
+
     "nav.home": "होम",
     "nav.invites": "निमंत्रण",
     "nav.settings": "सेटिंग्स",
