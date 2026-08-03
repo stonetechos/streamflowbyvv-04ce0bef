@@ -119,10 +119,12 @@ export const NOTIFICATION_SERVICE = createServiceToken<NotificationService>("Not
 export const ANALYTICS_SERVICE = createServiceToken<AnalyticsService>("AnalyticsService");
 export const USER_SERVICE = createServiceToken<UserService>("UserService");
 export const PROVIDER_SERVICE = createServiceToken<ProviderService>("ProviderService");
-export const FEATURE_FLAG_SERVICE =
-  createServiceToken<FeatureFlagDomainService>("FeatureFlagDomainService");
-export const LOCALIZATION_SERVICE =
-  createServiceToken<LocalizationDomainService>("LocalizationDomainService");
+export const FEATURE_FLAG_SERVICE = createServiceToken<FeatureFlagDomainService>(
+  "FeatureFlagDomainService",
+);
+export const LOCALIZATION_SERVICE = createServiceToken<LocalizationDomainService>(
+  "LocalizationDomainService",
+);
 export const COMPLIANCE_SERVICE = createServiceToken<ComplianceService>("ComplianceService");
 /** Sprint 2.2 — deep-link construction (URL building only, never launching). */
 export const DEEP_LINK_SERVICE = createServiceToken<DeepLinkService>("DeepLinkService");
@@ -167,7 +169,10 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
           }),
         ),
     ],
-    [ROOM_READ_MODEL, () => createRoomReadModel(resolveRoomReadModelDependencies())],
+    [
+      ROOM_READ_MODEL,
+      () => createRoomReadModel(resolveRoomReadModelDependencies(resolveService(ROOM_SERVICE))),
+    ],
     [
       PRESENCE_COORDINATOR,
       () =>

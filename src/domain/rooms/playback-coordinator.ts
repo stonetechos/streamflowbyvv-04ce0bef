@@ -456,5 +456,4 @@ export function resolvePlaybackCoordinatorDependencies(input: {
   };
 }
 
-export const PLAYBACK_COORDINATOR =
-  createServiceToken<PlaybackCoordinator>("PlaybackCoordinator");
+export const PLAYBACK_COORDINATOR = createServiceToken<PlaybackCoordinator>("PlaybackCoordinator");

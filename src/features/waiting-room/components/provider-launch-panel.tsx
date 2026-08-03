@@ -34,9 +34,7 @@ export function ProviderLaunchPanel({ model }: { model: ProviderLaunchModel }) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
-        <CardTitle className="text-base">
-          {t(guidanceHeadingKey(plan.launchClass))}
-        </CardTitle>
+        <CardTitle className="text-base">{t(guidanceHeadingKey(plan.launchClass))}</CardTitle>
         <Badge variant={plan.launchClass === "unsupported" ? "outline" : "secondary"}>
           {t(`provider.launch.class.${plan.launchClass}`)}
         </Badge>

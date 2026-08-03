@@ -49,7 +49,6 @@ export function createSupabaseAuthRepository(connection: DataConnection): AuthRe
       });
       if (error) throw toAuthError(error, "signUp");
 
-
       const session = await resolveDomainSession(connection, data.session, "signUp");
       return session
         ? { kind: "session", session }
@@ -89,10 +88,7 @@ export function createSupabaseAuthRepository(connection: DataConnection): AuthRe
     async requestPasswordReset(email: string, returnPath: string): Promise<void> {
       assertAvailable("requestPasswordReset");
       const redirectTo = toRedirectUrl(returnPath);
-      const { error } = await auth().resetPasswordForEmail(
-        email,
-        redirectTo ? { redirectTo } : {},
-      );
+      const { error } = await auth().resetPasswordForEmail(email, redirectTo ? { redirectTo } : {});
       if (error) throw toAuthError(error, "requestPasswordReset");
     },
 

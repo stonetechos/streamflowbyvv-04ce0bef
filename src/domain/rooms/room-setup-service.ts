@@ -61,16 +61,9 @@ export interface SelectProviderResult {
 export interface RoomSetupService {
   isAvailable(): boolean;
   /** Refuses an unselectable or compliance-blocked provider outright. */
-  selectProvider(
-    request: SelectProviderRequest,
-    intent: Intent,
-  ): Promise<SelectProviderResult>;
+  selectProvider(request: SelectProviderRequest, intent: Intent): Promise<SelectProviderResult>;
   /** Persists the countdown length. Clamped, never scheduled. */
-  setCountdownSeconds(
-    roomId: string,
-    seconds: number,
-    actorProfileId: string,
-  ): Promise<Room>;
+  setCountdownSeconds(roomId: string, seconds: number, actorProfileId: string): Promise<Room>;
   /** Reads the stored length, falling back to the specified default. */
   readCountdownSeconds(metadata: MetadataBag): number;
 }
@@ -105,7 +98,8 @@ export function createRoomSetupService(deps: RoomSetupDependencies): RoomSetupSe
     async selectProvider(request, intent) {
       const store = requireRooms(rooms, "selectProvider");
       const room = await store.findById(request.roomId);
-      if (!room) throw domainError("ROOM_NOT_FOUND", {
+      if (!room)
+        throw domainError("ROOM_NOT_FOUND", {
           operation: "RoomSetupService.selectProvider",
           aggregateId: request.roomId,
         });
@@ -183,7 +177,8 @@ export function createRoomSetupService(deps: RoomSetupDependencies): RoomSetupSe
     async setCountdownSeconds(roomId, seconds, actorProfileId) {
       const store = requireRooms(rooms, "setCountdownSeconds");
       const room = await store.findById(roomId);
-      if (!room) throw domainError("ROOM_NOT_FOUND", {
+      if (!room)
+        throw domainError("ROOM_NOT_FOUND", {
           operation: "RoomSetupService.setCountdownSeconds",
           aggregateId: roomId,
         });

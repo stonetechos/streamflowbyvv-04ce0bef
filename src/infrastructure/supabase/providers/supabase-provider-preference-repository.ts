@@ -123,17 +123,14 @@ export function createSupabaseProviderContextRepository(
     async setDefaultProvider(profileId: EntityId, providerId: EntityId | null): Promise<void> {
       requireAvailable(connection, context("setDefaultProvider", profileId));
       await runCommand(
-        connection
-          .client()
-          .from("privacy_preferences")
-          .upsert(
-            {
-              profile_id: profileId,
-              default_provider_id: providerId,
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: "profile_id" },
-          ),
+        connection.client().from("privacy_preferences").upsert(
+          {
+            profile_id: profileId,
+            default_provider_id: providerId,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "profile_id" },
+        ),
         context("setDefaultProvider", profileId),
       );
     },

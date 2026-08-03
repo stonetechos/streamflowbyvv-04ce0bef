@@ -25,10 +25,7 @@ export interface DeepLinkTarget {
 }
 
 export type DeepLinkRefusalReason =
-  | "unsupported_provider"
-  | "missing_reference"
-  | "untrusted_host"
-  | "not_a_web_link";
+  "unsupported_provider" | "missing_reference" | "untrusted_host" | "not_a_web_link";
 
 export type DeepLinkResult =
   | { readonly ok: true; readonly target: DeepLinkTarget }

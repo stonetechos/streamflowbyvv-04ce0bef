@@ -30,7 +30,8 @@ export const hiINBundle: LocaleBundle = {
     "error.net.timeout": "अनुरोध में बहुत समय लग गया। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
     "error.net.offline": "आप ऑफ़लाइन लग रहे हैं। कनेक्शन लौटते ही StreamFlow अपने आप जुड़ जाएगा।",
     "error.net.cancelled": "यह अनुरोध रद्द कर दिया गया।",
-    "error.net.unreachable": "हम StreamFlow तक नहीं पहुँच सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+    "error.net.unreachable":
+      "हम StreamFlow तक नहीं पहुँच सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
     "error.net.bad_response": "हमें एक अनपेक्षित उत्तर मिला। कृपया फिर कोशिश करें।",
     "error.net.server_error": "StreamFlow में अभी कुछ दिक्कत है। थोड़ी देर बाद कोशिश करें।",
     // Sprint 1.9 — गतिविधि टाइमलाइन सारांश (Foundation §13).
@@ -42,7 +43,8 @@ export const hiINBundle: LocaleBundle = {
     "activity.voice_joined": "आप वॉइस चैट में शामिल हुए।",
     // Sprint 1.6 — साझा डोमेन त्रुटि वर्गीकरण (Foundation §16.1).
     "error.sys.invalid_input": "यह अनुरोध मान्य नहीं था, इसलिए कुछ नहीं बदला।",
-    "error.sys.service_unavailable": "StreamFlow का यह हिस्सा अभी तैयार नहीं है। कृपया फिर कोशिश करें।",
+    "error.sys.service_unavailable":
+      "StreamFlow का यह हिस्सा अभी तैयार नहीं है। कृपया फिर कोशिश करें।",
     "error.sys.rate_limited": "आपने यह बहुत बार किया है। कृपया थोड़ा रुकें।",
     "error.room.capacity_exceeded": "यह रूम भर चुका है।",
     "error.room.invalid_transition": "यह रूम उस स्थिति में नहीं जा सकता।",
@@ -60,7 +62,8 @@ export const hiINBundle: LocaleBundle = {
     "error.provider.capability_unsupported": "यह सेवा वह क्रिया समर्थित नहीं करती।",
     "error.compliance.action_blocked": "StreamFlow इस सेवा के साथ यह नहीं कर सकता।",
     "error.net.request_failed": "यह अनुरोध पूरा नहीं हो सका। कृपया फिर कोशिश करें।",
-    "error.sys.persistence_unavailable": "StreamFlow अभी आपके डेटा तक नहीं पहुँच पा रहा। थोड़ी देर बाद कोशिश करें।",
+    "error.sys.persistence_unavailable":
+      "StreamFlow अभी आपके डेटा तक नहीं पहुँच पा रहा। थोड़ी देर बाद कोशिश करें।",
     "error.sys.persistence_failed": "हम यह पूरा नहीं कर सके। कृपया फिर कोशिश करें।",
     "error.sys.not_found": "आप जो खोज रहे थे वह नहीं मिला।",
     "error.sys.conflict": "यह कहीं और पहले ही बदल चुका है। रिफ़्रेश करके फिर कोशिश करें।",
@@ -109,7 +112,7 @@ export const hiINBundle: LocaleBundle = {
     "a11y.main_content.label": "मुख्य सामग्री",
     "a11y.loading.announcement": "लोड हो रहा है, कृपया प्रतीक्षा करें",
     "a11y.error.announcement": "एक त्रुटि हुई",
-  
+
     "room.waiting_room.eyebrow": "प्रतीक्षा कक्ष",
     "room.waiting_room.title": "सबको एक साथ लाया जा रहा है",
     "room.waiting_room.subtitle": "होस्ट के कहने तक कुछ शुरू नहीं होगा।",
@@ -143,7 +146,8 @@ export const hiINBundle: LocaleBundle = {
     "room.actions.join_hint": "रूम में दिखने और तैयार होने का संकेत देने के लिए शामिल हों।",
     "room.actions.leave": "रूम छोड़ें",
     "room.actions.ready_label": "मैं तैयार हूँ",
-    "room.actions.ready_hint": "तैयारी होस्ट को बताती है कि आप तैयार हैं। इससे प्लेबैक शुरू नहीं होता।",
+    "room.actions.ready_hint":
+      "तैयारी होस्ट को बताती है कि आप तैयार हैं। इससे प्लेबैक शुरू नहीं होता।",
     "invite.summary.title": "लंबित आमंत्रण",
     "invite.summary.empty": "किसी आमंत्रण का उत्तर बाकी नहीं है।",
     "invite.summary.pending": "{count} उत्तर की प्रतीक्षा में।",
@@ -157,7 +161,7 @@ export const hiINBundle: LocaleBundle = {
     "error.sys.service_unavailable.title": "अभी तैयार नहीं",
     "error.sys.persistence_unavailable.title": "आपका डेटा नहीं मिल रहा",
     "error.sys.conflict.title": "कोई पहले बदल चुका है",
-  
+
     "room.presence.online": "ऑनलाइन",
     "room.presence.idle": "निष्क्रिय",
     "room.presence.away": "दूर",
@@ -182,8 +186,10 @@ export const hiINBundle: LocaleBundle = {
     "provider.class.unverified": "असत्यापित",
     "provider.class.unavailable": "अनुपलब्ध",
     "provider.hint.supported": "StreamFlow इसे सबके लिए साथ में चला और रोक सकता है।",
-    "provider.hint.manual_sync": "सब गिनती पर एक साथ प्ले दबाएंगे। StreamFlow प्लेयर को नियंत्रित नहीं करेगा।",
-    "provider.hint.unverified": "हमने इसे अभी सत्यापित नहीं किया है। आप गिनती के साथ फिर भी साथ देख सकते हैं।",
+    "provider.hint.manual_sync":
+      "सब गिनती पर एक साथ प्ले दबाएंगे। StreamFlow प्लेयर को नियंत्रित नहीं करेगा।",
+    "provider.hint.unverified":
+      "हमने इसे अभी सत्यापित नहीं किया है। आप गिनती के साथ फिर भी साथ देख सकते हैं।",
     "provider.hint.unavailable": "इस रूम में यह सेवा अभी उपयोग नहीं हो सकती।",
     "provider.badge.default": "आपकी डिफ़ॉल्ट",
     "provider.action.favorite": "{provider} को पसंदीदा में जोड़ें",
@@ -193,11 +199,15 @@ export const hiINBundle: LocaleBundle = {
     "provider.netflix.name": "Netflix",
     "provider.prime_video.name": "Prime Video",
     "provider.disney_hotstar.name": "Disney+ Hotstar",
-    "compliance.rationale.tos_no_automation": "इस सेवा की शर्तें स्वचालित नियंत्रण की अनुमति नहीं देतीं।",
-    "compliance.rationale.public_embed_api": "सेवा के अपने सार्वजनिक एम्बेड से, आपके ही सत्र में चलता है।",
-    "compliance.rationale.never_store_credentials": "StreamFlow आपके खाते की जानकारी न मांगता है, न संग्रहित करता है।",
+    "compliance.rationale.tos_no_automation":
+      "इस सेवा की शर्तें स्वचालित नियंत्रण की अनुमति नहीं देतीं।",
+    "compliance.rationale.public_embed_api":
+      "सेवा के अपने सार्वजनिक एम्बेड से, आपके ही सत्र में चलता है।",
+    "compliance.rationale.never_store_credentials":
+      "StreamFlow आपके खाते की जानकारी न मांगता है, न संग्रहित करता है।",
     "compliance.rationale.user_owned_media": "आपकी अपनी डिवाइस की, आपकी अपनी फ़ाइल चलती है।",
-    "compliance.rationale.no_redistribution": "वीडियो StreamFlow से होकर नहीं जाता। कुछ भी साझा नहीं किया जाता।",
+    "compliance.rationale.no_redistribution":
+      "वीडियो StreamFlow से होकर नहीं जाता। कुछ भी साझा नहीं किया जाता।",
 
     "room.setup.title": "देखने से पहले",
     "room.setup.description.host": "सेवा और गिनती की अवधि चुनें। आपके कहने तक कुछ शुरू नहीं होगा।",
@@ -205,11 +215,13 @@ export const hiINBundle: LocaleBundle = {
     "room.setup.selected.label": "सेवा:",
     "room.setup.selected.none": "अभी नहीं चुनी गई",
     "room.setup.countdown.label": "गिनती की अवधि (सेकंड)",
-    "room.setup.countdown.hint": "{min} से {max} सेकंड के बीच। सहेजा जाएगा — अभी कुछ शुरू नहीं होगा।",
+    "room.setup.countdown.hint":
+      "{min} से {max} सेकंड के बीच। सहेजा जाएगा — अभी कुछ शुरू नहीं होगा।",
     "room.setup.countdown.invalid": "{min} से {max} के बीच पूर्ण संख्या दर्ज करें।",
     "room.setup.countdown.readonly": "गिनती {seconds} सेकंड तक चलेगी।",
     "room.countdown.title": "गिनती",
-    "room.countdown.description.host": "सब तैयार हों तो गिनती शुरू करें। शून्य पर सब एक साथ प्ले दबाएँ — StreamFlow आपके लिए नहीं दबाएगा।",
+    "room.countdown.description.host":
+      "सब तैयार हों तो गिनती शुरू करें। शून्य पर सब एक साथ प्ले दबाएँ — StreamFlow आपके लिए नहीं दबाएगा।",
     "room.countdown.description.guest": "मेजबान गिनती शुरू करेगा। अपनी सेवा खोलकर तैयार रखें।",
     "room.countdown.state.idle": "शुरू नहीं हुई",
     "room.countdown.state.preparing": "तैयारी हो रही है",
@@ -244,7 +256,8 @@ export const hiINBundle: LocaleBundle = {
     "po.banner.encouraging": "पो शांति से प्रतीक्षा कर रहा है — कमरे को बस एक पल चाहिए।",
     "room.playback_sync.status.playback_ready": "प्लेबैक तैयार",
     "room.playback_sync.status.synchronization_ready": "सिंक्रनाइज़ेशन तैयार",
-    "room.playback_sync.status.waiting_for_manual_play": "सभी के अपने ऐप में प्ले दबाने की प्रतीक्षा है।",
+    "room.playback_sync.status.waiting_for_manual_play":
+      "सभी के अपने ऐप में प्ले दबाने की प्रतीक्षा है।",
     "room.playback_sync.status.waiting_for_resync": "साथ देखने से पहले री-सिंक की प्रतीक्षा है।",
     "room.playback_sync.decision.stay_synchronized": "कमरा एक लय में है।",
     "room.playback_sync.decision.recommend_resync": "री-सिंक की सलाह दी जाती है।",
@@ -254,19 +267,26 @@ export const hiINBundle: LocaleBundle = {
     "room.playback_sync.correction.soft": "एक छोटा समायोजन कमरे को साथ ले आएगा।",
     "room.playback_sync.correction.hard": "कमरे को साथ लाने के लिए पूरा री-सिंक चाहिए होगा।",
     "room.room_sync.title": "कमरे का सिंक्रनाइज़ेशन",
-    "room.room_sync.description": "सबकी घड़ियाँ कितनी मिलती हैं। कमरा हमेशा सबसे कमज़ोर प्रतिभागी को दर्शाता है।",
+    "room.room_sync.description":
+      "सबकी घड़ियाँ कितनी मिलती हैं। कमरा हमेशा सबसे कमज़ोर प्रतिभागी को दर्शाता है।",
     "room.room_sync.count.ready": "तैयार",
     "room.room_sync.count.synced": "सिंक",
     "room.room_sync.count.waiting": "प्रतीक्षारत",
     "room.room_sync.count.of": " / {total}",
-    "room.room_sync.block.resync_required": "काउंटडाउन रुका है: कम से कम एक व्यक्ति की घड़ी बहुत अलग है। उन्हें दोबारा माप लेने को कहें।",
-    "room.room_sync.block.no_participants": "काउंटडाउन रुका है: अभी कोई कमरे में शामिल नहीं हुआ है।",
-    "room.room_sync.block.participant_advisory": "कोई अब भी पीछे है। होस्ट अभी काउंटडाउन शुरू नहीं कर सकता।",
-    "room.room_sync.advisory.warning": "घड़ियाँ थोड़ी अलग हैं। काउंटडाउन शुरू हो सकता है, पर थोड़ा अंतर रहेगा।",
-    "room.room_sync.no_playback_notice": "StreamFlow केवल तैयारी का समन्वय करता है; यह आपका प्लेयर कभी नियंत्रित नहीं करता।",
+    "room.room_sync.block.resync_required":
+      "काउंटडाउन रुका है: कम से कम एक व्यक्ति की घड़ी बहुत अलग है। उन्हें दोबारा माप लेने को कहें।",
+    "room.room_sync.block.no_participants":
+      "काउंटडाउन रुका है: अभी कोई कमरे में शामिल नहीं हुआ है।",
+    "room.room_sync.block.participant_advisory":
+      "कोई अब भी पीछे है। होस्ट अभी काउंटडाउन शुरू नहीं कर सकता।",
+    "room.room_sync.advisory.warning":
+      "घड़ियाँ थोड़ी अलग हैं। काउंटडाउन शुरू हो सकता है, पर थोड़ा अंतर रहेगा।",
+    "room.room_sync.no_playback_notice":
+      "StreamFlow केवल तैयारी का समन्वय करता है; यह आपका प्लेयर कभी नियंत्रित नहीं करता।",
     "room.sync.announce.room_health_changed": "कमरे का सिंक्रनाइज़ेशन: {health}।",
     "room.sync.title": "सिंक स्थिति",
-    "room.sync.description": "इस डिवाइस की घड़ी रूम की घड़ी से कितनी मेल खाती है। यह केवल मापा जाता है, सुधारा नहीं जाता।",
+    "room.sync.description":
+      "इस डिवाइस की घड़ी रूम की घड़ी से कितनी मेल खाती है। यह केवल मापा जाता है, सुधारा नहीं जाता।",
     "room.sync.health.excellent": "उत्कृष्ट",
     "room.sync.health.good": "अच्छा",
     "room.sync.health.warning": "चेतावनी",
@@ -282,10 +302,12 @@ export const hiINBundle: LocaleBundle = {
     "room.sync.measure_action": "फिर से मापें",
     "room.sync.unavailable": "इस डिवाइस पर सिंक उपलब्ध नहीं है।",
     "room.sync.resync_hint": "घड़ियाँ बहुत अलग हैं। काउंटडाउन शुरू करने से पहले फिर से मापें।",
-    "room.sync.no_correction_notice": "StreamFlow सिंक स्थिति बताता है; वह आपका प्लेबैक कभी नहीं बदलता।",
+    "room.sync.no_correction_notice":
+      "StreamFlow सिंक स्थिति बताता है; वह आपका प्लेबैक कभी नहीं बदलता।",
     "room.sync.announce.health_changed": "सिंक स्थिति: {health}।",
     "room.playback.title": "देखने के लिए तैयार",
-    "room.playback.description": "सभी तैयार हैं। अपने ऐप में प्ले दबाएं — StreamFlow आपका प्लेयर कभी नहीं चलाता।",
+    "room.playback.description":
+      "सभी तैयार हैं। अपने ऐप में प्ले दबाएं — StreamFlow आपका प्लेयर कभी नहीं चलाता।",
     "room.playback.state.idle": "अभी तैयार नहीं",
     "room.playback.state.queued": "रूम तैयार हो रहा है",
     "room.playback.state.ready": "तैयार — प्ले दबाएं",
@@ -297,7 +319,8 @@ export const hiINBundle: LocaleBundle = {
     "room.playback.arming": "रूम तैयार किया जा रहा है…",
     "room.playback.press_play_hint": "अपने खाते में अभी प्ले दबाएं।",
     "room.playback.owner": "{owner} रूम को एक साथ रख रहे हैं।",
-    "room.playback.no_control_notice": "StreamFlow आपकी स्ट्रीमिंग सेवा को नियंत्रित नहीं करता और न ही आपका साइन-इन संग्रहीत करता है।",
+    "room.playback.no_control_notice":
+      "StreamFlow आपकी स्ट्रीमिंग सेवा को नियंत्रित नहीं करता और न ही आपका साइन-इन संग्रहीत करता है।",
     "room.playback.announce.countdown_complete": "काउंटडाउन पूरा हुआ।",
     "room.playback.announce.waiting_for_playback": "प्लेबैक की प्रतीक्षा है।",
     "error.provider.capability_unsupported.title": "यह सेवा यहाँ उपयोग नहीं हो सकती",
@@ -315,7 +338,8 @@ export const hiINBundle: LocaleBundle = {
     "provider.launch.status.launched": "प्रोवाइडर खुल गया। काउंटडाउन के लिए यहाँ लौटें।",
     "provider.launch.status.failed": "कुछ नहीं खुला। ब्राउज़र विकल्प आज़माएँ।",
     "provider.launch.refusal.compliance_blocked": "यह प्रोवाइडर StreamFlow से नहीं खोला जा सकता।",
-    "provider.launch.refusal.provider_unavailable": "यह प्रोवाइडर अभी आपके क्षेत्र में उपलब्ध नहीं है।",
+    "provider.launch.refusal.provider_unavailable":
+      "यह प्रोवाइडर अभी आपके क्षेत्र में उपलब्ध नहीं है।",
     "provider.launch.refusal.missing_content_reference": "होस्ट ने अभी कोई शीर्षक नहीं चुना है।",
     "provider.launch.refusal.no_known_destination": "StreamFlow को इस प्रोवाइडर का पता नहीं है।",
     "provider.launch.refusal.local_media": "अपनी फ़ाइल अपने प्लेयर में खोलें।",
@@ -326,8 +350,10 @@ export const hiINBundle: LocaleBundle = {
     "provider.guidance.heading.deep_link": "तैयारी करें",
     "provider.guidance.heading.unsupported": "यह क्यों उपलब्ध नहीं है",
     "provider.guidance.summary.supported": "शून्य पर सब एक साथ प्ले दबाते हैं।",
-    "provider.guidance.summary.manual_sync": "StreamFlow गिनती करता है; प्ले आप अपने ऐप में दबाते हैं।",
-    "provider.guidance.summary.deep_link": "StreamFlow प्रोवाइडर खोलता है, फिर नियंत्रण आपको देता है।",
+    "provider.guidance.summary.manual_sync":
+      "StreamFlow गिनती करता है; प्ले आप अपने ऐप में दबाते हैं।",
+    "provider.guidance.summary.deep_link":
+      "StreamFlow प्रोवाइडर खोलता है, फिर नियंत्रण आपको देता है।",
     "provider.guidance.summary.unsupported": "StreamFlow यह प्रोवाइडर नहीं खोलेगा।",
     "provider.guidance.unsupported.explain": "StreamFlow केवल अनुमत प्रोवाइडर से ही लिंक करता है।",
     "provider.guidance.step.open_provider": "ऊपर दिए बटन से प्रोवाइडर खोलें।",
@@ -337,7 +363,8 @@ export const hiINBundle: LocaleBundle = {
     "provider.guidance.step.press_play_on_zero": "शून्य पर अपने ऐप में प्ले दबाएँ।",
     "provider.guidance.youtube.pause_at_start": "शुरुआत में रोक कर रखें ताकि सब साथ शुरू करें।",
     "provider.guidance.netflix.skip_intro_together": "इंट्रो स्किप करने पर पहले सहमत हों।",
-    "provider.guidance.prime_video.check_audio_track": "सुनिश्चित करें सबका ऑडियो ट्रैक एक जैसा है।",
+    "provider.guidance.prime_video.check_audio_track":
+      "सुनिश्चित करें सबका ऑडियो ट्रैक एक जैसा है।",
     "provider.guidance.disney_hotstar.check_language": "सुनिश्चित करें सबने एक ही भाषा चुनी है।",
     "provider.guidance.local_file.open_your_copy": "अपनी फ़ाइल अपने सामान्य प्लेयर में खोलें।",
     "provider.guidance.local_file.confirm_same_cut": "सुनिश्चित करें सबके पास एक ही संस्करण है।",
@@ -353,7 +380,8 @@ export const hiINBundle: LocaleBundle = {
     "room.ready.count": "{total} में से {ready} तैयार",
     "room.ready.action.confirm": "मैं तैयार हूँ",
     "room.ready.action.undo": "अभी तैयार नहीं हूँ",
-    "room.ready.timeout_hint": "आप काफ़ी देर से बिना पुष्टि किए रूम में हैं। तैयार होने पर पुष्टि करें।",
+    "room.ready.timeout_hint":
+      "आप काफ़ी देर से बिना पुष्टि किए रूम में हैं। तैयार होने पर पुष्टि करें।",
     "room.ready.late_join_hint": "रूम तैयार होने के बाद कोई शामिल हुआ है। उन्हें थोड़ा समय दें।",
     "room.ready.no_control_notice": "StreamFlow सिर्फ़ समय मिलाता है; प्ले हमेशा आप खुद दबाते हैं।",
     "room.ready.block.no_participants": "अभी तक कोई रूम में शामिल नहीं हुआ।",
@@ -363,7 +391,8 @@ export const hiINBundle: LocaleBundle = {
     "room.ready.announce.member_ready": "{member} तैयार हैं।",
     "room.ready.announce.everyone_ready": "सब तैयार हैं।",
     "room.ready.announce.countdown_available": "काउंटडाउन उपलब्ध है।",
-    "room.ready.announce.manual_play_reminder": "काउंटडाउन खत्म होते ही अपने ऐप में प्ले दबाना याद रखें।",
+    "room.ready.announce.manual_play_reminder":
+      "काउंटडाउन खत्म होते ही अपने ऐप में प्ले दबाना याद रखें।",
     "room.summary.title": "रूम सारांश",
     "room.summary.description": "काउंटडाउन शुरू करने से पहले ज़रूरी सब कुछ।",
     "room.summary.members_ready": "तैयार सदस्य",

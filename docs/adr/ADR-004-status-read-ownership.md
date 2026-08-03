@@ -11,10 +11,10 @@
 
 ## Decision
 
-| Concern | Authoritative column |
-|---|---|
-| Room lifecycle, listings, navigation, RLS | `rooms.status` |
-| Watching-screen playback condition | `room_state.playback_status` |
+| Concern                                   | Authoritative column         |
+| ----------------------------------------- | ---------------------------- |
+| Room lifecycle, listings, navigation, RLS | `rooms.status`               |
+| Watching-screen playback condition        | `room_state.playback_status` |
 
 **`rooms.status = paused` is not used to represent a paused video in v1.** A room with a paused video remains `active`; the pause lives in `room_state.playback_status`.
 

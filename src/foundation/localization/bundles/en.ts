@@ -65,7 +65,8 @@ export const enBundle: LocaleBundle = {
     "error.provider.capability_unsupported": "This service doesn't support that action.",
     "error.compliance.action_blocked": "StreamFlow can't do that with this service.",
     "error.net.request_failed": "That request didn't go through. Please try again.",
-    "error.sys.persistence_unavailable": "StreamFlow can't reach your data right now. Please try again shortly.",
+    "error.sys.persistence_unavailable":
+      "StreamFlow can't reach your data right now. Please try again shortly.",
     "error.sys.persistence_failed": "We couldn't complete that. Please try again.",
     "error.sys.not_found": "We couldn't find what you were looking for.",
     "error.sys.conflict": "That has already been changed somewhere else. Refresh and try again.",
@@ -114,7 +115,7 @@ export const enBundle: LocaleBundle = {
     "a11y.main_content.label": "Main content",
     "a11y.loading.announcement": "Loading, please wait",
     "a11y.error.announcement": "An error occurred",
-  
+
     "room.waiting_room.eyebrow": "Waiting room",
     "room.waiting_room.title": "Getting everyone together",
     "room.waiting_room.subtitle": "Nothing starts until the host says so.",
@@ -162,7 +163,7 @@ export const enBundle: LocaleBundle = {
     "error.sys.service_unavailable.title": "Not ready yet",
     "error.sys.persistence_unavailable.title": "Can't reach your data",
     "error.sys.conflict.title": "Someone got there first",
-  
+
     "room.presence.online": "Online",
     "room.presence.idle": "Idle",
     "room.presence.away": "Away",
@@ -187,8 +188,10 @@ export const enBundle: LocaleBundle = {
     "provider.class.unverified": "Unverified",
     "provider.class.unavailable": "Unavailable",
     "provider.hint.supported": "StreamFlow can start and pause this together for everyone.",
-    "provider.hint.manual_sync": "Everyone presses play together on a countdown. StreamFlow won't control the player.",
-    "provider.hint.unverified": "Not yet verified by us. You can still watch together with a countdown.",
+    "provider.hint.manual_sync":
+      "Everyone presses play together on a countdown. StreamFlow won't control the player.",
+    "provider.hint.unverified":
+      "Not yet verified by us. You can still watch together with a countdown.",
     "provider.hint.unavailable": "This service can't be used in this room right now.",
     "provider.badge.default": "Your default",
     "provider.action.favorite": "Add {provider} to favourites",
@@ -198,24 +201,32 @@ export const enBundle: LocaleBundle = {
     "provider.netflix.name": "Netflix",
     "provider.prime_video.name": "Prime Video",
     "provider.disney_hotstar.name": "Disney+ Hotstar",
-    "compliance.rationale.tos_no_automation": "This service's terms don't allow automated playback control.",
-    "compliance.rationale.public_embed_api": "Played through the service's own public embed, in your own session.",
-    "compliance.rationale.never_store_credentials": "StreamFlow never asks for or stores your account details.",
+    "compliance.rationale.tos_no_automation":
+      "This service's terms don't allow automated playback control.",
+    "compliance.rationale.public_embed_api":
+      "Played through the service's own public embed, in your own session.",
+    "compliance.rationale.never_store_credentials":
+      "StreamFlow never asks for or stores your account details.",
     "compliance.rationale.user_owned_media": "Plays a file you already own, from your own device.",
-    "compliance.rationale.no_redistribution": "Video never passes through StreamFlow. Nothing is copied or re-shared.",
+    "compliance.rationale.no_redistribution":
+      "Video never passes through StreamFlow. Nothing is copied or re-shared.",
 
     "room.setup.title": "Before you watch",
-    "room.setup.description.host": "Pick the service and how long the countdown runs. Nothing starts until you say so.",
+    "room.setup.description.host":
+      "Pick the service and how long the countdown runs. Nothing starts until you say so.",
     "room.setup.description.guest": "The host is choosing the service and the countdown length.",
     "room.setup.selected.label": "Service:",
     "room.setup.selected.none": "Not chosen yet",
     "room.setup.countdown.label": "Countdown length (seconds)",
-    "room.setup.countdown.hint": "Between {min} and {max} seconds. Saved for later — nothing starts now.",
+    "room.setup.countdown.hint":
+      "Between {min} and {max} seconds. Saved for later — nothing starts now.",
     "room.setup.countdown.invalid": "Enter a whole number between {min} and {max}.",
     "room.setup.countdown.readonly": "The countdown will run for {seconds} seconds.",
     "room.countdown.title": "Countdown",
-    "room.countdown.description.host": "Start the countdown when everyone is ready. Everybody presses play together at zero — StreamFlow won't press it for you.",
-    "room.countdown.description.guest": "The host starts the countdown. Get your service open and ready.",
+    "room.countdown.description.host":
+      "Start the countdown when everyone is ready. Everybody presses play together at zero — StreamFlow won't press it for you.",
+    "room.countdown.description.guest":
+      "The host starts the countdown. Get your service open and ready.",
     "room.countdown.state.idle": "Not started",
     "room.countdown.state.preparing": "Getting ready",
     "room.countdown.state.counting_down": "Counting down",
@@ -249,29 +260,40 @@ export const enBundle: LocaleBundle = {
     "po.banner.encouraging": "Po waits calmly — the room just needs a moment to line up.",
     "room.playback_sync.status.playback_ready": "Playback ready",
     "room.playback_sync.status.synchronization_ready": "Synchronization ready",
-    "room.playback_sync.status.waiting_for_manual_play": "Waiting for everyone to press play in their own app.",
-    "room.playback_sync.status.waiting_for_resync": "Waiting for a re-sync before watching together.",
+    "room.playback_sync.status.waiting_for_manual_play":
+      "Waiting for everyone to press play in their own app.",
+    "room.playback_sync.status.waiting_for_resync":
+      "Waiting for a re-sync before watching together.",
     "room.playback_sync.decision.stay_synchronized": "The room is in step.",
     "room.playback_sync.decision.recommend_resync": "A re-sync is recommended.",
-    "room.playback_sync.decision.require_resync": "A re-sync is required before continuing together.",
+    "room.playback_sync.decision.require_resync":
+      "A re-sync is required before continuing together.",
     "room.playback_sync.decision.waiting": "Waiting for the room to settle.",
     "room.playback_sync.decision.recovering": "The room is coming back into step.",
     "room.playback_sync.correction.soft": "A small adjustment would bring the room together.",
-    "room.playback_sync.correction.hard": "A full re-sync would be needed to bring the room together.",
+    "room.playback_sync.correction.hard":
+      "A full re-sync would be needed to bring the room together.",
     "room.room_sync.title": "Room synchronization",
-    "room.room_sync.description": "How closely everyone's clocks agree. The room always reflects its weakest participant.",
+    "room.room_sync.description":
+      "How closely everyone's clocks agree. The room always reflects its weakest participant.",
     "room.room_sync.count.ready": "Ready",
     "room.room_sync.count.synced": "Synced",
     "room.room_sync.count.waiting": "Waiting",
     "room.room_sync.count.of": " / {total}",
-    "room.room_sync.block.resync_required": "The countdown is blocked: at least one person's clock is too far out of step. Ask them to measure again.",
-    "room.room_sync.block.no_participants": "The countdown is blocked: nobody has joined the room yet.",
-    "room.room_sync.block.participant_advisory": "Someone is still catching up. The host cannot start the countdown yet.",
-    "room.room_sync.advisory.warning": "Clocks are a little apart. The countdown can still start, but expect a small gap.",
-    "room.room_sync.no_playback_notice": "StreamFlow coordinates readiness only; it never controls your player.",
+    "room.room_sync.block.resync_required":
+      "The countdown is blocked: at least one person's clock is too far out of step. Ask them to measure again.",
+    "room.room_sync.block.no_participants":
+      "The countdown is blocked: nobody has joined the room yet.",
+    "room.room_sync.block.participant_advisory":
+      "Someone is still catching up. The host cannot start the countdown yet.",
+    "room.room_sync.advisory.warning":
+      "Clocks are a little apart. The countdown can still start, but expect a small gap.",
+    "room.room_sync.no_playback_notice":
+      "StreamFlow coordinates readiness only; it never controls your player.",
     "room.sync.announce.room_health_changed": "Room synchronization: {health}.",
     "room.sync.title": "Synchronization health",
-    "room.sync.description": "How closely this device’s clock matches the room’s. It is measured, never corrected for you.",
+    "room.sync.description":
+      "How closely this device’s clock matches the room’s. It is measured, never corrected for you.",
     "room.sync.health.excellent": "Excellent",
     "room.sync.health.good": "Good",
     "room.sync.health.warning": "Warning",
@@ -287,10 +309,12 @@ export const enBundle: LocaleBundle = {
     "room.sync.measure_action": "Measure again",
     "room.sync.unavailable": "Synchronization is unavailable on this device.",
     "room.sync.resync_hint": "Clocks are far apart. Measure again before starting a countdown.",
-    "room.sync.no_correction_notice": "StreamFlow reports sync health; it never adjusts your playback.",
+    "room.sync.no_correction_notice":
+      "StreamFlow reports sync health; it never adjusts your playback.",
     "room.sync.announce.health_changed": "Synchronization health: {health}.",
     "room.playback.title": "Ready to watch",
-    "room.playback.description": "Everyone is ready. Press play in your own app — StreamFlow keeps the room together, it never touches your player.",
+    "room.playback.description":
+      "Everyone is ready. Press play in your own app — StreamFlow keeps the room together, it never touches your player.",
     "room.playback.state.idle": "Not ready yet",
     "room.playback.state.queued": "Getting the room ready",
     "room.playback.state.ready": "Ready — press play",
@@ -302,7 +326,8 @@ export const enBundle: LocaleBundle = {
     "room.playback.arming": "Getting the room ready…",
     "room.playback.press_play_hint": "Press play now, in your own account.",
     "room.playback.owner": "{owner} is keeping the room in step.",
-    "room.playback.no_control_notice": "StreamFlow never controls your streaming service or stores your sign-in.",
+    "room.playback.no_control_notice":
+      "StreamFlow never controls your streaming service or stores your sign-in.",
     "room.playback.announce.countdown_complete": "Countdown complete.",
     "room.playback.announce.waiting_for_playback": "Waiting for playback.",
     "error.provider.capability_unsupported.title": "Can't use this service here",
@@ -320,9 +345,11 @@ export const enBundle: LocaleBundle = {
     "provider.launch.status.launched": "Provider opened. Come back here for the countdown.",
     "provider.launch.status.failed": "Nothing opened. Try the browser option instead.",
     "provider.launch.refusal.compliance_blocked": "This provider cannot be opened from StreamFlow.",
-    "provider.launch.refusal.provider_unavailable": "This provider is unavailable in your region right now.",
+    "provider.launch.refusal.provider_unavailable":
+      "This provider is unavailable in your region right now.",
     "provider.launch.refusal.missing_content_reference": "The host has not chosen a title yet.",
-    "provider.launch.refusal.no_known_destination": "StreamFlow does not know where to send you for this provider.",
+    "provider.launch.refusal.no_known_destination":
+      "StreamFlow does not know where to send you for this provider.",
     "provider.launch.refusal.local_media": "Open your own copy in your own player.",
     "provider.launch.announce.opened": "Provider opened in a new window.",
     "provider.launch.announce.failed": "The provider did not open.",
@@ -330,26 +357,34 @@ export const enBundle: LocaleBundle = {
     "provider.guidance.heading.manual_sync": "Manual sync steps",
     "provider.guidance.heading.deep_link": "Getting ready",
     "provider.guidance.heading.unsupported": "Why this is unavailable",
-    "provider.guidance.summary.supported": "Everyone presses play together when the countdown hits zero.",
-    "provider.guidance.summary.manual_sync": "StreamFlow counts you in; you press play in your own app.",
-    "provider.guidance.summary.deep_link": "StreamFlow opens the provider, then hands control back to you.",
+    "provider.guidance.summary.supported":
+      "Everyone presses play together when the countdown hits zero.",
+    "provider.guidance.summary.manual_sync":
+      "StreamFlow counts you in; you press play in your own app.",
+    "provider.guidance.summary.deep_link":
+      "StreamFlow opens the provider, then hands control back to you.",
     "provider.guidance.summary.unsupported": "StreamFlow will not open this provider.",
-    "provider.guidance.unsupported.explain": "StreamFlow only links to providers it is allowed to link to.",
+    "provider.guidance.unsupported.explain":
+      "StreamFlow only links to providers it is allowed to link to.",
     "provider.guidance.step.open_provider": "Open the provider using a button above.",
     "provider.guidance.step.sign_in_own_account": "Sign in with your own account.",
     "provider.guidance.step.find_title": "Find the title the host chose and load it.",
     "provider.guidance.step.return_and_wait": "Come back to StreamFlow and wait for the countdown.",
     "provider.guidance.step.press_play_on_zero": "Press play in your app exactly at zero.",
     "provider.guidance.youtube.pause_at_start": "Pause at the very start so you begin together.",
-    "provider.guidance.netflix.skip_intro_together": "Agree on skipping the intro before you start.",
+    "provider.guidance.netflix.skip_intro_together":
+      "Agree on skipping the intro before you start.",
     "provider.guidance.prime_video.check_audio_track": "Check everyone has the same audio track.",
     "provider.guidance.disney_hotstar.check_language": "Check everyone picked the same language.",
     "provider.guidance.local_file.open_your_copy": "Open your own copy in your usual player.",
-    "provider.guidance.local_file.confirm_same_cut": "Confirm everyone has the same version and runtime.",
+    "provider.guidance.local_file.confirm_same_cut":
+      "Confirm everyone has the same version and runtime.",
     // Sprint 2.9 — ready confirmation, host summary, and the manual play reminder.
-    "room.actions.member_hint": "You're in the room. Confirm you're ready when you've opened your app.",
+    "room.actions.member_hint":
+      "You're in the room. Confirm you're ready when you've opened your app.",
     "room.ready.title": "Ready to start",
-    "room.ready.description": "Tell the room you're set. Nobody is counted in until they say so themselves.",
+    "room.ready.description":
+      "Tell the room you're set. Nobody is counted in until they say so themselves.",
     "room.ready.state.not_member": "Join the room to confirm you're ready.",
     "room.ready.state.not_ready": "You haven't confirmed yet.",
     "room.ready.state.launch_pending": "Finishing opening your provider…",
@@ -358,9 +393,11 @@ export const enBundle: LocaleBundle = {
     "room.ready.count": "{ready} of {total} ready",
     "room.ready.action.confirm": "I'm ready",
     "room.ready.action.undo": "I'm not ready yet",
-    "room.ready.timeout_hint": "You've been in the room a while without confirming. Confirm when you're set.",
+    "room.ready.timeout_hint":
+      "You've been in the room a while without confirming. Confirm when you're set.",
     "room.ready.late_join_hint": "Someone joined after the room was ready. Give them a moment.",
-    "room.ready.no_control_notice": "StreamFlow coordinates the moment; you always press play yourself.",
+    "room.ready.no_control_notice":
+      "StreamFlow coordinates the moment; you always press play yourself.",
     "room.ready.block.no_participants": "Nobody has joined the room yet.",
     "room.ready.block.no_provider": "The host has not chosen a service yet.",
     "room.ready.block.not_everyone_ready": "Waiting for everyone to confirm they're ready.",
@@ -368,7 +405,8 @@ export const enBundle: LocaleBundle = {
     "room.ready.announce.member_ready": "{member} is ready.",
     "room.ready.announce.everyone_ready": "Everyone is ready.",
     "room.ready.announce.countdown_available": "The countdown is available.",
-    "room.ready.announce.manual_play_reminder": "Remember to press play in your own app when the countdown finishes.",
+    "room.ready.announce.manual_play_reminder":
+      "Remember to press play in your own app when the countdown finishes.",
     "room.summary.title": "Room summary",
     "room.summary.description": "Everything you need before starting the countdown.",
     "room.summary.members_ready": "Members ready",

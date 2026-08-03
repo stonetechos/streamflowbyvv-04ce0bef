@@ -52,10 +52,7 @@ export function createSupabaseProviderCatalogRepository(
     async listCapabilities(): Promise<readonly ProviderCapabilityEntry[]> {
       requireAvailable(connection, context("listCapabilities"));
       const rows = await runQuery<ProviderCapabilityRow[]>(
-        connection
-          .client()
-          .from("provider_capabilities")
-          .select(PROVIDER_CAPABILITY_COLUMNS),
+        connection.client().from("provider_capabilities").select(PROVIDER_CAPABILITY_COLUMNS),
         context("listCapabilities"),
       );
       return (rows ?? []).map(toProviderCapability);

@@ -32,13 +32,11 @@ export interface ProviderService {
   /** ADR-003: only `supported` remote control yields a controlled room. */
   resolveSyncMode(playPauseSupport: CapabilitySupportLevel): SyncMode;
   isSelectable(status: ProviderStatus): boolean;
-  assertCapability(
-    input: {
-      providerId: string;
-      capability: ProviderCapability;
-      supportLevel: CapabilitySupportLevel;
-    },
-  ): void;
+  assertCapability(input: {
+    providerId: string;
+    capability: ProviderCapability;
+    supportLevel: CapabilitySupportLevel;
+  }): void;
 }
 
 export function createProviderService(context: DomainServiceContext): ProviderService {

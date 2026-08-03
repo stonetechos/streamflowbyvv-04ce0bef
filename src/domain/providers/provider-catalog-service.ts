@@ -13,10 +13,7 @@
 import { createServiceToken } from "@/domain/service-registry";
 import type { ComplianceRule, ComplianceService } from "@/domain/services/compliance-service";
 import type { ProviderService } from "@/domain/services/provider-service";
-import type {
-  CapabilitySupportLevel,
-  ProviderStatus,
-} from "@/domain/shared/domain-enums";
+import type { CapabilitySupportLevel, ProviderStatus } from "@/domain/shared/domain-enums";
 import {
   PROVIDER_CATALOG_REPOSITORY,
   PROVIDER_CONTEXT_PREFERENCE_REPOSITORY,
@@ -64,10 +61,7 @@ export interface ProviderCatalogService {
   isAvailable(): boolean;
   load(query: ProviderCatalogQuery): Promise<ProviderCatalogSnapshot>;
   /** Single lookup against an already-loaded snapshot. Pure. */
-  find(
-    snapshot: ProviderCatalogSnapshot,
-    providerId: string,
-  ): ProviderSelectionOption | null;
+  find(snapshot: ProviderCatalogSnapshot, providerId: string): ProviderSelectionOption | null;
 }
 
 export interface ProviderCatalogDependencies {
@@ -162,14 +156,15 @@ export function createProviderCatalogService(
         profileId && context
           ? await context.read(profileId)
           : { defaultProviderId: null, regionCode: null };
-      const favourites =
-        profileId && preferences ? await preferences.listByProfile(profileId) : [];
+      const favourites = profileId && preferences ? await preferences.listByProfile(profileId) : [];
 
       const regionCode = requestedRegion ?? stored.regionCode ?? DEFAULT_REGION_CODE;
       const favouriteIds = new Set(
         favourites.filter((row) => row.isFavorite).map((row) => row.providerId),
       );
-      const hiddenIds = new Set(favourites.filter((row) => row.isHidden).map((row) => row.providerId));
+      const hiddenIds = new Set(
+        favourites.filter((row) => row.isHidden).map((row) => row.providerId),
+      );
 
       const options = providers
         .filter((provider) => !hiddenIds.has(provider.id))

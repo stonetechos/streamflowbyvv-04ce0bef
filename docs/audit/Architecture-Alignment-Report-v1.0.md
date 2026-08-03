@@ -4,15 +4,16 @@
 
 Documents inspected: `docs/adr/ADR-001-po-agent.md` (158 lines), `docs/product/MVP-Functional-Specification-v1.0.md` (423 lines), `docs/database/Database-Specification-v1.0.md` (606 lines).
 
-**Verified finding up front:** the Foundation Specification v1.0 does **not** exist as a file in this repository. A search of the whole project returns "Foundation" only as inbound *references* from the other three documents. Those three depend on it by section number (§2, §6, §7, §10, §14, §16, §17, §18, §19, §20) and declare it the tie-breaker for all conflicts. The understanding of it below is reconstructed from those references and from project memory, not read from source. This is the single largest readiness gap and is carried into §11 and §12.
+**Verified finding up front:** the Foundation Specification v1.0 does **not** exist as a file in this repository. A search of the whole project returns "Foundation" only as inbound _references_ from the other three documents. Those three depend on it by section number (§2, §6, §7, §10, §14, §16, §17, §18, §19, §20) and declare it the tie-breaker for all conflicts. The understanding of it below is reconstructed from those references and from project memory, not read from source. This is the single largest readiness gap and is carried into §11 and §12.
 
 ---
 
 ## 1. Executive Understanding
 
-**What StreamFlow is.** A watch-together coordination platform. Two to four people, each holding their own lawful subscription, watch the same title at the same moment on their own screens, in their own provider apps or tabs, while talking over voice. StreamFlow supplies the shared clock, the shared room, the shared voice channel, and Po — a natural-language agent that drives the product by intent. It is a *coordination layer over other people's players*, not a player.
+**What StreamFlow is.** A watch-together coordination platform. Two to four people, each holding their own lawful subscription, watch the same title at the same moment on their own screens, in their own provider apps or tabs, while talking over voice. StreamFlow supplies the shared clock, the shared room, the shared voice channel, and Po — a natural-language agent that drives the product by intent. It is a _coordination layer over other people's players_, not a player.
 
 **What StreamFlow is NOT.**
+
 - Not a streaming service, CDN, media proxy, or transcoder. No media byte ever crosses StreamFlow infrastructure.
 - Not a DRM, geo-fence, paywall, or subscription workaround. Anything requiring one is classified `Unavailable` and refused with an explanation.
 - Not a credential broker. No provider passwords, cookies, session tokens, or DRM material are stored anywhere — the Database Spec states this both as a table-level prohibition on `provider_preferences` and as cross-cutting security rule 1.
@@ -21,10 +22,11 @@ Documents inspected: `docs/adr/ADR-001-po-agent.md` (158 lines), `docs/product/M
 - Not Lovable-, Supabase-, LiveKit-, or OpenAI-bound. Each is one swappable adapter behind an interface.
 
 **Philosophy.** Four convictions run through every document:
-1. *Legality is architecture, not policy.* Compliance is a service in the dependency graph with veto power, not a paragraph in the terms of service.
-2. *Honesty over illusion.* Where control is impossible, the product says so and offers the lawful alternative (a countdown) as a first-class experience rather than pretending to sync.
-3. *Portability is a first-order requirement.* One coupling point to auth (`profiles.auth_user_id`), one to the SFU (`voice_sessions.provider_key`), one to the LLM (the model capability interface). Vendor migration touches adapters, never domain.
-4. *Additive growth.* New providers, tools, languages, and flags arrive as data or registry entries. Core modules are not edited to add capability.
+
+1. _Legality is architecture, not policy._ Compliance is a service in the dependency graph with veto power, not a paragraph in the terms of service.
+2. _Honesty over illusion._ Where control is impossible, the product says so and offers the lawful alternative (a countdown) as a first-class experience rather than pretending to sync.
+3. _Portability is a first-order requirement._ One coupling point to auth (`profiles.auth_user_id`), one to the SFU (`voice_sessions.provider_key`), one to the LLM (the model capability interface). Vendor migration touches adapters, never domain.
+4. _Additive growth._ New providers, tools, languages, and flags arrive as data or registry entries. Core modules are not edited to add capability.
 
 ---
 
@@ -32,27 +34,27 @@ Documents inspected: `docs/adr/ADR-001-po-agent.md` (158 lines), `docs/product/M
 
 **The primary experience.** A host creates a private room, invites up to three people, everyone lands in a Waiting Room, joins voice, marks Ready, agrees on a provider and title, and the host runs a countdown anchored to server time. At zero, everyone presses play in their own player. From then on the room shows a shared elapsed timer, anyone can raise "I'm behind"/"I'm ahead", and any drift is repaired by another short countdown. Voice runs throughout and never blocks the room.
 
-**Why Manual Sync is the MVP, not a fallback.** Because it is the only mode that is simultaneously legal, reliable, and available today across the providers people actually use. Every non-YouTube provider begins at `Unverified`; none is legally validated for remote control at v1. If manual sync were a degraded fallback, the MVP's headline experience would depend on a capability that does not exist. Making countdown-driven coordination the first-class product inverts that dependency: the product works perfectly on day one, and true remote control (v2) becomes an *upgrade* to specific providers rather than a prerequisite for launch. The definition of done in MVP §16 is explicitly a manual-sync run.
+**Why Manual Sync is the MVP, not a fallback.** Because it is the only mode that is simultaneously legal, reliable, and available today across the providers people actually use. Every non-YouTube provider begins at `Unverified`; none is legally validated for remote control at v1. If manual sync were a degraded fallback, the MVP's headline experience would depend on a capability that does not exist. Making countdown-driven coordination the first-class product inverts that dependency: the product works perfectly on day one, and true remote control (v2) becomes an _upgrade_ to specific providers rather than a prerequisite for launch. The definition of done in MVP §16 is explicitly a manual-sync run.
 
-**Why provider control is never assumed.** Assuming control would require scraping DOMs, injecting scripts, replaying session cookies, or driving DRM-protected players — every one of which is a prohibition. So the architecture treats controllability as a *per-capability, per-provider, evidence-backed claim*: `provider_capabilities` records a support level per capability (`play_pause`, `seek`, `deep_link`, `position_read`, `embed`, `local_playback`) with `verified_at`/`verified_by`, and `provider_compliance_rules` carries dated effective windows. Nothing is controllable until someone recorded that it is, and that record is auditable and revocable. Promotion out of `Unverified` requires a recorded legal validation.
+**Why provider control is never assumed.** Assuming control would require scraping DOMs, injecting scripts, replaying session cookies, or driving DRM-protected players — every one of which is a prohibition. So the architecture treats controllability as a _per-capability, per-provider, evidence-backed claim_: `provider_capabilities` records a support level per capability (`play_pause`, `seek`, `deep_link`, `position_read`, `embed`, `local_playback`) with `verified_at`/`verified_by`, and `provider_compliance_rules` carries dated effective windows. Nothing is controllable until someone recorded that it is, and that record is auditable and revocable. Promotion out of `Unverified` requires a recorded legal validation.
 
 ---
 
 ## 3. System Architecture — layer responsibilities and prohibitions
 
-**Presentation** (routes, components, Po surface: mic button, transcript, clarification prompt, plan preview). Renders state, captures input, handles accessibility and localization at the string-key level. *Never:* calls Supabase/LiveKit/an LLM SDK, contains business rules, holds sync arithmetic, embeds prompt text, hardcodes user-facing copy, or reads a table.
+**Presentation** (routes, components, Po surface: mic button, transcript, clarification prompt, plan preview). Renders state, captures input, handles accessibility and localization at the string-key level. _Never:_ calls Supabase/LiveKit/an LLM SDK, contains business rules, holds sync arithmetic, embeds prompt text, hardcodes user-facing copy, or reads a table.
 
-**Feature** (room, sync, voice, providers, settings, Po). Orchestrates use cases: composes domain services, owns view-model shape, owns local UI state and optimistic updates, subscribes to the event bus. *Never:* speaks to infrastructure, encodes vendor semantics, or duplicates domain rules.
+**Feature** (room, sync, voice, providers, settings, Po). Orchestrates use cases: composes domain services, owns view-model shape, owns local UI state and optimistic updates, subscribes to the event bus. _Never:_ speaks to infrastructure, encodes vendor semantics, or duplicates domain rules.
 
-**Po Core** — a Feature-layer citizen with a hard rule of its own: it reaches the world only through the Tool Registry, and every tool wraps a domain service. *Never:* touches repositories, the database, LiveKit, a provider plugin, or a vendor SDK; never carries tool-name literals or per-tool branching; never holds compliance rules. Removing Po entirely must leave StreamFlow fully usable — Po is never the only path to any feature.
+**Po Core** — a Feature-layer citizen with a hard rule of its own: it reaches the world only through the Tool Registry, and every tool wraps a domain service. _Never:_ touches repositories, the database, LiveKit, a provider plugin, or a vendor SDK; never carries tool-name literals or per-tool branching; never holds compliance rules. Removing Po entirely must leave StreamFlow fully usable — Po is never the only path to any feature.
 
-**Domain** (RoomService, PlaybackService, SyncService, VoiceService, InvitationService, PresenceService, NotificationService, AnalyticsService, UserService, ProviderService, FeatureFlagService, LocalizationService, ComplianceService). Pure business rules, invariants, and event emission. *Never:* imports Supabase, LiveKit, an HTTP client, React, or any vendor type; never knows a table name or a storage engine.
+**Domain** (RoomService, PlaybackService, SyncService, VoiceService, InvitationService, PresenceService, NotificationService, AnalyticsService, UserService, ProviderService, FeatureFlagService, LocalizationService, ComplianceService). Pure business rules, invariants, and event emission. _Never:_ imports Supabase, LiveKit, an HTTP client, React, or any vendor type; never knows a table name or a storage engine.
 
-**Repository** — interfaces owned by Domain, one per aggregate root (`profiles`, `rooms`, `providers`, `po_sessions`, `feature_flags`). Persistence contracts in domain vocabulary. *Never:* leaks a vendor row type, a PostgREST filter, or a query builder upward; never reaches across aggregate roots in a single read; never contains business rules.
+**Repository** — interfaces owned by Domain, one per aggregate root (`profiles`, `rooms`, `providers`, `po_sessions`, `feature_flags`). Persistence contracts in domain vocabulary. _Never:_ leaks a vendor row type, a PostgREST filter, or a query builder upward; never reaches across aggregate roots in a single read; never contains business rules.
 
-**Infrastructure** — the only vendor-aware layer: Supabase client, Realtime, Storage, LiveKit adapter, LLM/STT/TTS adapters, IndexedDB local-first store, analytics sink. Implements repository interfaces, translates errors into domain error types. *Never:* makes a business decision, is imported by Presentation or Domain, or exposes a vendor type in a signature.
+**Infrastructure** — the only vendor-aware layer: Supabase client, Realtime, Storage, LiveKit adapter, LLM/STT/TTS adapters, IndexedDB local-first store, analytics sink. Implements repository interfaces, translates errors into domain error types. _Never:_ makes a business decision, is imported by Presentation or Domain, or exposes a vendor type in a signature.
 
-**Database** — the durable truth for rooms, sync state, events, and audit. Enforces referential integrity, uniqueness, ownership, and row-level access. *Never:* holds business orchestration in triggers and functions the domain layer should own, calls out to the app, stores a secret, or becomes the place features quietly coordinate.
+**Database** — the durable truth for rooms, sync state, events, and audit. Enforces referential integrity, uniqueness, ownership, and row-level access. _Never:_ holds business orchestration in triggers and functions the domain layer should own, calls out to the app, stores a secret, or becomes the place features quietly coordinate.
 
 The rule that makes this real: dependencies point one direction only, and each layer's forbidden-imports list is enforceable by lint. Coupling escapes get caught at the boundary, not at review.
 
@@ -64,7 +66,7 @@ The rule that makes this real: dependencies point one direction only, and each l
 
 - **Speech Adapter / STT Adapter** — audio capture, press-to-talk, endpointing, barge-in; transcript plus confidence and language hints. Text input skips both and enters the identical pipeline. There is one intelligence, two input adapters.
 - **Text Normalization** — deterministic, non-AI: whitespace, fillers, number/time expressions ("in five minutes"), name candidates, locale tags. Shrinks prompts and rescues weak transcripts.
-- **Intent Engine** — utterance → intent type, entities, confidence, and *missing required slots*, enriched with conversation context and consented memory. Classifies and extracts; never decides how to act.
+- **Intent Engine** — utterance → intent type, entities, confidence, and _missing required slots_, enriched with conversation context and consented memory. Classifies and extracts; never decides how to act.
 - **Planning Engine** — intent → ordered, dependency-aware tool plan with expected outcomes, each step tagged reversible or irreversible. Never fabricates a missing value; defers to the Conversation Manager instead.
 - **Conversation Manager** — the state machine everything else reads: turn history, pending clarifications, unresolved slots, active plan, interruption, cancellation, multi-turn continuity.
 - **Tool Registry** — the sole catalogue of what Po can do. Each entry declares name, description, input/output contracts, side-effect class, required permissions, compliance sensitivity, confirmation policy, namespace, and feature flag. What is not registered is not invocable — and the registry is what the model is told about.
@@ -80,7 +82,7 @@ The rule that makes this real: dependencies point one direction only, and each l
 
 ## 5. Provider Architecture
 
-**Provider SDK.** A plugin contract every provider implements identically: identity, capability declarations, deep-link construction, optional embed/control surface, and compliance metadata. First-party providers in v1 are catalog *rows* (`providers` + `provider_capabilities`), so onboarding a provider is data, not a migration.
+**Provider SDK.** A plugin contract every provider implements identically: identity, capability declarations, deep-link construction, optional embed/control surface, and compliance metadata. First-party providers in v1 are catalog _rows_ (`providers` + `provider_capabilities`), so onboarding a provider is data, not a migration.
 
 **Capability Matrix.** Machine-readable, per-capability rather than per-provider. A provider is not "supported" as a whole; it is `supported` for `deep_link` and `unavailable` for `seek`. Support levels: **Supported** (StreamFlow may control), **Manual Sync** (countdown + deep link only), **Experimental** (flagged, opt-in, may break — no provider ships in this state in v1), **Unverified** (listed, coordination only, labelled), **Unavailable** (refused). v1 reality: YouTube and local files Supported; Netflix, Prime Video, Disney+/Hotstar, SonyLIV Manual Sync; everything else Unverified; anything requiring a workaround Unavailable.
 
@@ -88,7 +90,7 @@ The rule that makes this real: dependencies point one direction only, and each l
 
 **Manual Sync.** Server-anchored countdown, shared elapsed timer, self-reported drift, one-tap re-sync, announced pause/resume/seek targets. `room_state.sync_mode` distinguishes `manual` from `controlled`, so the same room model serves both without a schema change when a provider is promoted.
 
-**Deep Linking.** The only lawful hand-off: open the provider in the *user's own* session on their own device. No embedding of a protected player, no credential passing, no interception.
+**Deep Linking.** The only lawful hand-off: open the provider in the _user's own_ session on their own device. No embedding of a protected player, no credential passing, no interception.
 
 **Why providers are isolated.** Because they are the fastest-changing, highest-legal-risk, least-controllable part of the system. Isolation means a provider's status can flip overnight (`provider_status_history`) without touching room, sync, voice, or Po code; a provider can be disabled remotely by flag; a legal challenge is contained to rows; and the core product's correctness never depends on a third party's undocumented behaviour.
 
@@ -98,7 +100,7 @@ The rule that makes this real: dependencies point one direction only, and each l
 
 **Philosophy.** A portable PostgreSQL schema that would survive being lifted out of Supabase intact. UUID surrogate keys with human-readable display codes (`ROM-000001`) that are never joined on; snake_case; UTC `timestamptz`; forward-only immutable migrations; enums modelled as application constants plus check constraints rather than native PG enum types precisely because native enums resist alteration and migration. Only `profiles.auth_user_id` touches the auth provider, so identity migration is one column. JSONB exists for forward compatibility with an explicit rule: anything filtered, sorted, or joined must be promoted to a real column.
 
-**Entity ownership.** Five aggregate roots — `profiles`, `rooms`, `providers`, `po_sessions`, `feature_flags` — each with one repository and no cross-root joins. Every row has a documented owner, which is what makes RLS mechanical rather than inventive. The pivot for almost all room-scoped access is "does a `room_members` row exist for me in this room with state `joined`", which makes that index a *security* dependency, not just a performance one. Three ownership rules stand out: admin is a role in a separate authorization table checked by a security-definer function, never a column on `profiles`; Po data is private to its owner and unreadable by a room host; `blocked_users` is invisible to the blocked party.
+**Entity ownership.** Five aggregate roots — `profiles`, `rooms`, `providers`, `po_sessions`, `feature_flags` — each with one repository and no cross-root joins. Every row has a documented owner, which is what makes RLS mechanical rather than inventive. The pivot for almost all room-scoped access is "does a `room_members` row exist for me in this room with state `joined`", which makes that index a _security_ dependency, not just a performance one. Three ownership rules stand out: admin is a role in a separate authorization table checked by a security-definer function, never a column on `profiles`; Po data is private to its owner and unreadable by a room host; `blocked_users` is invisible to the blocked party.
 
 **Auditing.** Six layers with distinct jobs — row audit (`created_at`/`updated_at`/`created_by`/`updated_by`), reversibility (`deleted_at` on user-authored rows), business history (`domain_events`: immutable, versioned, per-aggregate sequence, correlation/causation), security history (`audit_logs`: redacted before/after, hashed IP/UA, admin-only), a user-facing projection (`activity_timeline`, disposable and rebuildable from events), and compliance history (dated effective windows so "why was this blocked in March" is answerable).
 
@@ -118,7 +120,7 @@ The rule that makes this real: dependencies point one direction only, and each l
 
 **Waiting Room.** Invitee opens the link, hits the auth wall with the invite preserved, membership is validated, and joins. `room_members` flips to `joined`, a `room_presence` heartbeat starts carrying latency and clock offset, and the mic permission prompt appears (skippable). Everyone marks Ready. Provider is chosen; the ComplianceService verdict and sync mode are shown inline; the agreed audio/subtitle tracks become a room note.
 
-**Countdown.** Host sets a duration (default from preference). `room_state` moves to `counting_down` with `countdown_target_at` set and `version` incremented; every client renders the counter against *server* time corrected by its own measured `clock_offset_ms`, not local time. `sync_events` records `countdown_scheduled`. At zero: visible cue, audio ping, haptics where available, `countdown_fired`. A late joiner is not folded into a running countdown — they wait for the next one.
+**Countdown.** Host sets a duration (default from preference). `room_state` moves to `counting_down` with `countdown_target_at` set and `version` incremented; every client renders the counter against _server_ time corrected by its own measured `clock_offset_ms`, not local time. `sync_events` records `countdown_scheduled`. At zero: visible cue, audio ping, haptics where available, `countdown_fired`. A late joiner is not folded into a running countdown — they wait for the next one.
 
 **Playback.** Each user presses play in their own provider tab or app. A `playback_sessions` row (`PLB-NNNNNN`, `sync_mode = manual`) opens; `playback_events` logs the start. The room displays a shared elapsed timer as the reference. "I'm behind"/"I'm ahead" writes `drift_measured`; a re-sync request runs another short countdown. Pause broadcasts a prompt to everyone; resume runs a countdown; a seek is announced as a target timestamp and then re-synced. Someone who misses a prompt shows as unconfirmed rather than silently drifting.
 
@@ -136,7 +138,7 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 
 **What StreamFlow will never do.** Circumvent DRM. Bypass a subscription, paywall, or regional restriction. Proxy, cache, re-host, or transcode copyrighted media. Scrape a provider or drive it through an unpublished interface. Store, share, or relay provider credentials, cookies, session tokens, or DRM material. Present an unverified provider as controllable. Let any surface — UI or Po — reach a provider without a verdict.
 
-**How ComplianceService protects the architecture.** It is a single domain authority with veto power, sitting in front of every provider-sensitive path. The Tool Executor must call it before a provider-sensitive tool; Po holds no rules of its own and cannot override it; the Presentation layer displays verdicts but never computes them. Its rules are data with dated, region-scoped effective windows, so verdicts are explainable *as of a date* and revocable without a deploy. Denials are logged with the originating utterance's correlation id, and refusals are phrased as human explanations with a lawful alternative offered.
+**How ComplianceService protects the architecture.** It is a single domain authority with veto power, sitting in front of every provider-sensitive path. The Tool Executor must call it before a provider-sensitive tool; Po holds no rules of its own and cannot override it; the Presentation layer displays verdicts but never computes them. Its rules are data with dated, region-scoped effective windows, so verdicts are explainable _as of a date_ and revocable without a deploy. Denials are logged with the originating utterance's correlation id, and refusals are phrased as human explanations with a lawful alternative offered.
 
 **Why this matters.** Legal exposure here is existential rather than incremental — a single scraping path or credential relay anywhere in the codebase compromises the whole product. Centralizing the verdict means the prohibition is enforced by the dependency graph rather than by developer discipline: there is exactly one place to audit, one place to change when a provider's status flips, and no second path a well-meaning feature can take. It also protects users, who are the ones holding the subscriptions.
 
@@ -152,7 +154,7 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 
 **How architecture changes should be handled.** Only through a new numbered ADR in `docs/adr/` that names the affected sections and tables. Approved documents are never edited in place; they are extended or superseded by record. Schema changes require an ADR and a forward-only migration traceable to a Database Spec section.
 
-**Why implementation must not invent features.** Because in this product an invented feature is usually an invented *capability*, and invented capabilities here are legal exposure — a helpful "we could just read the player position" is precisely the prohibition. Beyond legality: the MVP's definition of done is one complete session, and every unplanned addition dilutes it; unspecified behaviour has no localization keys, no accessibility pass, no analytics, no RLS decision, and no compliance verdict, so it ships as a hole in four systems at once.
+**Why implementation must not invent features.** Because in this product an invented feature is usually an invented _capability_, and invented capabilities here are legal exposure — a helpful "we could just read the player position" is precisely the prohibition. Beyond legality: the MVP's definition of done is one complete session, and every unplanned addition dilutes it; unspecified behaviour has no localization keys, no accessibility pass, no analytics, no RLS decision, and no compliance verdict, so it ships as a hole in four systems at once.
 
 ---
 
@@ -191,7 +193,7 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 14. `analytics_events.anonymous_id` lifetime and scope (device, session, install) is undefined.
 15. "Recent for a limited period" for closed rooms has no duration.
 16. "Two launch locales (English plus one)" — the second locale is never named, which blocks RTL and pluralization decisions.
-17. The `blocked_users` enforcement points are listed, but the behaviour when a block occurs *during* an active shared room is unspecified.
+17. The `blocked_users` enforcement points are listed, but the behaviour when a block occurs _during_ an active shared room is unspecified.
 18. Guest room preview scope — what an unauthenticated visitor may see of a private room before the auth wall.
 
 ### Missing definitions
@@ -222,16 +224,16 @@ Throughout, Po can drive any of these steps by intent, and every Po-driven step 
 
 **Score: 72 / 100.**
 
-| Dimension | Score | Note |
-|---|---|---|
-| Product clarity | 17/20 | Journeys, tiers, and definition of done are unusually complete; a handful of undefined constants |
-| Architecture clarity | 14/20 | Layering and prohibitions are crisp — but the governing document is not in the repository |
-| Data model | 17/20 | Production-grade and portable; a few enum/journey mismatches and two orphaned preference sets |
-| Po specification | 14/15 | ADR-001 is thorough; tool contracts deferred to a file that doesn't exist |
-| Compliance | 14/15 | Strongest area; enforcement point, data model, and product behaviour all agree |
-| Operational readiness | 6/10 | No numbers: drift tolerance, timeouts, expiries, rate limits, locales, latency budgets |
+| Dimension             | Score | Note                                                                                             |
+| --------------------- | ----- | ------------------------------------------------------------------------------------------------ |
+| Product clarity       | 17/20 | Journeys, tiers, and definition of done are unusually complete; a handful of undefined constants |
+| Architecture clarity  | 14/20 | Layering and prohibitions are crisp — but the governing document is not in the repository        |
+| Data model            | 17/20 | Production-grade and portable; a few enum/journey mismatches and two orphaned preference sets    |
+| Po specification      | 14/15 | ADR-001 is thorough; tool contracts deferred to a file that doesn't exist                        |
+| Compliance            | 14/15 | Strongest area; enforcement point, data model, and product behaviour all agree                   |
+| Operational readiness | 6/10  | No numbers: drift tolerance, timeouts, expiries, rate limits, locales, latency budgets           |
 
-**Justification.** The conceptual work is genuinely done — the product knows what it is, the legal posture is designed in rather than bolted on, the layering is enforceable, and the schema is portable and honest about what it defers. What is missing is not thinking but *artifacts and constants*: the Foundation document, the event catalog, the tool contracts, and roughly a dozen numeric thresholds that implementation cannot invent without silently making product decisions. The listed contradictions are all small and mechanically resolvable, but resolving them in code rather than in documents would fork the specification on day one.
+**Justification.** The conceptual work is genuinely done — the product knows what it is, the legal posture is designed in rather than bolted on, the layering is enforceable, and the schema is portable and honest about what it defers. What is missing is not thinking but _artifacts and constants_: the Foundation document, the event catalog, the tool contracts, and roughly a dozen numeric thresholds that implementation cannot invent without silently making product decisions. The listed contradictions are all small and mechanically resolvable, but resolving them in code rather than in documents would fork the specification on day one.
 
 ### Required before Build Mode
 

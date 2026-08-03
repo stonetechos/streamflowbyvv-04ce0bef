@@ -38,18 +38,11 @@ export interface ReadyParticipantInput {
 
 /** Where a single viewer stands in the confirmation workflow. */
 export type ViewerReadyState =
-  | "not_member"
-  | "not_ready"
-  | "launch_pending"
-  | "waiting_for_others"
-  | "everyone_ready";
+  "not_member" | "not_ready" | "launch_pending" | "waiting_for_others" | "everyone_ready";
 
 /** Why the countdown cannot be offered yet. Presentation maps to copy. */
 export type ReadyBlockReason =
-  | "no_participants"
-  | "no_provider"
-  | "not_everyone_ready"
-  | "resync_required";
+  "no_participants" | "no_provider" | "not_everyone_ready" | "resync_required";
 
 /** What the host is told about the room, in one place. */
 export interface HostReadySummary {

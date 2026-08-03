@@ -15,12 +15,12 @@ Three documents assume `activity_timeline` and `recent_partners` are always rebu
 
 Fixed v1.0 values (Foundation §14.4):
 
-| Data | Retention |
-|---|---|
-| `domain_events` | 24 months |
-| `activity_timeline`, `recent_partners` | 90 days |
-| Po sessions and conversations | 30 days |
-| Analytics events | 12 months |
+| Data                                   | Retention |
+| -------------------------------------- | --------- |
+| `domain_events`                        | 24 months |
+| `activity_timeline`, `recent_partners` | 90 days   |
+| Po sessions and conversations          | 30 days   |
+| Analytics events                       | 12 months |
 
 90 days < 24 months, so the invariant holds. Any future change to either value must re-verify the invariant in the same ADR.
 

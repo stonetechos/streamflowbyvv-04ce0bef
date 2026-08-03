@@ -76,7 +76,8 @@ const DEFAULT_ENTRIES: Readonly<Record<string, ProviderLaunchEntry>> = Object.fr
       android: "intent://www.primevideo.com/detail/{ref}#Intent;scheme=https;end",
     }),
     storeIosUrl: "https://apps.apple.com/app/id545519333",
-    storeAndroidUrl: "https://play.google.com/store/apps/details?id=com.amazon.avod.thirdpartyclient",
+    storeAndroidUrl:
+      "https://play.google.com/store/apps/details?id=com.amazon.avod.thirdpartyclient",
     homepageUrl: "https://www.primevideo.com",
   }),
   disney_hotstar: Object.freeze({

@@ -9,8 +9,10 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
+    "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "arch:check": "node scripts/check-architecture.mjs"
+    "arch:check": "node scripts/check-architecture.mjs",
+    "verify": "bun run format:check && bun run lint --max-warnings 20 && bun run arch:check"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

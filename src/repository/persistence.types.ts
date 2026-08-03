@@ -15,11 +15,7 @@
  * Storage engine behind an adapter. Purely informational: no caller may branch
  * on it to change domain behaviour (Build Rules §2 — vendor neutrality).
  */
-export type PersistenceDriverKind =
-  | "postgres"
-  | "sqlite"
-  | "memory"
-  | "remote-api";
+export type PersistenceDriverKind = "postgres" | "sqlite" | "memory" | "remote-api";
 
 /** Execution scope of a connection. Determines credential class, not behaviour. */
 export type PersistenceScope = "browser" | "server" | "service";

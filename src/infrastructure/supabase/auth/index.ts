@@ -38,9 +38,7 @@ export function registerSupabaseAuthAdapter(connection?: DataConnection): boolea
     bindRepository(SESSION_REPOSITORY, () => createSupabaseSessionRepository(active));
   }
   if (!isRepositoryBound(AUTH_IDENTITY_REPOSITORY)) {
-    bindRepository(AUTH_IDENTITY_REPOSITORY, () =>
-      createSupabaseAuthIdentityRepository(active),
-    );
+    bindRepository(AUTH_IDENTITY_REPOSITORY, () => createSupabaseAuthIdentityRepository(active));
   }
   if (!isRepositoryBound(ROLE_REPOSITORY)) {
     bindRepository(ROLE_REPOSITORY, () => createSupabaseRoleRepository(active));

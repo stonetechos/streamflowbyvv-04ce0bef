@@ -4,11 +4,7 @@
  * Pure function of (definition, subject). Contains no product rules: it resolves
  * a state into a boolean and records how that verdict was reached.
  */
-import type {
-  FeatureFlagDefinition,
-  FlagEvaluation,
-  FlagSubject,
-} from "./feature-flags.types";
+import type { FeatureFlagDefinition, FlagEvaluation, FlagSubject } from "./feature-flags.types";
 
 /** Deterministic, stable 0–99 bucket from a subject id and a flag key (FNV-1a). */
 export function bucketOf(bucketingId: string, flagKey: string): number {

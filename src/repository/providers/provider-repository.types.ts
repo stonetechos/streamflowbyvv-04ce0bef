@@ -52,6 +52,4 @@ export const PROVIDER_PREFERENCE_REPOSITORY: RepositoryToken<ProviderPreferenceR
   createRepositoryToken<ProviderPreferenceRepository>("ProviderPreferenceRepository");
 
 export const PROVIDER_CONTEXT_PREFERENCE_REPOSITORY: RepositoryToken<ProviderContextPreferenceRepository> =
-  createRepositoryToken<ProviderContextPreferenceRepository>(
-    "ProviderContextPreferenceRepository",
-  );
+  createRepositoryToken<ProviderContextPreferenceRepository>("ProviderContextPreferenceRepository");

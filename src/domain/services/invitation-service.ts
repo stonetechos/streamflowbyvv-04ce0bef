@@ -22,16 +22,19 @@ export interface CreateInviteInput {
 }
 
 export interface InvitationService {
-  createInvite(
-    input: CreateInviteInput,
-    intent: Intent,
-  ): Promise<CatalogEvent<"InviteCreated">>;
+  createInvite(input: CreateInviteInput, intent: Intent): Promise<CatalogEvent<"InviteCreated">>;
   markDelivered(
     input: { roomId: string; inviteId: string; channel: InviteChannel; deliveryStatus: string },
     intent: Intent,
   ): Promise<CatalogEvent<"InviteDelivered">>;
   accept(
-    input: { inviteId: string; roomId: string; profileId: string; status: InviteStatus; expiresAt: string },
+    input: {
+      inviteId: string;
+      roomId: string;
+      profileId: string;
+      status: InviteStatus;
+      expiresAt: string;
+    },
     intent: Intent,
   ): Promise<CatalogEvent<"InviteAccepted">>;
   decline(

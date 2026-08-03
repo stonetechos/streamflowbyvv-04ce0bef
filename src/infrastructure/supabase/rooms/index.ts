@@ -11,10 +11,7 @@
  * never imports this folder.
  */
 import { bindRepository, isRepositoryBound } from "@/repository/repository-registry";
-import {
-  CODE_ALLOCATOR,
-  ROOM_UNIT_OF_WORK,
-} from "@/repository/rooms/room-support.types";
+import { CODE_ALLOCATOR, ROOM_UNIT_OF_WORK } from "@/repository/rooms/room-support.types";
 import { ROOM_PRESENCE_REPOSITORY } from "@/repository/rooms/presence-repository.types";
 import {
   INVITE_REPOSITORY,
@@ -51,9 +48,7 @@ export function registerSupabaseRoomAdapter(connection?: DataConnection): boolea
   }
   // Sprint 2.1: ephemeral liveness, separate from durable membership.
   if (!isRepositoryBound(ROOM_PRESENCE_REPOSITORY)) {
-    bindRepository(ROOM_PRESENCE_REPOSITORY, () =>
-      createSupabaseRoomPresenceRepository(active),
-    );
+    bindRepository(ROOM_PRESENCE_REPOSITORY, () => createSupabaseRoomPresenceRepository(active));
   }
   // Sprint 1.8: code allocation (Database Spec §3.11) and the creation
   // atomicity boundary.

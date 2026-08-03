@@ -344,45 +344,92 @@
  * on mobile. The global reduced-motion rules above neutralise all of it.
  */
 @keyframes sf-po-breathe {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-1.2px) scale(1.012); }
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-1.2px) scale(1.012);
+  }
 }
 
 @keyframes sf-po-blink {
-  0%, 92%, 100% { transform: scaleY(1); }
-  95% { transform: scaleY(0.08); }
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.08);
+  }
 }
 
 @keyframes sf-po-ear-left {
-  0%, 88%, 100% { transform: rotate(0deg); }
-  92% { transform: rotate(-7deg); }
+  0%,
+  88%,
+  100% {
+    transform: rotate(0deg);
+  }
+  92% {
+    transform: rotate(-7deg);
+  }
 }
 
 @keyframes sf-po-ear-right {
-  0%, 70%, 100% { transform: rotate(0deg); }
-  75% { transform: rotate(7deg); }
+  0%,
+  70%,
+  100% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(7deg);
+  }
 }
 
 @keyframes sf-po-tail {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(-1.5px) translateY(1px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-1.5px) translateY(1px);
+  }
 }
 
 @keyframes sf-po-look-around {
-  0%, 60%, 100% { transform: translateX(0) rotate(0deg); }
-  70% { transform: translateX(-2px) rotate(-2deg); }
-  85% { transform: translateX(2px) rotate(2deg); }
+  0%,
+  60%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  70% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  85% {
+    transform: translateX(2px) rotate(2deg);
+  }
 }
 
 @keyframes sf-po-glance {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-2.5px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2.5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 @keyframes sf-po-canopy {
-  0%, 100% { transform: rotate(-0.6deg); }
-  50% { transform: rotate(0.8deg); }
+  0%,
+  100% {
+    transform: rotate(-0.6deg);
+  }
+  50% {
+    transform: rotate(0.8deg);
+  }
 }
 
 .sf-po .sf-po-head {
@@ -441,9 +488,7 @@
 }
 
 .sf-po[data-mood="focused"] .sf-po-body {
-  animation-duration:
-    5.5s,
-    1.6s;
+  animation-duration: 5.5s, 1.6s;
 }
 
 .sf-po[data-mood="focused"] .sf-po-tail {
@@ -455,15 +500,28 @@
  * beyond "something is happening". Reduced motion neutralises all of it.
  */
 @keyframes sf-po-cheer {
-  0%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-4px); }
-  70% { transform: translateY(-1px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-4px);
+  }
+  70% {
+    transform: translateY(-1px);
+  }
 }
 
 @keyframes sf-po-sink {
-  0% { transform: translateY(0); }
-  60% { transform: translateY(2.5px) scale(0.99); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(2.5px) scale(0.99);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .sf-po[data-mood="counting"] .sf-po-head {
@@ -475,9 +533,7 @@
 }
 
 .sf-po[data-mood="counting"] .sf-po-body {
-  animation-duration:
-    2.4s,
-    1.6s;
+  animation-duration: 2.4s, 1.6s;
 }
 
 .sf-po[data-mood="counting"] .sf-po-tail {
@@ -515,9 +571,15 @@
  * only; reduced motion neutralises it like every other Po animation.
  */
 @keyframes sf-po-stand {
-  0% { transform: translateY(0) scaleY(1); }
-  55% { transform: translateY(-6px) scaleY(1.05); }
-  100% { transform: translateY(-4px) scaleY(1.03); }
+  0% {
+    transform: translateY(0) scaleY(1);
+  }
+  55% {
+    transform: translateY(-6px) scaleY(1.05);
+  }
+  100% {
+    transform: translateY(-4px) scaleY(1.03);
+  }
 }
 
 .sf-po[data-mood="excited"] .sf-po-body {
@@ -546,8 +608,13 @@
  * an achievement. Decorative only, and neutralised by reduced motion.
  */
 @keyframes sf-po-watch {
-  0%, 100% { transform: rotate(-1.5deg); }
-  50% { transform: rotate(1.5deg); }
+  0%,
+  100% {
+    transform: rotate(-1.5deg);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
 }
 
 .sf-po[data-mood="observing"] .sf-po-head {
@@ -559,9 +626,7 @@
 }
 
 .sf-po[data-mood="observing"] .sf-po-body {
-  animation-duration:
-    5.5s,
-    4s;
+  animation-duration: 5.5s, 4s;
 }
 
 .sf-po[data-mood="observing"] .sf-po-tail {
@@ -579,14 +644,25 @@
  * neutralises them.
  */
 @keyframes sf-po-tilt-wait {
-  0%, 100% { transform: rotate(-4deg) translateY(0); }
-  50% { transform: rotate(-1deg) translateY(-1px); }
+  0%,
+  100% {
+    transform: rotate(-4deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-1deg) translateY(-1px);
+  }
 }
 
 @keyframes sf-po-exhale {
-  0% { transform: scaleY(1.04) translateY(-2px); }
-  60% { transform: scaleY(0.98) translateY(1px); }
-  100% { transform: scaleY(1) translateY(0); }
+  0% {
+    transform: scaleY(1.04) translateY(-2px);
+  }
+  60% {
+    transform: scaleY(0.98) translateY(1px);
+  }
+  100% {
+    transform: scaleY(1) translateY(0);
+  }
 }
 
 .sf-po[data-mood="concerned"] .sf-po-head {
@@ -598,9 +674,7 @@
 }
 
 .sf-po[data-mood="concerned"] .sf-po-body {
-  animation-duration:
-    6.5s,
-    4s;
+  animation-duration: 6.5s, 4s;
 }
 
 .sf-po[data-mood="concerned"] .sf-po-tail {
@@ -629,8 +703,13 @@
  * their own players. Decorative only (Po Rule); reduced motion neutralises it.
  */
 @keyframes sf-po-encourage {
-  0%, 100% { transform: rotate(-2deg) translateY(0); }
-  50% { transform: rotate(2deg) translateY(-2px); }
+  0%,
+  100% {
+    transform: rotate(-2deg) translateY(0);
+  }
+  50% {
+    transform: rotate(2deg) translateY(-2px);
+  }
 }
 
 .sf-po[data-mood="encouraging"] .sf-po-head {
@@ -638,9 +717,7 @@
 }
 
 .sf-po[data-mood="encouraging"] .sf-po-body {
-  animation-duration:
-    5s,
-    4s;
+  animation-duration: 5s, 4s;
 }
 
 .sf-po[data-mood="encouraging"] .sf-po-ear-left,

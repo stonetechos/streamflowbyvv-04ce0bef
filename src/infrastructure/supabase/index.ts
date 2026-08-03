@@ -24,10 +24,7 @@ export {
   runQuery,
   type PostgrestLike,
 } from "./query-wrapper";
-export {
-  SupabaseRepositoryBase,
-  type SupabaseRepositoryOptions,
-} from "./supabase-repository";
+export { SupabaseRepositoryBase, type SupabaseRepositoryOptions } from "./supabase-repository";
 export type {
   ConnectionStatus,
   Database,
@@ -41,4 +38,3 @@ export type {
   Tables,
   TableUpdate,
 } from "./supabase.types";
-

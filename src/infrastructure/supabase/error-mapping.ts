@@ -6,11 +6,7 @@
  */
 import type { PostgrestError } from "@supabase/supabase-js";
 
-import {
-  REPOSITORY_ERRORS,
-  RepositoryError,
-  type RepositoryErrorContext,
-} from "@/repository";
+import { REPOSITORY_ERRORS, RepositoryError, type RepositoryErrorContext } from "@/repository";
 import type { AppErrorDescriptor } from "@/shared/constants/error-taxonomy";
 
 function descriptorFor(code: string | undefined): AppErrorDescriptor {
@@ -43,7 +39,5 @@ export function toRepositoryError(
 }
 
 export function isNotFoundError(error: unknown): boolean {
-  return (
-    error instanceof RepositoryError && error.code === REPOSITORY_ERRORS.NOT_FOUND.code
-  );
+  return error instanceof RepositoryError && error.code === REPOSITORY_ERRORS.NOT_FOUND.code;
 }

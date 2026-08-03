@@ -61,4 +61,9 @@ export interface ViewerView {
   readonly isMember: boolean;
   readonly isHost: boolean;
   readonly isReady: boolean;
+  /**
+   * Whether a seat is still available for this viewer. Decided by Domain
+   * (ADR-002 lifecycle, ADR-013 capacity) and only carried here.
+   */
+  readonly canJoin: boolean;
 }

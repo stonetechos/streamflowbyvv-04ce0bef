@@ -14,7 +14,12 @@ import type { CatalogEvent, DomainEventName, EventBus, Unsubscribe } from "@/dom
 import type { AnalyticsRecord, AnalyticsService } from "@/domain/services";
 import type { AnalyticsEventRecord, AnalyticsEventSinkRepository } from "@/repository";
 
-import { createOrderedDispatcher, createReplayGuard, eventKey, type OrderedDispatcher } from "./event-dispatch";
+import {
+  createOrderedDispatcher,
+  createReplayGuard,
+  eventKey,
+  type OrderedDispatcher,
+} from "./event-dispatch";
 import { payloadString } from "./event-serializer";
 
 /** Catalog §2–§9: events whose documented consumer includes analytics. */
@@ -52,7 +57,8 @@ function scalarProperties(
 
 /** Maps an envelope to the analytics row shape. Pure. */
 export function toAnalyticsEvent(event: CatalogEvent): AnalyticsEventRecord {
-  const roomId = payloadString(event, "roomId") ?? (event.aggregateType === "room" ? event.aggregateId : null);
+  const roomId =
+    payloadString(event, "roomId") ?? (event.aggregateType === "room" ? event.aggregateId : null);
   return {
     eventName: event.eventName,
     profileId: event.actorProfileId,

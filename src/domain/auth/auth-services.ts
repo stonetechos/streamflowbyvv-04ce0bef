@@ -5,16 +5,20 @@
  * services resolve their repositories lazily, so an unbound identity adapter
  * degrades to `SF-AUTH-PROVIDER-UNAVAILABLE` rather than a crash.
  */
-import { bindService, createServiceToken, isServiceBound, resolveService } from "../service-registry";
+import {
+  bindService,
+  createServiceToken,
+  isServiceBound,
+  resolveService,
+} from "../service-registry";
 
 import { createAuthorizationService, type AuthorizationService } from "./authorization-service";
 import { createPermissionService, type PermissionService } from "./permission-service";
 import { createSessionService, type SessionService } from "./session-service";
 
 export const SESSION_SERVICE = createServiceToken<SessionService>("SessionService");
-export const AUTHORIZATION_SERVICE = createServiceToken<AuthorizationService>(
-  "AuthorizationService",
-);
+export const AUTHORIZATION_SERVICE =
+  createServiceToken<AuthorizationService>("AuthorizationService");
 export const PERMISSION_SERVICE = createServiceToken<PermissionService>("PermissionService");
 
 /** Idempotent: safe to call from any entry point, binds each token once. */

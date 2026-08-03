@@ -55,9 +55,7 @@ export function toAnalyticsEventInsert(record: AnalyticsEventRecord): AnalyticsE
   };
 }
 
-export function toActivityTimelineInsert(
-  entry: ActivityTimelineEntry,
-): ActivityTimelineInsert {
+export function toActivityTimelineInsert(entry: ActivityTimelineEntry): ActivityTimelineInsert {
   return {
     profile_id: entry.profileId,
     activity_type: entry.activityType,

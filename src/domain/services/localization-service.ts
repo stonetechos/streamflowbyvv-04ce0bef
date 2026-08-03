@@ -20,7 +20,10 @@ const KEY_PATTERN = /^[a-z0-9]+(?:_[a-z0-9]+)*(?:\.[a-z0-9]+(?:_[a-z0-9]+)*)+$/;
 export interface LocalizationDomainService {
   isSupported(locale: string): locale is LocaleCode;
   /** Profile preference wins, then the request locale, then the fallback. */
-  resolveLocale(input: { profileLocale?: string | null; requestLocale?: string | null }): LocaleCode;
+  resolveLocale(input: {
+    profileLocale?: string | null;
+    requestLocale?: string | null;
+  }): LocaleCode;
   isValidKey(key: string): boolean;
   assertValidKey(key: string): void;
   readonly supportedLocales: readonly LocaleCode[];

@@ -50,7 +50,6 @@ import type { SyncHealth } from "./sync.types";
  */
 export interface ParticipantSyncInput {
   readonly profileId: string;
-  readonly isReady: boolean;
   readonly isOnline: boolean;
   readonly clockOffsetMs: number | null;
   readonly latencyMs: number | null;
@@ -63,7 +62,6 @@ export interface ParticipantSyncStatus {
   readonly clockOffsetMs: number | null;
   readonly latencyMs: number | null;
   readonly isOnline: boolean;
-  readonly isReady: boolean;
   /** In the Excellent or Good band; an unmeasured participant is not synced. */
   readonly isSynced: boolean;
 }
@@ -71,16 +69,19 @@ export interface ParticipantSyncStatus {
 /** Why a countdown is refused. Machine-readable; Presentation maps to copy. */
 export type CountdownBlockReason = "resync_required" | "no_participants";
 
-/** The room's synchronization verdict at one instant. Immutable. */
+/**
+ * The room's synchronization verdict at one instant. Immutable.
+ *
+ * Readiness is deliberately absent (Milestone D.5): who has confirmed is
+ * `ReadyCoordinator`'s answer alone, and a second count here could disagree
+ * with it. This coordinator answers timing questions and nothing else.
+ */
 export interface RoomSyncSnapshot {
   readonly roomId: string;
   readonly health: SyncHealth;
   readonly participants: readonly ParticipantSyncStatus[];
   readonly participantCount: number;
-  readonly readyCount: number;
   readonly syncedCount: number;
-  /** Online participants who are neither ready nor synced yet. */
-  readonly waitingCount: number;
   /** Whose clock the room's health came from, when one can be identified. */
   readonly weakestProfileId: string | null;
   /** Largest absolute measured offset across participants, or null. */
@@ -147,7 +148,6 @@ export function createRoomSyncCoordinator(
           clockOffsetMs: offsetMs,
           latencyMs: participant.latencyMs,
           isOnline: participant.isOnline,
-          isReady: participant.isReady,
           isSynced: isHealthSatisfactory(health),
         });
       });
@@ -174,20 +174,14 @@ export function createRoomSyncCoordinator(
         return Math.abs(status.clockOffsetMs) > Math.abs(worst.clockOffsetMs) ? status : worst;
       }, null);
 
-      const readyCount = statuses.filter((status) => status.isReady).length;
       const syncedCount = measured.filter((status) => status.isSynced).length;
-      const waitingCount = measured.filter(
-        (status) => !status.isReady || !status.isSynced,
-      ).length;
 
       const snapshot: RoomSyncSnapshot = Object.freeze({
         roomId,
         health,
         participants: Object.freeze(statuses),
         participantCount: statuses.length,
-        readyCount,
         syncedCount,
-        waitingCount,
         weakestProfileId: weakest?.profileId ?? null,
         worstDeviationMs,
         canStartCountdown: false,
@@ -258,5 +252,4 @@ export function resolveRoomSyncCoordinatorDependencies(input: {
   return input;
 }
 
-export const ROOM_SYNC_COORDINATOR =
-  createServiceToken<RoomSyncCoordinator>("RoomSyncCoordinator");
+export const ROOM_SYNC_COORDINATOR = createServiceToken<RoomSyncCoordinator>("RoomSyncCoordinator");

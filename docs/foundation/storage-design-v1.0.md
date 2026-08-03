@@ -17,10 +17,10 @@
 
 ## 2. Buckets
 
-| Bucket | Contents | Read access | Write access |
-|---|---|---|---|
-| `avatars` | Profile avatar images | Public read | Owner only, own prefix |
-| `provider-assets` | Provider logos and badges used in the capability matrix | Public read | Admin only |
+| Bucket            | Contents                                                | Read access | Write access           |
+| ----------------- | ------------------------------------------------------- | ----------- | ---------------------- |
+| `avatars`         | Profile avatar images                                   | Public read | Owner only, own prefix |
+| `provider-assets` | Provider logos and badges used in the capability matrix | Public read | Admin only             |
 
 No other bucket exists in v1. Voice audio, media, captions, and Po transcripts are never stored as objects.
 
@@ -39,13 +39,13 @@ provider-assets/{provider_key}/{asset_name}.{ext}
 
 ## 4. Limits and validation
 
-| Rule | Value |
-|---|---|
-| Avatar max file size | 2 MB |
-| Avatar accepted types | `image/png`, `image/jpeg`, `image/webp` |
-| Avatar max dimensions | 1024 × 1024 px, resized on upload |
-| Provider asset max size | 512 KB |
-| Uploads per profile | 10 per hour (Foundation §19 pattern) |
+| Rule                    | Value                                   |
+| ----------------------- | --------------------------------------- |
+| Avatar max file size    | 2 MB                                    |
+| Avatar accepted types   | `image/png`, `image/jpeg`, `image/webp` |
+| Avatar max dimensions   | 1024 × 1024 px, resized on upload       |
+| Provider asset max size | 512 KB                                  |
+| Uploads per profile     | 10 per hour (Foundation §19 pattern)    |
 
 Content type is validated from the file's actual bytes, not from the client-declared type or the extension. A failed validation returns `SF-SYS-INVALID-UPLOAD`.
 

@@ -18,9 +18,7 @@ export function registerVoiceAdapter(providerId: string, factory: VoiceAdapterFa
 }
 
 export function resolveVoiceAdapter(providerId?: string): VoiceAdapter | null {
-  const factory = providerId
-    ? factories.get(providerId)
-    : Array.from(factories.values())[0];
+  const factory = providerId ? factories.get(providerId) : Array.from(factories.values())[0];
   return factory ? factory() : null;
 }
 

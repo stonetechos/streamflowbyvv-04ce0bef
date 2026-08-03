@@ -56,10 +56,7 @@ function minutesOfDay(value: string): number {
 export function createNotificationService(context: DomainServiceContext): NotificationService {
   const { clock } = context;
 
-  const isWithinQuietHours = (
-    preferences: NotificationPreferences,
-    now = clock.now(),
-  ): boolean => {
+  const isWithinQuietHours = (preferences: NotificationPreferences, now = clock.now()): boolean => {
     const { quietHoursStart, quietHoursEnd } = preferences;
     if (!quietHoursStart || !quietHoursEnd) return false;
     const current = now.getUTCHours() * 60 + now.getUTCMinutes();

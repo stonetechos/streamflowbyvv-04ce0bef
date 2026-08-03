@@ -32,9 +32,7 @@ const MAX_LIMIT = 200;
  * reads and writes; they never re-implement paging or error handling.
  */
 export abstract class SupabaseRepositoryBase<TRow extends Record<string, unknown>, TEntity> {
-  protected constructor(
-    protected readonly options: SupabaseRepositoryOptions<TRow, TEntity>,
-  ) {}
+  protected constructor(protected readonly options: SupabaseRepositoryOptions<TRow, TEntity>) {}
 
   /** Query builder for this repository's table. */
   protected table() {

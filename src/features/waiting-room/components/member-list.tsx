@@ -2,7 +2,9 @@
  * Member list — Sprint 2.0.
  *
  * The lobby roster: who is here, who hosts, and who has signalled ready. It
- * renders state; it never derives membership rules.
+ * renders state; it never derives membership rules, and since Milestone D.5
+ * it no longer counts readiness either — that number arrives from
+ * `ReadyCoordinator`.
  */
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,11 +15,14 @@ import { PresenceIndicator } from "./presence-indicator";
 
 export interface MemberListProps {
   readonly members: readonly MemberView[];
+  /** Confirmed members, as decided by `ReadyCoordinator`. */
+  readonly readyCount: number;
+  /** Members the readiness verdict covers. */
+  readonly readyTotal: number;
 }
 
-export function MemberList({ members }: MemberListProps) {
+export function MemberList({ members, readyCount, readyTotal }: MemberListProps) {
   const { t } = useTranslation();
-  const readyCount = members.filter((member) => member.isReady).length;
 
   return (
     <Card>
@@ -26,7 +31,7 @@ export function MemberList({ members }: MemberListProps) {
           <span>{t("room.members.title", { count: members.length })}</span>
           {members.length > 0 ? (
             <span className="text-xs font-normal text-muted-foreground">
-              {t("room.members.ready_count", { ready: readyCount, total: members.length })}
+              {t("room.members.ready_count", { ready: readyCount, total: readyTotal })}
             </span>
           ) : null}
         </CardTitle>
@@ -85,7 +90,9 @@ function MemberRow({ member }: { member: MemberView }) {
         <Badge
           variant={member.isReady ? "secondary" : "outline"}
           className={
-            member.isReady ? "border-success/40 bg-success/12 text-success" : "text-muted-foreground"
+            member.isReady
+              ? "border-success/40 bg-success/12 text-success"
+              : "text-muted-foreground"
           }
         >
           <span aria-hidden="true" className="mr-1">

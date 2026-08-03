@@ -1,7 +1,12 @@
 /**
  * Domain services public surface — Sprint 1.6.
  */
-export { createAnalyticsService, type AnalyticsRecord, type AnalyticsService, type AnalyticsSink } from "./analytics-service";
+export {
+  createAnalyticsService,
+  type AnalyticsRecord,
+  type AnalyticsService,
+  type AnalyticsSink,
+} from "./analytics-service";
 export {
   createComplianceService,
   type ComplianceRequest,

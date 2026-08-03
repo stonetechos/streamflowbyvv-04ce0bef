@@ -189,7 +189,7 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
                     ? "M75 64 q5 -2 10 0"
                     : mood === "waiting"
                       ? "M75 63 q5 3 10 0"
-                    : "M75 63 q5 4 10 0"
+                      : "M75 63 q5 4 10 0"
             }
             stroke="var(--color-foreground)"
             strokeWidth="2"

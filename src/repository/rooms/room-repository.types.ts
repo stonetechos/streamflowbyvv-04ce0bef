@@ -82,11 +82,7 @@ export interface RoomStateRepository {
    * `expectedVersion`, and returns the row at `expectedVersion + 1`.
    * @throws RepositoryError `SF-SYS-CONFLICT` when the version moved on.
    */
-  update(
-    roomId: EntityId,
-    expectedVersion: number,
-    patch: RoomStatePatch,
-  ): Promise<RoomState>;
+  update(roomId: EntityId, expectedVersion: number, patch: RoomStatePatch): Promise<RoomState>;
   /** Non-throwing variant for callers that resolve conflicts themselves. */
   tryUpdate(
     roomId: EntityId,

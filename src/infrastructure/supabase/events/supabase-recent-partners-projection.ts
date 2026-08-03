@@ -10,7 +10,11 @@ import type { PartnerObservation, RecentPartnersProjection } from "@/repository"
 import type { DataConnection } from "../connection";
 import { runCommand, runMaybe } from "../query-wrapper";
 import { requireAvailable } from "../rooms/room-query-support";
-import { RECENT_PARTNER_COLUMNS, toRecentPartnerInsert, type RecentPartnerRow } from "./event-mapper";
+import {
+  RECENT_PARTNER_COLUMNS,
+  toRecentPartnerInsert,
+  type RecentPartnerRow,
+} from "./event-mapper";
 
 const AGGREGATE = "recent_partner";
 

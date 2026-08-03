@@ -11,13 +11,7 @@ import type { EntityCode, EntityId, Page } from "@/repository/repository.types";
 import type { DataConnection } from "../connection";
 import { runCommand, runMaybe, runQuery } from "../query-wrapper";
 import { paginateRows, requireAvailable } from "./room-query-support";
-import {
-  ROOM_COLUMNS,
-  toRoom,
-  toRoomInsert,
-  toRoomUpdate,
-  type RoomRow,
-} from "./room-mapper";
+import { ROOM_COLUMNS, toRoom, toRoomInsert, toRoomUpdate, type RoomRow } from "./room-mapper";
 
 const AGGREGATE = "room";
 

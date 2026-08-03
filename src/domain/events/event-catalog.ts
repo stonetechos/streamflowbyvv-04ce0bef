@@ -183,7 +183,8 @@ export interface FeatureFlagEventPayloads {
 
 /** The complete v1.0 event surface. */
 export interface DomainEventPayloads
-  extends IdentityEventPayloads,
+  extends
+    IdentityEventPayloads,
     RoomEventPayloads,
     InvitationEventPayloads,
     PlaybackEventPayloads,

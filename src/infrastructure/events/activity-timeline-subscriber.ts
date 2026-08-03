@@ -7,13 +7,14 @@
  * localization key plus identifiers (Foundation §13).
  */
 import type { CatalogEvent, EventBus, Unsubscribe } from "@/domain/events";
-import type {
-  ActivityTimelineEntry,
-  ActivityTimelineProjection,
-  ActivityType,
-} from "@/repository";
+import type { ActivityTimelineEntry, ActivityTimelineProjection, ActivityType } from "@/repository";
 
-import { createOrderedDispatcher, createReplayGuard, eventKey, type OrderedDispatcher } from "./event-dispatch";
+import {
+  createOrderedDispatcher,
+  createReplayGuard,
+  eventKey,
+  type OrderedDispatcher,
+} from "./event-dispatch";
 import { payloadString, payloadStrings } from "./event-serializer";
 
 const SUMMARY_KEYS: Readonly<Record<ActivityType, string>> = Object.freeze({
@@ -47,7 +48,8 @@ function entry(
 
 /** Maps one envelope to zero or more timeline rows. Pure. */
 export function toActivityEntries(event: CatalogEvent): readonly ActivityTimelineEntry[] {
-  const roomId = payloadString(event, "roomId") ?? (event.aggregateType === "room" ? event.aggregateId : null);
+  const roomId =
+    payloadString(event, "roomId") ?? (event.aggregateType === "room" ? event.aggregateId : null);
 
   switch (event.eventName) {
     case "RoomCreated": {

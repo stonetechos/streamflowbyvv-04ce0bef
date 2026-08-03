@@ -83,10 +83,7 @@ export const PROVIDER_LAUNCH_COORDINATOR = createServiceToken<ProviderLaunchCoor
  * control is possible AND there is somewhere to send the member; a capability
  * with no destination is not a launch route.
  */
-function classify(
-  option: ProviderSelectionOption,
-  hasDestination: boolean,
-): ProviderLaunchClass {
+function classify(option: ProviderSelectionOption, hasDestination: boolean): ProviderLaunchClass {
   if (!option.isSelectable || option.complianceAction === "block") return "unsupported";
   if (!hasDestination) return "unsupported";
   if (option.syncMode === "controlled" && option.selectionClass === "supported") {
