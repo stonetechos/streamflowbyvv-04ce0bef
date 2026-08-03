@@ -52,6 +52,11 @@ export interface WaitingRoomModel {
   readonly pending: WaitingRoomPendingAction;
   /** True once a realtime transport is attached for this room. */
   readonly isLive: boolean;
+  /** Sprint J.2 — this viewer has left or ended the room; go Home. */
+  readonly departed: boolean;
+  /** Sprint J.2 — the room itself has ended for everyone. */
+  readonly hasEnded: boolean;
+
   /** True while a presence store is reporting liveness for this room. */
   readonly isPresenceTracked: boolean;
   /** Live presence rows by profile, for the synchronization pipeline. */
@@ -94,6 +99,8 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
   const [status, setStatus] = useState<WaitingRoomStatus>("loading");
   const [error, setError] = useState<WaitingRoomError | null>(null);
   const [pending, setPending] = useState<WaitingRoomPendingAction>(null);
+  // Sprint J.2 — this viewer has left (or ended) the room and should go Home.
+  const [departed, setDeparted] = useState(false);
   const mounted = useRef(true);
 
   const readModel = useMemo(
@@ -152,17 +159,35 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     [load],
   );
 
+  const viewerIsMember = snapshot?.viewerMembership?.state === "joined";
+  const viewerIsHost =
+    snapshot?.viewerMembership?.role === "host" ||
+    (snapshot?.room.hostProfileId ?? null) === profileId;
+
   const join = useCallback(() => {
     if (!profileId) return;
     const flow = resolveService(ROOM_FLOW_SERVICE);
     void run("join", () => flow.joinRoom({ roomId, profileId }, newIntent(profileId)));
   }, [profileId, roomId, run]);
 
+  /**
+   * Sprint J.2 — departure is one act with two shapes. A guest releases their
+   * seat; the host ends the room, because a hostless room has no authority
+   * left to run a countdown. Both settle into `departed`, which is the signal
+   * Presentation uses to return the person Home.
+   */
   const leave = useCallback(() => {
     if (!profileId) return;
     const flow = resolveService(ROOM_FLOW_SERVICE);
-    void run("leave", () => flow.leaveRoom({ roomId, profileId }, newIntent(profileId)));
-  }, [profileId, roomId, run]);
+    void run("leave", async () => {
+      if (viewerIsHost) {
+        await flow.endRoom({ roomId, actorProfileId: profileId }, newIntent(profileId));
+      } else {
+        await flow.leaveRoom({ roomId, profileId }, newIntent(profileId));
+      }
+      if (mounted.current) setDeparted(true);
+    });
+  }, [profileId, roomId, run, viewerIsHost]);
 
   const setReady = useCallback(
     (ready: boolean) => {
@@ -172,11 +197,6 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     },
     [readModel, run, snapshot],
   );
-
-  const viewerIsMember = snapshot?.viewerMembership?.state === "joined";
-  const viewerIsHost =
-    snapshot?.viewerMembership?.role === "host" ||
-    (snapshot?.room.hostProfileId ?? null) === profileId;
 
   // Sprint 2.5 measures this device's clock; Sprint 2.6 carries the result on
   // the presence heartbeat so the room can aggregate it.
@@ -257,6 +277,13 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     presenceRefresh.current();
   }, [load]);
 
+  /**
+   * Sprint J.2 — the room is over for this viewer. Either the read model says
+   * the room ended, or the load was refused because it ended. Domain decided
+   * both; this is a projection, not an inference.
+   */
+  const hasEnded = snapshot?.room.status === "ended" || error?.code === "SF-ROOM-ENDED";
+
   return {
     status,
     error,
@@ -269,7 +296,10 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     roomSync,
     viewer,
     pending,
+    departed,
+    hasEnded,
     isLive: realtime.isLive,
+
     refresh,
     join,
     leave,

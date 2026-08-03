@@ -4,7 +4,8 @@
  * Composes the lobby from the hook's model and resolves loading, error, and
  * empty states in one place so no child has to know about them.
  */
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 import { ErrorState, LoadingState } from "@/app-shell";
 import type { SyncHealth } from "@/domain";
@@ -127,6 +128,21 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     inputDeviceId: devicePreferences.inputDeviceId,
     outputDeviceId: devicePreferences.outputDeviceId,
   });
+
+  /**
+   * Sprint J.2 — the end of the journey. Once this viewer has left, or the
+   * room itself has ended, the call is closed and the person is returned Home.
+   * Presence, realtime, sync, and Po are torn down by unmounting this screen;
+   * voice is closed explicitly so the microphone never outlives the room.
+   */
+  const navigate = useNavigate();
+  const isOver = model.departed || model.hasEnded;
+  const leaveVoice = voice.leave;
+  useEffect(() => {
+    if (!isOver) return;
+    leaveVoice();
+    void navigate({ to: "/home" });
+  }, [isOver, leaveVoice, navigate]);
 
   // Per-member voice and clock standing, keyed by profile so the roster can
   // stay a pure renderer.

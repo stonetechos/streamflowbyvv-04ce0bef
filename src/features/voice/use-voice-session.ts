@@ -235,6 +235,20 @@ export function useVoiceSession(input: UseVoiceSessionInput): VoiceSessionModel 
     void connect();
   }, [autoJoin, connect, isAvailable, transportState]);
 
+  /**
+   * Sprint J.2 — voice never outlives membership. If the call stops being
+   * offered while the screen is still mounted (the member left, the room
+   * ended, the grant went away), the transport is closed here rather than
+   * waiting for unmount. The auto-join attempt resets so a later rejoin
+   * reconnects normally.
+   */
+  useEffect(() => {
+    if (isAvailable) return;
+    autoJoinAttempted.current = false;
+    if (transportState === "disconnected") return;
+    void disconnect("session_unavailable");
+  }, [disconnect, isAvailable, transportState]);
+
   // Leaving the room screen always ends the call; nothing keeps a mic open.
   useEffect(
     () => () => {
