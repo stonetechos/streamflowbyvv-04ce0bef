@@ -2262,6 +2262,18 @@ export type Database = {
       allocate_code: { Args: { _prefix: string }; Returns: string }
       current_auth_user_id: { Args: never; Returns: string }
       current_profile_id: { Args: never; Returns: string }
+      discover_room_by_code: {
+        Args: { _code: string }
+        Returns: {
+          capacity: number
+          host_display_name: string
+          member_count: number
+          provider_id: string
+          room_id: string
+          room_name: string
+          status: string
+        }[]
+      }
       has_role: {
         Args: { _profile_id: string; _role: string }
         Returns: boolean
@@ -2277,6 +2289,37 @@ export type Database = {
       }
       owns_po_plan: { Args: { _po_plan_id: string }; Returns: boolean }
       owns_po_session: { Args: { _po_session_id: string }; Returns: boolean }
+      room_admission_row: {
+        Args: { _room_id: string }
+        Returns: {
+          code: string
+          content_reference: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          ended_at: string | null
+          host_profile_id: string | null
+          id: string
+          join_code_expires_at: string | null
+          join_code_hash: string | null
+          max_members: number
+          metadata: Json
+          name: string
+          provider_id: string | null
+          scheduled_start_at: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+          updated_by: string | null
+          visibility: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "rooms"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
     }
     Enums: {
       [_ in never]: never

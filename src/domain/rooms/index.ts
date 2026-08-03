@@ -28,6 +28,7 @@ export {
   type RoomFlowDependencies,
   type RoomFlowService,
 } from "./room-flow-service";
+export type { RoomDiscovery } from "@/repository/rooms/room-discovery.types";
 export {
   createRoomReadModel,
   resolveRoomReadModelDependencies,

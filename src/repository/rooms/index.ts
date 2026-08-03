@@ -24,4 +24,9 @@ export {
   type CodePrefix,
   type RoomUnitOfWork,
 } from "./room-support.types";
+export {
+  ROOM_DISCOVERY_REPOSITORY,
+  type RoomDiscovery,
+  type RoomDiscoveryRepository,
+} from "./room-discovery.types";
 export { ROOM_PRESENCE_REPOSITORY, type RoomPresenceRepository } from "./presence-repository.types";

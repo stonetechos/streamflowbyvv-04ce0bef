@@ -42,6 +42,7 @@ import {
   CODE_PREFIXES,
   INVITE_REPOSITORY,
   ROOM_MEMBER_REPOSITORY,
+  ROOM_DISCOVERY_REPOSITORY,
   ROOM_REPOSITORY,
   ROOM_STATE_REPOSITORY,
   ROOM_UNIT_OF_WORK,
@@ -52,6 +53,8 @@ import {
   type InviteRepository,
   type Page,
   type RoomMemberRepository,
+  type RoomDiscovery,
+  type RoomDiscoveryRepository,
   type RoomQuery,
   type RoomRepository,
   type RoomStateRepository,
@@ -105,6 +108,13 @@ export interface RoomFlowService {
   createRoom(request: RoomCreationRequest, intent: Intent): Promise<RoomCreationResult>;
   getRoom(roomId: EntityId): Promise<Room>;
   getRoomByCode(code: string): Promise<Room>;
+  /**
+   * Sprint J.1 — discovery, not admission. Resolves an exact room code to the
+   * minimal facts a not-yet-member may see. Admission is still decided by
+   * `joinRoom`; this method re-implements no capacity, lifecycle, or
+   * readiness rule.
+   */
+  discoverRoomByCode(code: string): Promise<RoomDiscovery>;
   listRooms(query?: RoomQuery): Promise<Page<Room>>;
   endRoom(
     input: { roomId: EntityId; actorProfileId: EntityId; endReason?: SessionEndReason },
@@ -141,6 +151,8 @@ export interface RoomFlowDependencies {
   readonly members: RoomMemberRepository;
   readonly invites: InviteRepository;
   readonly codes: CodeAllocator;
+  /** Optional: absent adapters simply make code discovery unavailable. */
+  readonly discovery?: RoomDiscoveryRepository | undefined;
   readonly unitOfWork: RoomUnitOfWork;
   readonly roomService: RoomService;
   readonly invitationService: InvitationService;
@@ -164,6 +176,9 @@ export function resolveRoomFlowDependencies(services: {
     members: resolveRepository(ROOM_MEMBER_REPOSITORY),
     invites: resolveRepository(INVITE_REPOSITORY),
     codes: resolveRepository(CODE_ALLOCATOR),
+    discovery: isRepositoryBound(ROOM_DISCOVERY_REPOSITORY)
+      ? resolveRepository(ROOM_DISCOVERY_REPOSITORY)
+      : undefined,
     unitOfWork: isRepositoryBound(ROOM_UNIT_OF_WORK)
       ? resolveRepository(ROOM_UNIT_OF_WORK)
       : PASSTHROUGH_UNIT_OF_WORK,
@@ -178,6 +193,7 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     members,
     invites,
     codes,
+    discovery,
     unitOfWork,
     roomService,
     invitationService,
@@ -320,6 +336,14 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       return room;
     },
 
+    async discoverRoomByCode(code) {
+      const operation = "RoomFlowService.discoverRoomByCode";
+      if (!discovery) throw domainError("SERVICE_UNAVAILABLE", { operation });
+      const found = await discovery.discoverByCode(code.trim().toUpperCase());
+      if (!found) throw domainError("ROOM_NOT_FOUND", { operation });
+      return found;
+    },
+
     listRooms: (query) => rooms.list(query),
 
     async endRoom({ roomId, actorProfileId, endReason = "host_ended" }, intent) {
@@ -375,7 +399,14 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
 
     async joinRoom({ roomId, profileId, role = "guest" }, intent) {
       const operation = "RoomFlowService.joinRoom";
-      const room = await requireRoom(roomId, operation);
+      // Sprint J.1 — a guest cannot read the room they are knocking on, so when
+      // the member-scoped read finds nothing we fall back to the narrow
+      // joinable-room lookup. It only *loads* the room; every admission rule
+      // below is unchanged and still applied here.
+      const room =
+        (await rooms.findById(roomId)) ??
+        (discovery ? await discovery.findJoinableById(roomId) : null);
+      if (!room) throw domainError("ROOM_NOT_FOUND", { operation, aggregateId: roomId });
       return admit(room, profileId, role, operation, intent);
     },
 

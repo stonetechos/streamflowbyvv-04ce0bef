@@ -148,9 +148,11 @@ export function useHome(viewerProfileId: string | null): HomeModel {
     async (code: string) => {
       if (!rooms || !viewerProfileId) return null;
       return run("join", async () => {
-        const room = await rooms.getRoomByCode(code);
-        await rooms.joinRoom({ roomId: room.id, profileId: viewerProfileId }, intent());
-        return room.id;
+        // Sprint J.1: a guest is not yet a member, so the room is discovered
+        // through the narrow code lookup. Admission is still RoomFlowService's.
+        const found = await rooms.discoverRoomByCode(code);
+        await rooms.joinRoom({ roomId: found.roomId, profileId: viewerProfileId }, intent());
+        return found.roomId;
       });
     },
     [intent, rooms, run, viewerProfileId],

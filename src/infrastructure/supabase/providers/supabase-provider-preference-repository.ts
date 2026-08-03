@@ -116,7 +116,6 @@ export function createSupabaseProviderContextRepository(
         ),
       ]);
 
-
       return {
         defaultProviderId: privacy?.default_provider_id ?? null,
         regionCode: localization?.region_code ?? null,

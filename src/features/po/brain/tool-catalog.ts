@@ -379,10 +379,10 @@ const ACTION_TOOLS: readonly PoToolDescriptor<never, unknown>[] = [
     parseInput: (raw) => ({ code: str(raw, "code") }),
     async execute({ code }: { code: string }) {
       const flow = roomFlow();
-      const room = await flow.getRoomByCode(code);
-      await flow.joinRoom({ roomId: room.id, profileId: actorId() }, intent());
+      const room = await flow.discoverRoomByCode(code);
+      await flow.joinRoom({ roomId: room.roomId, profileId: actorId() }, intent());
       invalidatePoContext("home");
-      return { roomId: room.id, roomCode: room.code, roomName: room.name } satisfies PoRoomRef;
+      return { roomId: room.roomId, roomCode: code, roomName: room.name } satisfies PoRoomRef;
     },
   }),
 
