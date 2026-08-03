@@ -17,7 +17,13 @@ import { useAccessibility } from "@/foundation/accessibility";
 import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
 
-import type { PoOutcome, PoPendingQuestion, PoStepOutcome, PoTurn } from "../brain/po-brain.types";
+import type {
+  PoExecutionPhase,
+  PoOutcome,
+  PoPendingQuestion,
+  PoStepOutcome,
+  PoTurn,
+} from "../brain/po-brain.types";
 
 export interface PoConsoleTranscriptProps {
   readonly turns: readonly PoTurn[];
@@ -25,9 +31,18 @@ export interface PoConsoleTranscriptProps {
   readonly pending: PoPendingQuestion | null;
   readonly outcome: PoOutcome | null;
   readonly isBusy: boolean;
+  /** Milestone H1.5 §5 — the phase behind the wait, so it can be named. */
+  readonly phase: PoExecutionPhase | null;
   /** Sends a typed answer to an open question, or a yes/no. */
   onAnswer(text: string): void;
 }
+
+/** Milestone H1.5 §5 — what to say while each phase is running. */
+const PHASE_LABEL: Partial<Record<PoExecutionPhase, string>> = {
+  thinking: "po.console.thinking",
+  planning: "po.console.planning",
+  executing: "po.console.executing",
+};
 
 const STEP_ICON: Record<PoStepOutcome["status"], typeof Check> = {
   ok: Check,
@@ -43,6 +58,7 @@ export function PoConsoleTranscript({
   pending,
   outcome,
   isBusy,
+  phase,
   onAnswer,
 }: PoConsoleTranscriptProps) {
   const { t } = useTranslation();
@@ -150,10 +166,17 @@ export function PoConsoleTranscript({
         </div>
       ) : null}
 
+      {/* Milestone H1.5 §3 — one quiet offer of the next step, never an action. */}
+      {!isBusy && !pending && outcome?.followUp ? (
+        <p className="mt-3 text-sm text-muted-foreground">
+          {t(outcome.followUp.key, outcome.followUp.values)}
+        </p>
+      ) : null}
+
       {isBusy ? (
         <p className="mt-3 text-sm text-muted-foreground" role="status">
           <span className={cn(prefersReducedMotion ? undefined : "animate-pulse")}>
-            {t("po.console.thinking")}
+            {t(PHASE_LABEL[phase ?? "thinking"] ?? "po.console.thinking")}
           </span>
         </p>
       ) : null}

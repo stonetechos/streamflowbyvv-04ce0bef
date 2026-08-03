@@ -53,6 +53,12 @@ export interface PoRoomControls {
 export interface PoRuntime {
   readonly actor: PoActor;
   readonly room: PoRoomControls | null;
+  /**
+   * The screen the person is looking at, as a path. Milestone H1.5 §1: Po
+   * reasons about where the person already is, so it neither asks about it nor
+   * opens a screen that is already open.
+   */
+  readonly route: string;
   navigate(to: PoNavigationTarget): void;
 }
 
@@ -61,6 +67,7 @@ const NO_ACTOR: PoActor = Object.freeze({ profileId: null, displayName: "" });
 let runtime: PoRuntime = {
   actor: NO_ACTOR,
   room: null,
+  route: "/",
   navigate: () => {
     /* No router attached yet; navigation tools report unavailability. */
   },
@@ -94,6 +101,13 @@ export function setPoActor(actor: PoActor): void {
   publish();
 }
 
+/** Publishes the current path. Called by the Po provider on every navigation. */
+export function setPoRoute(route: string): void {
+  if (runtime.route === route) return;
+  runtime = { ...runtime, route };
+  publish();
+}
+
 export function setPoNavigator(navigate: (to: PoNavigationTarget) => void): void {
   runtime = { ...runtime, navigate };
   hasNavigator = true;
@@ -122,7 +136,7 @@ export function clearPoRoomControls(roomId: string): void {
 
 /** Test-support only. */
 export function resetPoRuntime(): void {
-  runtime = { actor: NO_ACTOR, room: null, navigate: () => {} };
+  runtime = { actor: NO_ACTOR, room: null, route: "/", navigate: () => {} };
   hasNavigator = false;
   publish();
 }

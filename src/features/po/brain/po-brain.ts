@@ -26,7 +26,10 @@ import {
 } from "./conversation-manager";
 import { PO_CLARIFY_THRESHOLD, detectIntent, isActionable, splitUtterance } from "./intent-engine";
 import { planIntent } from "./planning-engine";
+import { followUpFor } from "./po-followups";
+import { getPoRuntime } from "./po-runtime";
 import type {
+  PoExecutionPhase,
   PoMessage,
   PoOutcome,
   PoPlanned,
@@ -41,12 +44,23 @@ export interface PoBrainState {
   readonly conversation: PoConversationState;
   /** A plan waiting on a yes. Held whole, so nothing runs before the yes. */
   readonly pendingPlan: PoPlanned | null;
+  /**
+   * Milestone H1.5 §3 — the last suggestion Po made, so the same one is not
+   * offered twice in a row.
+   */
+  readonly lastFollowUpKey: string | null;
 }
 
 export const EMPTY_BRAIN_STATE: PoBrainState = Object.freeze({
   conversation: EMPTY_CONVERSATION,
   pendingPlan: null,
+  lastFollowUpKey: null,
 });
+
+/** Reports where the turn is. Milestone H1.5 §5 — feedback, not behaviour. */
+export type PoPhaseReporter = (phase: PoExecutionPhase) => void;
+
+const NO_PHASES: PoPhaseReporter = () => {};
 
 export interface PoBrainResult {
   readonly state: PoBrainState;
@@ -88,7 +102,9 @@ async function runPlan(
   state: PoBrainState,
   intent: PoResolvedIntent,
   plan: PoPlanned,
+  onPhase: PoPhaseReporter = NO_PHASES,
 ): Promise<PoBrainResult> {
+  onPhase("executing");
   const execution = await executePoPlan(plan);
 
   const msg = execution.failed
@@ -107,18 +123,45 @@ async function runPlan(
       ? "answered"
       : "executed";
 
+  // Milestone H1.5 §3 — one offer, only when the situation makes it useful,
+  // and never the same offer twice running.
+  let followUp: PoMessage | null = null;
+  if (!execution.failed) {
+    followUp = await followUpFor(intent, getPoRuntime().actor.profileId);
+    if (followUp && followUp.key === state.lastFollowUpKey) followUp = null;
+  }
+
+  onPhase(execution.failed ? "failed" : "completed");
+
   return {
-    state: { conversation: nextConversation, pendingPlan: null },
-    outcome: outcome(status, msg, execution.steps),
+    state: {
+      conversation: nextConversation,
+      pendingPlan: null,
+      lastFollowUpKey: followUp?.key ?? null,
+    },
+    outcome: {
+      ...outcome(status, msg, execution.steps),
+      ...(followUp ? { followUp } : {}),
+    },
   };
 }
 
 /** Plans one intent, then either asks, refuses, confirms, or executes. */
-async function handleIntent(state: PoBrainState, intent: PoResolvedIntent): Promise<PoBrainResult> {
+async function handleIntent(
+  state: PoBrainState,
+  intent: PoResolvedIntent,
+  onPhase: PoPhaseReporter = NO_PHASES,
+): Promise<PoBrainResult> {
+  onPhase("planning");
   const planned = await planIntent(intent);
 
   if (planned.kind === "clarify") {
-    const msg = message(planned.promptKey, { ...intent.slots } as Record<string, string | number>);
+    onPhase("awaiting_clarification");
+    // The question may name what it found, e.g. both people called Rahul.
+    const msg = message(planned.promptKey, {
+      ...(intent.slots as Record<string, string | number>),
+      ...(planned.values ?? {}),
+    });
     const conversation = recordPoTurn(
       askQuestion(state.conversation, {
         kind: "clarification",
@@ -130,20 +173,25 @@ async function handleIntent(state: PoBrainState, intent: PoResolvedIntent): Prom
       intent,
     );
     return {
-      state: { conversation, pendingPlan: null },
+      state: { ...state, conversation, pendingPlan: null },
       outcome: outcome("asked", msg),
     };
   }
 
   if (planned.kind === "refuse") {
+    onPhase("failed");
     const msg = message(planned.refusal.refusalKey, planned.refusal.values);
     const conversation = recordPoTurn(settle(state.conversation, intent), msg, intent);
-    return { state: { conversation, pendingPlan: null }, outcome: outcome("refused", msg) };
+    return {
+      state: { ...state, conversation, pendingPlan: null },
+      outcome: outcome("refused", msg),
+    };
   }
 
   const plan = planned.plan;
 
   if (planNeedsConfirmation(plan)) {
+    onPhase("awaiting_confirmation");
     const msg = message(`${plan.summaryKey}.confirm`, plan.summaryValues);
     const conversation = recordPoTurn(
       askQuestion(state.conversation, { kind: "confirmation", intent, message: msg }),
@@ -151,12 +199,12 @@ async function handleIntent(state: PoBrainState, intent: PoResolvedIntent): Prom
       intent,
     );
     return {
-      state: { conversation, pendingPlan: plan },
+      state: { ...state, conversation, pendingPlan: plan },
       outcome: outcome("asked", msg),
     };
   }
 
-  return runPlan(state, intent, plan);
+  return runPlan(state, intent, plan, onPhase);
 }
 
 /**
@@ -167,7 +215,9 @@ async function handleIntent(state: PoBrainState, intent: PoResolvedIntent): Prom
 export async function handlePoUtterance(
   state: PoBrainState,
   utterance: string,
+  onPhase: PoPhaseReporter = NO_PHASES,
 ): Promise<PoBrainResult> {
+  onPhase("thinking");
   const said = utterance.trim();
   if (said.length === 0) {
     return { state, outcome: outcome("asked", message("po.ask.repeat")) };
@@ -182,9 +232,11 @@ export async function handlePoUtterance(
 
   // Cancellation always wins, at any point in an exchange.
   if (reading.name === "conversation.cancel") {
+    onPhase("cancelled");
     const msg = message("po.done.cancelled");
     return {
       state: {
+        ...state,
         conversation: recordPoTurn(cancelExchange(heard.conversation), msg),
         pendingPlan: null,
       },
@@ -195,12 +247,14 @@ export async function handlePoUtterance(
   // A plan waiting on a yes.
   if (pending?.kind === "confirmation" && state.pendingPlan) {
     if (reading.name === "conversation.confirm") {
-      return runPlan(heard, pending.intent, state.pendingPlan);
+      return runPlan(heard, pending.intent, state.pendingPlan, onPhase);
     }
     if (reading.name === "conversation.decline") {
+      onPhase("cancelled");
       const msg = message("po.done.cancelled");
       return {
         state: {
+          ...state,
           conversation: recordPoTurn(cancelExchange(heard.conversation), msg),
           pendingPlan: null,
         },
@@ -216,7 +270,7 @@ export async function handlePoUtterance(
   if (pending?.kind === "clarification" && !isActionable(reading)) {
     const answered = answerPending({ ...heard.conversation }, said);
     if (answered) {
-      return handleIntent({ ...heard, conversation: answered.state }, answered.intent);
+      return handleIntent({ ...heard, conversation: answered.state }, answered.intent, onPhase);
     }
   }
 
@@ -229,7 +283,7 @@ export async function handlePoUtterance(
     const steps: PoStepOutcome[] = [];
     for (const part of parts) {
       const partIntent = detectIntent(part, { carriedSlots: current.conversation.carriedSlots });
-      last = await handleIntent(current, partIntent);
+      last = await handleIntent(current, partIntent, onPhase);
       current = last.state;
       steps.push(...last.outcome.steps);
       if (last.outcome.status !== "executed" && last.outcome.status !== "answered") break;
@@ -240,9 +294,11 @@ export async function handlePoUtterance(
   }
 
   if (reading.name === "unknown" || reading.confidence < PO_CLARIFY_THRESHOLD) {
+    onPhase("failed");
     const msg = message("po.refuse.unknown");
     return {
       state: {
+        ...state,
         conversation: recordPoTurn(settle(heard.conversation, null), msg),
         pendingPlan: null,
       },
@@ -250,7 +306,7 @@ export async function handlePoUtterance(
     };
   }
 
-  return handleIntent(heard, reading);
+  return handleIntent(heard, reading, onPhase);
 }
 
 /** Clears the conversation. Nothing was persisted, so nothing is deleted. */

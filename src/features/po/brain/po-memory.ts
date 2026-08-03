@@ -100,6 +100,19 @@ export function findPoMemory(profileId: string | null, fragment: string): PoMemo
   );
 }
 
+/**
+ * Milestone H1.5 §6 — an exact match on what the person already asked Po to
+ * remember, so the same thing is not stored (or asked about) twice.
+ */
+export function findPoMemoryByText(
+  profileId: string | null,
+  summary: string,
+): PoMemoryRecord | null {
+  const needle = summary.trim().toLowerCase();
+  if (needle.length === 0) return null;
+  return listPoMemories(profileId).find((entry) => entry.summary.toLowerCase() === needle) ?? null;
+}
+
 export function forgetAllPoMemories(profileId: string | null): void {
   if (!profileId) return;
   clearLocalPreference(MEMORY_KEY, profileId);
