@@ -17,6 +17,8 @@ export interface NavDestination {
   readonly icon: ReactNode;
   /** Only match this exact path when highlighting. */
   readonly exact?: boolean;
+  /** Which live count, if any, this destination carries (RC2 Blocker 2). */
+  readonly badge?: "friendRequests" | "roomInvites";
 }
 
 const iconClass = "size-5 shrink-0";
@@ -79,7 +81,7 @@ function SettingsIcon() {
 
 export const NAV_DESTINATIONS: readonly NavDestination[] = Object.freeze([
   { id: "home", to: "/home", labelKey: "nav.home", icon: <HomeIcon />, exact: true },
-  { id: "people", to: "/people", labelKey: "nav.people", icon: <PeopleIcon /> },
-  { id: "invites", to: "/invites", labelKey: "nav.invites", icon: <InviteIcon /> },
+  { id: "people", to: "/people", labelKey: "nav.people", icon: <PeopleIcon />, badge: "friendRequests" },
+  { id: "invites", to: "/invites", labelKey: "nav.invites", icon: <InviteIcon />, badge: "roomInvites" },
   { id: "settings", to: "/settings", labelKey: "nav.settings", icon: <SettingsIcon /> },
 ]);

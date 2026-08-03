@@ -564,6 +564,7 @@ export const hiINBundle: LocaleBundle = {
     "nav.home": "होम",
     "nav.invites": "निमंत्रण",
     "nav.settings": "सेटिंग्स",
+    "nav.badge.unread": "{destination} में {count} नए",
     "nav.primary": "मुख्य",
     "nav.account": "खाता",
     "nav.sign_in": "साइन इन",

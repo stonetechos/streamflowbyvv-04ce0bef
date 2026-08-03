@@ -569,6 +569,7 @@ export const enBundle: LocaleBundle = {
     "nav.home": "Home",
     "nav.invites": "Rooms",
     "nav.settings": "Settings",
+    "nav.badge.unread": "{count} new in {destination}",
     "nav.primary": "Primary",
     "nav.account": "Account",
     "nav.sign_in": "Sign in",

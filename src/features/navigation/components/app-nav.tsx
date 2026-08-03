@@ -12,6 +12,7 @@ import { Link } from "@tanstack/react-router";
 
 import { Avatar } from "@/design-system/components";
 import { useAuth } from "@/features/auth";
+import { NotificationBadge, useNotifications } from "@/features/notifications";
 import { useTranslation } from "@/foundation/localization";
 import { useTheme } from "@/foundation/theme";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ export function AppNav() {
   const { t } = useTranslation();
   const auth = useAuth();
   const { resolvedTheme, setTheme } = useTheme();
+  const badges = useNotifications();
 
   const brand = (
     <Link to="/" className="text-sm font-semibold tracking-tight">
@@ -72,6 +74,15 @@ export function AppNav() {
                 >
                   {item.icon}
                   <span>{t(item.labelKey)}</span>
+                  {item.badge ? (
+                    <NotificationBadge
+                      count={badges[item.badge]}
+                      label={t("nav.badge.unread", {
+                        count: String(badges[item.badge]),
+                        destination: t(item.labelKey),
+                      })}
+                    />
+                  ) : null}
                 </Link>
               </li>
             ))}

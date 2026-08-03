@@ -17,6 +17,7 @@ import {
   type Relationship,
   type SocialOverview,
 } from "@/domain";
+import { refreshBadges } from "@/features/notifications";
 import { usePoReaction } from "@/features/po";
 import { logger } from "@/foundation/logging";
 
@@ -104,6 +105,8 @@ export function useSocial(viewerProfileId: string | null): SocialModel {
       try {
         await operation();
         refresh();
+        // The counts other surfaces show are now stale: re-read immediately.
+        refreshBadges();
         return true;
       } catch (cause) {
         logger.warn("Social action failed", { module: MODULE, error: cause });

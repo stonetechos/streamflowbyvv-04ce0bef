@@ -12,6 +12,7 @@
 import { useCallback, useState } from "react";
 
 import { ActionButton, Surface } from "@/design-system/components";
+import { copyText } from "@/features/shared/copy-text";
 import { useAnnouncer } from "@/foundation/accessibility";
 import { useTranslation } from "@/foundation/localization";
 
@@ -27,14 +28,14 @@ export function InviteShareCard({ roomName, roomCode, joinUrl }: InviteShareCard
   const [copied, setCopied] = useState(false);
 
   const copy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(joinUrl);
-      setCopied(true);
-      announce(t("invite.share.copied"));
-      window.setTimeout(() => setCopied(false), 2400);
-    } catch {
+    const copiedOk = await copyText(joinUrl);
+    if (!copiedOk) {
       announce(t("invite.share.copy_failed"), "assertive");
+      return;
     }
+    setCopied(true);
+    announce(t("invite.share.copied"));
+    window.setTimeout(() => setCopied(false), 2400);
   }, [announce, joinUrl, t]);
 
   const share = useCallback(async () => {
