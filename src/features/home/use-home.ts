@@ -179,7 +179,7 @@ export function useHome(viewerProfileId: string | null): HomeModel {
           {
             roomId,
             inviterProfileId: viewerProfileId,
-            channel: "direct",
+            channel: "in_app",
             inviteeProfileId,
           },
           intent(),

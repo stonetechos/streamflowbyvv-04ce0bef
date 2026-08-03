@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
 export interface NavDestination {
   readonly id: string;
   /** Typed TanStack route path. */
-  readonly to: "/home" | "/invites" | "/settings" | "/account";
+  readonly to: "/home" | "/people" | "/invites" | "/settings" | "/account";
   readonly labelKey: string;
   readonly icon: ReactNode;
   /** Only match this exact path when highlighting. */
@@ -39,6 +39,26 @@ function InviteIcon() {
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={iconClass}>
       <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
       <path d="m4 8 8 5 8-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function PeopleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={iconClass}>
+      <circle cx="9.5" cy="8.5" r="3.2" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M3.4 19.2c.9-3 3.2-4.5 6.1-4.5s5.2 1.5 6.1 4.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M16.2 6.1a3 3 0 0 1 0 5.6m1.1 3.2c2 .5 3.4 1.9 4.1 4.1"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -73,6 +93,7 @@ function AccountIcon() {
 
 export const NAV_DESTINATIONS: readonly NavDestination[] = Object.freeze([
   { id: "home", to: "/home", labelKey: "nav.home", icon: <HomeIcon />, exact: true },
+  { id: "people", to: "/people", labelKey: "nav.people", icon: <PeopleIcon /> },
   { id: "invites", to: "/invites", labelKey: "nav.invites", icon: <InviteIcon /> },
   { id: "settings", to: "/settings", labelKey: "nav.settings", icon: <SettingsIcon /> },
   { id: "account", to: "/account", labelKey: "nav.account", icon: <AccountIcon /> },
