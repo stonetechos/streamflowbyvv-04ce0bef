@@ -300,16 +300,16 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     await roomService.joinMember(
       { roomId: room.id, profileId, role: seatRole, currentMemberCount: seats },
       intent,
-
     );
 
     const joinedAt = nowIso();
     return existing
-      ? members.update(existing.id, { state: "joined", role, joinedAt, leftAt: null })
+      ? members.update(existing.id, { state: "joined", role: seatRole, joinedAt, leftAt: null })
       : members.create({
           roomId: room.id,
           profileId,
-          role,
+          role: seatRole,
+
           state: "joined",
           joinedAt,
         });
