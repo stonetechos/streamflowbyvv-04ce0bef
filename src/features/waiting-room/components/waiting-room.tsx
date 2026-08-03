@@ -290,7 +290,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             room={room}
             providerName={providerLaunch.plan?.providerKey ?? room.providerId}
             hostLabel={model.members.find((member) => member.isHost)?.label ?? null}
-            supportsDeepLink={providerLaunch.plan?.primaryTarget !== null}
+            supportsDeepLink={(providerLaunch.plan?.primaryTarget ?? null) !== null}
           />
           <ManualPlayReminder
             isDue={readySnapshot?.manualPlayReminderDue ?? false}
