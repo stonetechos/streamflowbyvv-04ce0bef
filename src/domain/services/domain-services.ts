@@ -47,6 +47,12 @@ import {
   createProviderCatalogService,
   resolveProviderCatalogDependencies,
   PROVIDER_CATALOG_SERVICE,
+  PROVIDER_LAUNCHER,
+  PROVIDER_LAUNCH_COORDINATOR,
+  createDeepLinkRegistry,
+  createNoopProviderLauncher,
+  createProviderLaunchCoordinator,
+  resolveProviderLaunchCoordinatorDependencies,
 } from "../providers/provider-catalog-service";
 import {
   createProviderPreferenceService,
@@ -191,6 +197,21 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
       () => createProviderPreferenceService(resolveProviderPreferenceDependencies()),
     ],
     [DEEP_LINK_SERVICE, () => createDeepLinkService()],
+    // Sprint 2.8 — the ONLY authority for how a provider is launched.
+    [
+      PROVIDER_LAUNCH_COORDINATOR,
+      () =>
+        createProviderLaunchCoordinator(
+          resolveProviderLaunchCoordinatorDependencies({
+            registry: createDeepLinkRegistry(),
+            deepLinks: resolveService(DEEP_LINK_SERVICE),
+            launcher: isServiceBound(PROVIDER_LAUNCHER)
+              ? resolveService(PROVIDER_LAUNCHER)
+              : createNoopProviderLauncher(),
+            clock: resolveService(CLOCK),
+          }),
+        ),
+    ],
     [
       ROOM_SETUP_SERVICE,
       () =>
