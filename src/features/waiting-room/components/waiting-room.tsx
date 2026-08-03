@@ -10,6 +10,7 @@ import { PoWaitingBanner } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
 import { useRoomCountdown } from "../use-room-countdown";
+import { useRoomPlayback } from "../use-room-playback";
 import { useRoomSetup } from "../use-room-setup";
 import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
@@ -17,6 +18,7 @@ import { MemberList } from "./member-list";
 import { MembershipActions } from "./membership-actions";
 import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
+import { PlaybackReadinessPanel } from "./playback-readiness-panel";
 import { RoomSetupCard } from "./room-setup-card";
 import { WaitingRoomLayout } from "./waiting-room-layout";
 
@@ -37,6 +39,18 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     durationSeconds: model.room?.countdownSeconds ?? 5,
     enabled: model.status === "ready" && model.viewer.isMember,
   });
+
+  // Sprint 2.4: reaching zero arms the room. Nothing is launched — everyone
+  // simply becomes ready to press play in their own app.
+  const playback = useRoomPlayback({
+    roomId,
+    actorProfileId: model.viewer.profileId,
+    isHost: model.viewer.isHost,
+    countdownState: countdown.state,
+    enabled: model.status === "ready" && model.viewer.isMember,
+  });
+
+
 
   if (model.status === "loading") {
     return (
@@ -84,6 +98,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isCounting={countdown.isLive}
             hasCompleted={countdown.state === "completed"}
             wasCancelled={countdown.state === "cancelled" || countdown.state === "expired"}
+            isPlaybackReady={playback.isReady}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
@@ -92,6 +107,11 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isHost={model.viewer.isHost}
             members={model.members}
             hasProvider={room.providerId !== null}
+          />
+          <PlaybackReadinessPanel
+            playback={playback}
+            members={model.members}
+            countdownCompleted={countdown.state === "completed"}
           />
           <MemberList members={model.members} />
           <RoomSetupCard

@@ -71,3 +71,15 @@ export {
   type CountdownTickSignal,
   type CountdownTickUnsubscribe,
 } from "./countdown-coordinator";
+export {
+  createPlaybackCoordinator,
+  resolvePlaybackCoordinatorDependencies,
+  PLAYBACK_COORDINATOR,
+  type PlaybackArmRequest,
+  type PlaybackCommandResult,
+  type PlaybackCoordinator,
+  type PlaybackCoordinatorDependencies,
+  type PlaybackPositionRequest,
+  type PlaybackSeekRequest,
+  type PlaybackStopRequest,
+} from "./playback-coordinator";

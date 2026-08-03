@@ -19,6 +19,11 @@ import {
   COUNTDOWN_COORDINATOR,
 } from "../rooms/countdown-coordinator";
 import {
+  createPlaybackCoordinator,
+  resolvePlaybackCoordinatorDependencies,
+  PLAYBACK_COORDINATOR,
+} from "../rooms/playback-coordinator";
+import {
   createPresenceCoordinator,
   resolvePresenceCoordinatorDependencies,
   PRESENCE_COORDINATOR,
@@ -185,6 +190,17 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
         ),
     ],
     [PLAYBACK_SERVICE, () => createPlaybackService(context())],
+    // Sprint 2.4 — playback orchestration: intent only, no provider control.
+    [
+      PLAYBACK_COORDINATOR,
+      () =>
+        createPlaybackCoordinator(
+          resolvePlaybackCoordinatorDependencies({
+            playback: resolveService(PLAYBACK_SERVICE),
+            clock: resolveService(CLOCK),
+          }),
+        ),
+    ],
     [SYNC_SERVICE, () => createSyncService(context())],
     [VOICE_SERVICE, () => createVoiceService(context())],
     [INVITATION_SERVICE, () => createInvitationService(context())],

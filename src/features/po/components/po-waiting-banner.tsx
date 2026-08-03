@@ -29,6 +29,8 @@ export interface PoWaitingBannerProps {
   readonly hasCompleted?: boolean;
   /** The countdown was cancelled or expired — a brief disappointed beat. */
   readonly wasCancelled?: boolean;
+  /** The room is ready to watch — Po stands up (Sprint 2.4, visual only). */
+  readonly isPlaybackReady?: boolean;
   /** Changing this makes Po glance toward the roster (e.g. a new arrival). */
   readonly gazeToken?: string | null;
   readonly className?: string;
@@ -42,7 +44,11 @@ export function resolvePoWaitingMood(signals: {
   readonly isCounting?: boolean;
   readonly hasCompleted?: boolean;
   readonly wasCancelled?: boolean;
+  readonly isPlaybackReady?: boolean;
 }): PoMood {
+  // Readiness is the happiest thing the lobby can report, so it outranks the
+  // countdown beats it necessarily follows.
+  if (signals.isPlaybackReady) return "excited";
   // Countdown outranks every lobby signal: it is the thing everyone is
   // watching. Cancellation wins over "counting" so the disappointed beat is
   // never swallowed by a stale tick.
@@ -63,6 +69,7 @@ const CAPTION_KEYS: Readonly<Record<PoMood, string>> = {
   counting: "po.banner.counting",
   celebrating: "po.banner.celebrating",
   disappointed: "po.banner.cancelled",
+  excited: "po.banner.playback_ready",
 };
 
 export function PoWaitingBanner({
@@ -72,6 +79,7 @@ export function PoWaitingBanner({
   isCounting = false,
   hasCompleted = false,
   wasCancelled = false,
+  isPlaybackReady = false,
   gazeToken = null,
   className,
 }: PoWaitingBannerProps) {
@@ -83,6 +91,7 @@ export function PoWaitingBanner({
     isCounting,
     hasCompleted,
     wasCancelled,
+    isPlaybackReady,
   });
 
   return (
