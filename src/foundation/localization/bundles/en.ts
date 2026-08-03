@@ -86,6 +86,8 @@ export const enBundle: LocaleBundle = {
     "error.sys.constraint_violation": "Those details couldn't be saved. Check them and try again.",
     "error.action.retry": "Try again",
     "error.action.go_home": "Go home",
+    "error.action.leave_other_room": "Leave the other room first",
+
     "error.reference.label": "Reference code",
 
     "error.auth.provider_unavailable.title": "Sign-in isn't available yet",
