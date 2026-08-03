@@ -39,6 +39,10 @@ export interface PoWaitingBannerProps {
   readonly isRoomOutOfSync?: boolean;
   /** The room just returned to a healthy band — Po visibly relaxes. */
   readonly hasRoomRecovered?: boolean;
+  /** A playback re-sync is recommended or required — Po encourages patience. */
+  readonly needsSyncEncouragement?: boolean;
+  /** Everyone became synchronization ready — Po celebrates, quietly. */
+  readonly isSynchronizationReady?: boolean;
   /** Changing this makes Po glance toward the roster (e.g. a new arrival). */
   readonly gazeToken?: string | null;
   readonly className?: string;
@@ -57,7 +61,14 @@ export function resolvePoWaitingMood(signals: {
   readonly isSyncSatisfied?: boolean;
   readonly isRoomOutOfSync?: boolean;
   readonly hasRoomRecovered?: boolean;
+  readonly needsSyncEncouragement?: boolean;
+  readonly isSynchronizationReady?: boolean;
 }): PoMood {
+  // Sprint 2.7 — playback synchronization sits just under the room's clock
+  // verdict: encourage patience while a re-sync is pending, celebrate the
+  // moment everyone is together. Both decorative (Po Rule).
+  if (signals.needsSyncEncouragement) return "encouraging";
+  if (signals.isSynchronizationReady) return "celebrating";
   // Sprint 2.6 — the room being out of step outranks every happier signal:
   // it is the one thing standing between the lobby and a countdown.
   if (signals.isRoomOutOfSync) return "concerned";
@@ -92,6 +103,7 @@ const CAPTION_KEYS: Readonly<Record<PoMood, string>> = {
   excited: "po.banner.playback_ready",
   observing: "po.banner.observing",
   concerned: "po.banner.concerned",
+  encouraging: "po.banner.encouraging",
   relieved: "po.banner.relieved",
 };
 
@@ -107,6 +119,8 @@ export function PoWaitingBanner({
   isSyncSatisfied = false,
   isRoomOutOfSync = false,
   hasRoomRecovered = false,
+  needsSyncEncouragement = false,
+  isSynchronizationReady = false,
   gazeToken = null,
   className,
 }: PoWaitingBannerProps) {
@@ -123,6 +137,8 @@ export function PoWaitingBanner({
     isSyncSatisfied,
     isRoomOutOfSync,
     hasRoomRecovered,
+    needsSyncEncouragement,
+    isSynchronizationReady,
   });
 
   return (

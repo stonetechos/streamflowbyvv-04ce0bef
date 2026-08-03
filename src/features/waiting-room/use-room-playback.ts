@@ -37,6 +37,8 @@ const MODULE = "waiting-room-playback";
 export interface RoomPlaybackModel {
   readonly state: PlaybackMachineState;
   readonly snapshot: PlaybackSnapshot | null;
+  /** The durable runtime, handed to `PlaybackSyncEngine` for its anchor. */
+  readonly runtime: PlaybackRuntime | null;
   /** The room is armed: everyone may press play in their own app. */
   readonly isReady: boolean;
   readonly ownerProfileId: string | null;
@@ -189,6 +191,7 @@ export function useRoomPlayback({
   return {
     state: runtime?.state ?? IDLE_STATE,
     snapshot,
+    runtime,
     isReady: runtime?.state === "ready",
     ownerProfileId: runtime?.ownerProfileId ?? null,
     isOwner: coordinator && runtime ? coordinator.isOwner(runtime, actorProfileId) : false,

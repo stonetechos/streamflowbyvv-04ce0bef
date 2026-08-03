@@ -53,7 +53,11 @@ export type PoMood =
   // gesture that someone is still catching up; `relieved` is the breath out
   // when everyone is back in step. Decorative, as always (Po Rule).
   | "concerned"
-  | "relieved";
+  | "relieved"
+  // Sprint 2.7 — playback synchronization. `encouraging` is a calm, patient
+  // gesture while the room is asked to re-sync; the existing `celebrating`
+  // mood is reused, quietly, when everyone becomes synchronization ready.
+  | "encouraging";
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;
