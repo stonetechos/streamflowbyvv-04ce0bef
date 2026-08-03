@@ -40,6 +40,18 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     enabled: model.status === "ready" && model.viewer.isMember,
   });
 
+  // Sprint 2.4: reaching zero arms the room. Nothing is launched — everyone
+  // simply becomes ready to press play in their own app.
+  const playback = useRoomPlayback({
+    roomId,
+    actorProfileId: model.viewer.profileId,
+    isHost: model.viewer.isHost,
+    countdownState: countdown.state,
+    enabled: model.status === "ready" && model.viewer.isMember,
+  });
+
+
+
   if (model.status === "loading") {
     return (
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
