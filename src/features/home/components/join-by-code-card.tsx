@@ -31,8 +31,12 @@ export function JoinByCodeCard({ home }: { home: HomeModel }) {
       setCode("");
       void navigate({ to: "/rooms/$roomId", params: { roomId } });
     } else {
-      setCodeError(t("home.join.not_found"));
+      // Sprint J.1.5 — show the reason the domain gave. Presentation must not
+      // assume "not found"; the code may be valid and the refusal something
+      // else entirely (ended, full, already in another room).
+      setCodeError(t(refusalMessageKey(home.error, "home.join.not_found")));
     }
+
   }
 
   return (
