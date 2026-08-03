@@ -466,9 +466,22 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       const room =
         (await rooms.findById(roomId)) ??
         (discovery ? await discovery.findJoinableById(roomId) : null);
-      if (!room) throw domainError("ROOM_NOT_FOUND", { operation, aggregateId: roomId });
+
+      if (!room) {
+        // Sprint J.1.5 — never claim "no such room" until that is the truth.
+        await adjudicate({ roomId }, profileId, operation);
+        throw domainError("ROOM_NOT_FOUND", { operation, aggregateId: roomId });
+      }
+
+      // The room loaded, so the refusal (if any) is about this person: already
+      // joined, removed, blocked, or busy in another open room.
+      if (room.hostProfileId !== profileId) {
+        await adjudicate({ roomId }, profileId, operation);
+      }
+
       return admit(room, profileId, role, operation, intent);
     },
+
 
     async leaveRoom({ roomId, profileId, leftReason = "voluntary" }, intent) {
       const operation = "RoomFlowService.leaveRoom";
