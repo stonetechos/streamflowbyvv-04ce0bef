@@ -503,6 +503,10 @@ export const hiINBundle: LocaleBundle = {
       "\u0906\u092a \u0915\u0939\u093e\u0901 \u0926\u0947\u0916\u0928\u093e \u091a\u093e\u0939\u0924\u0947 \u0939\u0948\u0902?",
     "home.services.description":
       "\u090f\u0915 \u0938\u0947\u0935\u093e \u091a\u0941\u0928\u093f\u090f \u2014 StreamFlow \u0906\u092a\u0915\u0947 \u0932\u093f\u090f \u0930\u0942\u092e \u0924\u0948\u092f\u093e\u0930 \u0915\u0930 \u0926\u0947\u0917\u093e\u0964",
+    "home.services.status.supported": "समर्थित",
+    "home.services.status.manual_sync": "मैन्युअल सिंक",
+    "home.services.status.unverified": "बीटा",
+    "home.services.status.unavailable": "अनुपलब्ध",
     "home.services.status.coming_soon":
       "\u091c\u0932\u094d\u0926 \u0906 \u0930\u0939\u093e \u0939\u0948",
     "home.services.room_name": "{service} \u0928\u093e\u0907\u091f",

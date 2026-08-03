@@ -505,6 +505,10 @@ export const enBundle: LocaleBundle = {
     "home.services.title": "Where do you want to watch?",
     "home.services.description":
       "Pick a service and StreamFlow sets up the room for you \u2014 you keep using your own account.",
+    "home.services.status.supported": "Supported",
+    "home.services.status.manual_sync": "Manual sync",
+    "home.services.status.unverified": "Beta",
+    "home.services.status.unavailable": "Unavailable",
     "home.services.status.coming_soon": "Coming soon",
     "home.services.room_name": "{service} night",
     "home.services.footnote":
