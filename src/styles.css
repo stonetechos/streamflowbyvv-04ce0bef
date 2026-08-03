@@ -539,3 +539,31 @@
 .sf-po[data-mood="excited"] .sf-po-tail {
   animation-duration: 3.4s;
 }
+
+/*
+ * Sprint 2.5 — `observing`: Po watches the clocks settle. A slow, attentive
+ * head turn and slower blinking; nothing celebratory, because measuring is not
+ * an achievement. Decorative only, and neutralised by reduced motion.
+ */
+@keyframes sf-po-watch {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
+}
+
+.sf-po[data-mood="observing"] .sf-po-head {
+  animation: sf-po-watch 9s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="observing"] .sf-po-eyes {
+  animation-duration: 6.5s;
+}
+
+.sf-po[data-mood="observing"] .sf-po-body {
+  animation-duration:
+    5.5s,
+    4s;
+}
+
+.sf-po[data-mood="observing"] .sf-po-tail {
+  animation-duration: 10s;
+}

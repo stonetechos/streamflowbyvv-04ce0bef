@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PoWaitingBanner } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
+import { useRoomClockSync } from "../use-room-clock-sync";
 import { useRoomCountdown } from "../use-room-countdown";
 import { useRoomPlayback } from "../use-room-playback";
 import { useRoomSetup } from "../use-room-setup";
@@ -20,6 +21,7 @@ import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
 import { PlaybackReadinessPanel } from "./playback-readiness-panel";
 import { RoomSetupCard } from "./room-setup-card";
+import { SyncHealthCard } from "./sync-health-card";
 import { WaitingRoomLayout } from "./waiting-room-layout";
 
 export function WaitingRoom({ roomId }: { roomId: string }) {
@@ -30,6 +32,14 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     actorProfileId: model.viewer.profileId,
     isHost: model.viewer.isHost,
     onChanged: model.refresh,
+  });
+
+  // Sprint 2.5: a common notion of time. Classification only — nothing here
+  // adjusts the countdown or corrects playback.
+  const sync = useRoomClockSync({
+    roomId,
+    profileId: model.viewer.profileId,
+    enabled: model.status === "ready" && model.viewer.isMember,
   });
 
   const countdown = useRoomCountdown({
@@ -99,6 +109,8 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             hasCompleted={countdown.state === "completed"}
             wasCancelled={countdown.state === "cancelled" || countdown.state === "expired"}
             isPlaybackReady={playback.isReady}
+            isSyncing={sync.isAvailable && sync.health === "unknown"}
+            isSyncSatisfied={sync.isSatisfactory}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
@@ -113,6 +125,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             members={model.members}
             countdownCompleted={countdown.state === "completed"}
           />
+          <SyncHealthCard sync={sync} />
           <MemberList members={model.members} />
           <RoomSetupCard
             setup={setup}

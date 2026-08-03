@@ -35,6 +35,13 @@ export {
   type RoomPlaybackModel,
   type UseRoomPlaybackInput,
 } from "./use-room-playback";
+export { SyncHealthCard, type SyncHealthCardProps } from "./components/sync-health-card";
+export {
+  useRoomClockSync,
+  SYNC_HEALTH_KEYS,
+  type RoomClockSyncModel,
+  type UseRoomClockSyncInput,
+} from "./use-room-clock-sync";
 export { PresenceIndicator } from "./components/presence-indicator";
 export { useRoomPresence, type RoomPresenceModel } from "./use-room-presence";
 export { useWaitingRoom, type WaitingRoomModel } from "./use-waiting-room";
