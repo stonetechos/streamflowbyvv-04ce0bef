@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.provision_profile_for_auth_user() FROM PUBLIC, anon, authenticated;
