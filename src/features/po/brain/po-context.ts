@@ -124,12 +124,31 @@ export interface PoPersonMatch {
   readonly handle: string;
 }
 
+export interface PoPersonResolution {
+  readonly match: PoPersonMatch | null;
+  readonly ambiguous: boolean;
+  /** Milestone H1.5 §2 — who matched, so the question can name them. */
+  readonly candidates: readonly PoPersonMatch[];
+}
+
+function asMatch(person: {
+  profileId: string;
+  displayName: string;
+  handle: string;
+}): PoPersonMatch {
+  return {
+    profileId: person.profileId,
+    displayName: person.displayName,
+    handle: person.handle,
+  };
+}
+
 export async function resolvePoPerson(
   profileId: string,
   term: string,
-): Promise<{ readonly match: PoPersonMatch | null; readonly ambiguous: boolean }> {
+): Promise<PoPersonResolution> {
   const needle = term.trim().toLowerCase().replace(/^@/, "");
-  if (needle.length === 0) return { match: null, ambiguous: false };
+  if (needle.length === 0) return { match: null, ambiguous: false, candidates: [] };
 
   const overview = await loadPoSocial(profileId);
   const candidates = [...(overview?.friends ?? []), ...(overview?.recentPartners ?? [])];
@@ -140,53 +159,38 @@ export async function resolvePoPerson(
       person.code.toLowerCase() === needle,
   );
   if (exact.length === 1 && exact[0]) {
-    const person = exact[0];
-    return {
-      match: {
-        profileId: person.profileId,
-        displayName: person.displayName,
-        handle: person.handle,
-      },
-      ambiguous: false,
-    };
+    return { match: asMatch(exact[0]), ambiguous: false, candidates: [] };
   }
 
   const partial = candidates.filter((person) =>
     person.displayName.toLowerCase().startsWith(needle),
   );
   if (partial.length === 1 && partial[0]) {
-    const person = partial[0];
-    return {
-      match: {
-        profileId: person.profileId,
-        displayName: person.displayName,
-        handle: person.handle,
-      },
-      ambiguous: false,
-    };
+    return { match: asMatch(partial[0]), ambiguous: false, candidates: [] };
   }
-  if (partial.length > 1) return { match: null, ambiguous: true };
+  if (partial.length > 1) {
+    return { match: null, ambiguous: true, candidates: partial.map(asMatch) };
+  }
 
-  if (!isServiceBound(SOCIAL_SERVICE)) return { match: null, ambiguous: false };
+  if (!isServiceBound(SOCIAL_SERVICE)) return { match: null, ambiguous: false, candidates: [] };
   const social = resolveService(SOCIAL_SERVICE);
-  if (!social.isConfigured) return { match: null, ambiguous: false };
+  if (!social.isConfigured) return { match: null, ambiguous: false, candidates: [] };
 
   try {
     const found = await social.searchProfiles(term.trim(), profileId);
-    if (found.length === 1 && found[0]) {
-      const person = found[0];
-      return {
-        match: {
-          profileId: person.id,
-          displayName: person.displayName,
-          handle: person.handle,
-        },
-        ambiguous: false,
-      };
+    const candidates = found.map((person) =>
+      asMatch({
+        profileId: person.id,
+        displayName: person.displayName,
+        handle: person.handle,
+      }),
+    );
+    if (candidates.length === 1 && candidates[0]) {
+      return { match: candidates[0], ambiguous: false, candidates: [] };
     }
-    return { match: null, ambiguous: found.length > 1 };
+    return { match: null, ambiguous: candidates.length > 1, candidates };
   } catch (cause) {
     logger.warn("Po could not search the directory", { module: MODULE, error: cause });
-    return { match: null, ambiguous: false };
+    return { match: null, ambiguous: false, candidates: [] };
   }
 }

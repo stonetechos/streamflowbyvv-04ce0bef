@@ -127,7 +127,28 @@ export interface PoOutcome {
   readonly status: PoOutcomeStatus;
   readonly message: PoMessage;
   readonly steps: readonly PoStepOutcome[];
+  /**
+   * Milestone H1.5 §3 — one optional next thing worth offering, decided from
+   * what just happened and what the room already looks like. It is a
+   * suggestion, never an action: Po does nothing until it is asked.
+   */
+  readonly followUp?: PoMessage;
 }
+
+/**
+ * Milestone H1.5 §5 — where a turn currently is. Reported as it changes so the
+ * console can say "thinking" before it can say "running", rather than showing
+ * one undifferentiated wait.
+ */
+export type PoExecutionPhase =
+  | "thinking"
+  | "planning"
+  | "executing"
+  | "awaiting_clarification"
+  | "awaiting_confirmation"
+  | "completed"
+  | "cancelled"
+  | "failed";
 
 /**
  * A planned step. `bindings` carry a value produced by an earlier step into
@@ -160,5 +181,11 @@ export interface PoPlanRefusal {
 
 export type PoPlanResult =
   | { readonly kind: "plan"; readonly plan: PoPlanned }
-  | { readonly kind: "clarify"; readonly slot: string; readonly promptKey: string }
+  | {
+      readonly kind: "clarify";
+      readonly slot: string;
+      readonly promptKey: string;
+      /** Values the question interpolates, e.g. the names that both matched. */
+      readonly values?: Readonly<Record<string, string | number>>;
+    }
   | { readonly kind: "refuse"; readonly refusal: PoPlanRefusal };
