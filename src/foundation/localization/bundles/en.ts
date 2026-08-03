@@ -256,7 +256,6 @@ export const enBundle: LocaleBundle = {
     "room.room_sync.advisory.warning": "Clocks are a little apart. The countdown can still start, but expect a small gap.",
     "room.room_sync.no_playback_notice": "StreamFlow coordinates readiness only; it never controls your player.",
     "room.sync.announce.room_health_changed": "Room synchronization: {health}.",
-    "error.sync.resync_required": "The room needs to re-measure its clocks before a countdown can start.",
     "room.sync.title": "Synchronization health",
     "room.sync.description": "How closely this device’s clock matches the room’s. It is measured, never corrected for you.",
     "room.sync.health.excellent": "Excellent",

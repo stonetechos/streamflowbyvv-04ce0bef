@@ -251,7 +251,6 @@ export const hiINBundle: LocaleBundle = {
     "room.room_sync.advisory.warning": "घड़ियाँ थोड़ी अलग हैं। काउंटडाउन शुरू हो सकता है, पर थोड़ा अंतर रहेगा।",
     "room.room_sync.no_playback_notice": "StreamFlow केवल तैयारी का समन्वय करता है; यह आपका प्लेयर कभी नियंत्रित नहीं करता।",
     "room.sync.announce.room_health_changed": "कमरे का सिंक्रनाइज़ेशन: {health}।",
-    "error.sync.resync_required": "काउंटडाउन शुरू करने से पहले कमरे को अपनी घड़ियाँ दोबारा मापनी होंगी।",
     "room.sync.title": "सिंक स्थिति",
     "room.sync.description": "इस डिवाइस की घड़ी रूम की घड़ी से कितनी मेल खाती है। यह केवल मापा जाता है, सुधारा नहीं जाता।",
     "room.sync.health.excellent": "उत्कृष्ट",
