@@ -17,6 +17,13 @@ import type { DataConnection } from "../connection";
 import { toAuthError } from "./auth-mapper";
 import { resolveDomainSession } from "./supabase-session-repository";
 
+/**
+ * Where every emailed link returns to. Sprint H1.6 §1 — one route that owns
+ * confirmation, magic link and recovery landings; `/auth` had no handler and
+ * left correct links on a dead screen.
+ */
+const EMAIL_RETURN_PATH = "/auth/callback";
+
 /** Builds an absolute return URL from a same-origin path, or omits it on the server. */
 function toRedirectUrl(returnPath: string): string | undefined {
   if (typeof window === "undefined") return undefined;
@@ -36,7 +43,7 @@ export function createSupabaseAuthRepository(connection: DataConnection): AuthRe
     async signUp(request: SignUpRequest): Promise<AuthOutcome> {
       assertAvailable("signUp");
 
-      const redirectTo = toRedirectUrl("/auth");
+      const redirectTo = toRedirectUrl(EMAIL_RETURN_PATH);
       const { data, error } = await auth().signUp({
         email: request.email,
         password: request.password,
@@ -92,9 +99,15 @@ export function createSupabaseAuthRepository(connection: DataConnection): AuthRe
       if (error) throw toAuthError(error, "requestPasswordReset");
     },
 
+    async updatePassword(newPassword: string): Promise<void> {
+      assertAvailable("updatePassword");
+      const { error } = await auth().updateUser({ password: newPassword });
+      if (error) throw toAuthError(error, "updatePassword");
+    },
+
     async resendVerification(email: string): Promise<void> {
       assertAvailable("resendVerification");
-      const redirectTo = toRedirectUrl("/auth");
+      const redirectTo = toRedirectUrl(EMAIL_RETURN_PATH);
       const { error } = await auth().resend({
         type: "signup",
         email,

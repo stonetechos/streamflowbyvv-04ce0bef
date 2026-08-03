@@ -10,6 +10,7 @@ export { AuthShell, type AuthShellProps } from "./components/auth-shell";
 export { SignInForm } from "./components/sign-in-form";
 export { SignUpForm } from "./components/sign-up-form";
 export { ForgotPasswordForm } from "./components/forgot-password-form";
+export { ResetPasswordForm } from "./components/reset-password-form";
 export { VerifyEmailPanel } from "./components/verify-email-panel";
 export {
   normalizeRoomCode,
