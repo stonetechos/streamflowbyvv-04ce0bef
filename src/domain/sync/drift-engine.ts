@@ -67,10 +67,7 @@ export function aggregateHealth(healths: readonly SyncHealth[]): SyncHealth {
   if (healths.length === 0) return "unknown";
   const known = healths.filter((health) => health !== "unknown");
   if (known.length === 0) return "unknown";
-  for (const band of SEVERITY) {
-    if (known.includes(band)) return band;
-  }
-  return "unknown";
+  return SEVERITY.find((band) => known.some((health) => health === band)) ?? "unknown";
 }
 
 /** True for the two bands Foundation §15 allows a countdown to be scheduled in. */
