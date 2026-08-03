@@ -38,7 +38,16 @@ export {
   type ProviderSessionStatus,
 } from "./provider-session";
 export {
+  parseSharedContent,
+  readSeriesTitle,
+  type SharedContent,
+  type SharedContentPayload,
+  type SharedContentRefusal,
+  type SharedContentResult,
+} from "./shared-content";
+export {
   createDeepLinkService,
+  DEFAULT_DEEP_LINK_HOSTS,
   type DeepLinkResult,
   type DeepLinkRefusalReason,
   type DeepLinkService,
