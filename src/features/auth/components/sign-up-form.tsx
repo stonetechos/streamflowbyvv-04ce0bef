@@ -12,7 +12,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 
 import { ActionButton, TextField } from "@/design-system/components";
-import { useLocale, useTranslation } from "@/foundation/localization";
+import { useLocalization, useTranslation } from "@/foundation/localization";
 import { LOCAL_PREFERENCE_KEYS, writeLocalPreference } from "@/foundation/preferences";
 
 import { useAuth } from "../auth-provider";
@@ -32,7 +32,7 @@ const STRENGTH_CLASS = {
 
 export function SignUpForm() {
   const { t } = useTranslation();
-  const locale = useLocale();
+  const { locale } = useLocalization();
   const auth = useAuth();
   const navigate = useNavigate();
   const form = useAuthForm();
