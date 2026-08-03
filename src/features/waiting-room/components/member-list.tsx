@@ -53,10 +53,7 @@ export function MemberList({
             {t("room.members.empty")}
           </p>
         ) : (
-          <ul
-            className="grid gap-2 sm:grid-cols-2"
-            aria-label={t("room.members.list_label")}
-          >
+          <ul className="grid gap-2 sm:grid-cols-2" aria-label={t("room.members.list_label")}>
             {members.map((member) => (
               <MemberCard
                 key={member.id}

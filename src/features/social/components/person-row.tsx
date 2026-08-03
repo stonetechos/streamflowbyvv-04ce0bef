@@ -56,7 +56,9 @@ export function PersonRow({
           {secondary ? (
             <span className="block truncate text-xs text-muted-foreground">{secondary}</span>
           ) : null}
-          {meta ? <span className="mt-0.5 block truncate text-xs text-muted-foreground">{meta}</span> : null}
+          {meta ? (
+            <span className="mt-0.5 block truncate text-xs text-muted-foreground">{meta}</span>
+          ) : null}
         </span>
       </Link>
       {actions ? <div className="shrink-0">{actions}</div> : null}

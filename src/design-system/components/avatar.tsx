@@ -9,14 +9,7 @@
  */
 import { cn } from "@/lib/utils";
 
-export const AVATAR_PRESETS = [
-  "aurora",
-  "dusk",
-  "ember",
-  "forest",
-  "lagoon",
-  "orchid",
-] as const;
+export const AVATAR_PRESETS = ["aurora", "dusk", "ember", "forest", "lagoon", "orchid"] as const;
 export type AvatarPreset = (typeof AVATAR_PRESETS)[number];
 
 const PRESET_CLASS: Record<AvatarPreset, string> = {

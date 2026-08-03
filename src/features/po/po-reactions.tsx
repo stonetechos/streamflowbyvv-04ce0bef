@@ -22,11 +22,7 @@ import type { PoMood } from "./components/po-companion";
 
 /** The social moments Po is allowed to notice in Milestone F.0. */
 export type PoSocialMoment =
-  | "friend_request_sent"
-  | "friend_accepted"
-  | "invite_sent"
-  | "invite_accepted"
-  | "room_created";
+  "friend_request_sent" | "friend_accepted" | "invite_sent" | "invite_accepted" | "room_created";
 
 /** Each moment maps to an existing mood; none of them imply understanding. */
 const MOMENT_MOOD: Record<PoSocialMoment, PoMood> = {

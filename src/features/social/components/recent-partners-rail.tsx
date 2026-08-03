@@ -20,7 +20,10 @@ export interface RecentPartnersRailProps {
   readonly limit?: number;
 }
 
-function formatMeta(partner: RecentPartnerView, t: (key: string, vars?: Record<string, string | number>) => string) {
+function formatMeta(
+  partner: RecentPartnerView,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+) {
   return t("social.partners.meta", { count: partner.sessionCount });
 }
 

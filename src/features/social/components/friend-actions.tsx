@@ -80,7 +80,12 @@ export function FriendActions({
         <ActionButton size={size} loading={busy} onClick={() => onAccept(friendshipId)}>
           {t("social.action.accept")}
         </ActionButton>
-        <ActionButton size={size} tone="ghost" disabled={busy} onClick={() => onDecline(friendshipId)}>
+        <ActionButton
+          size={size}
+          tone="ghost"
+          disabled={busy}
+          onClick={() => onDecline(friendshipId)}
+        >
           {t("social.action.decline")}
         </ActionButton>
       </div>
@@ -93,7 +98,12 @@ export function FriendActions({
         <span className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground">
           {t("social.status.requested")}
         </span>
-        <ActionButton size={size} tone="ghost" loading={busy} onClick={() => onCancel(friendshipId)}>
+        <ActionButton
+          size={size}
+          tone="ghost"
+          loading={busy}
+          onClick={() => onCancel(friendshipId)}
+        >
           {t("social.action.cancel_request")}
         </ActionButton>
       </div>

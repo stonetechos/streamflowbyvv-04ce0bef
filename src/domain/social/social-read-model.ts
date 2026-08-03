@@ -7,12 +7,7 @@
  * the Domain, not in a component, and the shape returned is already the shape
  * the Presentation layer renders.
  */
-import type {
-  BlockRecord,
-  DirectoryProfileRecord,
-  EntityId,
-  FriendshipRecord,
-} from "@/repository";
+import type { BlockRecord, DirectoryProfileRecord, EntityId, FriendshipRecord } from "@/repository";
 
 import { createServiceToken } from "../service-registry";
 import type { SocialService } from "./social-service";
@@ -127,15 +122,18 @@ export function createSocialReadModel(deps: SocialReadModelDependencies): Social
 
       const view = (edge: FriendshipRecord): SocialPersonView => {
         const otherId = counterpartOf(edge);
-        return toPersonView(directory.get(otherId), otherId, edge.id, edge.respondedAt ?? edge.createdAt);
+        return toPersonView(
+          directory.get(otherId),
+          otherId,
+          edge.id,
+          edge.respondedAt ?? edge.createdAt,
+        );
       };
 
       const friendIds = new Set(accepted.map(counterpartOf));
 
       return Object.freeze({
-        friends: accepted
-          .map(view)
-          .sort((a, b) => a.displayName.localeCompare(b.displayName)),
+        friends: accepted.map(view).sort((a, b) => a.displayName.localeCompare(b.displayName)),
         incomingRequests: incoming.map(view),
         outgoingRequests: outgoing.map(view),
         blocked: blocks.map((block) => ({

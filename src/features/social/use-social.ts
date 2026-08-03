@@ -119,12 +119,7 @@ export function useSocial(viewerProfileId: string | null): SocialModel {
   const relationshipWith = useCallback(
     (profileId: string): Relationship => {
       if (!social || !viewerProfileId) return { kind: "none", friendshipId: null };
-      return social.classify(
-        viewerProfileId,
-        profileId,
-        overview.friendships,
-        overview.blocks,
-      );
+      return social.classify(viewerProfileId, profileId, overview.friendships, overview.blocks);
     },
     [overview.blocks, overview.friendships, social, viewerProfileId],
   );

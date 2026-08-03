@@ -69,7 +69,11 @@ export function WatchPartyStatus({
           value={sync.outOfSyncCount}
           tone={sync.outOfSyncCount > 0 ? "warning" : "muted"}
         />
-        <Stat label={t("watch_party.status.unmeasured")} value={sync.unmeasuredCount} tone="muted" />
+        <Stat
+          label={t("watch_party.status.unmeasured")}
+          value={sync.unmeasuredCount}
+          tone="muted"
+        />
       </dl>
     </Surface>
   );

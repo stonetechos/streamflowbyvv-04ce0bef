@@ -2,7 +2,11 @@
  * Voice feature surface — Milestone G.
  * Presentation imports this barrel and nothing deeper.
  */
-export { useVoiceSession, type UseVoiceSessionInput, type VoiceSessionModel } from "./use-voice-session";
+export {
+  useVoiceSession,
+  type UseVoiceSessionInput,
+  type VoiceSessionModel,
+} from "./use-voice-session";
 export { useVoiceDevices, type VoiceDevicesModel } from "./use-voice-devices";
 export {
   readVoiceDevicePreferences,

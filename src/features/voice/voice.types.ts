@@ -8,12 +8,7 @@ import type { VoiceQuality } from "@/infrastructure/voice";
 
 /** What the UI shows. `unavailable` means no transport or no grant source. */
 export type VoiceUiState =
-  | "unavailable"
-  | "idle"
-  | "connecting"
-  | "connected"
-  | "reconnecting"
-  | "error";
+  "unavailable" | "idle" | "connecting" | "connected" | "reconnecting" | "error";
 
 export interface VoiceMemberView {
   /** The participant identity is the profile id (Foundation §6). */

@@ -89,9 +89,7 @@ export function MemberCard({ member, voice, syncHealth, className }: MemberCardP
       <span
         className={cn(
           "shrink-0 rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold",
-          member.isReady
-            ? "bg-success/12 text-success"
-            : "bg-muted text-muted-foreground",
+          member.isReady ? "bg-success/12 text-success" : "bg-muted text-muted-foreground",
         )}
       >
         <span aria-hidden="true" className="mr-1">

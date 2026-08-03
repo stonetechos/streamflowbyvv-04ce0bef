@@ -115,14 +115,15 @@ export function createHomeReadModel(deps: HomeReadModelDependencies): HomeReadMo
             membership,
             memberCount,
             isHost: room.hostProfileId === viewerProfileId,
-            isResumable:
-              membership.state === "joined" && LIVE_STATUSES.includes(room.status),
+            isResumable: membership.state === "joined" && LIVE_STATUSES.includes(room.status),
           };
         }),
       );
 
       const present = summaries.filter((entry): entry is HomeRoomSummary => entry !== null);
-      const live = present.filter((entry) => LIVE_STATUSES.includes(entry.room.status)).sort(newestFirst);
+      const live = present
+        .filter((entry) => LIVE_STATUSES.includes(entry.room.status))
+        .sort(newestFirst);
       const closed = present
         .filter((entry) => CLOSED_STATUSES.includes(entry.room.status))
         .sort(newestFirst);

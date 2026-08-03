@@ -226,8 +226,6 @@ export function SettingsPanel({ profileId }: { profileId: string | null }) {
         onChange={(patch) => void profile.saveSettings({ privacy: patch })}
       />
 
-
-
       <section className="space-y-4">
         <SectionHeader title={t("settings.language.title")} />
         <Surface padding="lg" className="space-y-2">

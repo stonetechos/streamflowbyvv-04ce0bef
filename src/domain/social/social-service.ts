@@ -64,9 +64,14 @@ export interface SocialService {
   listRecentPartners(profileId: EntityId): Promise<readonly RecentPartnerRecord[]>;
 
   /** Directory search. Blocked people are filtered by the store, not here. */
-  searchProfiles(term: string, viewerProfileId: EntityId): Promise<readonly DirectoryProfileRecord[]>;
+  searchProfiles(
+    term: string,
+    viewerProfileId: EntityId,
+  ): Promise<readonly DirectoryProfileRecord[]>;
   getProfile(profileId: EntityId): Promise<DirectoryProfileRecord | null>;
-  hydrateProfiles(profileIds: readonly EntityId[]): Promise<ReadonlyMap<EntityId, DirectoryProfileRecord>>;
+  hydrateProfiles(
+    profileIds: readonly EntityId[],
+  ): Promise<ReadonlyMap<EntityId, DirectoryProfileRecord>>;
 
   /** Classifies the viewer's standing with another person. Pure given inputs. */
   classify(
@@ -88,7 +93,11 @@ export interface SocialService {
     reason: string,
     intent: Intent,
   ): Promise<void>;
-  unblockProfile(viewerProfileId: EntityId, targetProfileId: EntityId, intent: Intent): Promise<void>;
+  unblockProfile(
+    viewerProfileId: EntityId,
+    targetProfileId: EntityId,
+    intent: Intent,
+  ): Promise<void>;
 }
 
 export interface SocialServiceDependencies {

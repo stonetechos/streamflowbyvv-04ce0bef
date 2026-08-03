@@ -604,16 +604,19 @@ export const enBundle: LocaleBundle = {
     // Milestone F.0 — social foundation.
     "nav.people": "People",
     "invite.history.title": "Answered invitations",
-    "invite.history.description": "Invitations you've already accepted, declined, or that have lapsed.",
+    "invite.history.description":
+      "Invitations you've already accepted, declined, or that have lapsed.",
     "invite.status.pending": "Waiting",
     "invite.status.accepted": "Accepted",
     "invite.status.declined": "Declined",
     "invite.status.expired": "Expired",
     "invite.status.revoked": "Withdrawn",
     "social.title": "People",
-    "social.description": "Find the people you watch with, answer requests, and choose who can reach you.",
+    "social.description":
+      "Find the people you watch with, answer requests, and choose who can reach you.",
     "social.unavailable.title": "People isn't available right now",
-    "social.unavailable.description": "Your friend list can't be reached at the moment. Try again in a little while.",
+    "social.unavailable.description":
+      "Your friend list can't be reached at the moment. Try again in a little while.",
     "social.search.title": "Find people",
     "social.search.label": "Search by name, handle, or profile code",
     "social.search.hint": "Type at least two characters.",
@@ -633,7 +636,8 @@ export const enBundle: LocaleBundle = {
     "social.requests.outgoing.title": "Requests you sent",
     "social.requests.outgoing.description": "Waiting on an answer.",
     "social.requests.outgoing.empty.title": "Nothing pending",
-    "social.requests.outgoing.empty.description": "Requests you send will be listed here until they're answered.",
+    "social.requests.outgoing.empty.description":
+      "Requests you send will be listed here until they're answered.",
     "social.blocked.title": "Blocked",
     "social.blocked.description": "These people can't find you or invite you.",
     "social.blocked.empty.title": "No one is blocked",
@@ -641,7 +645,8 @@ export const enBundle: LocaleBundle = {
     "social.partners.title": "Recent partners",
     "social.partners.description": "The people you've watched with most recently.",
     "social.partners.empty.title": "No watch partners yet",
-    "social.partners.empty.description": "Once you've watched something together, they'll appear here.",
+    "social.partners.empty.description":
+      "Once you've watched something together, they'll appear here.",
     "social.partners.meta_one": "{count} session together",
     "social.partners.meta_other": "{count} sessions together",
     "social.profile.loading": "Loading profile\u2026",
@@ -697,7 +702,8 @@ export const enBundle: LocaleBundle = {
     "watch_party.elapsed.label": "Watching for",
     "watch_party.elapsed.hint": "Counted from the moment the room started together.",
     "watch_party.manual_reminder.title": "You control your own player",
-    "watch_party.manual_reminder.body": "StreamFlow keeps the room in step. Play, pause and seek stay in your streaming app.",
+    "watch_party.manual_reminder.body":
+      "StreamFlow keeps the room in step. Play, pause and seek stay in your streaming app.",
     "watch_party.status.title": "Staying together",
     "watch_party.status.resync": "Re-sync",
     "watch_party.status.in_sync": "In sync",
