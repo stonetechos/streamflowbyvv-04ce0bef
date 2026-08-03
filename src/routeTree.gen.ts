@@ -32,6 +32,8 @@ import { Route as AuthenticatedPeopleProfileIdRouteImport } from './routes/_auth
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
 import { Route as ApiPublicTimeRouteImport } from './routes/api/public/time'
 import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice/token'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -149,6 +151,16 @@ const ApiVoiceTokenRoute = ApiVoiceTokenRouteImport.update({
   path: '/api/voice/token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -173,6 +185,8 @@ export interface FileRoutesByFullPath {
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -196,6 +210,8 @@ export interface FileRoutesByTo {
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -222,6 +238,8 @@ export interface FileRoutesById {
   '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -248,6 +266,8 @@ export interface FileRouteTypes {
     | '/rooms/$roomId'
     | '/api/public/time'
     | '/api/voice/token'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -271,6 +291,8 @@ export interface FileRouteTypes {
     | '/rooms/$roomId'
     | '/api/public/time'
     | '/api/voice/token'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
   id:
     | '__root__'
     | '/'
@@ -296,6 +318,8 @@ export interface FileRouteTypes {
     | '/_authenticated/rooms/$roomId'
     | '/api/public/time'
     | '/api/voice/token'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -305,6 +329,8 @@ export interface RootRouteChildren {
   JoinCodeRoute: typeof JoinCodeRoute
   ApiPublicTimeRoute: typeof ApiPublicTimeRoute
   ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -470,6 +496,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVoiceTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -541,6 +581,8 @@ const rootRouteChildren: RootRouteChildren = {
   JoinCodeRoute: JoinCodeRoute,
   ApiPublicTimeRoute: ApiPublicTimeRoute,
   ApiVoiceTokenRoute: ApiVoiceTokenRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
