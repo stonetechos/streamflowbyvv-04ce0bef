@@ -902,3 +902,26 @@
 .sf-po[data-mood="sleeping"] .sf-po-sleep {
   animation: sf-po-snooze 3.6s var(--ease-standard) infinite;
 }
+
+/*
+ * Milestone G.5 — rail entrance.
+ *
+ * Home and room sections rise into place in reading order. Transform/opacity
+ * only; `--sf-rail-index` staggers the delay. Reduced motion neutralises it
+ * through the global rules above.
+ */
+@keyframes sf-rail-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sf-rail-enter {
+  animation: sf-rail-in 0.4s var(--ease-emphasized) both;
+  animation-delay: calc(var(--sf-rail-index, 0) * 60ms);
+}
