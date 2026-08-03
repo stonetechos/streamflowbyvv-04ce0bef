@@ -11,7 +11,14 @@ export {
   type ActionSize,
   type ActionTone,
 } from "./action-button";
-export { Avatar, AVATAR_PRESETS, type AvatarPreset, type AvatarProps } from "./avatar";
+export {
+  Avatar,
+  AVATAR_PRESETS,
+  presetForName,
+  type AvatarPreset,
+  type AvatarProps,
+} from "./avatar";
+
 export { EmptyState, SectionHeader, type EmptyStateProps, type SectionHeaderProps } from "./section";
 export { Skeleton, SkeletonCard, SkeletonRail } from "./skeleton";
 export {

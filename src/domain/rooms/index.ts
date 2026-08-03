@@ -40,6 +40,17 @@ export {
   type WaitingRoomSnapshot,
 } from "./room-read-model";
 export {
+  createHomeReadModel,
+  resolveHomeReadModelDependencies,
+  HOME_READ_MODEL,
+  type HomeInviteSummary,
+  type HomeReadModel,
+  type HomeReadModelDependencies,
+  type HomeRoomSummary,
+  type HomeSnapshot,
+} from "./home-read-model";
+
+export {
   createRoomSetupService,
   resolveRoomSetupDependencies,
   COUNTDOWN_SECONDS_METADATA_KEY,

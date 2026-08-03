@@ -78,6 +78,12 @@ import {
   ROOM_READ_MODEL,
 } from "../rooms/room-read-model";
 import {
+  createHomeReadModel,
+  resolveHomeReadModelDependencies,
+  HOME_READ_MODEL,
+} from "../rooms/home-read-model";
+
+import {
   bindService,
   createServiceToken,
   isServiceBound,
@@ -173,6 +179,9 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
       ROOM_READ_MODEL,
       () => createRoomReadModel(resolveRoomReadModelDependencies(resolveService(ROOM_SERVICE))),
     ],
+    // Milestone E — cross-aggregate composition for the home experience.
+    [HOME_READ_MODEL, () => createHomeReadModel(resolveHomeReadModelDependencies())],
+
     [
       PRESENCE_COORDINATOR,
       () =>
