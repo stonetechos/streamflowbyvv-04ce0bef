@@ -177,7 +177,8 @@ export function useRoomPlayback({
 
   useEffect(() => {
     if (runtime?.state !== "ready") {
-      if (runtime && runtime.state !== "ready") announcedReady.current = false;
+      // Leaving `ready` re-arms the announcement for the next time round.
+      if (runtime) announcedReady.current = false;
       return;
     }
     if (announcedReady.current) return;
