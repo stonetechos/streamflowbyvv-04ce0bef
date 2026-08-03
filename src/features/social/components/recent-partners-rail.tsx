@@ -16,7 +16,7 @@ import { PersonRow } from "./person-row";
 export interface RecentPartnersRailProps {
   readonly social: SocialModel;
   /** Offer a one-tap invite when the caller has a room to invite into. */
-  onInvite?: (profileId: string) => void;
+  readonly onInvite?: ((profileId: string) => void) | undefined;
   readonly limit?: number;
 }
 

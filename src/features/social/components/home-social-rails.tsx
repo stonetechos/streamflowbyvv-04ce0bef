@@ -18,7 +18,7 @@ import { RecentPartnersRail } from "./recent-partners-rail";
 
 export interface HomeSocialRailsProps {
   readonly social: SocialModel;
-  onInvite?: (profileId: string) => void;
+  readonly onInvite?: ((profileId: string) => void) | undefined;
 }
 
 export function HomeSocialRails({ social, onInvite }: HomeSocialRailsProps) {
@@ -72,20 +72,22 @@ export function HomeSocialRails({ social, onInvite }: HomeSocialRailsProps) {
           title={t("social.friends.title")}
           description={t("social.friends.description")}
           action={
-            <Link to="/people">
-              <ActionButton size="sm" tone="ghost" as="span">
-                {t("social.action.see_all")}
-              </ActionButton>
+            <Link
+              to="/people"
+              className="rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent"
+            >
+              {t("social.action.see_all")}
             </Link>
           }
         />
         {friends.length === 0 ? (
           <Surface padding="md">
             <p className="text-sm text-muted-foreground">{t("social.friends.empty.description")}</p>
-            <Link to="/people" className="mt-3 inline-block">
-              <ActionButton size="sm" as="span">
-                {t("social.action.find_people")}
-              </ActionButton>
+            <Link
+              to="/people"
+              className="mt-3 inline-block rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              {t("social.action.find_people")}
             </Link>
           </Surface>
         ) : (
@@ -112,7 +114,7 @@ export function HomeSocialRails({ social, onInvite }: HomeSocialRailsProps) {
         )}
       </section>
 
-      <RecentPartnersRail social={social} onInvite={onInvite} limit={4} />
+      <RecentPartnersRail social={social} {...(onInvite ? { onInvite } : {})} limit={4} />
     </div>
   );
 }
