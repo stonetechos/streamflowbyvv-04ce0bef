@@ -431,8 +431,7 @@ export const hiINBundle: LocaleBundle = {
     "provider.playback_mode.unsupported": "उपलब्ध नहीं",
     "provider.control.refusal.browser":
       "StreamFlow आपके लिए प्ले या पॉज़ नहीं कर सकता। काउंटडाउन के बाद सब साथ में प्ले दबाएं।",
-    "provider.control.refusal.native_planned":
-      "नेटिव कंट्रोल योजना में है, अभी उपलब्ध नहीं।",
+    "provider.control.refusal.native_planned": "नेटिव कंट्रोल योजना में है, अभी उपलब्ध नहीं।",
     "provider.control.refusal.unsupported": "StreamFlow यह सेवा नहीं खोल सकता।",
     "provider.session.status.connected": "जुड़ा हुआ",
     "provider.session.status.not_connected": "जुड़ा नहीं",

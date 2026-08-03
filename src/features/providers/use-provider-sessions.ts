@@ -15,7 +15,11 @@
  */
 import { useCallback, useMemo, useState } from "react";
 
-import { deriveProviderSession, type ProviderConnectionRecord, type ProviderSession } from "@/domain";
+import {
+  deriveProviderSession,
+  type ProviderConnectionRecord,
+  type ProviderSession,
+} from "@/domain";
 import { readLocalJson, writeLocalJson } from "@/foundation/preferences";
 
 const STORAGE_KEY = "provider-connections";
