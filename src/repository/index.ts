@@ -77,6 +77,9 @@ export {
   type RoomStateRepository,
   ROOM_PRESENCE_REPOSITORY,
   type RoomPresenceRepository,
+  ROOM_DISCOVERY_REPOSITORY,
+  type RoomDiscovery,
+  type RoomDiscoveryRepository,
 } from "./rooms";
 export {
   PROVIDER_CATALOG_REPOSITORY,

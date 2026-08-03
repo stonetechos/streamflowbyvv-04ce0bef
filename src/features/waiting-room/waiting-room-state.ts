@@ -27,9 +27,9 @@ const ROLE_WEIGHT: Record<string, number> = { host: 0, co_host: 1, guest: 2 };
 const STATE_WEIGHT: Record<string, number> = { joined: 0, invited: 1, left: 2, removed: 3 };
 
 /**
- * A readable stand-in for a display name. Profile records are a later sprint,
- * so the lobby shows the identifier it legitimately holds rather than
- * inventing a name.
+ * The fallback stand-in for a display name (Sprint J.1: only used while a name
+ * is loading, or when the profile is not visible to this viewer). The lobby
+ * shows the identifier it legitimately holds rather than inventing a name.
  */
 export function memberLabel(profileId: string): string {
   const compact = profileId.replace(/-/g, "");
@@ -71,6 +71,7 @@ export function toMemberViews(
   viewerProfileId: string | null,
   isReady: (member: RoomMember) => boolean,
   presence: PresenceLookup = UNTRACKED,
+  namesByProfileId: ReadonlyMap<string, string> = new Map(),
 ): readonly MemberView[] {
   return [...snapshot.members]
     .sort(
@@ -85,7 +86,7 @@ export function toMemberViews(
       return {
         id: member.id,
         profileId: member.profileId,
-        label: memberLabel(member.profileId),
+        label: namesByProfileId.get(member.profileId) ?? memberLabel(member.profileId),
         role: member.role,
         state: member.state,
         isHost: member.role === "host" || member.profileId === snapshot.room.hostProfileId,

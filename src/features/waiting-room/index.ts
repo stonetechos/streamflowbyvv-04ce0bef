@@ -57,6 +57,7 @@ export {
   type RoomPresenceModel,
 } from "./use-room-presence";
 export { useWaitingRoom, type WaitingRoomModel } from "./use-waiting-room";
+export { useMemberNames } from "./use-member-names";
 export {
   memberLabel,
   readCountdownSeconds,

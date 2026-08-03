@@ -21,6 +21,7 @@ import { useAuth } from "@/features/auth";
 import { logger } from "@/foundation/logging";
 
 import { useCoarseNow } from "./use-coarse-now";
+import { useMemberNames } from "./use-member-names";
 import { useRoomClockSync, type RoomClockSyncModel } from "./use-room-clock-sync";
 import { useRoomPresence } from "./use-room-presence";
 import { useRoomRealtime } from "./use-room-realtime";
@@ -204,16 +205,29 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
   // roster identities, or the hooks that consume them re-evaluate forever.
   const now = useCoarseNow();
 
+  // Sprint J.1 — people, not identifiers.
+  const memberProfileIds = useMemo(
+    () => (snapshot ? snapshot.members.map((member) => member.profileId) : []),
+    [snapshot],
+  );
+  const memberNames = useMemberNames(memberProfileIds);
+
   const members = useMemo(
     () =>
       snapshot
-        ? toMemberViews(snapshot, profileId, isReady, {
-            byProfileId: presence.byProfileId,
-            isTracking: presence.isTracking,
-            now,
-          })
+        ? toMemberViews(
+            snapshot,
+            profileId,
+            isReady,
+            {
+              byProfileId: presence.byProfileId,
+              isTracking: presence.isTracking,
+              now,
+            },
+            memberNames,
+          )
         : EMPTY_MEMBERS,
-    [isReady, now, presence.byProfileId, presence.isTracking, profileId, snapshot],
+    [isReady, memberNames, now, presence.byProfileId, presence.isTracking, profileId, snapshot],
   );
 
   const joined = useMemo(() => members.filter((member) => member.state === "joined"), [members]);
