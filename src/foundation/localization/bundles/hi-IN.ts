@@ -10,6 +10,9 @@ export const hiINBundle: LocaleBundle = {
   strings: {
     "common.app.name": "StreamFlow",
     "common.app.tagline": "साथ देखें, एक ही समय पर।",
+    "common.app.publisher": "वेडोरा विज़न द्वारा",
+    "common.action.learn_more": "और जानें",
+
     "common.action.retry": "फिर से कोशिश करें",
     "common.action.go_home": "होम पर जाएँ",
     "common.action.dismiss": "बंद करें",

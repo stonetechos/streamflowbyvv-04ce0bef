@@ -15,6 +15,9 @@ export const enBundle: LocaleBundle = {
   strings: {
     "common.app.name": "StreamFlow",
     "common.app.tagline": "Watch together, in sync.",
+    "common.app.publisher": "by Vedora Vision",
+    "common.action.learn_more": "Learn more",
+
     "common.action.retry": "Try again",
     "common.action.go_home": "Go home",
     "common.action.dismiss": "Dismiss",
