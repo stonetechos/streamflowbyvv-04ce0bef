@@ -17,6 +17,8 @@ import {
 } from "@/domain";
 import { logger } from "@/foundation/logging";
 
+import { refreshBadges } from "@/features/notifications";
+
 import { refusalCode } from "@/features/shared/refusal-message";
 
 const MODULE = "home";
@@ -119,6 +121,7 @@ export function useHome(viewerProfileId: string | null): HomeModel {
       try {
         const result = await operation();
         refresh();
+        refreshBadges();
         return result;
       } catch (cause) {
         logger.warn("Home action failed", { module: MODULE, action, error: cause });

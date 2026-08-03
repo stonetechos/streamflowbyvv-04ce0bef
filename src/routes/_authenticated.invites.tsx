@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { SectionHeader } from "@/design-system/components";
 import { useAuth } from "@/features/auth";
 import { useHome } from "@/features/home";
 import { InviteCard, InviteHistoryList } from "@/features/invitations";
+import { useNotifications } from "@/features/notifications";
 import { PoCompanion } from "@/features/po";
 import { EmptyState } from "@/design-system/components";
 import { useTranslation } from "@/foundation/localization";
@@ -41,6 +43,13 @@ function InvitesRoute() {
   const home = useHome(auth.session?.identity.profileId ?? null);
   const pending = home.snapshot.pendingInvites;
   const answered = home.snapshot.answeredInvites;
+  const notifications = useNotifications();
+  const markInvitesSeen = notifications.markInvitesSeen;
+
+  // Looking at the list is the acknowledgement: the badge clears here.
+  useEffect(() => {
+    markInvitesSeen();
+  }, [answered.length, markInvitesSeen]);
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8 px-4 py-8 pb-28 sm:px-6 md:pb-12">
