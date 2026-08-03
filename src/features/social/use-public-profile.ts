@@ -44,8 +44,8 @@ export function usePublicProfile(profileId: string | null): PublicProfileModel {
     setLoading(true);
 
     social
-      .findProfile(profileId)
-      .then((found) => {
+      .getProfile(profileId)
+      .then((found: DirectoryProfileRecord | null) => {
         if (!active) return;
         setProfile(found);
         setError(null);
