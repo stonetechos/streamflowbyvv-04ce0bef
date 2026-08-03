@@ -560,7 +560,7 @@ export const enBundle: LocaleBundle = {
     "landing.services.title": "Works with the services you already use",
 
     "nav.home": "Home",
-    "nav.invites": "Invites",
+    "nav.invites": "Rooms",
     "nav.settings": "Settings",
     "nav.primary": "Primary",
     "nav.account": "Account",
@@ -757,7 +757,7 @@ export const enBundle: LocaleBundle = {
     "onboarding.avatar.preset.orchid": "Orchid",
 
     // Milestone F.0 — social foundation.
-    "nav.people": "People",
+    "nav.people": "Friends",
     "invite.history.title": "Answered invitations",
     "invite.history.description":
       "Invitations you've already accepted, declined, or that have lapsed.",
