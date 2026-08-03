@@ -43,6 +43,12 @@ export interface PoWaitingBannerProps {
   readonly needsSyncEncouragement?: boolean;
   /** Everyone became synchronization ready — Po celebrates, quietly. */
   readonly isSynchronizationReady?: boolean;
+  /** Someone just confirmed they are ready — Po lifts, briefly (Sprint 2.9). */
+  readonly someoneBecameReady?: boolean;
+  /** Everyone has confirmed — Po celebrates (Sprint 2.9). */
+  readonly isEveryoneReady?: boolean;
+  /** People are still arriving or confirming — Po settles in to wait. */
+  readonly isWaitingForMembers?: boolean;
   /** Changing this makes Po glance toward the roster (e.g. a new arrival). */
   readonly gazeToken?: string | null;
   readonly className?: string;
@@ -63,6 +69,9 @@ export function resolvePoWaitingMood(signals: {
   readonly hasRoomRecovered?: boolean;
   readonly needsSyncEncouragement?: boolean;
   readonly isSynchronizationReady?: boolean;
+  readonly someoneBecameReady?: boolean;
+  readonly isEveryoneReady?: boolean;
+  readonly isWaitingForMembers?: boolean;
 }): PoMood {
   // Sprint 2.6 — the room being out of step outranks every happier signal:
   // it is the one thing standing between the lobby and a countdown.
@@ -83,12 +92,17 @@ export function resolvePoWaitingMood(signals: {
   if (signals.hasCompleted) return "celebrating";
   if (signals.isCounting) return "counting";
   if (signals.isBusy) return "thinking";
+  // Sprint 2.9 — the confirmation workflow, under the countdown but above the
+  // quieter lobby signals. Decorative throughout (Po Rule).
+  if (signals.isEveryoneReady) return "celebrating";
+  if (signals.someoneBecameReady) return "happy";
   if (signals.allReady) return "delighted";
   // Sprint 2.5 — clocks. Po watches while they settle, and gives the same
   // satisfied smile as "everyone ready" once they land in a healthy band.
   if (signals.isSyncing) return "observing";
   if (signals.isSyncSatisfied) return "delighted";
   if (signals.hasProvider) return "focused";
+  if (signals.isWaitingForMembers) return "waiting";
   return "calm";
 }
 
@@ -105,6 +119,8 @@ const CAPTION_KEYS: Readonly<Record<PoMood, string>> = {
   concerned: "po.banner.concerned",
   encouraging: "po.banner.encouraging",
   relieved: "po.banner.relieved",
+  waiting: "po.banner.waiting_for_members",
+  happy: "po.banner.someone_ready",
 };
 
 export function PoWaitingBanner({
@@ -121,6 +137,9 @@ export function PoWaitingBanner({
   hasRoomRecovered = false,
   needsSyncEncouragement = false,
   isSynchronizationReady = false,
+  someoneBecameReady = false,
+  isEveryoneReady = false,
+  isWaitingForMembers = false,
   gazeToken = null,
   className,
 }: PoWaitingBannerProps) {
@@ -139,6 +158,9 @@ export function PoWaitingBanner({
     hasRoomRecovered,
     needsSyncEncouragement,
     isSynchronizationReady,
+    someoneBecameReady,
+    isEveryoneReady,
+    isWaitingForMembers,
   });
 
   return (

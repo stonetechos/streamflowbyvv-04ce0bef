@@ -13,6 +13,7 @@ import { usePlaybackSync } from "../use-playback-sync";
 import { useRoomCountdown } from "../use-room-countdown";
 import { useRoomPlayback } from "../use-room-playback";
 import { useProviderLaunch } from "../use-provider-launch";
+import { useRoomReady } from "../use-room-ready";
 import { useRoomSetup } from "../use-room-setup";
 import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
@@ -20,6 +21,9 @@ import { MemberList } from "./member-list";
 import { MembershipActions } from "./membership-actions";
 import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
+import { ManualPlayReminder } from "./manual-play-reminder";
+import { ReadyConfirmationCard } from "./ready-confirmation-card";
+import { RoomSummaryCard } from "./room-summary-card";
 import { PlaybackReadinessPanel } from "./playback-readiness-panel";
 import { ProviderLaunchPanel } from "./provider-launch-panel";
 import { RoomSetupCard } from "./room-setup-card";
@@ -85,6 +89,20 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     enabled: model.status === "ready" && model.viewer.isMember,
   });
 
+  // Sprint 2.9 — the single authority for who is ready and what may follow.
+  const ready = useRoomReady({
+    roomId,
+    members: model.members,
+    presenceByProfileId: model.presenceByProfileId,
+    viewerProfileId: model.viewer.profileId,
+    hasProvider: model.room?.providerId !== null && model.room?.providerId !== undefined,
+    launchPending: providerLaunch.status === "launching",
+    syncSnapshot: roomSync.snapshot,
+    enabled: model.status === "ready" && model.viewer.isMember,
+    isConfirming: model.pending === "readiness",
+    setReady: model.setReady,
+  });
+
   if (model.status === "loading") {
     return (
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
@@ -138,15 +156,29 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             hasRoomRecovered={roomSync.justRecovered}
             needsSyncEncouragement={playbackSync.needsEncouragement}
             isSynchronizationReady={playbackSync.justBecameReady}
+            someoneBecameReady={(ready.snapshot?.readyCount ?? 0) > 0}
+            isEveryoneReady={ready.snapshot?.everyoneReady ?? false}
+            isWaitingForMembers={(ready.snapshot?.waitingCount ?? 0) > 0}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
+          <ManualPlayReminder
+            isDue={ready.snapshot?.manualPlayReminderDue ?? false}
+            hasCountdownFinished={countdown.state === "completed"}
+          />
+          <RoomSummaryCard
+            ready={ready}
+            sync={roomSync}
+            members={model.members}
+            providerId={room.providerId}
+            isHost={model.viewer.isHost}
+          />
           <CountdownPanel
             countdown={countdown}
             isHost={model.viewer.isHost}
             members={model.members}
             hasProvider={room.providerId !== null}
-            canStartCountdown={roomSync.canStartCountdown}
+            canStartCountdown={roomSync.canStartCountdown && (ready.snapshot?.countdownAvailable ?? false)}
             blockReasonKey={roomSync.blockReasonKey}
             hasSyncAdvisory={roomSync.hasAdvisory}
           />
@@ -170,13 +202,13 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
       }
       secondary={
         <>
+          <ReadyConfirmationCard ready={ready} />
           <MembershipActions
             viewer={model.viewer}
             pending={model.pending}
             canJoin={canJoin}
             onJoin={model.join}
             onLeave={model.leave}
-            onReadyChange={model.setReady}
           />
           <InviteSummary pendingInviteCount={room.pendingInviteCount} roomCode={room.code} />
         </>

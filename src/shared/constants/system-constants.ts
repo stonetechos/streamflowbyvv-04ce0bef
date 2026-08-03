@@ -160,4 +160,15 @@ export const CACHE_TTL = Object.freeze({
   FEATURE_FLAGS_MS: 1 * HOUR_MS,
 });
 
+/**
+ * Sprint 2.9 — Ready confirmation. Operational values only: no band, no
+ * eligibility rule lives here. `TIMEOUT_MS` is how long a joined member may
+ * stay unconfirmed before the lobby says so (it never removes anyone), and
+ * `REMINDER_LEAD_SECONDS` is how early the manual-play reminder is surfaced.
+ */
+export const READY_CONFIRMATION = Object.freeze({
+  TIMEOUT_MS: 5 * MINUTE_MS,
+  REMINDER_LEAD_SECONDS: 10,
+});
+
 export const TIME = Object.freeze({ SECOND_MS, MINUTE_MS, HOUR_MS, DAY_MS });

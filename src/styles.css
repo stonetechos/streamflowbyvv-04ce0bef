@@ -651,3 +651,41 @@
 .sf-po[data-mood="encouraging"] .sf-po-tail {
   animation-duration: 6s;
 }
+
+/* Sprint 2.9 — Po's confirmation moods. Idle animation only (Po Rule). */
+@keyframes sf-po-settle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1.5px);
+  }
+}
+
+@keyframes sf-po-lift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-3px);
+  }
+}
+
+.sf-po[data-mood="waiting"] .sf-po-body {
+  animation:
+    sf-po-breathe 5.5s var(--ease-standard) infinite,
+    sf-po-settle 6s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="happy"] .sf-po-body {
+  animation:
+    sf-po-breathe 4s var(--ease-standard) infinite,
+    sf-po-lift 1.4s var(--ease-emphasized) 2;
+}
+
+.sf-po[data-mood="happy"] .sf-po-ear-left,
+.sf-po[data-mood="happy"] .sf-po-ear-right {
+  animation-duration: 3.5s;
+}

@@ -83,3 +83,18 @@ export {
   type PlaybackSeekRequest,
   type PlaybackStopRequest,
 } from "./playback-coordinator";
+// Sprint 2.9 — the ONLY authority for readiness, countdown availability, and
+// the manual-play reminder.
+export {
+  createReadyCoordinator,
+  resolveReadyCoordinatorDependencies,
+  READY_COORDINATOR,
+  type HostReadySummary,
+  type ReadyBlockReason,
+  type ReadyCoordinator,
+  type ReadyCoordinatorDependencies,
+  type ReadyEvaluationInput,
+  type ReadyParticipantInput,
+  type ReadySnapshot,
+  type ViewerReadyState,
+} from "./ready-coordinator";
