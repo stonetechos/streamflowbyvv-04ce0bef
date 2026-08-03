@@ -30,6 +30,39 @@ export {
   type PlaybackTimeline,
 } from "./playback.types";
 export {
+  PLAYBACK_CORRECTION_KINDS,
+  PLAYBACK_SYNC_DECISIONS,
+  createPlaybackAnchor,
+  type ParticipantPlaybackReport,
+  type PlaybackAnchor,
+  type PlaybackCorrection,
+  type PlaybackCorrectionKind,
+  type PlaybackCorrectionReason,
+  type PlaybackDelta,
+  type PlaybackHealth,
+  type PlaybackPosition,
+  type PlaybackSyncDecision,
+  type PlaybackSyncSnapshot,
+} from "./playback-sync.types";
+export {
+  classifyPlaybackDrift,
+  correctionFor,
+  deltaFor,
+  isHardCorrectionEligible,
+  isPlaybackInSync,
+  isSoftCorrectionEligible,
+  positionFromAnchor,
+  worstDelta,
+} from "./playback-drift-policy";
+export {
+  createPlaybackSyncEngine,
+  resolvePlaybackSyncEngineDependencies,
+  PLAYBACK_SYNC_ENGINE,
+  type PlaybackSyncEngine,
+  type PlaybackSyncEngineDependencies,
+  type PlaybackSyncInput,
+} from "./playback-sync-engine";
+export {
   PLAYBACK_ANCHOR_METADATA_KEY,
   PLAYBACK_DURATION_METADATA_KEY,
   PLAYBACK_END_REASON_METADATA_KEY,
