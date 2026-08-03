@@ -19,6 +19,45 @@ export {
   type DeepLinkTarget,
 } from "./deep-link-service";
 export {
+  createDeepLinkRegistry,
+  detectLaunchPlatform,
+  type DeepLinkRegistry,
+  type ProviderLaunchEntry,
+} from "./deep-link-registry";
+export {
+  guidanceHeadingKey,
+  guidanceSummaryKey,
+  manualSyncGuidanceKeys,
+} from "./manual-sync-guidance";
+export {
+  createNoopProviderLauncher,
+  PROVIDER_LAUNCHER,
+  type ProviderLauncher,
+} from "./provider-launcher";
+export {
+  createProviderLaunchCoordinator,
+  resolveProviderLaunchCoordinatorDependencies,
+  PROVIDER_LAUNCH_COORDINATOR,
+  type ProviderLaunchCoordinator,
+  type ProviderLaunchCoordinatorDependencies,
+  type ProviderLaunchRequest,
+} from "./provider-launch-coordinator";
+export {
+  LAUNCH_PLATFORMS,
+  LAUNCH_REFUSAL_REASONS,
+  LAUNCH_STATUSES,
+  LAUNCH_TARGET_KINDS,
+  PROVIDER_LAUNCH_CLASSES,
+  type LaunchOutcome,
+  type LaunchPlatform,
+  type LaunchRefusalReason,
+  type LaunchStatus,
+  type LaunchTarget,
+  type LaunchTargetKind,
+  type ProviderLaunchClass,
+  type ProviderLaunchPlan,
+} from "./provider-launch.types";
+export {
   createProviderCatalogService,
   deriveProviderStatus,
   resolveProviderCatalogDependencies,
