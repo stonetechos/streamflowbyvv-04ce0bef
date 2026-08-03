@@ -16,6 +16,7 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthSignOutRouteImport } from './routes/auth.sign-out'
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
+import { Route as ApiPublicTimeRouteImport } from './routes/api/public/time'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const AuthenticatedRoomsRoomIdRoute =
     path: '/rooms/$roomId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ApiPublicTimeRoute = ApiPublicTimeRouteImport.update({
+  id: '/api/public/time',
+  path: '/api/public/time',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/': typeof AuthIndexRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/api/public/time': typeof ApiPublicTimeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth': typeof AuthIndexRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/api/public/time': typeof ApiPublicTimeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,13 +85,26 @@ export interface FileRoutesById {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/': typeof AuthIndexRoute
   '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/api/public/time': typeof ApiPublicTimeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/account' | '/auth/sign-out' | '/auth/' | '/rooms/$roomId'
+    | '/'
+    | '/auth'
+    | '/account'
+    | '/auth/sign-out'
+    | '/auth/'
+    | '/rooms/$roomId'
+    | '/api/public/time'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/auth/sign-out' | '/auth' | '/rooms/$roomId'
+  to:
+    | '/'
+    | '/account'
+    | '/auth/sign-out'
+    | '/auth'
+    | '/rooms/$roomId'
+    | '/api/public/time'
   id:
     | '__root__'
     | '/'
@@ -93,12 +114,14 @@ export interface FileRouteTypes {
     | '/auth/sign-out'
     | '/auth/'
     | '/_authenticated/rooms/$roomId'
+    | '/api/public/time'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  ApiPublicTimeRoute: typeof ApiPublicTimeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRoomsRoomIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/public/time': {
+      id: '/api/public/time'
+      path: '/api/public/time'
+      fullPath: '/api/public/time'
+      preLoaderRoute: typeof ApiPublicTimeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -185,7 +215,18 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  ApiPublicTimeRoute: ApiPublicTimeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

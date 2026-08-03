@@ -21,6 +21,7 @@ export {
 export * from "./events";
 export * from "./countdown";
 export * from "./playback";
+export * from "./sync";
 export * from "./providers";
 export * from "./rooms";
 export * from "./services";
