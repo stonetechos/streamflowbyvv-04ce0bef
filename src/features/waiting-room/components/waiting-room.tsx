@@ -32,6 +32,7 @@ import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
 import { MemberList } from "./member-list";
 import { MembershipActions } from "./membership-actions";
+import { NowWatchingCard } from "./now-watching-card";
 import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
 import { ManualPlayReminder } from "./manual-play-reminder";
@@ -255,14 +256,13 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
   return (
     <WaitingRoomLayout
       header={
-        <header>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            {t("room.waiting_room.eyebrow")}
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
-            {t("room.waiting_room.title")}
-          </h1>
-        </header>
+        <NowWatchingCard
+          room={room}
+          providerName={providerLaunch.plan?.providerKey ?? room.providerId}
+          hostLabel={model.members.find((member) => member.isHost)?.label ?? null}
+          memberCount={model.members.length}
+          isLive={model.isLive}
+        />
       }
       primary={
         <>
