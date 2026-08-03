@@ -139,6 +139,10 @@ export function buildServiceShelf(
   return [...cards].sort((a, b) => Number(b.providerId !== null) - Number(a.providerId !== null));
 }
 
+/**
+ * Badge copy for a card. The status itself always comes from the adjudicated
+ * catalog (or the presentation-only `coming_soon`); this only names it.
+ */
 export function serviceStatusLabelKey(status: ServiceStatus): string {
-  return status === "coming_soon" ? "home.services.status.coming_soon" : `provider.class.${status}`;
+  return `home.services.status.${status}`;
 }

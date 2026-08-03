@@ -18,6 +18,7 @@ import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
 
 import { buildServiceShelf, serviceStatusLabelKey, type ServiceCardView } from "../service-shelf";
+import { ServiceLogo } from "./service-logo";
 import type { HomeModel } from "../use-home";
 
 const ACCENT_TILE: Record<ServiceCardView["accent"], string> = {
@@ -26,6 +27,15 @@ const ACCENT_TILE: Record<ServiceCardView["accent"], string> = {
   success: "from-success/70 to-success/25 text-success-foreground",
   warning: "from-warning/70 to-warning/25 text-warning-foreground",
   accent: "from-accent to-accent/40 text-accent-foreground",
+};
+
+/** Badge tone per adjudicated status. Tokens only; never a raw colour. */
+const STATUS_BADGE: Record<ServiceCardView["status"], string> = {
+  supported: "border-success/40 bg-success/10 text-success",
+  manual_sync: "border-info/40 bg-info/10 text-info",
+  unverified: "border-warning/40 bg-warning/10 text-warning",
+  unavailable: "border-border bg-muted text-muted-foreground",
+  coming_soon: "border-border bg-muted text-muted-foreground",
 };
 
 export interface ServiceShelfProps {
@@ -80,30 +90,39 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                 onClick={() => void onChoose(card)}
                 className={cn(
                   "group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-left text-card-foreground shadow-e1",
+                  "will-change-transform focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   "transition-[transform,box-shadow] duration-normal ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   card.isChoosable
-                    ? "hover:-translate-y-0.5 hover:shadow-e3 active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none"
+                    ? "hover:-translate-y-1 hover:shadow-e3 active:scale-[0.98] active:shadow-e1 motion-reduce:transform-none motion-reduce:transition-none"
                     : "opacity-70",
                 )}
               >
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "flex aspect-[16/10] w-full items-center justify-center bg-gradient-to-br",
-                    "font-display text-2xl font-semibold tracking-tight",
+                    "flex aspect-[16/10] w-full items-center justify-center overflow-hidden bg-gradient-to-br p-[12%]",
                     ACCENT_TILE[card.accent],
                   )}
                 >
                   {busy ? (
                     <span className="size-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   ) : (
-                    card.monogram
+                    <ServiceLogo
+                      brandKey={card.key}
+                      name={card.name}
+                      className="h-full w-full transition-transform duration-normal ease-standard group-hover:scale-[1.04] motion-reduce:transform-none motion-reduce:transition-none"
+                    />
                   )}
                 </span>
 
                 <span className="flex flex-1 flex-col gap-2 p-3">
                   <span className="truncate font-display text-sm font-semibold">{card.name}</span>
-                  <span className="inline-flex w-fit items-center rounded-full border border-border px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground">
+                  <span
+                    className={cn(
+                      "inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider",
+                      STATUS_BADGE[card.status],
+                    )}
+                  >
                     {t(serviceStatusLabelKey(card.status))}
                   </span>
                 </span>
