@@ -24,6 +24,7 @@ import {
 import { useAuth } from "../auth-provider";
 import { validateEmail, validatePassword } from "../auth-validation";
 import { useAuthForm } from "../use-auth-form";
+import { claimDestination } from "../pending-destination";
 
 type Method = "password" | "link";
 
@@ -70,7 +71,8 @@ export function SignInForm({ redirectTo = "/home" }: { redirectTo?: string }) {
     setPassword("");
 
     if (outcome.kind === "session") {
-      void navigate({ to: redirectTo, replace: true });
+      const destination = claimDestination() ?? redirectTo;
+      void navigate({ to: destination, replace: true });
       return;
     }
     if (outcome.kind === "magic_link_sent") {

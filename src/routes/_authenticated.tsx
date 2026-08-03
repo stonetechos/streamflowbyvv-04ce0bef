@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { RequireAuth, useAuth } from "@/features/auth";
-import { readPendingInvite } from "@/features/invitations";
+import { claimPendingInvite } from "@/features/invitations";
 
 /**
  * Protected subtree — Sprint 1.4 §7.
@@ -26,7 +26,7 @@ function InviteContinuation() {
 
   useEffect(() => {
     if (!auth.isAuthenticated) return;
-    const code = readPendingInvite();
+    const code = claimPendingInvite();
     if (!code) return;
     void navigate({ to: "/join/$code", params: { code }, replace: true });
   }, [auth.isAuthenticated, navigate]);

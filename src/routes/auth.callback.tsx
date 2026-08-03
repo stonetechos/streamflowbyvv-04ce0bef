@@ -16,7 +16,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButton } from "@/design-system/components";
-import { AuthShell, claimCallbackPayload, traceCallback, useAuth } from "@/features/auth";
+import {
+  AuthShell,
+  claimCallbackPayload,
+  claimDestination,
+  traceCallback,
+  useAuth,
+} from "@/features/auth";
 import { useTranslation } from "@/foundation/localization";
 
 export const Route = createFileRoute("/auth/callback")({
@@ -121,7 +127,9 @@ function AuthCallbackPage() {
     redirected.current = true;
     // A recovery link signs the person in so they can choose a new password;
     // anyone else is simply confirmed and belongs in the app.
-    const to = isRecovery ? "/auth/reset-password" : "/home";
+    // A confirmed person continues to whatever they were opening — an invite,
+    // a room, a shared title — and only falls back to Home when there was none.
+    const to = isRecovery ? "/auth/reset-password" : (claimDestination() ?? "/home");
     traceCallback("redirect", to);
     void navigate({ to, replace: true });
   }, [auth.isAuthenticated, isRecovery, navigate, params.error]);

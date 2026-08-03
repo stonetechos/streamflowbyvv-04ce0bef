@@ -17,6 +17,7 @@ import { ErrorState, LoadingState } from "@/app-shell";
 import { useAuth } from "@/features/auth";
 import { useHome } from "@/features/home";
 import { clearPendingInvite, rememberPendingInvite } from "@/features/invitations";
+import { clearDestination, rememberCurrentDestination } from "@/features/auth";
 import { refusalMessageKey } from "@/features/shared/refusal-message";
 import { useTranslation } from "@/foundation/localization";
 
@@ -55,6 +56,9 @@ function JoinInvitePage() {
   // Remember the destination before anything can navigate away from it.
   useEffect(() => {
     rememberPendingInvite(normalizedCode);
+    // The whole link is remembered, query included, so any token or content
+    // reference travelling with the invitation survives authentication.
+    rememberCurrentDestination();
   }, [normalizedCode]);
 
   // No session yet: send them to sign in. The continuation runs on return.
@@ -70,6 +74,7 @@ function JoinInvitePage() {
     void (async () => {
       const roomId = await joinByCode(normalizedCode);
       clearPendingInvite();
+      clearDestination();
       if (roomId) {
         void navigate({ to: "/rooms/$roomId", params: { roomId }, replace: true });
       } else {

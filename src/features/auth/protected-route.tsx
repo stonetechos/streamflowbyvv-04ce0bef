@@ -16,6 +16,7 @@ import { ErrorState, LoadingState } from "@/app-shell";
 import { useTranslation } from "@/foundation/localization";
 
 import { useAuth } from "./auth-provider";
+import { rememberCurrentDestination } from "./pending-destination";
 
 export interface RequireAuthProps {
   children: ReactNode;
@@ -41,6 +42,9 @@ export function RequireAuth({
 
   useEffect(() => {
     if (!shouldRedirect) return;
+    // Remember the whole intent — path and query — so authentication resumes
+    // exactly where the visitor meant to be, never on Home.
+    rememberCurrentDestination();
     void navigate({ to: redirectTo, replace: true });
   }, [navigate, redirectTo, shouldRedirect]);
 

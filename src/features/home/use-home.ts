@@ -17,6 +17,8 @@ import {
 } from "@/domain";
 import { logger } from "@/foundation/logging";
 
+import { refusalCode } from "@/features/shared/refusal-message";
+
 const MODULE = "home";
 
 const EMPTY_SNAPSHOT: HomeSnapshot = Object.freeze({
@@ -151,7 +153,13 @@ export function useHome(viewerProfileId: string | null): HomeModel {
         // Sprint J.1: a guest is not yet a member, so the room is discovered
         // through the narrow code lookup. Admission is still RoomFlowService's.
         const found = await rooms.discoverRoomByCode(code);
-        await rooms.joinRoom({ roomId: found.roomId, profileId: viewerProfileId }, intent());
+        try {
+          await rooms.joinRoom({ roomId: found.roomId, profileId: viewerProfileId }, intent());
+        } catch (cause) {
+          // Someone re-opening their own invite link is already inside. That is
+          // not a refusal to show them — it is the room they asked for.
+          if (refusalCode(cause) !== "SF-ROOM-ALREADY-MEMBER") throw cause;
+        }
         return found.roomId;
       });
     },
