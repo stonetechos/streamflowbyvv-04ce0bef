@@ -170,6 +170,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "resolved", session });
   }, [sessions]);
 
+  // Recovery and verification never change local session state: the provider
+  // sends an email and the journey continues in the inbox.
+  const requestPasswordReset = useCallback(
+    (email: string, returnPath: string) => sessions.requestPasswordReset(email, returnPath),
+    [sessions],
+  );
+
+  const resendVerification = useCallback(
+    (email: string) => sessions.resendVerification(email),
+    [sessions],
+  );
+
   const value = useMemo<AuthContextValue>(
     () => ({
       ...state,
@@ -181,11 +193,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signOut,
       refresh,
+      requestPasswordReset,
+      resendVerification,
       hasRole: (role) => roles.includes(role),
       can: (permission) => permissions.can(roles, permission),
     }),
-    [permissions, refresh, roles, sessions, signIn, signOut, signUp, state],
+    [
+      permissions,
+      refresh,
+      requestPasswordReset,
+      resendVerification,
+      roles,
+      sessions,
+      signIn,
+      signOut,
+      signUp,
+      state,
+    ],
   );
+
 
   return <AuthContext value={value}>{children}</AuthContext>;
 }
