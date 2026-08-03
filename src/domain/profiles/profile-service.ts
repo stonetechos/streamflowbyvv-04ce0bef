@@ -191,7 +191,7 @@ export function createProfileService(deps: ProfileServiceDependencies): ProfileS
         await users.updatePreferences(
           {
             profileId,
-            preferenceTable: PREFERENCE_TABLES[group],
+            preferenceTable: PREFERENCE_TABLES[group] ?? group,
             changedFields: Object.keys(patch[group] ?? {}),
           },
           intent,
