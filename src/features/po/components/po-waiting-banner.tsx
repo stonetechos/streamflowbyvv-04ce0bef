@@ -121,6 +121,9 @@ const CAPTION_KEYS: Readonly<Record<PoMood, string>> = {
   relieved: "po.banner.relieved",
   waiting: "po.banner.waiting_for_members",
   happy: "po.banner.someone_ready",
+  listening: "po.banner.listening",
+  watching: "po.banner.watching",
+  sleeping: "po.banner.sleeping",
 };
 
 export function PoWaitingBanner({

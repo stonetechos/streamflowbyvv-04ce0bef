@@ -17,6 +17,7 @@ import { registerSocialAdapter } from "@/infrastructure/social";
 
 import { registerRoomAdapter } from "@/infrastructure/rooms";
 import { registerTimeAdapter } from "@/infrastructure/time";
+import { registerVoiceInfrastructure } from "@/infrastructure/voice";
 import { logger } from "@/foundation/logging";
 
 let composed = false;
@@ -39,6 +40,8 @@ export function composeApplication(): void {
   // Sprint 2.5: the server-time reference behind clock synchronization.
 
   const timeBound = registerTimeAdapter();
+  // Milestone G: the voice transport and the grant seam. Browser only.
+  const voiceBound = registerVoiceInfrastructure();
   registerAuthServices();
   // Sprint 1.6: orchestration services and the internal event bus. Bound here so
   // nothing above Domain constructs a business service for itself.
@@ -64,6 +67,9 @@ export function composeApplication(): void {
   }
   if (!timeBound) {
     logger.warn("No time adapter bound: clock synchronization is unavailable", { module: "sync" });
+  }
+  if (!voiceBound && typeof window !== "undefined") {
+    logger.warn("No voice transport bound: voice is unavailable", { module: "voice" });
   }
   if (!eventsBound) {
     logger.warn("No event adapter bound: backend is not configured", { module: "events" });

@@ -62,7 +62,24 @@ export type PoMood =
   // people are still arriving; `happy` is the small lift when one more person
   // confirms. Everyone-ready reuses `celebrating`. Visual only (Po Rule).
   | "waiting"
-  | "happy";
+  | "happy"
+  // Milestone G — the watch-party moods. Still purely visual: Po does not
+  // hear the call, does not know what is playing, and says nothing (Po Rule).
+  //
+  // - `listening` — someone is speaking on the voice call
+  // - `watching` — the room is watching together
+  // - `sleeping` — the room has been idle; Po dozes off
+  | "listening"
+  | "watching"
+  | "sleeping";
+
+export type PoSize = "sm" | "md" | "lg";
+
+const SIZE_CLASS: Readonly<Record<PoSize, string>> = {
+  sm: "h-16 w-20",
+  md: "h-24 w-32",
+  lg: "h-32 w-44",
+};
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;
@@ -71,10 +88,16 @@ export interface PoCompanionProps {
    * arrival. Any stable string works; the value itself is never rendered.
    */
   readonly gazeToken?: string | null;
+  readonly size?: PoSize;
   readonly className?: string;
 }
 
-export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCompanionProps) {
+export function PoCompanion({
+  mood = "calm",
+  gazeToken = null,
+  size = "md",
+  className,
+}: PoCompanionProps) {
   return (
     <svg
       key={gazeToken ?? "idle"}
@@ -82,7 +105,7 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
       role="presentation"
       aria-hidden="true"
       focusable="false"
-      className={cn("sf-po h-24 w-32 shrink-0 select-none", className)}
+      className={cn("sf-po shrink-0 select-none", SIZE_CLASS[size], className)}
       data-mood={mood}
     >
       {/* Tree — a slim trunk and a soft canopy that drifts. */}
@@ -187,15 +210,36 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
                   ? "M75 65 q5 -4 10 0"
                   : mood === "thinking" || mood === "counting"
                     ? "M75 64 q5 -2 10 0"
-                    : mood === "waiting"
+                    : mood === "waiting" || mood === "sleeping"
                       ? "M75 63 q5 3 10 0"
-                      : "M75 63 q5 4 10 0"
+                      : mood === "listening"
+                        ? "M76 63 q4 5 8 0"
+                        : "M75 63 q5 4 10 0"
             }
             stroke="var(--color-foreground)"
             strokeWidth="2"
             strokeLinecap="round"
             fill="none"
           />
+          {/* Milestone G — mood-specific decoration. Rendered, never animated
+              into meaning: these are ornaments, not status indicators. */}
+          {mood === "sleeping" ? (
+            <g className="sf-po-sleep" fill="var(--color-muted-foreground)" opacity="0.8">
+              <text x="100" y="30" fontSize="10" fontFamily="monospace">
+                z
+              </text>
+              <text x="109" y="21" fontSize="7" fontFamily="monospace">
+                z
+              </text>
+            </g>
+          ) : null}
+          {mood === "listening" ? (
+            <g className="sf-po-listen" fill="none" stroke="var(--color-primary)" strokeWidth="2">
+              <path d="M106 44 q5 6 0 12" strokeLinecap="round" opacity="0.7" />
+              <path d="M112 40 q8 10 0 20" strokeLinecap="round" opacity="0.4" />
+            </g>
+          ) : null}
+
           {/* A single soft accent — the Vedora Vision signature mark. */}
           <circle cx="80" cy="30" r="2" fill="var(--color-primary)" opacity="0.9" />
         </g>
