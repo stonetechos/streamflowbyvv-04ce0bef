@@ -31,7 +31,10 @@ export function composeApplication(): void {
   const roomsBound = registerRoomAdapter();
   // Sprint 2.2: provider catalog, capability matrix, compliance rules, prefs.
   const providersBound = registerProviderAdapter();
+  // Milestone E: profile and the five preference aggregates.
+  const profilesBound = registerProfileAdapter();
   // Sprint 2.5: the server-time reference behind clock synchronization.
+
   const timeBound = registerTimeAdapter();
   registerAuthServices();
   // Sprint 1.6: orchestration services and the internal event bus. Bound here so
@@ -50,7 +53,11 @@ export function composeApplication(): void {
   if (!providersBound) {
     logger.warn("No provider adapter bound: backend is not configured", { module: "providers" });
   }
+  if (!profilesBound) {
+    logger.warn("No profile adapter bound: backend is not configured", { module: "profiles" });
+  }
   if (!timeBound) {
+
     logger.warn("No time adapter bound: clock synchronization is unavailable", { module: "sync" });
   }
   if (!eventsBound) {
