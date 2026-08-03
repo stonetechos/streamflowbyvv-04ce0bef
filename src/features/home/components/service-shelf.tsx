@@ -18,6 +18,7 @@ import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
 
 import { buildServiceShelf, serviceStatusLabelKey, type ServiceCardView } from "../service-shelf";
+import { ServiceLogo } from "./service-logo";
 import type { HomeModel } from "../use-home";
 
 const ACCENT_TILE: Record<ServiceCardView["accent"], string> = {
@@ -26,6 +27,15 @@ const ACCENT_TILE: Record<ServiceCardView["accent"], string> = {
   success: "from-success/70 to-success/25 text-success-foreground",
   warning: "from-warning/70 to-warning/25 text-warning-foreground",
   accent: "from-accent to-accent/40 text-accent-foreground",
+};
+
+/** Badge tone per adjudicated status. Tokens only; never a raw colour. */
+const STATUS_BADGE: Record<ServiceCardView["status"], string> = {
+  supported: "border-success/40 bg-success/10 text-success",
+  manual_sync: "border-info/40 bg-info/10 text-info",
+  unverified: "border-warning/40 bg-warning/10 text-warning",
+  unavailable: "border-border bg-muted text-muted-foreground",
+  coming_soon: "border-border bg-muted text-muted-foreground",
 };
 
 export interface ServiceShelfProps {
@@ -80,9 +90,10 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                 onClick={() => void onChoose(card)}
                 className={cn(
                   "group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-left text-card-foreground shadow-e1",
+                  "will-change-transform focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   "transition-[transform,box-shadow] duration-normal ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   card.isChoosable
-                    ? "hover:-translate-y-0.5 hover:shadow-e3 active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none"
+                    ? "hover:-translate-y-1 hover:shadow-e3 active:scale-[0.98] active:shadow-e1 motion-reduce:transform-none motion-reduce:transition-none"
                     : "opacity-70",
                 )}
               >
