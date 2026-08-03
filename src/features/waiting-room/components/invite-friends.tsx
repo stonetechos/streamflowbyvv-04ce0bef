@@ -32,7 +32,9 @@ export function InviteFriends({ roomName, roomCode }: InviteFriendsProps) {
 
   const joinUrl = useMemo(() => {
     const origin = typeof window === "undefined" ? "" : window.location.origin;
-    return `${origin}/home?code=${encodeURIComponent(roomCode)}`;
+    // One link, one destination: the lobby. Signing in on the way is handled
+    // by the invite landing route, never by the person pasting a code.
+    return `${origin}/join/${encodeURIComponent(roomCode)}`;
   }, [roomCode]);
 
   const message = t("invite.share.text", { room: roomName });
