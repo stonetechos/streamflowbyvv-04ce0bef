@@ -57,7 +57,12 @@ export type PoMood =
   // Sprint 2.7 — playback synchronization. `encouraging` is a calm, patient
   // gesture while the room is asked to re-sync; the existing `celebrating`
   // mood is reused, quietly, when everyone becomes synchronization ready.
-  | "encouraging";
+  | "encouraging"
+  // Sprint 2.9 — the confirmation workflow. `waiting` is Po settling in while
+  // people are still arriving; `happy` is the small lift when one more person
+  // confirms. Everyone-ready reuses `celebrating`. Visual only (Po Rule).
+  | "waiting"
+  | "happy";
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;
@@ -173,12 +178,17 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
           <path
             className="sf-po-smile"
             d={
-              mood === "delighted" || mood === "celebrating" || mood === "excited"
+              mood === "delighted" ||
+              mood === "celebrating" ||
+              mood === "excited" ||
+              mood === "happy"
                 ? "M74 63 q6 7 12 0"
                 : mood === "disappointed"
                   ? "M75 65 q5 -4 10 0"
                   : mood === "thinking" || mood === "counting"
                     ? "M75 64 q5 -2 10 0"
+                    : mood === "waiting"
+                      ? "M75 63 q5 3 10 0"
                     : "M75 63 q5 4 10 0"
             }
             stroke="var(--color-foreground)"
