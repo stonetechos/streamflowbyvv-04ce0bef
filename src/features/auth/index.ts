@@ -5,6 +5,13 @@
 export { AuthProvider, useAuth, type AuthContextValue } from "./auth-provider";
 export { RequireAuth, type RequireAuthProps } from "./protected-route";
 export { authReducer, initialAuthState, isSettled, type AuthAction } from "./auth-state";
+export {
+  claimCallbackPayload,
+  readCallbackTrace,
+  traceCallback,
+  type CallbackStage,
+  type CallbackTraceEntry,
+} from "./auth-callback-trace";
 export { AUTH_CORE_FLAG, registerAuthFeatureFlags } from "./auth-feature-flags";
 export { AuthShell, type AuthShellProps } from "./components/auth-shell";
 export { SignInForm } from "./components/sign-in-form";

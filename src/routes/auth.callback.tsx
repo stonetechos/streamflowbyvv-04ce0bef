@@ -13,11 +13,12 @@
  * session arrives through the auth provider like any other sign-in.
  */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButton } from "@/design-system/components";
-import { AuthShell, useAuth } from "@/features/auth";
+import { AuthShell, claimCallbackPayload, traceCallback, useAuth } from "@/features/auth";
 import { useTranslation } from "@/foundation/localization";
+
 
 export const Route = createFileRoute("/auth/callback")({
   head: () => ({
@@ -42,17 +43,32 @@ interface CallbackParams {
   readonly type: string | null;
   readonly error: string | null;
   readonly errorCode: string | null;
+  /** True when the URL still carries a one-time credential to be consumed. */
+  readonly hasToken: boolean;
+  /** Shape-only fingerprint of the payload; never the token itself. */
+  readonly fingerprint: string;
 }
 
+const EMPTY_PARAMS: CallbackParams = {
+  type: null,
+  error: null,
+  errorCode: null,
+  hasToken: false,
+  fingerprint: "none",
+};
+
 function readCallbackParams(): CallbackParams {
-  if (typeof window === "undefined") return { type: null, error: null, errorCode: null };
+  if (typeof window === "undefined") return EMPTY_PARAMS;
   const query = new URLSearchParams(window.location.search);
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
   const read = (key: string) => query.get(key) ?? hash.get(key);
+  const credential = read("access_token") ?? read("code") ?? read("token_hash");
   return {
     type: read("type"),
     error: read("error") ?? read("error_description"),
     errorCode: read("error_code"),
+    hasToken: credential !== null,
+    fingerprint: `${read("type") ?? "-"}:${credential ? credential.length : 0}`,
   };
 }
 
@@ -65,6 +81,7 @@ function AuthCallbackPage() {
   const navigate = useNavigate();
   const params = useMemo(readCallbackParams, []);
   const [timedOut, setTimedOut] = useState(false);
+  const redirected = useRef(false);
 
   const isRecovery = params.type === "recovery";
   // An expired or already-used link is the common failure, and the two are
@@ -73,18 +90,52 @@ function AuthCallbackPage() {
     params.errorCode === "otp_expired" ||
     (params.error?.toLowerCase().includes("expired") ?? false);
 
+  // Entry trace. Guarded so Strict Mode's double-invocation, a remount, or a
+  // re-render can never present the same one-time token to the client twice.
   useEffect(() => {
-    if (params.error || !auth.isAuthenticated) return;
+    if (!claimCallbackPayload(params.fingerprint)) return;
+    traceCallback("callback_entered", window.location.pathname);
+    if (params.error) {
+      traceCallback("provider_error", params.errorCode ?? "unspecified");
+    } else if (params.hasToken) {
+      traceCallback("token_detected", params.type ?? "confirmation");
+    } else {
+      traceCallback("no_token_present");
+    }
+  }, [params]);
+
+  // The session is established by the identity client's own single URL
+  // exchange; this screen never runs a second mechanism against the token.
+  useEffect(() => {
+    if (!auth.isAuthenticated) return;
+    traceCallback("session_exchanged");
+    traceCallback("profile_loaded");
+    // Strip the spent credential so a refresh or back-navigation cannot
+    // replay it against the provider.
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, [auth.isAuthenticated]);
+
+  useEffect(() => {
+    if (params.error || !auth.isAuthenticated || redirected.current) return;
+    redirected.current = true;
     // A recovery link signs the person in so they can choose a new password;
     // anyone else is simply confirmed and belongs in the app.
-    void navigate({ to: isRecovery ? "/auth/reset-password" : "/home", replace: true });
+    const to = isRecovery ? "/auth/reset-password" : "/home";
+    traceCallback("redirect", to);
+    void navigate({ to, replace: true });
   }, [auth.isAuthenticated, isRecovery, navigate, params.error]);
 
   useEffect(() => {
     if (params.error || auth.isAuthenticated) return;
-    const timer = window.setTimeout(() => setTimedOut(true), SETTLE_TIMEOUT_MS);
+    const timer = window.setTimeout(() => {
+      traceCallback("timed_out");
+      setTimedOut(true);
+    }, SETTLE_TIMEOUT_MS);
     return () => window.clearTimeout(timer);
   }, [auth.isAuthenticated, params.error]);
+
 
   const failed = Boolean(params.error) || timedOut;
 
