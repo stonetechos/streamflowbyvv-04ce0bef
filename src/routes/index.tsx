@@ -21,17 +21,17 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Watch together on your own subscriptions with synchronized playback, a shared countdown and live voice chat.",
+          "StreamFlow keeps a group's playback in sync across the streaming services they already pay for, with a shared countdown and live voice. Own accounts only, nothing re-streamed.",
       },
       { property: "og:type", content: "website" },
       {
         property: "og:image",
-        content: "https://project--9fb64234-2e83-4a74-bb9c-83d15f6b5a75.lovable.app/og-image.jpg",
+        content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb",
       },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:image",
-        content: "https://project--9fb64234-2e83-4a74-bb9c-83d15f6b5a75.lovable.app/og-image.jpg",
+        content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb",
       },
     ],
     links: [

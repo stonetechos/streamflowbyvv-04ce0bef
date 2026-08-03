@@ -20,18 +20,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "StreamFlow — Watch together, in sync" },
+      { title: "StreamFlow — Watch together, perfectly synced" },
       {
         name: "description",
         content:
-          "StreamFlow synchronises playback across your own streaming accounts so you can watch together from anywhere, with voice.",
+          "StreamFlow keeps a group's playback in sync across the streaming services they already pay for, with a shared countdown and live voice. Own accounts only, nothing re-streamed.",
       },
       { name: "author", content: "Vedora Vision" },
-      { property: "og:title", content: "StreamFlow — Watch together, in sync" },
+      { property: "og:title", content: "StreamFlow — Watch together, perfectly synced" },
       {
         property: "og:description",
         content:
-          "Synchronised watch-together rooms with voice chat, using your own streaming subscriptions.",
+          "StreamFlow keeps a group's playback in sync across the streaming services they already pay for, with a shared countdown and live voice. Own accounts only, nothing re-streamed.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -41,6 +41,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "mobile-web-app-capable", content: "yes" },
+      { name: "twitter:title", content: "StreamFlow — Watch together, perfectly synced" },
+      { name: "twitter:description", content: "StreamFlow keeps a group's playback in sync across the streaming services they already pay for, with a shared countdown and live voice. Own accounts only, nothing re-streamed." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
