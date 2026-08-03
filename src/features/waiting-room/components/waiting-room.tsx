@@ -7,7 +7,6 @@
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 
-
 import { ErrorState, LoadingState } from "@/app-shell";
 import type { SyncHealth } from "@/domain";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -144,8 +143,6 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     leaveVoice();
     void navigate({ to: "/home" });
   }, [isOver, leaveVoice, navigate]);
-
-
 
   // Per-member voice and clock standing, keyed by profile so the roster can
   // stay a pure renderer.

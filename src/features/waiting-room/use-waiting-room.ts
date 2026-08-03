@@ -103,7 +103,6 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
   const [departed, setDeparted] = useState(false);
   const mounted = useRef(true);
 
-
   const readModel = useMemo(
     () => (isServiceBound(ROOM_READ_MODEL) ? resolveService(ROOM_READ_MODEL) : null),
     [],
@@ -198,7 +197,6 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     },
     [readModel, run, snapshot],
   );
-
 
   // Sprint 2.5 measures this device's clock; Sprint 2.6 carries the result on
   // the presence heartbeat so the room can aggregate it.

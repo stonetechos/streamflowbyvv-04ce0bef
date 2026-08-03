@@ -257,7 +257,6 @@ export function useVoiceSession(input: UseVoiceSessionInput): VoiceSessionModel 
     [],
   );
 
-
   const setMuted = useCallback(
     (next: boolean) => {
       const adapter = adapterRef.current;
