@@ -25,5 +25,26 @@ export const Route = createFileRoute("/auth")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: () => <Outlet />,
+  component: AuthLayout,
 });
+
+/** Auth outcomes the provider appends to an emailed link. */
+const LINK_PARAMS = /(access_token=|refresh_token=|error=|error_code=|type=recovery)/;
+
+function AuthLayout() {
+  const navigate = useNavigate();
+
+  // Sprint H1.6 §3 — links mailed before the callback route existed point at
+  // `/auth`, and the fragment survives the redirect to sign-in. Hand it to the
+  // one screen that knows how to finish the journey instead of dropping it.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const { pathname, hash, search } = window.location;
+    if (pathname.startsWith("/auth/callback")) return;
+    if (!LINK_PARAMS.test(`${search}${hash}`)) return;
+    void navigate({ to: "/auth/callback", replace: true, search: true, hash: hash.slice(1) });
+  }, [navigate]);
+
+  return <Outlet />;
+}
+
