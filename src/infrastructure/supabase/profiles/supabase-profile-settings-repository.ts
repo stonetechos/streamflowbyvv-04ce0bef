@@ -13,7 +13,7 @@ import type {
 } from "@/repository";
 
 import type { DataConnection } from "../connection";
-import { runCommand, runMaybe } from "../query-wrapper";
+import { runCommand, runMaybe, type PostgrestLike } from "../query-wrapper";
 import { requireAvailable } from "../rooms/room-query-support";
 import {
   ACCESSIBILITY_DEFAULTS,
@@ -24,6 +24,23 @@ import {
 } from "./profile-mapper";
 
 const AGGREGATE = "profile_settings";
+
+/** Structural view of the five interchangeable preference tables. */
+interface PreferenceTableAccess {
+  from(table: string): {
+    select(columns: string): {
+      eq(
+        column: string,
+        value: string,
+      ): { maybeSingle(): PromiseLike<PostgrestLike<unknown>> };
+    };
+    upsert(
+      values: Record<string, unknown>,
+      options: { onConflict: string },
+    ): PromiseLike<PostgrestLike<unknown>>;
+  };
+}
+
 
 interface AppearanceRow {
   theme_mode: string;
