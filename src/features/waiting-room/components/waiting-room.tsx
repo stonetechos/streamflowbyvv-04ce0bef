@@ -128,6 +128,23 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     outputDeviceId: devicePreferences.outputDeviceId,
   });
 
+  /**
+   * Sprint J.2 — the end of the journey. Once this viewer has left, or the
+   * room itself has ended, the call is closed and the person is returned Home.
+   * Presence, realtime, sync, and Po are torn down by unmounting this screen;
+   * voice is closed explicitly so the microphone never outlives the room.
+   */
+  const navigate = useNavigate();
+  const isOver = model.departed || model.hasEnded;
+  const leaveVoice = voice.leave;
+  useEffect(() => {
+    if (!isOver) return;
+    leaveVoice();
+    void navigate({ to: "/home" });
+  }, [isOver, leaveVoice, navigate]);
+
+
+
   // Per-member voice and clock standing, keyed by profile so the roster can
   // stay a pure renderer.
   const voiceByProfileId = useMemo(() => {
