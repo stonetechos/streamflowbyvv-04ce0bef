@@ -267,13 +267,74 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
 
   const canStart = roomSync.canStartCountdown && (readySnapshot?.countdownAvailable ?? false);
 
+  // The lobby is a journey, not a dashboard. Exactly one stage is on screen at
+  // a time, and each stage asks for exactly one thing. Nothing here decides
+  // anything new — the stage is read off state the coordinators already own.
+  const presentMembers = model.members.filter((member) => member.state !== "left");
+  const joinedCount = presentMembers.length;
+  const seatTotal = Math.min(room.capacity, 4);
+  const stage: "invite" | "waiting" | "ready" =
+    joinedCount <= 1 ? "invite" : canStart ? "ready" : "waiting";
+
+  const guideLine =
+    stage === "invite"
+      ? t("room.journey.po.invite")
+      : stage === "ready"
+        ? t("room.journey.po.ready")
+        : t("room.journey.po.waiting");
+
   return (
     <>
       <section
         aria-label={t("room.waiting_room.region_label")}
-        className="sf-screen-enter mx-auto w-full max-w-xl space-y-6 px-4 py-6 pb-44 sm:px-6 md:pb-32"
+        className="sf-screen-enter mx-auto w-full max-w-xl space-y-8 px-4 py-6 pb-48 sm:px-6 md:pb-36"
       >
         <RoomStage room={room} providerName={providerName} hostLabel={hostLabel} />
+
+        {/* One stage, one instruction. */}
+        <div className="space-y-6 text-center">
+          <h2 className="text-balance font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            {stage === "invite"
+              ? t("room.journey.invite.title")
+              : stage === "ready"
+                ? t("room.journey.ready.title")
+                : t("room.journey.waiting.title")}
+          </h2>
+
+          {stage === "invite" ? (
+            <InviteFriends roomName={room.name} roomCode={room.code} />
+          ) : (
+            <>
+              <MemberStrip members={model.members} capacity={room.capacity} />
+              <p className="text-sm font-medium text-muted-foreground">
+                {t("room.journey.progress", { joined: joinedCount, total: seatTotal })}
+              </p>
+            </>
+          )}
+
+          {stage === "ready" ? (
+            model.viewer.isHost ? (
+              <button
+                type="button"
+                onClick={countdown.start}
+                disabled={!countdown.isAvailable || countdown.pending !== null}
+                className="flex min-h-14 w-full items-center justify-center rounded-2xl bg-primary text-base font-semibold text-primary-foreground shadow-e2 transition-[transform,background-color] duration-normal ease-standard hover:bg-primary/90 active:scale-[0.99] disabled:opacity-50 motion-reduce:transform-none"
+              >
+                {t("room.countdown.action.start")}
+              </button>
+            ) : (
+              <p className="text-sm text-muted-foreground">{t("room.countdown.guest_hint")}</p>
+            )
+          ) : null}
+
+          {stage === "waiting" ? <ReadyConfirmationCard ready={ready} /> : null}
+
+          {stage !== "invite" ? (
+            <div className="flex justify-center">
+              <InviteFriends roomName={room.name} roomCode={room.code} />
+            </div>
+          ) : null}
+        </div>
 
         <PoWaitingBanner
           allReady={readySnapshot?.everyoneReady ?? false}
@@ -294,27 +355,9 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           isWaitingForMembers={(readySnapshot?.waitingCount ?? 0) > 0}
           gazeToken={model.lastArrivalProfileId}
         />
-
-        <MemberStrip members={model.members} capacity={room.capacity} />
-
-        <InviteFriends roomName={room.name} roomCode={room.code} />
-
-        <ReadyConfirmationCard ready={ready} />
-
-        {model.viewer.isHost ? (
-          <button
-            type="button"
-            onClick={countdown.start}
-            disabled={!countdown.isAvailable || countdown.pending !== null || !canStart}
-            className="flex min-h-14 w-full items-center justify-center rounded-2xl bg-primary text-base font-semibold text-primary-foreground shadow-e2 transition-[transform,background-color] duration-normal ease-standard hover:bg-primary/90 active:scale-[0.99] disabled:opacity-50 motion-reduce:transform-none"
-          >
-            {t("room.countdown.action.start")}
-          </button>
-        ) : (
-          <p className="text-center text-sm text-muted-foreground">
-            {t("room.countdown.guest_hint")}
-          </p>
-        )}
+        <p className="text-center text-sm text-muted-foreground" aria-live="polite">
+          {guideLine}
+        </p>
 
         {model.viewer.canJoin ? (
           <MembershipActions

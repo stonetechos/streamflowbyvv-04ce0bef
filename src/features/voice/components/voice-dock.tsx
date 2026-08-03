@@ -1,9 +1,13 @@
 /**
- * Voice dock — UX Simplification Pass.
+ * Voice bar — Beta UX Overhaul.
  *
- * The call, pinned to the bottom of the room: microphone, speaker, leave.
- * Nothing else. It renders the transport's state and forwards intent; it
- * decides nothing about the room.
+ * The call controls for the room: microphone, speaker, leave. It used to float
+ * over the page and cover whatever was underneath it while scrolling; it is
+ * now a fixed bar that sits directly above the bottom navigation, full width,
+ * with the page scrolling beneath it and never behind it.
+ *
+ * It renders the transport's state and forwards intent; it decides nothing
+ * about the room.
  */
 import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
@@ -18,12 +22,14 @@ export interface VoiceDockProps {
 
 function DockButton({
   label,
+  caption,
   active,
   danger,
   onClick,
   children,
 }: {
   label: string;
+  caption: string;
   active?: boolean;
   danger?: boolean;
   onClick: () => void;
@@ -36,15 +42,16 @@ function DockButton({
       aria-pressed={danger ? undefined : Boolean(active)}
       onClick={onClick}
       className={cn(
-        "grid size-12 place-items-center rounded-full border transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         danger
-          ? "border-destructive/40 bg-destructive/12 text-destructive hover:bg-destructive/20"
+          ? "text-destructive hover:bg-destructive/12"
           : active
-            ? "border-transparent bg-primary text-primary-foreground"
-            : "border-border bg-surface/80 text-foreground hover:bg-accent",
+            ? "text-primary hover:bg-accent"
+            : "text-muted-foreground hover:bg-accent",
       )}
     >
       {children}
+      <span className="text-[0.6875rem] font-medium">{caption}</span>
     </button>
   );
 }
@@ -55,10 +62,18 @@ export function VoiceDock({ voice, onLeaveRoom, isLeaving = false }: VoiceDockPr
   const connected = voice.isConnected;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] md:pb-6">
-      <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-border/70 bg-surface/90 px-3 py-2 shadow-e3 backdrop-blur-xl">
+    <div
+      className={cn(
+        "fixed inset-x-0 z-30 border-t border-border/70 bg-surface/95 backdrop-blur-xl",
+        // Above the bottom navigation on phones, at the screen edge from md up
+        // where the bottom bar is not rendered at all.
+        "bottom-[calc(env(safe-area-inset-bottom)+3.5rem)] md:bottom-0 md:pb-[env(safe-area-inset-bottom)]",
+      )}
+    >
+      <div className="mx-auto flex w-full max-w-lg items-stretch gap-1 px-3 py-1.5">
         <DockButton
           label={voice.isMuted ? t("voice.action.unmute") : t("voice.action.mute")}
+          caption={voice.isMuted || !connected ? t("voice.short.muted") : t("voice.short.mic")}
           active={connected && !voice.isMuted}
           onClick={() => (connected ? voice.toggleMute() : voice.join())}
         >
@@ -94,6 +109,7 @@ export function VoiceDock({ voice, onLeaveRoom, isLeaving = false }: VoiceDockPr
 
         <DockButton
           label={voice.isDeafened ? t("voice.action.undeafen") : t("voice.action.deafen")}
+          caption={t("voice.short.speaker")}
           active={connected && !voice.isDeafened}
           onClick={() => voice.toggleDeafen()}
         >
@@ -111,11 +127,14 @@ export function VoiceDock({ voice, onLeaveRoom, isLeaving = false }: VoiceDockPr
           </svg>
         </DockButton>
 
-        <span aria-hidden="true" className="h-6 w-px bg-border" />
-
-        <DockButton danger label={t("room.actions.leave")} onClick={onLeaveRoom}>
+        <DockButton
+          danger
+          label={t("room.actions.leave")}
+          caption={t("voice.short.leave")}
+          onClick={onLeaveRoom}
+        >
           {isLeaving ? (
-            <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            <span className="size-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
           ) : (
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-5">
               <path

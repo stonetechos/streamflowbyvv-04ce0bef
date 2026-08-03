@@ -27,6 +27,7 @@ import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
 import { Route as AuthSignOutRouteImport } from './routes/auth.sign-out'
 import { Route as AuthSignUpRouteImport } from './routes/auth.sign-up'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
+import { Route as JoinCodeRouteImport } from './routes/join.$code'
 import { Route as AuthenticatedPeopleProfileIdRouteImport } from './routes/_authenticated.people.$profileId'
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
 import { Route as ApiPublicTimeRouteImport } from './routes/api/public/time'
@@ -121,6 +122,11 @@ const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => AuthRoute,
 } as any)
+const JoinCodeRoute = JoinCodeRouteImport.update({
+  id: '/join/$code',
+  path: '/join/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPeopleProfileIdRoute =
   AuthenticatedPeopleProfileIdRouteImport.update({
     id: '/$profileId',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/join/$code': typeof JoinCodeRoute
   '/auth/': typeof AuthIndexRoute
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/join/$code': typeof JoinCodeRoute
   '/auth': typeof AuthIndexRoute
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/join/$code': typeof JoinCodeRoute
   '/auth/': typeof AuthIndexRoute
   '/_authenticated/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/auth/sign-out'
     | '/auth/sign-up'
     | '/auth/verify-email'
+    | '/join/$code'
     | '/auth/'
     | '/people/$profileId'
     | '/rooms/$roomId'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/auth/sign-out'
     | '/auth/sign-up'
     | '/auth/verify-email'
+    | '/join/$code'
     | '/auth'
     | '/people/$profileId'
     | '/rooms/$roomId'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/auth/sign-out'
     | '/auth/sign-up'
     | '/auth/verify-email'
+    | '/join/$code'
     | '/auth/'
     | '/_authenticated/people/$profileId'
     | '/_authenticated/rooms/$roomId'
@@ -290,6 +302,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  JoinCodeRoute: typeof JoinCodeRoute
   ApiPublicTimeRoute: typeof ApiPublicTimeRoute
   ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
 }
@@ -422,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/join/$code': {
+      id: '/join/$code'
+      path: '/join/$code'
+      fullPath: '/join/$code'
+      preLoaderRoute: typeof JoinCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/people/$profileId': {
       id: '/_authenticated/people/$profileId'
       path: '/$profileId'
@@ -518,6 +538,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  JoinCodeRoute: JoinCodeRoute,
   ApiPublicTimeRoute: ApiPublicTimeRoute,
   ApiVoiceTokenRoute: ApiVoiceTokenRoute,
 }

@@ -1142,5 +1142,17 @@ export const hiINBundle: LocaleBundle = {
       "\u0930\u0942\u092e \u092c\u0926\u0932 \u0917\u092f\u093e\u0964 \u092b\u093f\u0930 \u0915\u094b\u0936\u093f\u0936 \u0915\u0930\u0947\u0902\u0964",
     "po.fail.rate_limited":
       "\u092c\u0939\u0941\u0924 \u0938\u093e\u0930\u0947 \u0905\u0928\u0941\u0930\u094b\u0927\u0964 \u0925\u094b\u0921\u093c\u0940 \u0926\u0947\u0930 \u092e\u0947\u0902 \u092b\u093f\u0930 \u0915\u0930\u0947\u0902\u0964",
+    "invite.landing.joining": "आपको रूम में ले जा रहे हैं…",
+    "room.journey.invite.title": "शुरू करने के लिए दोस्तों को बुलाएँ।",
+    "room.journey.waiting.title": "दोस्तों का इंतज़ार…",
+    "room.journey.ready.title": "सब आ गए हैं।",
+    "room.journey.progress": "{total} में से {joined} शामिल",
+    "room.journey.po.invite": "जिनके साथ देखना है उन्हें लिंक भेजें।",
+    "room.journey.po.waiting": "सबका इंतज़ार है।",
+    "room.journey.po.ready": "सब तैयार हैं। जब चाहें शुरू करें।",
+    "voice.short.mic": "माइक",
+    "voice.short.muted": "म्यूट",
+    "voice.short.speaker": "स्पीकर",
+    "voice.short.leave": "छोड़ें",
   },
 };
