@@ -517,8 +517,7 @@ export const hiINBundle: LocaleBundle = {
     "landing.how.step": "चरण {step}",
     "landing.how.step1": "अपनी स्ट्रीमिंग सेवा चुनें।",
     "landing.how.step2": "रूम कोड या इनवाइट लिंक से दोस्तों को बुलाएँ।",
-    "landing.how.step3":
-      "हर कोई अपने ही खाते पर देखता है और StreamFlow सबको सिंक में रखता है।",
+    "landing.how.step3": "हर कोई अपने ही खाते पर देखता है और StreamFlow सबको सिंक में रखता है।",
     "landing.services.title": "उन सेवाओं के साथ जो आप पहले से इस्तेमाल करते हैं",
 
     "nav.home": "होम",

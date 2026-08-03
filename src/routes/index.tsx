@@ -90,10 +90,7 @@ function LandingPage() {
             </div>
           </div>
 
-          <PoCompanion
-            mood="happy"
-            className="h-32 w-44 shrink-0 self-center sm:h-40 sm:w-56"
-          />
+          <PoCompanion mood="happy" className="h-32 w-44 shrink-0 self-center sm:h-40 sm:w-56" />
         </div>
       </Surface>
 

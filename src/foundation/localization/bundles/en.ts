@@ -508,8 +508,7 @@ export const enBundle: LocaleBundle = {
     "landing.cta.primary": "Create Account",
     "landing.cta.secondary": "Sign In",
     "landing.card.together.title": "Watch Together",
-    "landing.card.together.body":
-      "Watch the same movie or episode with friends in real time.",
+    "landing.card.together.body": "Watch the same movie or episode with friends in real time.",
     "landing.card.subscription.title": "Use Your Own Subscription",
     "landing.card.subscription.body":
       "Everyone watches using their own Netflix, Prime Video, Disney+, JioHotstar or other supported account.",
@@ -517,8 +516,7 @@ export const enBundle: LocaleBundle = {
     "landing.card.voice.body":
       "Stay connected with built-in voice chat while a shared countdown gets everyone ready together.",
     "landing.how.title": "How StreamFlow Works",
-    "landing.how.description":
-      "Three steps from opening the app to pressing play together.",
+    "landing.how.description": "Three steps from opening the app to pressing play together.",
     "landing.how.step": "Step {step}",
     "landing.how.step1": "Choose your streaming service.",
     "landing.how.step2": "Invite friends with a room code or invite link.",
