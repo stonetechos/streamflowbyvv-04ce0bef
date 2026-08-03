@@ -94,7 +94,10 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
   const [status, setStatus] = useState<WaitingRoomStatus>("loading");
   const [error, setError] = useState<WaitingRoomError | null>(null);
   const [pending, setPending] = useState<WaitingRoomPendingAction>(null);
+  // Sprint J.2 — this viewer has left (or ended) the room and should go Home.
+  const [departed, setDeparted] = useState(false);
   const mounted = useRef(true);
+
 
   const readModel = useMemo(
     () => (isServiceBound(ROOM_READ_MODEL) ? resolveService(ROOM_READ_MODEL) : null),
