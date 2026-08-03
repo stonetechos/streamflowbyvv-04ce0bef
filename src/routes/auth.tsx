@@ -47,4 +47,3 @@ function AuthLayout() {
 
   return <Outlet />;
 }
-
