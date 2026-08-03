@@ -13,6 +13,7 @@ import {
   ROOM_READ_MODEL,
   isServiceBound,
   resolveService,
+  type MemberPresence,
   type RoomMember,
   type WaitingRoomSnapshot,
 } from "@/domain";
@@ -50,6 +51,8 @@ export interface WaitingRoomModel {
   readonly isLive: boolean;
   /** True while a presence store is reporting liveness for this room. */
   readonly isPresenceTracked: boolean;
+  /** Live presence rows by profile, for the synchronization pipeline. */
+  readonly presenceByProfileId: ReadonlyMap<string, MemberPresence>;
   /** Every joined member has signalled ready (and there is at least one). */
   readonly allReady: boolean;
   /** Profile id of the most recent arrival, for the Po companion's gaze. */
@@ -235,6 +238,7 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     room: snapshot ? toRoomSummary(snapshot) : null,
     members,
     isPresenceTracked: presence.isTracking,
+    presenceByProfileId: presence.byProfileId,
     allReady: joined.length > 0 && joined.every((member) => member.isReady),
     lastArrivalProfileId: joined.length > 0 ? (joined[joined.length - 1]?.profileId ?? null) : null,
     clockSync,

@@ -42,6 +42,12 @@ export {
   type RoomClockSyncModel,
   type UseRoomClockSyncInput,
 } from "./use-room-clock-sync";
+export {
+  usePlaybackSync,
+  PLAYBACK_SYNC_DECISION_KEYS,
+  type PlaybackSyncModel,
+  type UsePlaybackSyncInput,
+} from "./use-playback-sync";
 export { RoomSyncCard, type RoomSyncCardProps } from "./components/room-sync-card";
 export { useRoomSync, type RoomSyncModel, type UseRoomSyncInput } from "./use-room-sync";
 export { PresenceIndicator } from "./components/presence-indicator";

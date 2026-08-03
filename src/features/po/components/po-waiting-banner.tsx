@@ -64,15 +64,15 @@ export function resolvePoWaitingMood(signals: {
   readonly needsSyncEncouragement?: boolean;
   readonly isSynchronizationReady?: boolean;
 }): PoMood {
+  // Sprint 2.6 — the room being out of step outranks every happier signal:
+  // it is the one thing standing between the lobby and a countdown.
+  if (signals.isRoomOutOfSync) return "concerned";
+  if (signals.hasRoomRecovered) return "relieved";
   // Sprint 2.7 — playback synchronization sits just under the room's clock
   // verdict: encourage patience while a re-sync is pending, celebrate the
   // moment everyone is together. Both decorative (Po Rule).
   if (signals.needsSyncEncouragement) return "encouraging";
   if (signals.isSynchronizationReady) return "celebrating";
-  // Sprint 2.6 — the room being out of step outranks every happier signal:
-  // it is the one thing standing between the lobby and a countdown.
-  if (signals.isRoomOutOfSync) return "concerned";
-  if (signals.hasRoomRecovered) return "relieved";
   // Readiness is the happiest thing the lobby can report, so it outranks the
   // countdown beats it necessarily follows.
   if (signals.isPlaybackReady) return "excited";
