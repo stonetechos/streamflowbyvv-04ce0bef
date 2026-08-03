@@ -26,6 +26,8 @@ export {
 } from "./room-support.types";
 export {
   ROOM_DISCOVERY_REPOSITORY,
+  type RoomAdmissionFacts,
+  type RoomAdmissionLookup,
   type RoomDiscovery,
   type RoomDiscoveryRepository,
 } from "./room-discovery.types";

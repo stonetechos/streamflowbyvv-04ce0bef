@@ -54,11 +54,20 @@ export const hiINBundle: LocaleBundle = {
     "error.room.not_active": "यह रूम अभी सक्रिय नहीं है।",
     "error.room.not_found": "वह रूम नहीं मिला।",
     "error.room.forbidden": "यह केवल रूम होस्ट कर सकता है।",
-    "error.room.already_member": "आप पहले से इस रूम में हैं।",
+    "error.room.already_member": "आप पहले ही इस रूम में शामिल हो चुके हैं।",
     "error.room.member_not_found": "वह व्यक्ति इस रूम में नहीं है।",
+    // Sprint J.1.5 — हर इनकार असली कारण बताता है।
+    "error.room.ended": "यह रूम समाप्त हो चुका है।",
+    "error.room.deleted": "यह रूम बंद कर दिया गया है और अब उपलब्ध नहीं है।",
+    "error.room.blocked": "आप इस रूम में शामिल नहीं हो सकते।",
+    "error.room.already_in_another_room": "आप पहले से किसी दूसरे रूम में शामिल हैं।",
+    "error.room.member_removed": "आपको इस रूम से हटा दिया गया था।",
     "error.invite.not_found": "वह आमंत्रण नहीं मिला।",
     "error.invite.expired": "यह आमंत्रण समाप्त हो चुका है।",
     "error.invite.not_pending": "इस आमंत्रण का उत्तर पहले ही दिया जा चुका है।",
+    "error.invite.already_pending": "उन्हें पहले ही इस रूम का आमंत्रण भेजा जा चुका है।",
+    "error.invite.already_accepted": "वे पहले से इस रूम में हैं।",
+
     "error.sync.countdown_out_of_range": "3 से 60 सेकंड के बीच काउंटडाउन चुनें।",
     "error.sync.resync_required": "आपकी घड़ियाँ बहुत अलग हैं। शुरू करने से पहले री-सिंक करें।",
     "error.voice.session_not_active": "इस रूम में वॉइस चैट सक्रिय नहीं है।",
@@ -74,6 +83,8 @@ export const hiINBundle: LocaleBundle = {
     "error.sys.constraint_violation": "ये विवरण सहेजे नहीं जा सके। इन्हें जाँचकर फिर कोशिश करें।",
     "error.action.retry": "फिर से कोशिश करें",
     "error.action.go_home": "होम पर जाएँ",
+    "error.action.leave_other_room": "पहले दूसरा रूम छोड़ें",
+
     "error.reference.label": "संदर्भ कोड",
 
     "error.auth.provider_unavailable.title": "साइन-इन अभी उपलब्ध नहीं है",

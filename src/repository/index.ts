@@ -78,6 +78,8 @@ export {
   ROOM_PRESENCE_REPOSITORY,
   type RoomPresenceRepository,
   ROOM_DISCOVERY_REPOSITORY,
+  type RoomAdmissionFacts,
+  type RoomAdmissionLookup,
   type RoomDiscovery,
   type RoomDiscoveryRepository,
 } from "./rooms";

@@ -12,6 +12,8 @@
  * `rooms` are untouched: a non-member still cannot read or browse the table.
  */
 import type {
+  RoomAdmissionFacts,
+  RoomAdmissionLookup,
   RoomDiscovery,
   RoomDiscoveryRepository,
 } from "@/repository/rooms/room-discovery.types";
@@ -28,6 +30,7 @@ import { toRoom, type RoomRow } from "./room-mapper";
 const AGGREGATE = "room";
 const DISCOVER_FUNCTION = "discover_room_by_code";
 const ADMISSION_FUNCTION = "room_admission_row";
+const FACTS_FUNCTION = "room_admission_facts";
 
 interface DiscoveryRow {
   readonly room_id: string;
@@ -37,6 +40,13 @@ interface DiscoveryRow {
   readonly member_count: number;
   readonly capacity: number;
   readonly status: string;
+}
+
+interface FactsRow extends DiscoveryRow {
+  readonly is_deleted: boolean;
+  readonly is_blocked: boolean;
+  readonly viewer_state: string | null;
+  readonly viewer_other_room_id: string | null;
 }
 
 /**
@@ -73,22 +83,24 @@ export function createSupabaseRoomDiscoveryRepository(
     return Array.isArray(data) ? (data[0] ?? null) : data;
   };
 
+  const toDiscovery = (row: DiscoveryRow): RoomDiscovery => ({
+    roomId: row.room_id,
+    name: row.room_name,
+    providerId: row.provider_id,
+    hostDisplayName: row.host_display_name,
+    memberCount: Number(row.member_count ?? 0),
+    capacity: Number(row.capacity ?? 0),
+    status: row.status as RoomStatus,
+  });
+
   return {
     async discoverByCode(code: EntityCode): Promise<RoomDiscovery | null> {
-      const row = (await callRpc(DISCOVER_FUNCTION, { _code: code }, "discoverByCode")) as
-        | DiscoveryRow
-        | null;
-      if (!row) return null;
-
-      return {
-        roomId: row.room_id,
-        name: row.room_name,
-        providerId: row.provider_id,
-        hostDisplayName: row.host_display_name,
-        memberCount: Number(row.member_count ?? 0),
-        capacity: Number(row.capacity ?? 0),
-        status: row.status as RoomStatus,
-      };
+      const row = (await callRpc(
+        DISCOVER_FUNCTION,
+        { _code: code },
+        "discoverByCode",
+      )) as DiscoveryRow | null;
+      return row ? toDiscovery(row) : null;
     },
 
     async findJoinableById(roomId: EntityId): Promise<Room | null> {
@@ -98,6 +110,23 @@ export function createSupabaseRoomDiscoveryRepository(
         "findJoinableById",
       )) as RoomRow | null;
       return row ? toRoom(row) : null;
+    },
+
+    async explain(input: RoomAdmissionLookup): Promise<RoomAdmissionFacts | null> {
+      const row = (await callRpc(
+        FACTS_FUNCTION,
+        { _code: input.code ?? null, _room_id: input.roomId ?? null },
+        "explain",
+      )) as FactsRow | null;
+      if (!row) return null;
+
+      return {
+        ...toDiscovery(row),
+        isDeleted: Boolean(row.is_deleted),
+        isBlocked: Boolean(row.is_blocked),
+        viewerState: (row.viewer_state as RoomAdmissionFacts["viewerState"]) ?? null,
+        viewerOtherRoomId: row.viewer_other_room_id,
+      };
     },
   };
 }

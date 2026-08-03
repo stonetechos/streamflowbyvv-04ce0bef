@@ -57,11 +57,20 @@ export const enBundle: LocaleBundle = {
     "error.room.not_active": "This room isn't active right now.",
     "error.room.not_found": "We couldn't find that room.",
     "error.room.forbidden": "Only the room host can do that.",
-    "error.room.already_member": "You're already in this room.",
+    "error.room.already_member": "You've already joined this room.",
     "error.room.member_not_found": "That person isn't in this room.",
+    // Sprint J.1.5 — every refusal names the real reason.
+    "error.room.ended": "This room has already ended.",
+    "error.room.deleted": "This room was closed and is no longer available.",
+    "error.room.blocked": "You can't join this room.",
+    "error.room.already_in_another_room": "You're already participating in another room.",
+    "error.room.member_removed": "You were removed from this room.",
     "error.invite.not_found": "We couldn't find that invite.",
-    "error.invite.expired": "This invite has expired.",
+    "error.invite.expired": "This invitation has expired.",
     "error.invite.not_pending": "This invite has already been answered.",
+    "error.invite.already_pending": "They already have a pending invite to this room.",
+    "error.invite.already_accepted": "They're already in this room.",
+
     "error.sync.countdown_out_of_range": "Choose a countdown between 3 and 60 seconds.",
     "error.sync.resync_required": "Your clocks are too far apart. Re-sync before starting.",
     "error.voice.session_not_active": "Voice chat isn't active in this room.",
@@ -77,6 +86,8 @@ export const enBundle: LocaleBundle = {
     "error.sys.constraint_violation": "Those details couldn't be saved. Check them and try again.",
     "error.action.retry": "Try again",
     "error.action.go_home": "Go home",
+    "error.action.leave_other_room": "Leave the other room first",
+
     "error.reference.label": "Reference code",
 
     "error.auth.provider_unavailable.title": "Sign-in isn't available yet",

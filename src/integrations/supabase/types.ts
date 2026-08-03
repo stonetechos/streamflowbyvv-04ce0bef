@@ -2289,6 +2289,22 @@ export type Database = {
       }
       owns_po_plan: { Args: { _po_plan_id: string }; Returns: boolean }
       owns_po_session: { Args: { _po_session_id: string }; Returns: boolean }
+      room_admission_facts: {
+        Args: { _code?: string; _room_id?: string }
+        Returns: {
+          capacity: number
+          host_display_name: string
+          is_blocked: boolean
+          is_deleted: boolean
+          member_count: number
+          provider_id: string
+          room_id: string
+          room_name: string
+          status: string
+          viewer_other_room_id: string
+          viewer_state: string
+        }[]
+      }
       room_admission_row: {
         Args: { _room_id: string }
         Returns: {

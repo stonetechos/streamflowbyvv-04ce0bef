@@ -53,6 +53,7 @@ import {
   type InviteRepository,
   type Page,
   type RoomMemberRepository,
+  type RoomAdmissionFacts,
   type RoomDiscovery,
   type RoomDiscoveryRepository,
   type RoomQuery,
@@ -223,8 +224,53 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
 
   const requireJoinable = (room: Room, operation: string): void => {
     if (!JOINABLE_STATUSES.includes(room.status as (typeof JOINABLE_STATUSES)[number])) {
-      throw domainError("ROOM_NOT_ACTIVE", { operation, aggregateId: room.id });
+      throw domainError(room.status === "ended" ? "ROOM_ENDED" : "ROOM_NOT_ACTIVE", {
+        operation,
+        aggregateId: room.id,
+      });
     }
+  };
+
+  /**
+   * Sprint J.1.5 — the single place a refusal reason is decided. It reads the
+   * observable facts about a room the caller was pointed at and raises the
+   * condition that is actually true. Presentation never infers a reason; when
+   * no discovery adapter is bound this returns null and the downstream rules
+   * below still refuse, just less specifically.
+   */
+  const adjudicate = async (
+    lookup: { code?: string; roomId?: EntityId },
+    profileId: EntityId | null,
+    operation: string,
+  ): Promise<RoomAdmissionFacts | null> => {
+    if (!discovery) return null;
+
+    const facts = await discovery.explain(lookup);
+    if (!facts) throw domainError("ROOM_NOT_FOUND", { operation });
+
+    const context = { operation, aggregateId: facts.roomId };
+
+    if (facts.isDeleted) throw domainError("ROOM_DELETED", context);
+    if (facts.status === "ended") throw domainError("ROOM_ENDED", context);
+    if (!JOINABLE_STATUSES.includes(facts.status as (typeof JOINABLE_STATUSES)[number])) {
+      throw domainError("ROOM_NOT_ACTIVE", context);
+    }
+    if (facts.isBlocked) throw domainError("ROOM_BLOCKED", context);
+
+    if (profileId) {
+      if (facts.viewerState === "joined") throw domainError("ROOM_ALREADY_MEMBER", context);
+      if (facts.viewerState === "removed") throw domainError("ROOM_MEMBER_REMOVED", context);
+      if (facts.viewerOtherRoomId) {
+        throw domainError("ROOM_ALREADY_IN_ANOTHER_ROOM", context);
+      }
+    }
+
+    // A held seat (an outstanding invite) is the caller's own; it is not
+    // counted against them when the room looks full.
+    const occupied = facts.viewerState === "invited" ? facts.memberCount - 1 : facts.memberCount;
+    if (occupied >= facts.capacity) throw domainError("ROOM_CAPACITY_EXCEEDED", context);
+
+    return facts;
   };
 
   /** Admits a profile, enforcing capacity and re-using a prior membership row. */
@@ -236,10 +282,15 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     intent: Intent,
   ): Promise<RoomMember> => {
     requireJoinable(room, operation);
+    // The host reclaims their own chair; a rejoin never demotes them.
+    const seatRole: RoomRole = room.hostProfileId === profileId ? "host" : role;
 
     const existing = await members.findByRoomAndProfile(room.id, profileId);
     if (existing?.state === "joined") {
       throw domainError("ROOM_ALREADY_MEMBER", { operation, aggregateId: room.id });
+    }
+    if (existing?.state === "removed") {
+      throw domainError("ROOM_MEMBER_REMOVED", { operation, aggregateId: room.id });
     }
 
     const occupied = await members.countByRoom(room.id, OCCUPYING_STATES);
@@ -248,17 +299,18 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
 
     // Capacity is decided by RoomService; the event it returns is the record.
     await roomService.joinMember(
-      { roomId: room.id, profileId, role, currentMemberCount: seats },
+      { roomId: room.id, profileId, role: seatRole, currentMemberCount: seats },
       intent,
     );
 
     const joinedAt = nowIso();
     return existing
-      ? members.update(existing.id, { state: "joined", role, joinedAt, leftAt: null })
+      ? members.update(existing.id, { state: "joined", role: seatRole, joinedAt, leftAt: null })
       : members.create({
           roomId: room.id,
           profileId,
-          role,
+          role: seatRole,
+
           state: "joined",
           joinedAt,
         });
@@ -339,9 +391,15 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     async discoverRoomByCode(code) {
       const operation = "RoomFlowService.discoverRoomByCode";
       if (!discovery) throw domainError("SERVICE_UNAVAILABLE", { operation });
-      const found = await discovery.discoverByCode(code.trim().toUpperCase());
-      if (!found) throw domainError("ROOM_NOT_FOUND", { operation });
-      return found;
+      const normalized = code.trim().toUpperCase();
+      const found = await discovery.discoverByCode(normalized);
+      if (found) return found;
+      // Sprint J.1.5 — the narrow lookup hides every non-joinable room. Ask
+      // why before claiming the code is unknown; `adjudicate` raises the
+      // condition that is actually true, or ROOM_NOT_FOUND when there is
+      // genuinely no such room.
+      await adjudicate({ code: normalized }, null, operation);
+      throw domainError("ROOM_NOT_FOUND", { operation });
     },
 
     listRooms: (query) => rooms.list(query),
@@ -406,7 +464,19 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       const room =
         (await rooms.findById(roomId)) ??
         (discovery ? await discovery.findJoinableById(roomId) : null);
-      if (!room) throw domainError("ROOM_NOT_FOUND", { operation, aggregateId: roomId });
+
+      if (!room) {
+        // Sprint J.1.5 — never claim "no such room" until that is the truth.
+        await adjudicate({ roomId }, profileId, operation);
+        throw domainError("ROOM_NOT_FOUND", { operation, aggregateId: roomId });
+      }
+
+      // The room loaded, so the refusal (if any) is about this person: already
+      // joined, removed, blocked, or busy in another open room.
+      if (room.hostProfileId !== profileId) {
+        await adjudicate({ roomId }, profileId, operation);
+      }
+
       return admit(room, profileId, role, operation, intent);
     },
 
@@ -415,9 +485,16 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       await requireRoom(roomId, operation);
 
       const member = await members.findByRoomAndProfile(roomId, profileId);
-      if (!member || member.state !== "joined") {
+      if (!member) {
         throw domainError("ROOM_MEMBER_NOT_FOUND", { operation, aggregateId: roomId });
       }
+      if (member.state === "removed") {
+        throw domainError("ROOM_MEMBER_REMOVED", { operation, aggregateId: roomId });
+      }
+      // Sprint J.1.5 — leaving twice is not an error. The seat is already
+      // free, so the second call reports the same settled fact rather than
+      // stranding the person in a room they have left.
+      if (member.state === "left") return member;
 
       const updated = await members.update(member.id, { state: "left", leftAt: nowIso() });
       await roomService.leaveMember({ roomId, profileId, leftReason }, intent);
@@ -472,6 +549,25 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
           intent,
         );
         complianceService.assertAllowed(verdict, room.providerId);
+      }
+
+      // Sprint J.1.5 — a duplicate invite is refused for what it is, not as a
+      // capacity or lookup failure.
+      if (request.inviteeProfileId) {
+        const invitee = await members.findByRoomAndProfile(room.id, request.inviteeProfileId);
+        if (invitee?.state === "joined") {
+          throw domainError("INVITE_ALREADY_ACCEPTED", { operation, aggregateId: room.id });
+        }
+
+        const outstanding = await invites.listByRoom(room.id, { statuses: ["pending"] });
+        const duplicate = outstanding.items.find(
+          (invite) =>
+            invite.inviteeProfileId === request.inviteeProfileId &&
+            (!invite.expiresAt || !invitationService.isExpired(invite.expiresAt)),
+        );
+        if (duplicate) {
+          throw domainError("INVITE_ALREADY_PENDING", { operation, aggregateId: room.id });
+        }
       }
 
       const occupied = await members.countByRoom(room.id, OCCUPYING_STATES);
@@ -534,7 +630,13 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
         intent,
       );
 
+      // Sprint J.1.5 — the same truthful refusals apply to an invited guest.
+      if (room.hostProfileId !== profileId) {
+        await adjudicate({ roomId: room.id }, profileId, operation);
+      }
+
       const member = await admit(room, profileId, "guest", operation, intent);
+
       const accepted = await invites.update(inviteId, {
         status: "accepted",
         acceptedAt: nowIso(),
