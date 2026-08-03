@@ -126,7 +126,6 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                     {t(serviceStatusLabelKey(card.status))}
                   </span>
                 </span>
-
               </button>
             </li>
           );

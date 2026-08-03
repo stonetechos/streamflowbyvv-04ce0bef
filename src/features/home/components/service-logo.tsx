@@ -60,12 +60,7 @@ function Glyph({ kind }: { kind: NonNullable<WordmarkStyle["glyph"]> }) {
       );
     case "plus":
       return (
-        <path
-          d="M30 20v32M14 36h32"
-          stroke="currentColor"
-          strokeWidth="8"
-          strokeLinecap="round"
-        />
+        <path d="M30 20v32M14 36h32" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
       );
     case "dot":
       return <circle cx="30" cy="36" r="17" fill="currentColor" opacity="0.9" />;
