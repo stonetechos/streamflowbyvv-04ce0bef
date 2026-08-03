@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import { AppLayout, AppProviders, ErrorState } from "@/app-shell";
+import { AppLayout, AppProviders, BootScreen, ErrorState } from "@/app-shell";
 import { logger } from "@/foundation/logging";
 import { DEFAULT_LOCALE } from "@/shared/constants/locales";
 
@@ -101,6 +101,7 @@ function RootComponent() {
 
   return (
     <AppProviders queryClient={queryClient}>
+      <BootScreen />
       <AppLayout>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
