@@ -73,7 +73,7 @@ export function RoomSummaryCard({
           </div>
           <div>
             <dt className="text-xs text-muted-foreground">{t("room.summary.synchronization")}</dt>
-            <dd className="font-medium">{t(HEALTH_KEYS[sync.health] ?? HEALTH_KEYS.unknown!)}</dd>
+            <dd className="font-medium">{t(HEALTH_KEYS[sync.health] ?? "room.sync.health.unknown")}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted-foreground">{t("room.summary.provider")}</dt>
