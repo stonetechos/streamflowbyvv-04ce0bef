@@ -10,8 +10,8 @@ import { ReauthenticationEmail } from "@/lib/email-templates/reauthentication";
 
 // Configuration
 const SITE_NAME = "StreamFlow";
-const SENDER_DOMAIN = "email.mail.streamflow.stonetech.in";
-const FROM_DOMAIN = "email.mail.streamflow.stonetech.in";
+const SENDER_DOMAIN = "mail.streamflow.stonetech.in";
+const FROM_DOMAIN = "mail.streamflow.stonetech.in";
 const SITE_URL = "https://streamflow.stonetech.in";
 
 // The SDK handler owns verification, dispatch, and retry semantics; this file
