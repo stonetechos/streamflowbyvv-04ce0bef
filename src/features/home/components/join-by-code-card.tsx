@@ -10,6 +10,8 @@ import { useState, type FormEvent } from "react";
 
 import { ActionButton, Surface, TextField } from "@/design-system/components";
 import { normalizeRoomCode, validateRoomCode } from "@/features/auth";
+import { refusalMessageKey } from "@/features/shared/refusal-message";
+
 import { useTranslation } from "@/foundation/localization";
 
 import type { HomeModel } from "../use-home";
