@@ -101,6 +101,7 @@ function RootComponent() {
 
   return (
     <AppProviders queryClient={queryClient}>
+      <BootScreen />
       <AppLayout>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
