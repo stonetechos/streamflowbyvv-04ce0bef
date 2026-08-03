@@ -554,10 +554,30 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
         complianceService.assertAllowed(verdict, room.providerId);
       }
 
+      // Sprint J.1.5 — a duplicate invite is refused for what it is, not as a
+      // capacity or lookup failure.
+      if (request.inviteeProfileId) {
+        const invitee = await members.findByRoomAndProfile(room.id, request.inviteeProfileId);
+        if (invitee?.state === "joined") {
+          throw domainError("INVITE_ALREADY_ACCEPTED", { operation, aggregateId: room.id });
+        }
+
+        const outstanding = await invites.listByRoom(room.id, { statuses: ["pending"] });
+        const duplicate = outstanding.items.find(
+          (invite) =>
+            invite.inviteeProfileId === request.inviteeProfileId &&
+            (!invite.expiresAt || !invitationService.isExpired(invite.expiresAt)),
+        );
+        if (duplicate) {
+          throw domainError("INVITE_ALREADY_PENDING", { operation, aggregateId: room.id });
+        }
+      }
+
       const occupied = await members.countByRoom(room.id, OCCUPYING_STATES);
       if (!roomService.hasCapacity(occupied, room.maxMembers)) {
         throw domainError("ROOM_CAPACITY_EXCEEDED", { operation, aggregateId: room.id });
       }
+
 
       const code = await codes.allocate(CODE_PREFIXES.INVITE);
       const expiresAt = invitationService.expiryFor(clock.now()).toISOString();
