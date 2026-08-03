@@ -117,6 +117,28 @@ export const SYNC_RUNTIME = Object.freeze({
   SPREAD_CEILING_MS: 500,
 });
 
+/**
+ * Playback-synchronization cadence — Sprint 2.7 operational tuning.
+ *
+ * Foundation §14.5 fixes the quality bands that classify a playback gap; it
+ * leaves how often a room re-evaluates, and how long an anchor stays credible,
+ * to implementation. These are operational values only — no threshold that
+ * decides a band lives here.
+ *
+ * - `EVALUATION_INTERVAL_MS` — cadence of the room's re-evaluation while armed.
+ * - `ANCHOR_STALE_MS` — beyond this an anchor is reported as no longer evidence.
+ * - `RECOVERY_WINDOW_MS` — how long a room reads as "recovering" after it
+ *   returns from Re-sync Required, so the lobby does not flicker between
+ *   verdicts on one good measurement.
+ */
+export const PLAYBACK_SYNC_RUNTIME = Object.freeze({
+  EVALUATION_INTERVAL_MS: 2 * SECOND_MS,
+  ANCHOR_STALE_MS: 60 * SECOND_MS,
+  RECOVERY_WINDOW_MS: 8 * SECOND_MS,
+});
+
+
+
 export const SYNC_QUALITY = ["excellent", "good", "warning", "resync_required"] as const;
 export type SyncQualityBand = (typeof SYNC_QUALITY)[number];
 

@@ -187,7 +187,7 @@ export function useRoomSync({
     waitingCount: snapshot?.waitingCount ?? 0,
     canStartCountdown: snapshot ? snapshot.canStartCountdown : true,
     blockReasonKey: snapshot?.blockReason
-      ? `room.sync.block.${snapshot.blockReason}`
+      ? `room.room_sync.block.${snapshot.blockReason}`
       : null,
     hasAdvisory: snapshot?.hasAdvisory ?? false,
     needsResync: requiresResync(health),

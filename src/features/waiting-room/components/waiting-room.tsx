@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PoWaitingBanner } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
+import { usePlaybackSync } from "../use-playback-sync";
 import { useRoomCountdown } from "../use-room-countdown";
 import { useRoomPlayback } from "../use-room-playback";
 import { useRoomSetup } from "../use-room-setup";
@@ -61,6 +62,19 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
 
 
 
+  // Sprint 2.7 — the third member of the synchronization pipeline. Everything
+  // shown below about timing, drift, or readiness is decided in Domain.
+  const playbackSync = usePlaybackSync({
+    roomId,
+    runtime: playback.runtime,
+    roomSyncSnapshot: roomSync.snapshot,
+    members: model.members,
+    presenceByProfileId: model.presenceByProfileId,
+    isHost: model.viewer.isHost,
+    actorProfileId: model.viewer.profileId,
+    enabled: model.status === "ready" && model.viewer.isMember,
+  });
+
   if (model.status === "loading") {
     return (
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
@@ -112,6 +126,8 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isSyncSatisfied={sync.isSatisfactory}
             isRoomOutOfSync={roomSync.needsResync}
             hasRoomRecovered={roomSync.justRecovered}
+            needsSyncEncouragement={playbackSync.needsEncouragement}
+            isSynchronizationReady={playbackSync.justBecameReady}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
@@ -128,6 +144,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             playback={playback}
             members={model.members}
             countdownCompleted={countdown.state === "completed"}
+            sync={playbackSync}
           />
           <RoomSyncCard sync={roomSync} isHost={model.viewer.isHost} />
           <SyncHealthCard sync={sync} />

@@ -29,6 +29,11 @@ import {
   CLOCK_SYNC_SERVICE,
 } from "../sync/clock-sync-service";
 import {
+  createPlaybackSyncEngine,
+  resolvePlaybackSyncEngineDependencies,
+  PLAYBACK_SYNC_ENGINE,
+} from "../playback/playback-sync-engine";
+import {
   createRoomSyncCoordinator,
   resolveRoomSyncCoordinatorDependencies,
   ROOM_SYNC_COORDINATOR,
@@ -230,6 +235,20 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
         createPlaybackCoordinator(
           resolvePlaybackCoordinatorDependencies({
             playback: resolveService(PLAYBACK_SERVICE),
+            clock: resolveService(CLOCK),
+          }),
+        ),
+    ],
+    // Sprint 2.7 — the third member of the synchronization pipeline. It
+    // decides how playback state is synchronized and controls no player.
+    [
+      PLAYBACK_SYNC_ENGINE,
+      () =>
+        createPlaybackSyncEngine(
+          resolvePlaybackSyncEngineDependencies({
+            clockSync: resolveService(CLOCK_SYNC_SERVICE),
+            roomSync: resolveService(ROOM_SYNC_COORDINATOR),
+            sync: resolveService(SYNC_SERVICE),
             clock: resolveService(CLOCK),
           }),
         ),
