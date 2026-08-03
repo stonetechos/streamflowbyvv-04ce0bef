@@ -1,8 +1,8 @@
 /**
- * Home hero — Milestone E.
+ * Home hero — Milestone H2 (product experience).
  *
- * The greeting and the two things a person most often wants to do. Po sits in
- * the hero as the room's host presence: decorative, silent, and unaware of
+ * The question the product exists to answer, asked plainly. Po sits in the
+ * hero as the room's host presence: decorative, silent, and unaware of
  * everything around it (Po Rule).
  */
 import { Surface } from "@/design-system/components";
@@ -14,6 +14,8 @@ export interface HomeHeroProps {
   readonly isFirstTime: boolean;
   readonly hostedRoomCount: number;
   readonly mood?: PoMood;
+  /** A short, decorative line from Po. Never an action. */
+  readonly poLine?: string;
 }
 
 export function HomeHero({
@@ -21,6 +23,7 @@ export function HomeHero({
   isFirstTime,
   hostedRoomCount,
   mood = "calm",
+  poLine,
 }: HomeHeroProps) {
   const { t } = useTranslation();
 
@@ -38,10 +41,10 @@ export function HomeHero({
       <div className="flex items-center justify-between gap-4 sm:gap-6">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("common.app.name")}
-          </p>
-          <h1 className="mt-3 font-display text-2xl font-semibold tracking-tight sm:text-4xl">
             {t("home.greeting", { name: displayName })}
+          </p>
+          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+            {t("home.hero.question")}
           </h1>
           <p className="mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
             {isFirstTime
@@ -50,7 +53,14 @@ export function HomeHero({
           </p>
         </div>
 
-        <PoCompanion mood={mood} className="h-20 w-28 shrink-0 sm:h-28 sm:w-40" />
+        <div className="flex shrink-0 flex-col items-center gap-2">
+          <PoCompanion mood={mood} className="h-20 w-28 sm:h-28 sm:w-40" />
+          {poLine ? (
+            <p className="max-w-[10rem] rounded-full border border-border/60 bg-surface/60 px-3 py-1 text-center text-[0.6875rem] text-muted-foreground">
+              {poLine}
+            </p>
+          ) : null}
+        </div>
       </div>
     </Surface>
   );
