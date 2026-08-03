@@ -659,7 +659,6 @@ export const enBundle: LocaleBundle = {
     "room.details.toggle": "Room details",
     "room.countdown.launching": "Opening {service}…",
     "room.countdown.launching_generic": "Get ready to press play.",
-    "home.friends.title": "Friends",
     "home.friends.empty.title": "Invite your first friend.",
     "home.friends.empty.description": "Watch parties are better with someone else in the room.",
     "home.join.prompt": "Have an invite code?",

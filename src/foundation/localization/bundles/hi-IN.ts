@@ -659,7 +659,6 @@ export const hiINBundle: LocaleBundle = {
     "room.details.toggle": "रूम विवरण",
     "room.countdown.launching": "{service} खुल रहा है…",
     "room.countdown.launching_generic": "प्ले दबाने के लिए तैयार हो जाइए।",
-    "home.friends.title": "दोस्त",
     "home.friends.empty.title": "अपने पहले दोस्त को बुलाएँ।",
     "home.friends.empty.description": "साथ में देखना ज़्यादा मज़ेदार होता है।",
     "home.join.prompt": "क्या आपके पास इनवाइट कोड है?",
