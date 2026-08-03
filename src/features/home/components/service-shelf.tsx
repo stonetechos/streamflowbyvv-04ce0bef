@@ -89,24 +89,33 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "flex aspect-[16/10] w-full items-center justify-center bg-gradient-to-br",
-                    "font-display text-2xl font-semibold tracking-tight",
+                    "flex aspect-[16/10] w-full items-center justify-center overflow-hidden bg-gradient-to-br p-[12%]",
                     ACCENT_TILE[card.accent],
                   )}
                 >
                   {busy ? (
                     <span className="size-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   ) : (
-                    card.monogram
+                    <ServiceLogo
+                      brandKey={card.key}
+                      name={card.name}
+                      className="h-full w-full transition-transform duration-normal ease-standard group-hover:scale-[1.04] motion-reduce:transform-none motion-reduce:transition-none"
+                    />
                   )}
                 </span>
 
                 <span className="flex flex-1 flex-col gap-2 p-3">
                   <span className="truncate font-display text-sm font-semibold">{card.name}</span>
-                  <span className="inline-flex w-fit items-center rounded-full border border-border px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground">
+                  <span
+                    className={cn(
+                      "inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider",
+                      STATUS_BADGE[card.status],
+                    )}
+                  >
                     {t(serviceStatusLabelKey(card.status))}
                   </span>
                 </span>
+
               </button>
             </li>
           );
