@@ -26,6 +26,15 @@ export {
   type RoomCountdownModel,
   type UseRoomCountdownInput,
 } from "./use-room-countdown";
+export {
+  PlaybackReadinessPanel,
+  type PlaybackReadinessPanelProps,
+} from "./components/playback-readiness-panel";
+export {
+  useRoomPlayback,
+  type RoomPlaybackModel,
+  type UseRoomPlaybackInput,
+} from "./use-room-playback";
 export { PresenceIndicator } from "./components/presence-indicator";
 export { useRoomPresence, type RoomPresenceModel } from "./use-room-presence";
 export { useWaitingRoom, type WaitingRoomModel } from "./use-waiting-room";
