@@ -85,6 +85,38 @@ export const SYNC_QUALITY_BANDS = Object.freeze({
   WARNING_MAX_MS: 500,
 });
 
+/**
+ * Clock-sync runtime cadence — Sprint 2.5 operational tuning.
+ *
+ * Foundation §14.5 fixes the quality bands and §15 fixes the estimation rules
+ * (halved round trip, outlier rejection, median offset), but leaves burst size,
+ * window length, and refresh cadence to implementation — exactly as it does for
+ * the countdown and presence cadences. These values are operational, not
+ * normative, and are candidates for ratification by a future ADR.
+ *
+ * - `BURST_SIZE` — probes taken per burst (join, reconnect, before scheduling).
+ * - `BURST_SPACING_MS` — gap between probes so one congested moment cannot
+ *   colour a whole burst.
+ * - `WINDOW_SIZE` — retained samples; the rolling average's memory.
+ * - `REFRESH_INTERVAL_MS` — the lighter periodic refresh while a room is open.
+ * - `PROBE_TIMEOUT_MS` — a probe slower than this is worthless as a sample.
+ * - `MIN_SAMPLES_FOR_REJECTION` — below this a "median" is not meaningful.
+ * - `OUTLIER_MAD_FACTOR` — deviations above the median before rejection.
+ * - `OUTLIER_FLAT_FACTOR` — fallback multiple when the link has zero jitter.
+ * - `SPREAD_CEILING_MS` — offset spread at which sample agreement scores zero.
+ */
+export const SYNC_RUNTIME = Object.freeze({
+  BURST_SIZE: 5,
+  BURST_SPACING_MS: 120,
+  WINDOW_SIZE: 12,
+  REFRESH_INTERVAL_MS: 30 * SECOND_MS,
+  PROBE_TIMEOUT_MS: 5 * SECOND_MS,
+  MIN_SAMPLES_FOR_REJECTION: 3,
+  OUTLIER_MAD_FACTOR: 3,
+  OUTLIER_FLAT_FACTOR: 2,
+  SPREAD_CEILING_MS: 500,
+});
+
 export const SYNC_QUALITY = ["excellent", "good", "warning", "resync_required"] as const;
 export type SyncQualityBand = (typeof SYNC_QUALITY)[number];
 
