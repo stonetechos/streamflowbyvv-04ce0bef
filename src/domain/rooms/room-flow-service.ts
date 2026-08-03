@@ -392,10 +392,17 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     async discoverRoomByCode(code) {
       const operation = "RoomFlowService.discoverRoomByCode";
       if (!discovery) throw domainError("SERVICE_UNAVAILABLE", { operation });
-      const found = await discovery.discoverByCode(code.trim().toUpperCase());
-      if (!found) throw domainError("ROOM_NOT_FOUND", { operation });
-      return found;
+      const normalized = code.trim().toUpperCase();
+      const found = await discovery.discoverByCode(normalized);
+      if (found) return found;
+      // Sprint J.1.5 — the narrow lookup hides every non-joinable room. Ask
+      // why before claiming the code is unknown; `adjudicate` raises the
+      // condition that is actually true, or ROOM_NOT_FOUND when there is
+      // genuinely no such room.
+      await adjudicate({ code: normalized }, null, operation);
+      throw domainError("ROOM_NOT_FOUND", { operation });
     },
+
 
     listRooms: (query) => rooms.list(query),
 
