@@ -16,6 +16,7 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
 import { Route as AuthenticatedInvitesRouteImport } from './routes/_authenticated.invites'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
+import { Route as AuthenticatedPeopleRouteImport } from './routes/_authenticated.people'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
@@ -23,6 +24,7 @@ import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
 import { Route as AuthSignOutRouteImport } from './routes/auth.sign-out'
 import { Route as AuthSignUpRouteImport } from './routes/auth.sign-up'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
+import { Route as AuthenticatedPeopleProfileIdRouteImport } from './routes/_authenticated.people.$profileId'
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
 import { Route as ApiPublicTimeRouteImport } from './routes/api/public/time'
 
@@ -60,6 +62,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPeopleRoute = AuthenticatedPeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -95,6 +102,12 @@ const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthenticatedPeopleProfileIdRoute =
+  AuthenticatedPeopleProfileIdRouteImport.update({
+    id: '/$profileId',
+    path: '/$profileId',
+    getParentRoute: () => AuthenticatedPeopleRoute,
+  } as any)
 const AuthenticatedRoomsRoomIdRoute =
   AuthenticatedRoomsRoomIdRouteImport.update({
     id: '/rooms/$roomId',
@@ -114,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/invites': typeof AuthenticatedInvitesRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/people': typeof AuthenticatedPeopleRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -121,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth/': typeof AuthIndexRoute
+  '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
 }
@@ -130,6 +145,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/invites': typeof AuthenticatedInvitesRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/people': typeof AuthenticatedPeopleRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -137,6 +153,7 @@ export interface FileRoutesByTo {
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth': typeof AuthIndexRoute
+  '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
 }
@@ -149,6 +166,7 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/invites': typeof AuthenticatedInvitesRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/people': typeof AuthenticatedPeopleRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -156,6 +174,7 @@ export interface FileRoutesById {
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth/': typeof AuthIndexRoute
+  '/_authenticated/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
 }
@@ -168,6 +187,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/invites'
     | '/onboarding'
+    | '/people'
     | '/settings'
     | '/auth/forgot-password'
     | '/auth/sign-in'
@@ -175,6 +195,7 @@ export interface FileRouteTypes {
     | '/auth/sign-up'
     | '/auth/verify-email'
     | '/auth/'
+    | '/people/$profileId'
     | '/rooms/$roomId'
     | '/api/public/time'
   fileRoutesByTo: FileRoutesByTo
@@ -184,6 +205,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/invites'
     | '/onboarding'
+    | '/people'
     | '/settings'
     | '/auth/forgot-password'
     | '/auth/sign-in'
@@ -191,6 +213,7 @@ export interface FileRouteTypes {
     | '/auth/sign-up'
     | '/auth/verify-email'
     | '/auth'
+    | '/people/$profileId'
     | '/rooms/$roomId'
     | '/api/public/time'
   id:
@@ -202,6 +225,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/invites'
     | '/_authenticated/onboarding'
+    | '/_authenticated/people'
     | '/_authenticated/settings'
     | '/auth/forgot-password'
     | '/auth/sign-in'
@@ -209,6 +233,7 @@ export interface FileRouteTypes {
     | '/auth/sign-up'
     | '/auth/verify-email'
     | '/auth/'
+    | '/_authenticated/people/$profileId'
     | '/_authenticated/rooms/$roomId'
     | '/api/public/time'
   fileRoutesById: FileRoutesById
@@ -271,6 +296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/people': {
+      id: '/_authenticated/people'
+      path: '/people'
+      fullPath: '/people'
+      preLoaderRoute: typeof AuthenticatedPeopleRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -320,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_authenticated/people/$profileId': {
+      id: '/_authenticated/people/$profileId'
+      path: '/$profileId'
+      fullPath: '/people/$profileId'
+      preLoaderRoute: typeof AuthenticatedPeopleProfileIdRouteImport
+      parentRoute: typeof AuthenticatedPeopleRoute
+    }
     '/_authenticated/rooms/$roomId': {
       id: '/_authenticated/rooms/$roomId'
       path: '/rooms/$roomId'
@@ -337,11 +376,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedPeopleRouteChildren {
+  AuthenticatedPeopleProfileIdRoute: typeof AuthenticatedPeopleProfileIdRoute
+}
+
+const AuthenticatedPeopleRouteChildren: AuthenticatedPeopleRouteChildren = {
+  AuthenticatedPeopleProfileIdRoute: AuthenticatedPeopleProfileIdRoute,
+}
+
+const AuthenticatedPeopleRouteWithChildren =
+  AuthenticatedPeopleRoute._addFileChildren(AuthenticatedPeopleRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedInvitesRoute: typeof AuthenticatedInvitesRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedPeopleRoute: typeof AuthenticatedPeopleRouteWithChildren
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedRoomsRoomIdRoute: typeof AuthenticatedRoomsRoomIdRoute
 }
@@ -351,6 +402,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedInvitesRoute: AuthenticatedInvitesRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedPeopleRoute: AuthenticatedPeopleRouteWithChildren,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedRoomsRoomIdRoute: AuthenticatedRoomsRoomIdRoute,
 }
