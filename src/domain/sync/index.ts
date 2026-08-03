@@ -41,3 +41,14 @@ export {
   type ClockSyncService,
   type ClockSyncServiceDependencies,
 } from "./clock-sync-service";
+export {
+  createRoomSyncCoordinator,
+  resolveRoomSyncCoordinatorDependencies,
+  ROOM_SYNC_COORDINATOR,
+  type CountdownBlockReason,
+  type ParticipantSyncInput,
+  type ParticipantSyncStatus,
+  type RoomSyncCoordinator,
+  type RoomSyncCoordinatorDependencies,
+  type RoomSyncSnapshot,
+} from "./room-sync-coordinator";
