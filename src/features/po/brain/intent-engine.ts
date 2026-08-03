@@ -16,11 +16,7 @@
  * missing; it is never invented (Milestone H1 §3, §10).
  */
 import type { PoIntentCategory } from "../po.types";
-import {
-  PO_INTENT_RULES,
-  normalizeUtterance,
-  type IntentRule,
-} from "./po-lexicon";
+import { PO_INTENT_RULES, normalizeUtterance, type IntentRule } from "./po-lexicon";
 import type { PoIntentName, PoResolvedIntent, PoSlots } from "./po-brain.types";
 
 /** At or above this Po may act. */

@@ -24,12 +24,7 @@ import {
   settle,
   type PoConversationState,
 } from "./conversation-manager";
-import {
-  PO_CLARIFY_THRESHOLD,
-  detectIntent,
-  isActionable,
-  splitUtterance,
-} from "./intent-engine";
+import { PO_CLARIFY_THRESHOLD, detectIntent, isActionable, splitUtterance } from "./intent-engine";
 import { planIntent } from "./planning-engine";
 import type {
   PoMessage,

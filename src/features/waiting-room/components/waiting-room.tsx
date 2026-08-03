@@ -26,6 +26,7 @@ import { useRoomPlayback } from "../use-room-playback";
 import { useProviderLaunch } from "../use-provider-launch";
 import { useRoomReady } from "../use-room-ready";
 import { useRoomSetup } from "../use-room-setup";
+import { usePoRoomBridge } from "../use-po-room-bridge";
 import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
 import { MemberList } from "./member-list";
@@ -147,6 +148,43 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     }
     return map;
   }, [roomSync.snapshot]);
+
+  // Milestone H1 — publish the live lobby so Po acts through this screen's
+  // existing orchestration. Values only; every decision stays where it is.
+  usePoRoomBridge(
+    model.room && model.viewer.isMember
+      ? {
+          roomId,
+          roomCode: model.room.code,
+          roomName: model.room.name,
+          isHost: model.viewer.isHost,
+          isMember: model.viewer.isMember,
+          isReady: model.viewer.isReady,
+          providerId: model.room.providerId ?? null,
+          memberCount: model.members.length,
+          readyCount: ready.snapshot?.readyCount ?? 0,
+          countdownSeconds: model.room.countdownSeconds,
+          countdownState: countdown.state,
+          canStartCountdown: roomSync.canStartCountdown,
+          syncHealth: roomSync.snapshot?.health ?? "unknown",
+          voice: {
+            isAvailable: voice.isAvailable,
+            isConnected: voice.isConnected,
+            isMuted: voice.isMuted,
+          },
+          actions: {
+            startCountdown: countdown.start,
+            cancelCountdown: countdown.cancel,
+            setReady: model.setReady,
+            remeasureSync: sync.remeasure,
+            joinVoice: voice.join,
+            leaveVoice: voice.leave,
+            setMuted: voice.setMuted,
+            leaveRoom: model.leave,
+          },
+        }
+      : null,
+  );
 
   if (model.status === "loading") {
     return (

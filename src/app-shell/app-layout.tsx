@@ -9,6 +9,7 @@
 import type { ReactNode } from "react";
 
 import { AppNav, BottomNav } from "@/features/navigation";
+import { PoConsole } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
 export interface AppLayoutProps {
@@ -56,6 +57,8 @@ export function AppLayout({ children, chrome = "full" }: AppLayoutProps) {
       </footer>
 
       {showNav ? <BottomNav /> : null}
+      {/* Milestone H1 — Po sits beside the app, never over it. */}
+      {showNav ? <PoConsole /> : null}
     </div>
   );
 }
