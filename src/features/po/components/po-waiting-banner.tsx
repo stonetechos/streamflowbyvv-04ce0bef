@@ -31,6 +31,10 @@ export interface PoWaitingBannerProps {
   readonly wasCancelled?: boolean;
   /** The room is ready to watch — Po stands up (Sprint 2.4, visual only). */
   readonly isPlaybackReady?: boolean;
+  /** Clocks are still settling — Po watches quietly (Sprint 2.5). */
+  readonly isSyncing?: boolean;
+  /** Everyone reached Excellent or Good — Po gives a satisfied smile. */
+  readonly isSyncSatisfied?: boolean;
   /** Changing this makes Po glance toward the roster (e.g. a new arrival). */
   readonly gazeToken?: string | null;
   readonly className?: string;
@@ -45,10 +49,15 @@ export function resolvePoWaitingMood(signals: {
   readonly hasCompleted?: boolean;
   readonly wasCancelled?: boolean;
   readonly isPlaybackReady?: boolean;
+  readonly isSyncing?: boolean;
+  readonly isSyncSatisfied?: boolean;
 }): PoMood {
   // Readiness is the happiest thing the lobby can report, so it outranks the
   // countdown beats it necessarily follows.
   if (signals.isPlaybackReady) return "excited";
+  // Sync sits below the countdown beats: while nothing else is happening, Po
+  // watches the clocks, and smiles once they are all in a healthy band.
+  if (signals.isSyncing) return "observing";
   // Countdown outranks every lobby signal: it is the thing everyone is
   // watching. Cancellation wins over "counting" so the disappointed beat is
   // never swallowed by a stale tick.
@@ -70,6 +79,7 @@ const CAPTION_KEYS: Readonly<Record<PoMood, string>> = {
   celebrating: "po.banner.celebrating",
   disappointed: "po.banner.cancelled",
   excited: "po.banner.playback_ready",
+  observing: "po.banner.observing",
 };
 
 export function PoWaitingBanner({
@@ -80,6 +90,8 @@ export function PoWaitingBanner({
   hasCompleted = false,
   wasCancelled = false,
   isPlaybackReady = false,
+  isSyncing = false,
+  isSyncSatisfied = false,
   gazeToken = null,
   className,
 }: PoWaitingBannerProps) {
@@ -92,6 +104,8 @@ export function PoWaitingBanner({
     hasCompleted,
     wasCancelled,
     isPlaybackReady,
+    isSyncing,
+    isSyncSatisfied,
   });
 
   return (

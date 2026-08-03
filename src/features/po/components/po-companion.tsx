@@ -45,7 +45,10 @@ export type PoMood =
   | "counting"
   | "celebrating"
   | "disappointed"
-  | "excited";
+  | "excited"
+  // Sprint 2.5 — Po quietly watches the clocks settle. Watching only: Po
+  // measures nothing, reports nothing, and still says nothing (Po Rule).
+  | "observing";
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;
