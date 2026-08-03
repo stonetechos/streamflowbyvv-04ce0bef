@@ -59,6 +59,15 @@ const DEFAULT_RULES: Readonly<Record<string, DeepLinkRule>> = Object.freeze({
   local_file: { template: null, hosts: [] },
 });
 
+/**
+ * Public hosts per provider key — Milestone L. Exported so the share-intake
+ * parser recognises a shared address using the SAME trusted-host table this
+ * service links with; no second list, no second opinion.
+ */
+export const DEFAULT_DEEP_LINK_HOSTS: Readonly<Record<string, readonly string[]>> = Object.freeze(
+  Object.fromEntries(Object.entries(DEFAULT_RULES).map(([key, rule]) => [key, rule.hosts])),
+);
+
 function readStringArray(value: unknown): readonly string[] | null {
   return Array.isArray(value) && value.every((item) => typeof item === "string")
     ? (value as readonly string[])
