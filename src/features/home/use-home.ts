@@ -222,6 +222,7 @@ export function useHome(viewerProfileId: string | null): HomeModel {
       declineInvite,
       error,
       home,
+      inviteToRoom,
       isLoading,
       joinByCode,
       pending,
