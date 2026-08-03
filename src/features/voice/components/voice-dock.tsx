@@ -113,7 +113,7 @@ export function VoiceDock({ voice, onLeaveRoom, isLeaving = false }: VoiceDockPr
 
         <span aria-hidden="true" className="h-6 w-px bg-border" />
 
-        <DockButton danger label={t("room.action.leave")} onClick={onLeaveRoom}>
+        <DockButton danger label={t("room.actions.leave")} onClick={onLeaveRoom}>
           {isLeaving ? (
             <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
           ) : (
