@@ -40,7 +40,17 @@ export interface NotificationBadges {
   markInvitesSeen(): void;
 }
 
-export const EMPTY_BADGES = Object.freeze({ friendRequests: 0, roomInvites: 0, total: 0 });
+interface BadgeCounts {
+  readonly friendRequests: number;
+  readonly roomInvites: number;
+  readonly total: number;
+}
+
+export const EMPTY_BADGES: BadgeCounts = Object.freeze({
+  friendRequests: 0,
+  roomInvites: 0,
+  total: 0,
+});
 
 /** Any surface can ask every mounted badge reader to re-check immediately. */
 export function refreshBadges(): void {
@@ -70,7 +80,7 @@ function writeSeen(ids: readonly string[]): void {
 }
 
 export function useNotificationBadges(viewerProfileId: string | null): NotificationBadges {
-  const [counts, setCounts] = useState(EMPTY_BADGES);
+  const [counts, setCounts] = useState<BadgeCounts>(EMPTY_BADGES);
   const [token, setToken] = useState(0);
   const seenRef = useRef<readonly string[]>([]);
 
