@@ -79,7 +79,6 @@ export function LivePartiesSection({ rooms, action }: LivePartiesSectionProps) {
                       name={room.name}
                       preset={presetForName(room.name)}
                       size="sm"
-                      aria-hidden="true"
                     />
                     {isHost ? t("home.room.you_host") : t("home.live.host_other")}
                   </span>
