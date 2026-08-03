@@ -167,17 +167,19 @@ export function createSupabaseProfileSettingsRepository(
 
     async write(profileId: EntityId, patch: ProfileSettingsPatch): Promise<ProfileSettingsRecord> {
       requireAvailable(connection, context("write", profileId));
-      const client = connection.client();
+      const client = access();
       const now = new Date().toISOString();
       const upsert = (table: string, values: Record<string, unknown>) =>
         runCommand(
           client
             .from(table)
-            .upsert({ profile_id: profileId, ...values, updated_at: now }, {
-              onConflict: "profile_id",
-            }),
+            .upsert(
+              { profile_id: profileId, ...values, updated_at: now },
+              { onConflict: "profile_id" },
+            ) as PromiseLike<PostgrestLike<unknown>>,
           context(`write:${table}`, profileId),
         );
+
 
       const writes: Promise<void>[] = [];
 
