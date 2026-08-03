@@ -284,10 +284,12 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     // The host reclaims their own chair; a rejoin never demotes them.
     const seatRole: RoomRole = room.hostProfileId === profileId ? "host" : role;
 
-
     const existing = await members.findByRoomAndProfile(room.id, profileId);
     if (existing?.state === "joined") {
       throw domainError("ROOM_ALREADY_MEMBER", { operation, aggregateId: room.id });
+    }
+    if (existing?.state === "removed") {
+      throw domainError("ROOM_MEMBER_REMOVED", { operation, aggregateId: room.id });
     }
 
     const occupied = await members.countByRoom(room.id, OCCUPYING_STATES);
@@ -296,8 +298,9 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
 
     // Capacity is decided by RoomService; the event it returns is the record.
     await roomService.joinMember(
-      { roomId: room.id, profileId, role, currentMemberCount: seats },
+      { roomId: room.id, profileId, role: seatRole, currentMemberCount: seats },
       intent,
+
     );
 
     const joinedAt = nowIso();
