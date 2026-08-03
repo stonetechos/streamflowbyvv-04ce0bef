@@ -46,11 +46,7 @@ export function HomeHero({
           <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-5xl">
             {t("home.hero.question")}
           </h1>
-          <p className="mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
-            {isFirstTime
-              ? t("home.subtitle.first_time")
-              : t("home.subtitle.returning", { count: hostedRoomCount })}
-          </p>
+
         </div>
 
         <div className="flex shrink-0 flex-col items-center gap-2">
