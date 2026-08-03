@@ -29,6 +29,11 @@ import {
   CLOCK_SYNC_SERVICE,
 } from "../sync/clock-sync-service";
 import {
+  createRoomSyncCoordinator,
+  resolveRoomSyncCoordinatorDependencies,
+  ROOM_SYNC_COORDINATOR,
+} from "../sync/room-sync-coordinator";
+import {
   createPresenceCoordinator,
   resolvePresenceCoordinatorDependencies,
   PRESENCE_COORDINATOR,
@@ -201,6 +206,18 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
       () =>
         createClockSyncService(
           resolveClockSyncDependencies({
+            sync: resolveService(SYNC_SERVICE),
+            clock: resolveService(CLOCK),
+          }),
+        ),
+    ],
+    // Sprint 2.6 — the single authority for room synchronization decisions.
+    [
+      ROOM_SYNC_COORDINATOR,
+      () =>
+        createRoomSyncCoordinator(
+          resolveRoomSyncCoordinatorDependencies({
+            clockSync: resolveService(CLOCK_SYNC_SERVICE),
             sync: resolveService(SYNC_SERVICE),
             clock: resolveService(CLOCK),
           }),

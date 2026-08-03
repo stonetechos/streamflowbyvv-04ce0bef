@@ -33,6 +33,13 @@ export interface MemberPresence {
   readonly lastSeenAt: string;
   /** False once the newest heartbeat is older than the stale window. */
   readonly isOnline: boolean;
+  /**
+   * Sprint 2.6 — synchronization metrics carried on the existing presence
+   * columns (`clock_offset_ms`, `latency_ms`). Reported as measured; the band
+   * they fall in is decided by `RoomSyncCoordinator`, never here.
+   */
+  readonly clockOffsetMs: number | null;
+  readonly latencyMs: number | null;
 }
 
 export interface RoomPresenceSnapshot {
@@ -101,6 +108,10 @@ export function createPresenceCoordinator(
           status: fresh ? row.status : ("disconnected" as PresenceStatus),
           lastSeenAt: row.lastHeartbeatAt,
           isOnline: fresh && service.isPresent(row.status),
+          // Stale rows keep their last measurement but are excluded from room
+          // health by the coordinator, which only aggregates online devices.
+          clockOffsetMs: row.clockOffsetMs,
+          latencyMs: row.latencyMs,
         });
       });
 

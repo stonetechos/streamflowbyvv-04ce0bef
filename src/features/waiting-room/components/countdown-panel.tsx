@@ -25,6 +25,15 @@ export interface CountdownPanelProps {
   readonly members: readonly MemberView[];
   /** Blocks Start until the host has chosen what the room will watch. */
   readonly hasProvider: boolean;
+  /**
+   * Sprint 2.6 — Foundation §15 eligibility, decided by `RoomSyncCoordinator`.
+   * The panel renders the verdict; it never computes one.
+   */
+  readonly canStartCountdown?: boolean;
+  /** Translation key explaining a block, shown to the host. */
+  readonly blockReasonKey?: string | null;
+  /** Warning band: the countdown is allowed, the lobby is told anyway. */
+  readonly hasSyncAdvisory?: boolean;
 }
 
 const STATE_KEYS: Readonly<Record<string, string>> = {
@@ -36,7 +45,15 @@ const STATE_KEYS: Readonly<Record<string, string>> = {
   expired: "room.countdown.state.expired",
 };
 
-export function CountdownPanel({ countdown, isHost, members, hasProvider }: CountdownPanelProps) {
+export function CountdownPanel({
+  countdown,
+  isHost,
+  members,
+  hasProvider,
+  canStartCountdown = true,
+  blockReasonKey = null,
+  hasSyncAdvisory = false,
+}: CountdownPanelProps) {
   const { t } = useTranslation();
 
   const requester = countdown.requestedByProfileId
@@ -105,7 +122,9 @@ export function CountdownPanel({ countdown, isHost, members, hasProvider }: Coun
             <Button
               type="button"
               onClick={countdown.start}
-              disabled={!countdown.isAvailable || busy || isCounting || !hasProvider}
+              disabled={
+                !countdown.isAvailable || busy || isCounting || !hasProvider || !canStartCountdown
+              }
             >
               {t("room.countdown.action.start")}
             </Button>
@@ -121,7 +140,7 @@ export function CountdownPanel({ countdown, isHost, members, hasProvider }: Coun
               type="button"
               variant="outline"
               onClick={countdown.restart}
-              disabled={!countdown.isAvailable || busy || !isCounting}
+              disabled={!countdown.isAvailable || busy || !isCounting || !canStartCountdown}
             >
               {t("room.countdown.action.restart")}
             </Button>
@@ -132,6 +151,16 @@ export function CountdownPanel({ countdown, isHost, members, hasProvider }: Coun
 
         {isHost && !hasProvider ? (
           <p className="text-xs text-muted-foreground">{t("room.countdown.needs_provider")}</p>
+        ) : null}
+
+        {blockReasonKey ? (
+          <p className="text-xs text-destructive">
+            {t(isHost ? blockReasonKey : "room.room_sync.block.participant_advisory")}
+          </p>
+        ) : null}
+
+        {!blockReasonKey && hasSyncAdvisory ? (
+          <p className="text-xs text-muted-foreground">{t("room.room_sync.advisory.warning")}</p>
         ) : null}
       </CardContent>
     </Card>

@@ -567,3 +567,57 @@
 .sf-po[data-mood="observing"] .sf-po-tail {
   animation-duration: 10s;
 }
+
+/*
+ * Sprint 2.6 — room synchronization moods.
+ *
+ * `concerned`: someone in the room is still catching up. Po does not fret or
+ * point; the head tilts and the body settles, which reads as patience rather
+ * than alarm. `relieved`: the room came back into step, so Po lets a breath
+ * out and returns to the calm idle. Both are decorative only — Po measures
+ * nothing and says nothing (Po Rule) — and the global reduced-motion rule
+ * neutralises them.
+ */
+@keyframes sf-po-tilt-wait {
+  0%, 100% { transform: rotate(-4deg) translateY(0); }
+  50% { transform: rotate(-1deg) translateY(-1px); }
+}
+
+@keyframes sf-po-exhale {
+  0% { transform: scaleY(1.04) translateY(-2px); }
+  60% { transform: scaleY(0.98) translateY(1px); }
+  100% { transform: scaleY(1) translateY(0); }
+}
+
+.sf-po[data-mood="concerned"] .sf-po-head {
+  animation: sf-po-tilt-wait 6s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="concerned"] .sf-po-eyes {
+  animation-duration: 8s;
+}
+
+.sf-po[data-mood="concerned"] .sf-po-body {
+  animation-duration:
+    6.5s,
+    4s;
+}
+
+.sf-po[data-mood="concerned"] .sf-po-tail {
+  animation-duration: 12s;
+}
+
+.sf-po[data-mood="relieved"] .sf-po-body {
+  transform-origin: 80px 96px;
+  animation:
+    sf-po-exhale 1.2s var(--ease-emphasized) 1,
+    sf-po-breathe 4s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="relieved"] .sf-po-eyes {
+  animation-duration: 4.2s;
+}
+
+.sf-po[data-mood="relieved"] .sf-po-tail {
+  animation-duration: 5s;
+}

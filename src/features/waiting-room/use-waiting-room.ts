@@ -19,7 +19,9 @@ import {
 import { useAuth } from "@/features/auth";
 import { logger } from "@/foundation/logging";
 
+import { useRoomClockSync, type RoomClockSyncModel } from "./use-room-clock-sync";
 import { useRoomPresence } from "./use-room-presence";
+import { useRoomSync, type RoomSyncModel } from "./use-room-sync";
 import {
   toMemberViews,
   toRoomSummary,
@@ -52,6 +54,13 @@ export interface WaitingRoomModel {
   readonly allReady: boolean;
   /** Profile id of the most recent arrival, for the Po companion's gaze. */
   readonly lastArrivalProfileId: string | null;
+  /** This device's own clock estimate (Sprint 2.5). */
+  readonly clockSync: RoomClockSyncModel;
+  /**
+   * The room's synchronization verdict (Sprint 2.6). The only place the lobby
+   * may read health, readiness counts, or countdown eligibility from.
+   */
+  readonly roomSync: RoomSyncModel;
   refresh(): void;
   join(): void;
   leave(): void;
@@ -178,7 +187,23 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     [readModel, run, snapshot],
   );
 
-  const presence = useRoomPresence(roomId, profileId, status === "ready");
+  const viewerIsMember = snapshot?.viewerMembership?.state === "joined";
+  const viewerIsHost =
+    snapshot?.viewerMembership?.role === "host" ||
+    (snapshot?.room.hostProfileId ?? null) === profileId;
+
+  // Sprint 2.5 measures this device's clock; Sprint 2.6 carries the result on
+  // the presence heartbeat so the room can aggregate it.
+  const clockSync = useRoomClockSync({
+    roomId,
+    profileId,
+    enabled: status === "ready" && Boolean(viewerIsMember),
+  });
+
+  const presence = useRoomPresence(roomId, profileId, status === "ready", {
+    clockOffsetMs: clockSync.snapshot?.offset?.offsetMs ?? null,
+    latencyMs: clockSync.snapshot?.offset?.latencyMs ?? null,
+  });
 
   const isReady = useCallback(
     (member: RoomMember) => readModel?.isReady(member) ?? false,
@@ -194,6 +219,16 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     : [];
   const joined = members.filter((member) => member.state === "joined");
 
+  const roomSync = useRoomSync({
+    roomId,
+    members,
+    presenceByProfileId: presence.byProfileId,
+    isHost: Boolean(viewerIsHost),
+    actorProfileId: profileId,
+    ownHealth: clockSync.health,
+    enabled: status === "ready" && Boolean(viewerIsMember),
+  });
+
   return {
     status,
     error,
@@ -202,6 +237,8 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     isPresenceTracked: presence.isTracking,
     allReady: joined.length > 0 && joined.every((member) => member.isReady),
     lastArrivalProfileId: joined.length > 0 ? (joined[joined.length - 1]?.profileId ?? null) : null,
+    clockSync,
+    roomSync,
     viewer: snapshot ? toViewerView(snapshot, profileId, isReady) : ABSENT_VIEWER,
     pending,
     isLive,

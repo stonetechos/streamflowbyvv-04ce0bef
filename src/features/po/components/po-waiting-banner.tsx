@@ -35,6 +35,10 @@ export interface PoWaitingBannerProps {
   readonly isSyncing?: boolean;
   /** Everyone reached Excellent or Good — Po gives a satisfied smile. */
   readonly isSyncSatisfied?: boolean;
+  /** The room needs a re-sync — Po calmly gestures that someone is catching up. */
+  readonly isRoomOutOfSync?: boolean;
+  /** The room just returned to a healthy band — Po visibly relaxes. */
+  readonly hasRoomRecovered?: boolean;
   /** Changing this makes Po glance toward the roster (e.g. a new arrival). */
   readonly gazeToken?: string | null;
   readonly className?: string;
@@ -51,7 +55,13 @@ export function resolvePoWaitingMood(signals: {
   readonly isPlaybackReady?: boolean;
   readonly isSyncing?: boolean;
   readonly isSyncSatisfied?: boolean;
+  readonly isRoomOutOfSync?: boolean;
+  readonly hasRoomRecovered?: boolean;
 }): PoMood {
+  // Sprint 2.6 — the room being out of step outranks every happier signal:
+  // it is the one thing standing between the lobby and a countdown.
+  if (signals.isRoomOutOfSync) return "concerned";
+  if (signals.hasRoomRecovered) return "relieved";
   // Readiness is the happiest thing the lobby can report, so it outranks the
   // countdown beats it necessarily follows.
   if (signals.isPlaybackReady) return "excited";
@@ -81,6 +91,8 @@ const CAPTION_KEYS: Readonly<Record<PoMood, string>> = {
   disappointed: "po.banner.cancelled",
   excited: "po.banner.playback_ready",
   observing: "po.banner.observing",
+  concerned: "po.banner.concerned",
+  relieved: "po.banner.relieved",
 };
 
 export function PoWaitingBanner({
@@ -93,6 +105,8 @@ export function PoWaitingBanner({
   isPlaybackReady = false,
   isSyncing = false,
   isSyncSatisfied = false,
+  isRoomOutOfSync = false,
+  hasRoomRecovered = false,
   gazeToken = null,
   className,
 }: PoWaitingBannerProps) {
@@ -107,6 +121,8 @@ export function PoWaitingBanner({
     isPlaybackReady,
     isSyncing,
     isSyncSatisfied,
+    isRoomOutOfSync,
+    hasRoomRecovered,
   });
 
   return (

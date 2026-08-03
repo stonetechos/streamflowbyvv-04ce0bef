@@ -48,7 +48,12 @@ export type PoMood =
   | "excited"
   // Sprint 2.5 — Po quietly watches the clocks settle. Watching only: Po
   // measures nothing, reports nothing, and still says nothing (Po Rule).
-  | "observing";
+  | "observing"
+  // Sprint 2.6 — the room's own synchronization. `concerned` is a calm
+  // gesture that someone is still catching up; `relieved` is the breath out
+  // when everyone is back in step. Decorative, as always (Po Rule).
+  | "concerned"
+  | "relieved";
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;

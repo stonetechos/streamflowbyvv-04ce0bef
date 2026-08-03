@@ -158,6 +158,7 @@ export function toWaitingRoomError(error: unknown): WaitingRoomError {
     "SF-SYS-SERVICE-UNAVAILABLE": "error.sys.service_unavailable",
     "SF-SYS-PERSISTENCE-UNAVAILABLE": "error.sys.persistence_unavailable",
     "SF-SYS-CONFLICT": "error.sys.conflict",
+    "SF-SYNC-RESYNC-REQUIRED": "error.sync.resync_required",
   };
 
   return { code, messageKey: known[code] ?? "error.sys.unexpected" };
