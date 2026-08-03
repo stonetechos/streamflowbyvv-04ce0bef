@@ -18,7 +18,7 @@ import type {
 import type { EntityId } from "@/repository/repository.types";
 
 import type { DataConnection } from "../connection";
-import { runCommand, runQuery } from "../query-wrapper";
+import { runCommand, runMaybe, runQuery } from "../query-wrapper";
 import { requireAvailable } from "../rooms/room-query-support";
 import {
   PROVIDER_PREFERENCE_COLUMNS,
@@ -95,8 +95,10 @@ export function createSupabaseProviderContextRepository(
       requireAvailable(connection, context("read", profileId));
       const client = connection.client();
 
+      // A person who has never opened settings has no preference rows at all;
+      // "no row" is a legitimate outcome here, not a missing record.
       const [privacy, localization] = await Promise.all([
-        runQuery<{ default_provider_id: string | null } | null>(
+        runMaybe<{ default_provider_id: string | null }>(
           client
             .from("privacy_preferences")
             .select("default_provider_id")
@@ -104,7 +106,7 @@ export function createSupabaseProviderContextRepository(
             .maybeSingle(),
           context("read:privacy", profileId),
         ),
-        runQuery<{ region_code: string | null } | null>(
+        runMaybe<{ region_code: string | null }>(
           client
             .from("localization_preferences")
             .select("region_code")
@@ -113,6 +115,7 @@ export function createSupabaseProviderContextRepository(
           context("read:localization", profileId),
         ),
       ]);
+
 
       return {
         defaultProviderId: privacy?.default_provider_id ?? null,
