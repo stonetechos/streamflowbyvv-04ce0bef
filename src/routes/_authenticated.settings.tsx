@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { SectionHeader } from "@/design-system/components";
 import { useAuth } from "@/features/auth";
