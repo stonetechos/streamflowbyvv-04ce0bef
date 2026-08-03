@@ -426,6 +426,41 @@ export const hiINBundle: LocaleBundle = {
     "provider.launch.status.launching": "आपका प्रोवाइडर खोला जा रहा है…",
     "provider.launch.status.launched": "प्रोवाइडर खुल गया। काउंटडाउन के लिए यहाँ लौटें।",
     "provider.launch.status.failed": "कुछ नहीं खुला। ब्राउज़र विकल्प आज़माएँ।",
+    "provider.playback_mode.manual_sync": "मैन्युअल सिंक",
+    "provider.playback_mode.future_native": "मैन्युअल सिंक (नेटिव कंट्रोल भविष्य में)",
+    "provider.playback_mode.unsupported": "उपलब्ध नहीं",
+    "provider.control.refusal.browser":
+      "StreamFlow आपके लिए प्ले या पॉज़ नहीं कर सकता। काउंटडाउन के बाद सब साथ में प्ले दबाएं।",
+    "provider.control.refusal.native_planned":
+      "नेटिव कंट्रोल योजना में है, अभी उपलब्ध नहीं।",
+    "provider.control.refusal.unsupported": "StreamFlow यह सेवा नहीं खोल सकता।",
+    "provider.session.status.connected": "जुड़ा हुआ",
+    "provider.session.status.not_connected": "जुड़ा नहीं",
+    "provider.session.status.unavailable": "उपलब्ध नहीं",
+    "provider.session.last_used": "अंतिम बार: {when}",
+    "provider.capability.manual_sync": "मैन्युअल सिंक",
+    "provider.capability.future_control": "भविष्य का कंट्रोल",
+    "provider.connect.title": "{service} अपने खाते से खोलें",
+    "provider.connect.description":
+      "StreamFlow आपकी ओर से साइन इन नहीं करता। आप {service} में हमेशा की तरह खुद साइन इन करेंगे।",
+    "provider.connect.point_sign_in": "सेवा में सीधे साइन इन करें।",
+    "provider.connect.point_no_credentials":
+      "StreamFlow कोई यूज़रनेम, पासवर्ड या टोकन संग्रहीत नहीं करता।",
+    "provider.connect.point_manual_sync":
+      "प्लेबैक आपके हाथ में रहता है; काउंटडाउन सबको साथ लाता है।",
+    "provider.connect.confirm": "जारी रखें",
+    "provider.connect.cancel": "अभी नहीं",
+    "room.provider.title": "यह वॉच पार्टी",
+    "room.provider.service": "सेवा",
+    "room.provider.none": "अभी कोई सेवा नहीं चुनी",
+    "room.provider.selected_title": "चुना गया शीर्षक",
+    "room.provider.title_unknown": "अभी तय नहीं",
+    "room.provider.episode_value": "S{season} · E{episode}",
+    "room.provider.host": "होस्ट",
+    "room.provider.host_unknown": "अज्ञात",
+    "room.provider.playback_mode": "प्लेबैक मोड",
+    "room.provider.manual_note":
+      "StreamFlow काउंटडाउन से सबको एक साथ रखता है; वह सेवा का प्लेयर नहीं चलाता।",
     "provider.launch.refusal.compliance_blocked": "यह प्रोवाइडर StreamFlow से नहीं खोला जा सकता।",
     "provider.launch.refusal.provider_unavailable":
       "यह प्रोवाइडर अभी आपके क्षेत्र में उपलब्ध नहीं है।",

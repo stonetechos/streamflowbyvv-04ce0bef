@@ -422,6 +422,41 @@ export const enBundle: LocaleBundle = {
     "provider.launch.status.launching": "Opening your provider…",
     "provider.launch.status.launched": "Provider opened. Come back here for the countdown.",
     "provider.launch.status.failed": "Nothing opened. Try the browser option instead.",
+    "provider.playback_mode.manual_sync": "Manual sync",
+    "provider.playback_mode.future_native": "Manual sync (native control planned)",
+    "provider.playback_mode.unsupported": "Not available",
+    "provider.control.refusal.browser":
+      "StreamFlow can’t start or pause this service for you. Everyone presses play together after the countdown.",
+    "provider.control.refusal.native_planned":
+      "Native playback control is planned, not available yet. Playback stays manual.",
+    "provider.control.refusal.unsupported": "StreamFlow can’t open this service.",
+    "provider.session.status.connected": "Connected",
+    "provider.session.status.not_connected": "Not connected",
+    "provider.session.status.unavailable": "Unavailable",
+    "provider.session.last_used": "Last used {when}",
+    "provider.capability.manual_sync": "Manual sync",
+    "provider.capability.future_control": "Future control",
+    "provider.connect.title": "Open {service} with your own account",
+    "provider.connect.description":
+      "StreamFlow never signs in for you. You’ll sign in with {service} the way you normally do, in their own app or site.",
+    "provider.connect.point_sign_in": "Sign in with the service directly, as usual.",
+    "provider.connect.point_no_credentials":
+      "StreamFlow stores no usernames, passwords or service tokens — only that you connected.",
+    "provider.connect.point_manual_sync":
+      "Playback stays in your hands: a shared countdown gets everyone pressing play together.",
+    "provider.connect.confirm": "Continue",
+    "provider.connect.cancel": "Not now",
+    "room.provider.title": "This watch party",
+    "room.provider.service": "Service",
+    "room.provider.none": "No service chosen yet",
+    "room.provider.selected_title": "Selected title",
+    "room.provider.title_unknown": "Not set yet",
+    "room.provider.episode_value": "S{season} · E{episode}",
+    "room.provider.host": "Host",
+    "room.provider.host_unknown": "Unknown",
+    "room.provider.playback_mode": "Playback mode",
+    "room.provider.manual_note":
+      "StreamFlow keeps everyone in step with a countdown. It does not control the service’s player.",
     "provider.launch.refusal.compliance_blocked": "This provider cannot be opened from StreamFlow.",
     "provider.launch.refusal.provider_unavailable":
       "This provider is unavailable in your region right now.",
