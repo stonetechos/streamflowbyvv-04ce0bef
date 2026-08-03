@@ -39,6 +39,7 @@ import { ReadyConfirmationCard } from "./ready-confirmation-card";
 import { RoomSummaryCard } from "./room-summary-card";
 import { PlaybackReadinessPanel } from "./playback-readiness-panel";
 import { ProviderLaunchPanel } from "./provider-launch-panel";
+import { ProviderSessionCard } from "./provider-session-card";
 import { RoomSetupCard } from "./room-setup-card";
 import { RoomSyncCard } from "./room-sync-card";
 import { SyncHealthCard } from "./sync-health-card";
@@ -285,6 +286,12 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
+          <ProviderSessionCard
+            room={room}
+            providerName={providerLaunch.plan?.providerKey ?? room.providerId}
+            hostLabel={model.members.find((member) => member.isHost)?.label ?? null}
+            supportsDeepLink={(providerLaunch.plan?.primaryTarget ?? null) !== null}
+          />
           <ManualPlayReminder
             isDue={readySnapshot?.manualPlayReminderDue ?? false}
             hasCountdownFinished={countdown.state === "completed"}

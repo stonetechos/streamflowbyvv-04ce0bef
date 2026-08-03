@@ -10,6 +10,11 @@ export {
   type ProviderCatalogStatus,
 } from "./use-provider-catalog";
 export {
+  useProviderSessions,
+  type ProviderSessionSource,
+  type ProviderSessionsModel,
+} from "./use-provider-sessions";
+export {
   selectionClassHintKey,
   selectionClassLabelKey,
   toProviderOptionView,

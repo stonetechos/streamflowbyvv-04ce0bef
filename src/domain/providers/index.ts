@@ -3,14 +3,40 @@
  * Types, catalog adjudication, preferences, and deep-link construction.
  */
 export {
+  CONTENT_KINDS,
   CONTENT_REFERENCE_KINDS,
   createContentReference,
   parseContentReference,
   serializeContentReference,
+  type ContentKind,
   type ContentReference,
   type ContentReferenceDraft,
   type ContentReferenceKind,
 } from "./content-reference";
+export {
+  createBrowserProviderControl,
+  createNativeProviderControl,
+  createUnsupportedProviderControl,
+  selectProviderControl,
+  CONTROL_CAPABILITY_STATES,
+  PROVIDER_CONTROL_MODES,
+  type ControlCapabilityState,
+  type ProviderControl,
+  type ProviderControlCapabilities,
+  type ProviderControlMode,
+  type ProviderControlRefusal,
+  type ProviderControlSelection,
+} from "./provider-control";
+export {
+  connectProviderRecord,
+  deriveProviderSession,
+  providerSessionStatusKey,
+  PROVIDER_SESSION_STATUSES,
+  type ProviderConnectionRecord,
+  type ProviderSession,
+  type ProviderSessionInput,
+  type ProviderSessionStatus,
+} from "./provider-session";
 export {
   createDeepLinkService,
   type DeepLinkResult,

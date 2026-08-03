@@ -27,6 +27,8 @@ export interface ServiceCardView {
   readonly monogram: string;
   readonly status: ServiceStatus;
   readonly isChoosable: boolean;
+  /** Sprint K.1 — whether a specific title can be opened for this service. */
+  readonly supportsDeepLink: boolean;
   /** Token-based accent, so brand tiles never hardcode a colour. */
   readonly accent: "primary" | "info" | "success" | "warning" | "accent";
 }
@@ -103,6 +105,7 @@ export function buildServiceShelf(
         monogram: brand.monogram,
         status: statusOf(match),
         isChoosable: match.isSelectable,
+        supportsDeepLink: match.supportsDeepLink,
         accent: brand.accent,
       });
       continue;
@@ -115,6 +118,7 @@ export function buildServiceShelf(
       monogram: brand.monogram,
       status: "coming_soon",
       isChoosable: false,
+      supportsDeepLink: false,
       accent: brand.accent,
     });
   }
@@ -131,6 +135,7 @@ export function buildServiceShelf(
       monogram: name.slice(0, 2).toUpperCase(),
       status: statusOf(option),
       isChoosable: option.isSelectable,
+      supportsDeepLink: option.supportsDeepLink,
       accent: "accent",
     });
   }
