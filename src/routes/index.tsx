@@ -1,80 +1,92 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
-import { appConfig } from "@/config";
-import { useFeatureFlags } from "@/foundation/feature-flags";
-import { useLocalization } from "@/foundation/localization";
-import { usePo } from "@/features/po";
+import { ActionButton, Surface } from "@/design-system/components";
+import { useAuth } from "@/features/auth";
+import { PoCompanion } from "@/features/po";
+import { useTranslation } from "@/foundation/localization";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
   head: () => ({
     meta: [
-      { title: "StreamFlow — Foundation" },
+      { title: "StreamFlow — Watch together, in sync" },
       {
         name: "description",
         content:
-          "Sprint 1.0 foundation build of StreamFlow: application shell, design system, localization, feature flags and Po core.",
+          "StreamFlow keeps a group's playback in step across the services they already pay for, with a shared countdown and voice chat. No accounts shared, no content re-streamed.",
       },
-      { property: "og:title", content: "StreamFlow — Foundation" },
+      { property: "og:title", content: "StreamFlow — Watch together, in sync" },
       {
         property: "og:description",
-        content: "The foundation layer of StreamFlow's watch-together platform is in place.",
+        content:
+          "Start a watch party on the services you already use, with a shared countdown and voice.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: FoundationStatusPage,
+  component: LandingPage,
 });
 
-/**
- * Sprint 1.0 status page. Deliberately minimal: it exists to prove the shell,
- * design tokens, localization and provider graph are wired. Product pages are
- * out of scope for this sprint (Build Rules §1).
- */
-function FoundationStatusPage() {
-  const { locale, availableLocales, setLocale, t } = useLocalization();
-  const { subject } = useFeatureFlags();
-  const po = usePo();
+function LandingPage() {
+  const { t } = useTranslation();
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const isAuthenticated = Boolean(auth.session);
 
-  const checks = [
-    { label: "Configuration", value: `${appConfig.environment} · log ${appConfig.logLevel}` },
-    { label: "Localization", value: `${locale} · ${availableLocales.length} locales` },
-    { label: "Feature flags", value: subject ? "subject bound" : "registry empty" },
-    { label: "Po core", value: po.isAvailable ? "tools registered" : "shell only" },
-  ];
+  useEffect(() => {
+    if (isAuthenticated) void navigate({ to: "/home", replace: true });
+  }, [isAuthenticated, navigate]);
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 py-16">
-      <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-        Sprint 1.0
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">{t("common.app.name")}</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{t("common.app.tagline")}</p>
+    <div className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6">
+      <Surface tone="glass" padding="lg" className="relative isolate overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 opacity-70"
+          style={{
+            background:
+              "radial-gradient(48rem 28rem at 110% -10%, var(--color-info) 0%, transparent 60%), radial-gradient(38rem 24rem at -10% 120%, var(--color-primary) 0%, transparent 60%)",
+          }}
+        />
+        <div className="flex flex-col gap-8 md:flex-row md:items-center">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {t("common.app.name")}
+            </p>
+            <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+              {t("landing.headline")}
+            </h1>
+            <p className="mt-4 max-w-xl text-base text-muted-foreground">
+              {t("landing.subheadline")}
+            </p>
 
-      <dl className="mt-10 divide-y divide-border border-y border-border">
-        {checks.map((check) => (
-          <div key={check.label} className="flex items-center justify-between gap-4 py-3">
-            <dt className="text-sm font-medium">{check.label}</dt>
-            <dd className="text-sm text-muted-foreground">{check.value}</dd>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/auth/sign-up">
+                <ActionButton size="lg">{t("landing.cta.primary")}</ActionButton>
+              </Link>
+              <Link to="/auth/sign-in">
+                <ActionButton size="lg" tone="ghost">
+                  {t("landing.cta.secondary")}
+                </ActionButton>
+              </Link>
+            </div>
           </div>
-        ))}
-      </dl>
 
-      <div className="mt-8">
-        <label htmlFor="locale-select" className="text-sm font-medium">
-          {t("settings.language.label")}
-        </label>
-        <select
-          id="locale-select"
-          value={locale}
-          onChange={(event) => setLocale(event.target.value as typeof locale)}
-          className="mt-2 block rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          {availableLocales.map((option) => (
-            <option key={option.code} value={option.code}>
-              {option.nativeName}
-            </option>
-          ))}
-        </select>
-      </div>
+          <PoCompanion mood="happy" className="h-40 w-56 shrink-0 self-center" />
+        </div>
+      </Surface>
+
+      <ul className="mt-8 grid gap-4 sm:grid-cols-3">
+        {["accounts", "countdown", "voice"].map((point) => (
+          <li key={point}>
+            <Surface padding="md" className="h-full">
+              <p className="text-sm text-muted-foreground">{t(`auth.story.point.${point}`)}</p>
+            </Surface>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
