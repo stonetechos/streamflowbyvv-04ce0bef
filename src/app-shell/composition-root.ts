@@ -11,7 +11,9 @@ import { registerAuthServices } from "@/domain/auth";
 import { registerDomainServices } from "@/domain/services";
 import { registerEventInfrastructure } from "@/infrastructure/events";
 import { registerIdentityAdapter } from "@/infrastructure/identity";
+import { registerProfileAdapter } from "@/infrastructure/profiles";
 import { registerProviderAdapter } from "@/infrastructure/providers";
+
 import { registerRoomAdapter } from "@/infrastructure/rooms";
 import { registerTimeAdapter } from "@/infrastructure/time";
 import { logger } from "@/foundation/logging";
