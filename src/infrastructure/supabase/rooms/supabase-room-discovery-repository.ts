@@ -82,22 +82,22 @@ export function createSupabaseRoomDiscoveryRepository(
     return Array.isArray(data) ? (data[0] ?? null) : data;
   };
 
+  const toDiscovery = (row: DiscoveryRow): RoomDiscovery => ({
+    roomId: row.room_id,
+    name: row.room_name,
+    providerId: row.provider_id,
+    hostDisplayName: row.host_display_name,
+    memberCount: Number(row.member_count ?? 0),
+    capacity: Number(row.capacity ?? 0),
+    status: row.status as RoomStatus,
+  });
+
   return {
     async discoverByCode(code: EntityCode): Promise<RoomDiscovery | null> {
       const row = (await callRpc(DISCOVER_FUNCTION, { _code: code }, "discoverByCode")) as
         | DiscoveryRow
         | null;
-      if (!row) return null;
-
-      return {
-        roomId: row.room_id,
-        name: row.room_name,
-        providerId: row.provider_id,
-        hostDisplayName: row.host_display_name,
-        memberCount: Number(row.member_count ?? 0),
-        capacity: Number(row.capacity ?? 0),
-        status: row.status as RoomStatus,
-      };
+      return row ? toDiscovery(row) : null;
     },
 
     async findJoinableById(roomId: EntityId): Promise<Room | null> {
@@ -108,5 +108,23 @@ export function createSupabaseRoomDiscoveryRepository(
       )) as RoomRow | null;
       return row ? toRoom(row) : null;
     },
+
+    async explain(input: RoomAdmissionLookup): Promise<RoomAdmissionFacts | null> {
+      const row = (await callRpc(
+        FACTS_FUNCTION,
+        { _code: input.code ?? null, _room_id: input.roomId ?? null },
+        "explain",
+      )) as FactsRow | null;
+      if (!row) return null;
+
+      return {
+        ...toDiscovery(row),
+        isDeleted: Boolean(row.is_deleted),
+        isBlocked: Boolean(row.is_blocked),
+        viewerState: (row.viewer_state as RoomAdmissionFacts["viewerState"]) ?? null,
+        viewerOtherRoomId: row.viewer_other_room_id,
+      };
+    },
   };
+
 }
