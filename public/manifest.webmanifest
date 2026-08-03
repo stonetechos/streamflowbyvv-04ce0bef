@@ -1,0 +1,26 @@
+{
+  "name": "StreamFlow — Watch together, perfectly synced",
+  "short_name": "StreamFlow",
+  "description": "Share a movie or episode from your streaming app and watch it together, perfectly synced, with voice.",
+  "start_url": "/home",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0d12",
+  "theme_color": "#0b0d12",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
