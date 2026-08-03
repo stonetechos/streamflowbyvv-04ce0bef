@@ -499,6 +499,54 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          addressee_profile_id: string
+          code: string | null
+          created_at: string
+          id: string
+          requester_profile_id: string
+          responded_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          addressee_profile_id: string
+          code?: string | null
+          created_at?: string
+          id?: string
+          requester_profile_id: string
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          addressee_profile_id?: string
+          code?: string | null
+          created_at?: string
+          id?: string
+          requester_profile_id?: string
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_addressee_profile_id_fkey"
+            columns: ["addressee_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_requester_profile_id_fkey"
+            columns: ["requester_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invites: {
         Row: {
           accepted_at: string | null

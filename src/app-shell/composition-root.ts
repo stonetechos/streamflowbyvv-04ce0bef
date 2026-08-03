@@ -13,6 +13,7 @@ import { registerEventInfrastructure } from "@/infrastructure/events";
 import { registerIdentityAdapter } from "@/infrastructure/identity";
 import { registerProfileAdapter } from "@/infrastructure/profiles";
 import { registerProviderAdapter } from "@/infrastructure/providers";
+import { registerSocialAdapter } from "@/infrastructure/social";
 
 import { registerRoomAdapter } from "@/infrastructure/rooms";
 import { registerTimeAdapter } from "@/infrastructure/time";
@@ -33,6 +34,8 @@ export function composeApplication(): void {
   const providersBound = registerProviderAdapter();
   // Milestone E: profile and the five preference aggregates.
   const profilesBound = registerProfileAdapter();
+  // Milestone F.0: friend graph, block list, directory, recent partners.
+  const socialBound = registerSocialAdapter();
   // Sprint 2.5: the server-time reference behind clock synchronization.
 
   const timeBound = registerTimeAdapter();
@@ -55,6 +58,9 @@ export function composeApplication(): void {
   }
   if (!profilesBound) {
     logger.warn("No profile adapter bound: backend is not configured", { module: "profiles" });
+  }
+  if (!socialBound) {
+    logger.warn("No social adapter bound: backend is not configured", { module: "social" });
   }
   if (!timeBound) {
     logger.warn("No time adapter bound: clock synchronization is unavailable", { module: "sync" });

@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SectionHeader } from "@/design-system/components";
 import { useAuth } from "@/features/auth";
 import { useHome } from "@/features/home";
-import { InviteCard } from "@/features/invitations";
+import { InviteCard, InviteHistoryList } from "@/features/invitations";
 import { PoCompanion } from "@/features/po";
 import { EmptyState } from "@/design-system/components";
 import { useTranslation } from "@/foundation/localization";
@@ -40,6 +40,7 @@ function InvitesRoute() {
   const auth = useAuth();
   const home = useHome(auth.session?.identity.profileId ?? null);
   const pending = home.snapshot.pendingInvites;
+  const answered = home.snapshot.answeredInvites;
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8 px-4 py-8 pb-28 sm:px-6 md:pb-12">
@@ -65,6 +66,15 @@ function InvitesRoute() {
           ))}
         </ul>
       )}
+
+      <section className="space-y-4" aria-labelledby="invite-history-heading">
+        <SectionHeader
+          as="h2"
+          title={t("invite.history.title")}
+          description={t("invite.history.description")}
+        />
+        <InviteHistoryList entries={answered} />
+      </section>
     </div>
   );
 }

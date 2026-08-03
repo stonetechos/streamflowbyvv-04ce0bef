@@ -32,6 +32,27 @@ export const DOMAIN_ERRORS = Object.freeze({
     retryable: false,
     recoveryActionKey: "error.action.go_home",
   },
+  /** Milestone F.0 — the friendship edge is absent, or gone since it was read. */
+  FRIENDSHIP_NOT_FOUND: {
+    code: "SF-SYS-FRIENDSHIP-NOT-FOUND",
+    messageKey: "error.social.friendship_not_found",
+    severity: "warning",
+    retryable: false,
+  },
+  /** Milestone F.0 — the caller is not a party to this friendship edge. */
+  FRIENDSHIP_FORBIDDEN: {
+    code: "SF-SYS-FRIENDSHIP-FORBIDDEN",
+    messageKey: "error.social.friendship_forbidden",
+    severity: "error",
+    retryable: false,
+  },
+  /** Milestone F.0 — the edge is not in a state that permits this answer. */
+  FRIENDSHIP_INVALID_STATE: {
+    code: "SF-SYS-FRIENDSHIP-INVALID-STATE",
+    messageKey: "error.social.friendship_invalid_state",
+    severity: "warning",
+    retryable: false,
+  },
   /** Foundation §19 rate-limit policy. */
 
   RATE_LIMITED: {

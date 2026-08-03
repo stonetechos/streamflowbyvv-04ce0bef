@@ -24,6 +24,7 @@ const EMPTY_SNAPSHOT: HomeSnapshot = Object.freeze({
   liveRooms: [],
   recentRooms: [],
   pendingInvites: [],
+  answeredInvites: [],
   hostedRoomCount: 0,
   isFirstTime: true,
 });
@@ -43,6 +44,12 @@ export interface HomeModel {
   createRoom(name: string): Promise<string | null>;
   joinByCode(code: string): Promise<string | null>;
   acceptInvite(inviteId: string): Promise<string | null>;
+  /**
+   * Milestone F.0 — quick invite: invites a known person straight into the
+   * room being resumed. Capacity and compliance remain `RoomFlowService`'s
+   * decision; this only asks.
+   */
+  inviteToRoom(roomId: string, inviteeProfileId: string): Promise<boolean>;
   declineInvite(inviteId: string): Promise<void>;
 }
 
@@ -164,6 +171,25 @@ export function useHome(viewerProfileId: string | null): HomeModel {
     [intent, rooms, run, viewerProfileId],
   );
 
+  const inviteToRoom = useCallback(
+    async (roomId: string, inviteeProfileId: string) => {
+      if (!rooms || !viewerProfileId) return false;
+      const result = await run("invite", () =>
+        rooms.createInvite(
+          {
+            roomId,
+            inviterProfileId: viewerProfileId,
+            channel: "in_app",
+            inviteeProfileId,
+          },
+          intent(),
+        ),
+      );
+      return result !== null;
+    },
+    [intent, rooms, run, viewerProfileId],
+  );
+
   const declineInvite = useCallback(
     async (inviteId: string) => {
       if (!rooms || !viewerProfileId) return;
@@ -187,6 +213,7 @@ export function useHome(viewerProfileId: string | null): HomeModel {
       createRoom,
       joinByCode,
       acceptInvite,
+      inviteToRoom,
       declineInvite,
     }),
     [
@@ -195,6 +222,7 @@ export function useHome(viewerProfileId: string | null): HomeModel {
       declineInvite,
       error,
       home,
+      inviteToRoom,
       isLoading,
       joinByCode,
       pending,

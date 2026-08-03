@@ -9,12 +9,13 @@
 import { ActionButton, EmptyState, SectionHeader } from "@/design-system/components";
 import { InviteCard } from "@/features/invitations";
 import { PoCompanion } from "@/features/po";
+import { HomeSocialRails, useSocial } from "@/features/social";
 import { useTranslation } from "@/foundation/localization";
 
 import type { HomeModel } from "../use-home";
 import { ContinueWatchingCard } from "./continue-watching-card";
 import { HomeHero } from "./home-hero";
-import { FriendsPlaceholder, UpcomingPartiesPlaceholder } from "./home-placeholders";
+import { UpcomingPartiesPlaceholder } from "./home-placeholders";
 import { HomeSkeleton } from "./home-skeleton";
 import { ProvidersSection } from "./providers-section";
 import { RoomEntryCards } from "./room-entry-cards";
@@ -29,6 +30,13 @@ export interface HomeScreenProps {
 export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
   const { t } = useTranslation();
   const { snapshot } = home;
+  const social = useSocial(profileId);
+
+  // Quick invite is only offered when there is somewhere to invite people to.
+  const quickInviteRoomId = snapshot.continueRoom?.room.id ?? null;
+  const onInvite = quickInviteRoomId
+    ? (inviteeProfileId: string) => void home.inviteToRoom(quickInviteRoomId, inviteeProfileId)
+    : undefined;
 
   if (home.isLoading) {
     return (
@@ -107,10 +115,9 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
         emptyDescription={t("home.recent.empty.description")}
       />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <FriendsPlaceholder />
-        <UpcomingPartiesPlaceholder />
-      </div>
+      <HomeSocialRails social={social} {...(onInvite ? { onInvite } : {})} />
+
+      <UpcomingPartiesPlaceholder />
     </div>
   );
 }

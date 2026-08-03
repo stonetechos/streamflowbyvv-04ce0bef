@@ -101,6 +101,21 @@ export {
   type ProfileSettingsRecord,
   type ProfileSettingsRepository,
 } from "./profiles";
+export {
+  BLOCK_REPOSITORY,
+  FRIENDSHIP_REPOSITORY,
+  PROFILE_DIRECTORY_REPOSITORY,
+  RECENT_PARTNER_READ_REPOSITORY,
+  type BlockRecord,
+  type BlockRepository,
+  type DirectoryProfileRecord,
+  type FriendshipRecord,
+  type FriendshipRepository,
+  type FriendshipStatusValue,
+  type ProfileDirectoryRepository,
+  type RecentPartnerReadRepository,
+  type RecentPartnerRecord,
+} from "./social";
 
 export {
   REPOSITORY_ERRORS,

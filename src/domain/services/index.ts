@@ -47,6 +47,7 @@ export { createSyncService, type ClockSample, type SyncService } from "./sync-se
 export { createUserService, type UserService } from "./user-service";
 export { createVoiceService, type VoiceService } from "./voice-service";
 export type { DomainServiceContext, Intent } from "./service-context";
+
 export {
   ANALYTICS_SERVICE,
   CLOCK,
