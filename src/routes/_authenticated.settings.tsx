@@ -56,7 +56,6 @@ function SettingsRoute() {
       >
         {t("auth.action.sign_out")}
       </Link>
-
     </div>
   );
 }

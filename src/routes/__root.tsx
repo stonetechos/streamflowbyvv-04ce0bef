@@ -102,7 +102,6 @@ function RootNotFound() {
   );
 }
 
-
 function RootError({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
