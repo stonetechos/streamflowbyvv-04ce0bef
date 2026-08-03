@@ -55,9 +55,6 @@ export function resolvePoWaitingMood(signals: {
   // Readiness is the happiest thing the lobby can report, so it outranks the
   // countdown beats it necessarily follows.
   if (signals.isPlaybackReady) return "excited";
-  // Sync sits below the countdown beats: while nothing else is happening, Po
-  // watches the clocks, and smiles once they are all in a healthy band.
-  if (signals.isSyncing) return "observing";
   // Countdown outranks every lobby signal: it is the thing everyone is
   // watching. Cancellation wins over "counting" so the disappointed beat is
   // never swallowed by a stale tick.
@@ -66,6 +63,10 @@ export function resolvePoWaitingMood(signals: {
   if (signals.isCounting) return "counting";
   if (signals.isBusy) return "thinking";
   if (signals.allReady) return "delighted";
+  // Sprint 2.5 — clocks. Po watches while they settle, and gives the same
+  // satisfied smile as "everyone ready" once they land in a healthy band.
+  if (signals.isSyncing) return "observing";
+  if (signals.isSyncSatisfied) return "delighted";
   if (signals.hasProvider) return "focused";
   return "calm";
 }
