@@ -223,8 +223,53 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
 
   const requireJoinable = (room: Room, operation: string): void => {
     if (!JOINABLE_STATUSES.includes(room.status as (typeof JOINABLE_STATUSES)[number])) {
-      throw domainError("ROOM_NOT_ACTIVE", { operation, aggregateId: room.id });
+      throw domainError(room.status === "ended" ? "ROOM_ENDED" : "ROOM_NOT_ACTIVE", {
+        operation,
+        aggregateId: room.id,
+      });
     }
+  };
+
+  /**
+   * Sprint J.1.5 — the single place a refusal reason is decided. It reads the
+   * observable facts about a room the caller was pointed at and raises the
+   * condition that is actually true. Presentation never infers a reason; when
+   * no discovery adapter is bound this returns null and the downstream rules
+   * below still refuse, just less specifically.
+   */
+  const adjudicate = async (
+    lookup: { code?: string; roomId?: EntityId },
+    profileId: EntityId | null,
+    operation: string,
+  ): Promise<RoomAdmissionFacts | null> => {
+    if (!discovery) return null;
+
+    const facts = await discovery.explain(lookup);
+    if (!facts) throw domainError("ROOM_NOT_FOUND", { operation });
+
+    const context = { operation, aggregateId: facts.roomId };
+
+    if (facts.isDeleted) throw domainError("ROOM_DELETED", context);
+    if (facts.status === "ended") throw domainError("ROOM_ENDED", context);
+    if (!JOINABLE_STATUSES.includes(facts.status as (typeof JOINABLE_STATUSES)[number])) {
+      throw domainError("ROOM_NOT_ACTIVE", context);
+    }
+    if (facts.isBlocked) throw domainError("ROOM_BLOCKED", context);
+
+    if (profileId) {
+      if (facts.viewerState === "joined") throw domainError("ROOM_ALREADY_MEMBER", context);
+      if (facts.viewerState === "removed") throw domainError("ROOM_MEMBER_REMOVED", context);
+      if (facts.viewerOtherRoomId) {
+        throw domainError("ROOM_ALREADY_IN_ANOTHER_ROOM", context);
+      }
+    }
+
+    // A held seat (an outstanding invite) is the caller's own; it is not
+    // counted against them when the room looks full.
+    const occupied = facts.viewerState === "invited" ? facts.memberCount - 1 : facts.memberCount;
+    if (occupied >= facts.capacity) throw domainError("ROOM_CAPACITY_EXCEEDED", context);
+
+    return facts;
   };
 
   /** Admits a profile, enforcing capacity and re-using a prior membership row. */
@@ -236,6 +281,9 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     intent: Intent,
   ): Promise<RoomMember> => {
     requireJoinable(room, operation);
+    // The host reclaims their own chair; a rejoin never demotes them.
+    const seatRole: RoomRole = room.hostProfileId === profileId ? "host" : role;
+
 
     const existing = await members.findByRoomAndProfile(room.id, profileId);
     if (existing?.state === "joined") {
