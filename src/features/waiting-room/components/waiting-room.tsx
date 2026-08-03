@@ -15,7 +15,7 @@ import { useProfile } from "@/features/profiles";
 import {
   readVoiceDevicePreferences,
   useVoiceSession,
-  VoicePanel,
+  VoiceDock,
   type VoiceIndicatorState,
 } from "@/features/voice";
 import { WatchPartyScreen } from "@/features/watch-party";
@@ -32,11 +32,15 @@ import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
 import { MemberList } from "./member-list";
 import { MembershipActions } from "./membership-actions";
-import { NowWatchingCard } from "./now-watching-card";
 import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
+import { CountdownOverlay } from "./countdown-overlay";
+import { InviteFriends } from "./invite-friends";
 import { ManualPlayReminder } from "./manual-play-reminder";
+import { MemberStrip } from "./member-strip";
 import { ReadyConfirmationCard } from "./ready-confirmation-card";
+import { RoomDetails } from "./room-details";
+import { RoomStage } from "./room-stage";
 import { RoomSummaryCard } from "./room-summary-card";
 import { PlaybackReadinessPanel } from "./playback-readiness-panel";
 import { ProviderLaunchPanel } from "./provider-launch-panel";
@@ -44,7 +48,6 @@ import { ProviderSessionCard } from "./provider-session-card";
 import { RoomSetupCard } from "./room-setup-card";
 import { RoomSyncCard } from "./room-sync-card";
 import { SyncHealthCard } from "./sync-health-card";
-import { WaitingRoomLayout } from "./waiting-room-layout";
 
 export function WaitingRoom({ roomId }: { roomId: string }) {
   const { t } = useTranslation();
