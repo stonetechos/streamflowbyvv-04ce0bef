@@ -18,6 +18,15 @@ import { PO_DESTINATIONS } from "./po-lexicon";
 import type { PoPlanResult, PoPlanned, PoPlannedStep, PoResolvedIntent } from "./po-brain.types";
 import { findPoMemory } from "./po-memory";
 import { loadPoHome, loadPoProviders, resolvePoPerson } from "./po-context";
+import {
+  chooseInvite,
+  defaultRoomName,
+  inviteRoomNames,
+  isAlreadyFriend,
+  isCurrentRoute,
+  soleSelectableProvider,
+} from "./po-situation";
+import { findPoMemoryByText } from "./po-memory";
 import { getPoRuntime, type PoRoomControls } from "./po-runtime";
 
 function planId(): string {
@@ -63,8 +72,12 @@ function refuse(refusalKey: string, values?: Record<string, string | number>): P
   return { kind: "refuse", refusal: { refusalKey, ...(values ? { values } : {}) } };
 }
 
-function clarify(slot: string, promptKey: string): PoPlanResult {
-  return { kind: "clarify", slot, promptKey };
+function clarify(
+  slot: string,
+  promptKey: string,
+  values?: Record<string, string | number>,
+): PoPlanResult {
+  return { kind: "clarify", slot, promptKey, ...(values ? { values } : {}) };
 }
 
 function text(intent: PoResolvedIntent, slot: string): string | null {
@@ -112,7 +125,9 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
   switch (intent.name) {
     /* ── Rooms ─────────────────────────────────────────────────────────── */
     case "room.create": {
-      const name = text(intent, "room_name");
+      // Milestone H1.5 §2 — a room does not need a name to exist, and the
+      // person's own name is already known, so Po names it and moves on.
+      const name = text(intent, "room_name") ?? defaultRoomName(runtime.actor.displayName);
       if (!name) return clarify("room_name", "po.ask.room_name");
       return plan(
         intent,
@@ -168,8 +183,13 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
     case "invite.create": {
       const term = text(intent, "person");
       if (!term) return clarify("person", "po.ask.person");
-      const { match, ambiguous } = await resolvePoPerson(profileId, term);
-      if (ambiguous) return refuse("po.refuse.person_ambiguous", { term });
+      const { match, ambiguous, candidates } = await resolvePoPerson(profileId, term);
+      if (ambiguous) {
+        return clarify("person", "po.ask.which_person", {
+          term,
+          names: candidates.map((person) => person.handle || person.displayName).join(", "),
+        });
+      }
       if (!match) return refuse("po.refuse.person_unknown", { term });
       return plan(
         intent,
@@ -197,9 +217,16 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
       const home = await loadPoHome(profileId);
       const pending = home?.pendingInvites ?? [];
       if (pending.length === 0) return refuse("po.refuse.no_invites");
-      if (pending.length > 1)
-        return refuse("po.refuse.invite_ambiguous", { count: pending.length });
-      const only = pending[0];
+      // Milestone H1.5 §2 — with one invitation there is nothing to ask; with
+      // several, the room named in the utterance usually settles it, and only
+      // a genuine tie becomes a question.
+      const { invite: only, ambiguous: manyInvites } = chooseInvite(
+        pending,
+        text(intent, "room_name") ?? text(intent, "person"),
+      );
+      if (manyInvites) {
+        return clarify("room_name", "po.ask.which_invite", { rooms: inviteRoomNames(pending) });
+      }
       if (!only) return refuse("po.refuse.no_invites");
       const accepting = intent.name === "invite.accept";
       return plan(
@@ -257,7 +284,12 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
       return plan(intent, [step("provider.list", {}, "po.answer.providers")], "po.plan.read");
 
     case "provider.select": {
-      const hint = text(intent, "provider_hint");
+      let hint = text(intent, "provider_hint");
+      if (!hint) {
+        // Milestone H1.5 §2 — one selectable service means one possible answer.
+        const sole = await soleSelectableProvider(profileId);
+        hint = sole?.key ?? null;
+      }
       if (!hint) return clarify("provider_hint", "po.ask.provider");
       const catalog = await loadPoProviders(profileId);
       if (!catalog) return refuse("po.refuse.providers_unavailable");
@@ -330,9 +362,18 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
     case "friend.request": {
       const term = text(intent, "person");
       if (!term) return clarify("person", "po.ask.person");
-      const { match, ambiguous } = await resolvePoPerson(profileId, term);
-      if (ambiguous) return refuse("po.refuse.person_ambiguous", { term });
+      const { match, ambiguous, candidates } = await resolvePoPerson(profileId, term);
+      if (ambiguous) {
+        return clarify("person", "po.ask.which_person", {
+          term,
+          names: candidates.map((person) => person.handle || person.displayName).join(", "),
+        });
+      }
       if (!match) return refuse("po.refuse.person_unknown", { term });
+      // Already friends: saying so is more useful than sending a second request.
+      if (await isAlreadyFriend(profileId, match.profileId)) {
+        return refuse("po.refuse.already_friends", { name: match.displayName });
+      }
       return plan(
         intent,
         [
@@ -370,6 +411,10 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
     case "memory.remember": {
       const note = text(intent, "note");
       if (!note) return clarify("note", "po.ask.note");
+      // Milestone H1.5 §6 — prefer what is already remembered over storing it twice.
+      if (findPoMemoryByText(profileId, note)) {
+        return refuse("po.refuse.memory_known", { note });
+      }
       return plan(
         intent,
         [step("memory.store", { summary: note }, "po.done.remembered")],
@@ -407,6 +452,8 @@ export async function planIntent(intent: PoResolvedIntent): Promise<PoPlanResult
       if (!destination) return clarify("destination", "po.ask.destination");
       const path = PO_DESTINATIONS[destination as keyof typeof PO_DESTINATIONS];
       if (!path) return refuse("po.refuse.destination_unknown", { destination });
+      // Milestone H1.5 §1 — opening the screen already on screen is not help.
+      if (isCurrentRoute(path)) return refuse("po.refuse.already_there", { destination });
       return plan(
         intent,
         [step("navigate.to", { path, destination }, "po.done.navigated")],
