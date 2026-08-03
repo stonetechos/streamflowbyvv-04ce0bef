@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 
 import {
   Body,
@@ -10,13 +10,13 @@ import {
   Link,
   Preview,
   Text,
-} from '@react-email/components'
+} from "@react-email/components";
 
 interface SignupEmailProps {
-  siteName: string
-  siteUrl: string
-  recipient: string
-  confirmationUrl: string
+  siteName: string;
+  siteUrl: string;
+  recipient: string;
+  confirmationUrl: string;
 }
 
 export const SignupEmail = ({
@@ -32,7 +32,7 @@ export const SignupEmail = ({
       <Container style={container}>
         <Heading style={h1}>Confirm your email</Heading>
         <Text style={text}>
-          Thanks for signing up for{' '}
+          Thanks for signing up for{" "}
           <Link href={siteUrl} style={link}>
             <strong>{siteName}</strong>
           </Link>
@@ -54,31 +54,34 @@ export const SignupEmail = ({
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default SignupEmail
+export default SignupEmail;
 
-const main = { backgroundColor: '#ffffff', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" }
-const container = { padding: '20px 25px' }
+const main = {
+  backgroundColor: "#ffffff",
+  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+};
+const container = { padding: "20px 25px" };
 const h1 = {
-  fontSize: '22px',
+  fontSize: "22px",
   fontWeight: 700 as const,
-  color: '#17323d',
-  margin: '0 0 20px',
-}
+  color: "#17323d",
+  margin: "0 0 20px",
+};
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
-const link = { color: 'inherit', textDecoration: 'underline' }
+  fontSize: "14px",
+  color: "#55575d",
+  lineHeight: "1.5",
+  margin: "0 0 25px",
+};
+const link = { color: "inherit", textDecoration: "underline" };
 const button = {
-  backgroundColor: '#1f7d92',
-  color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '10px',
-  padding: '13px 22px',
-  textDecoration: 'none',
-}
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+  backgroundColor: "#1f7d92",
+  color: "#ffffff",
+  fontSize: "14px",
+  borderRadius: "10px",
+  padding: "13px 22px",
+  textDecoration: "none",
+};
+const footer = { fontSize: "12px", color: "#999999", margin: "30px 0 0" };
