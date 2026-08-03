@@ -41,6 +41,21 @@ export const COUNTDOWN_RUNTIME = Object.freeze({
   ANNOUNCE_FROM_SECONDS: 5,
 });
 
+/**
+ * Account constants — Milestone E.
+ *
+ * `MIN_PASSWORD_LENGTH` is a client-side courtesy check only; the identity
+ * provider remains the authority on password policy (Foundation §10.3).
+ */
+export const ACCOUNT = Object.freeze({
+  MIN_PASSWORD_LENGTH: 8,
+  MAX_DISPLAY_NAME_LENGTH: 40,
+});
+
+/** Convenience alias for the most frequently read account constant. */
+export const MIN_PASSWORD_LENGTH = ACCOUNT.MIN_PASSWORD_LENGTH;
+
+
 /** Foundation §14.2 — Invitations. */
 export const INVITATION = Object.freeze({
   INVITE_EXPIRY_MS: 24 * HOUR_MS,

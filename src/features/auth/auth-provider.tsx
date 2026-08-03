@@ -51,6 +51,10 @@ export interface AuthContextValue extends AuthState {
   signIn: (credentials: AuthCredentials) => Promise<AuthOutcome>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
+  /** Sends a reset link. Milestone E — the recovery journey (MVP §3.4). */
+  requestPasswordReset: (email: string, returnPath: string) => Promise<void>;
+  /** Re-sends the verification email for an address awaiting confirmation. */
+  resendVerification: (email: string) => Promise<void>;
   hasRole: (role: AppRole) => boolean;
   can: (permission: Permission) => boolean;
 }
@@ -165,6 +169,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "resolved", session });
   }, [sessions]);
 
+  // Recovery and verification never change local session state: the provider
+  // sends an email and the journey continues in the inbox.
+  const requestPasswordReset = useCallback(
+    (email: string, returnPath: string) => sessions.requestPasswordReset(email, returnPath),
+    [sessions],
+  );
+
+  const resendVerification = useCallback(
+    (email: string) => sessions.resendVerification(email),
+    [sessions],
+  );
+
   const value = useMemo<AuthContextValue>(
     () => ({
       ...state,
@@ -176,10 +192,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signOut,
       refresh,
+      requestPasswordReset,
+      resendVerification,
       hasRole: (role) => roles.includes(role),
       can: (permission) => permissions.can(roles, permission),
     }),
-    [permissions, refresh, roles, sessions, signIn, signOut, signUp, state],
+    [
+      permissions,
+      refresh,
+      requestPasswordReset,
+      resendVerification,
+      roles,
+      sessions,
+      signIn,
+      signOut,
+      signUp,
+      state,
+    ],
   );
 
   return <AuthContext value={value}>{children}</AuthContext>;

@@ -24,7 +24,16 @@ export const DOMAIN_ERRORS = Object.freeze({
     retryable: true,
     recoveryActionKey: "error.action.retry",
   },
+  /** Milestone E — a profile row the caller is entitled to read is absent. */
+  PROFILE_NOT_FOUND: {
+    code: "SF-SYS-PROFILE-NOT-FOUND",
+    messageKey: "error.sys.profile_not_found",
+    severity: "error",
+    retryable: false,
+    recoveryActionKey: "error.action.go_home",
+  },
   /** Foundation §19 rate-limit policy. */
+
   RATE_LIMITED: {
     code: "SF-SYS-RATE-LIMITED",
     messageKey: "error.sys.rate_limited",

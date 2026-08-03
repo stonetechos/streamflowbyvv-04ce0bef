@@ -78,6 +78,13 @@ import {
   ROOM_READ_MODEL,
 } from "../rooms/room-read-model";
 import {
+  createHomeReadModel,
+  resolveHomeReadModelDependencies,
+  HOME_READ_MODEL,
+} from "../rooms/home-read-model";
+import { createProfileService, PROFILE_SERVICE } from "../profiles/profile-service";
+
+import {
   bindService,
   createServiceToken,
   isServiceBound,
@@ -173,6 +180,9 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
       ROOM_READ_MODEL,
       () => createRoomReadModel(resolveRoomReadModelDependencies(resolveService(ROOM_SERVICE))),
     ],
+    // Milestone E — cross-aggregate composition for the home experience.
+    [HOME_READ_MODEL, () => createHomeReadModel(resolveHomeReadModelDependencies())],
+
     [
       PRESENCE_COORDINATOR,
       () =>
@@ -304,6 +314,10 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
     [NOTIFICATION_SERVICE, () => createNotificationService(context())],
     [ANALYTICS_SERVICE, () => createAnalyticsService(context())],
     [USER_SERVICE, () => createUserService(context())],
+    // Milestone E: profile and preference orchestration, on top of USER_SERVICE
+    // so every profile edit still emits its documented domain event.
+    [PROFILE_SERVICE, () => createProfileService({ users: resolveService(USER_SERVICE) })],
+
     [PROVIDER_SERVICE, () => createProviderService(context())],
     [FEATURE_FLAG_SERVICE, () => createFeatureFlagDomainService(context())],
     [LOCALIZATION_SERVICE, () => createLocalizationDomainService(context())],

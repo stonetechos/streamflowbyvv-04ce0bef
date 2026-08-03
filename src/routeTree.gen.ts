@@ -14,7 +14,11 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
+import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
 import { Route as AuthSignOutRouteImport } from './routes/auth.sign-out'
+import { Route as AuthSignUpRouteImport } from './routes/auth.sign-up'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
 import { Route as ApiPublicTimeRouteImport } from './routes/api/public/time'
 
@@ -42,9 +46,29 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthSignOutRoute = AuthSignOutRouteImport.update({
   id: '/sign-out',
   path: '/sign-out',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthenticatedRoomsRoomIdRoute =
@@ -63,7 +87,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/account': typeof AuthenticatedAccountRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-out': typeof AuthSignOutRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth/': typeof AuthIndexRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
@@ -71,7 +99,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-out': typeof AuthSignOutRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth': typeof AuthIndexRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
@@ -82,7 +114,11 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-out': typeof AuthSignOutRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth/': typeof AuthIndexRoute
   '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
   '/api/public/time': typeof ApiPublicTimeRoute
@@ -93,7 +129,11 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/account'
+    | '/auth/forgot-password'
+    | '/auth/sign-in'
     | '/auth/sign-out'
+    | '/auth/sign-up'
+    | '/auth/verify-email'
     | '/auth/'
     | '/rooms/$roomId'
     | '/api/public/time'
@@ -101,7 +141,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account'
+    | '/auth/forgot-password'
+    | '/auth/sign-in'
     | '/auth/sign-out'
+    | '/auth/sign-up'
+    | '/auth/verify-email'
     | '/auth'
     | '/rooms/$roomId'
     | '/api/public/time'
@@ -111,7 +155,11 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/account'
+    | '/auth/forgot-password'
+    | '/auth/sign-in'
     | '/auth/sign-out'
+    | '/auth/sign-up'
+    | '/auth/verify-email'
     | '/auth/'
     | '/_authenticated/rooms/$roomId'
     | '/api/public/time'
@@ -161,11 +209,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/sign-in': {
+      id: '/auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/auth/sign-out': {
       id: '/auth/sign-out'
       path: '/sign-out'
       fullPath: '/auth/sign-out'
       preLoaderRoute: typeof AuthSignOutRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/sign-up': {
+      id: '/auth/sign-up'
+      path: '/sign-up'
+      fullPath: '/auth/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/verify-email': {
+      id: '/auth/verify-email'
+      path: '/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_authenticated/rooms/$roomId': {
@@ -200,12 +276,20 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface AuthRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
+  AuthSignInRoute: typeof AuthSignInRoute
   AuthSignOutRoute: typeof AuthSignOutRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthSignInRoute: AuthSignInRoute,
   AuthSignOutRoute: AuthSignOutRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   AuthIndexRoute: AuthIndexRoute,
 }
 
@@ -220,13 +304,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
