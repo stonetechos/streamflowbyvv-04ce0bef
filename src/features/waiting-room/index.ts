@@ -42,8 +42,14 @@ export {
   type RoomClockSyncModel,
   type UseRoomClockSyncInput,
 } from "./use-room-clock-sync";
+export { RoomSyncCard, type RoomSyncCardProps } from "./components/room-sync-card";
+export { useRoomSync, type RoomSyncModel, type UseRoomSyncInput } from "./use-room-sync";
 export { PresenceIndicator } from "./components/presence-indicator";
-export { useRoomPresence, type RoomPresenceModel } from "./use-room-presence";
+export {
+  useRoomPresence,
+  type PresenceSyncMetrics,
+  type RoomPresenceModel,
+} from "./use-room-presence";
 export { useWaitingRoom, type WaitingRoomModel } from "./use-waiting-room";
 export {
   memberLabel,

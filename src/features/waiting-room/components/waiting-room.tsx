@@ -9,7 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PoWaitingBanner } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
-import { useRoomClockSync } from "../use-room-clock-sync";
 import { useRoomCountdown } from "../use-room-countdown";
 import { useRoomPlayback } from "../use-room-playback";
 import { useRoomSetup } from "../use-room-setup";
@@ -21,6 +20,7 @@ import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
 import { PlaybackReadinessPanel } from "./playback-readiness-panel";
 import { RoomSetupCard } from "./room-setup-card";
+import { RoomSyncCard } from "./room-sync-card";
 import { SyncHealthCard } from "./sync-health-card";
 import { WaitingRoomLayout } from "./waiting-room-layout";
 
@@ -34,13 +34,10 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     onChanged: model.refresh,
   });
 
-  // Sprint 2.5: a common notion of time. Classification only — nothing here
-  // adjusts the countdown or corrects playback.
-  const sync = useRoomClockSync({
-    roomId,
-    profileId: model.viewer.profileId,
-    enabled: model.status === "ready" && model.viewer.isMember,
-  });
+  // Sprint 2.5 measures this device's clock; Sprint 2.6 aggregates the room.
+  // Both come from the model so there is exactly one source of sync truth.
+  const sync = model.clockSync;
+  const roomSync = model.roomSync;
 
   const countdown = useRoomCountdown({
     roomId,
@@ -48,6 +45,8 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     isHost: model.viewer.isHost,
     durationSeconds: model.room?.countdownSeconds ?? 5,
     enabled: model.status === "ready" && model.viewer.isMember,
+    // Foundation §15 gate, owned by RoomSyncCoordinator.
+    assertSyncEligible: roomSync.assertCountdownEligible,
   });
 
   // Sprint 2.4: reaching zero arms the room. Nothing is launched — everyone
@@ -111,6 +110,8 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isPlaybackReady={playback.isReady}
             isSyncing={sync.isAvailable && sync.health === "unknown"}
             isSyncSatisfied={sync.isSatisfactory}
+            isRoomOutOfSync={roomSync.needsResync}
+            hasRoomRecovered={roomSync.justRecovered}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
@@ -119,12 +120,16 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isHost={model.viewer.isHost}
             members={model.members}
             hasProvider={room.providerId !== null}
+            canStartCountdown={roomSync.canStartCountdown}
+            blockReasonKey={roomSync.blockReasonKey}
+            hasSyncAdvisory={roomSync.hasAdvisory}
           />
           <PlaybackReadinessPanel
             playback={playback}
             members={model.members}
             countdownCompleted={countdown.state === "completed"}
           />
+          <RoomSyncCard sync={roomSync} isHost={model.viewer.isHost} />
           <SyncHealthCard sync={sync} />
           <MemberList members={model.members} />
           <RoomSetupCard
