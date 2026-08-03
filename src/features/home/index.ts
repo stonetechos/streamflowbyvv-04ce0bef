@@ -8,6 +8,8 @@ export {
   type LivePartiesSectionProps,
 } from "./components/live-parties-section";
 export { ServiceShelf, type ServiceShelfProps } from "./components/service-shelf";
+export { ServiceLogo, type ServiceLogoProps } from "./components/service-logo";
+
 export { JoinByCodeCard } from "./components/join-by-code-card";
 export { FriendsPlaceholder, UpcomingPartiesPlaceholder } from "./components/home-placeholders";
 export { HomeQuickSettings } from "./components/home-quick-settings";
