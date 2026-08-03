@@ -96,20 +96,14 @@ export function ShareIntakeScreen({ payload, profileId }: ShareIntakeScreenProps
 
           <div className="min-w-0 flex-1 space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              {intake.providerName ? (
-                <Badge variant="outline">{intake.providerName}</Badge>
-              ) : null}
+              {intake.providerName ? <Badge variant="outline">{intake.providerName}</Badge> : null}
               {episodeLabel ? <Badge variant="outline">{episodeLabel}</Badge> : null}
               {content ? (
                 <Badge variant="outline">{t(`share.kind.${content.contentKind}`)}</Badge>
               ) : null}
             </div>
 
-            <p
-              className="text-sm text-muted-foreground"
-              role="status"
-              aria-live="polite"
-            >
+            <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
               {isWorking ? (
                 <span className="mr-2 inline-block size-3 animate-spin rounded-full border-2 border-current border-t-transparent align-[-1px]" />
               ) : null}

@@ -24,13 +24,7 @@ export interface ContentPosterProps {
   readonly alt?: string;
 }
 
-export function ContentPoster({
-  artworkUrl,
-  brandKey,
-  name,
-  className,
-  alt,
-}: ContentPosterProps) {
+export function ContentPoster({ artworkUrl, brandKey, name, className, alt }: ContentPosterProps) {
   const [failed, setFailed] = useState(false);
   useEffect(() => setFailed(false), [artworkUrl]);
 

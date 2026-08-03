@@ -32,17 +32,12 @@ export function ShareStartCard() {
         <h2 className="mt-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">
           {t("home.share.title")}
         </h2>
-        <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          {t("home.share.description")}
-        </p>
+        <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t("home.share.description")}</p>
       </div>
 
       <ol className="grid gap-3 sm:grid-cols-3">
         {["one", "two", "three"].map((step, index) => (
-          <li
-            key={step}
-            className="rounded-xl border border-border/60 bg-surface/50 p-3 text-sm"
-          >
+          <li key={step} className="rounded-xl border border-border/60 bg-surface/50 p-3 text-sm">
             <span className="text-xs font-semibold text-muted-foreground">
               {t("home.share.step_label", { number: index + 1 })}
             </span>

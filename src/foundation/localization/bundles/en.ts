@@ -611,7 +611,8 @@ export const enBundle: LocaleBundle = {
     "share.status.created": "Your room is ready. Taking you there…",
     "share.status.provider_unavailable":
       "{service} can’t be used for a watch party here yet, so no room was created.",
-    "share.refusal.no_input": "Nothing was shared. Share a title from your streaming app, or paste its link.",
+    "share.refusal.no_input":
+      "Nothing was shared. Share a title from your streaming app, or paste its link.",
     "share.refusal.not_a_link": "That doesn’t look like a link to a title.",
     "share.refusal.unrecognized_provider":
       "StreamFlow doesn’t recognise that service yet, so it can’t set up a room for it.",

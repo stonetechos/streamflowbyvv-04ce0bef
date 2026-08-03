@@ -41,12 +41,7 @@ const CATALOG_ALIASES: Readonly<Record<string, readonly string[]>> = {
 };
 
 export type ShareIntakeStatus =
-  | "parsing"
-  | "unsupported"
-  | "provider_unavailable"
-  | "creating"
-  | "created"
-  | "error";
+  "parsing" | "unsupported" | "provider_unavailable" | "creating" | "created" | "error";
 
 export interface ShareIntakeModel {
   readonly status: ShareIntakeStatus;

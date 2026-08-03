@@ -150,7 +150,10 @@ function readTitles(
 
   const cleaned = source
     .replace(/^(watch|check out|now watching)\s+/i, "")
-    .replace(/\s+on\s+(netflix|prime video|disney\+?\s*hotstar|hotstar|youtube|jiohotstar)\.?$/i, "")
+    .replace(
+      /\s+on\s+(netflix|prime video|disney\+?\s*hotstar|hotstar|youtube|jiohotstar)\.?$/i,
+      "",
+    )
     .trim();
 
   // "Series: Season 4: Chapter One" — the part before the season is the series.

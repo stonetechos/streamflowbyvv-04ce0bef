@@ -611,7 +611,8 @@ export const hiINBundle: LocaleBundle = {
     "share.status.created": "आपका रूम तैयार है। आपको वहाँ ले जाया जा रहा है…",
     "share.status.provider_unavailable":
       "{service} यहाँ अभी वॉच पार्टी के लिए उपलब्ध नहीं है, इसलिए कोई रूम नहीं बना।",
-    "share.refusal.no_input": "कुछ भी साझा नहीं हुआ। अपने ऐप से कोई टाइटल साझा करें या उसका लिंक चिपकाएँ।",
+    "share.refusal.no_input":
+      "कुछ भी साझा नहीं हुआ। अपने ऐप से कोई टाइटल साझा करें या उसका लिंक चिपकाएँ।",
     "share.refusal.not_a_link": "यह किसी टाइटल का लिंक नहीं लगता।",
     "share.refusal.unrecognized_provider":
       "StreamFlow इस सेवा को अभी नहीं पहचानता, इसलिए उसके लिए रूम नहीं बनाया जा सकता।",
