@@ -13,6 +13,7 @@ import { memo, type ReactNode } from "react";
 
 import { ActionButton, SectionHeader } from "@/design-system/components";
 import { InviteCard } from "@/features/invitations";
+import { ShareStartCard } from "@/features/share";
 import { HomeSocialRails, useSocial } from "@/features/social";
 import { useTranslation } from "@/foundation/localization";
 
@@ -84,25 +85,30 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
         />
       </Rail>
 
+      {/* Milestone L — the journey now begins in the streaming app. */}
       <Rail index={1}>
-        <ServiceShelf home={home} profileId={profileId} />
+        <ShareStartCard />
       </Rail>
 
       <Rail index={2}>
+        <ServiceShelf home={home} profileId={profileId} />
+      </Rail>
+
+      <Rail index={3}>
         <JoinByCodeCard home={home} />
       </Rail>
 
       {snapshot.continueRoom ? (
-        <Rail index={3}>
+        <Rail index={4}>
           <ContinueWatchingCard summary={snapshot.continueRoom} />
         </Rail>
       ) : null}
 
-      <Rail index={4}>
+      <Rail index={5}>
         <HomeSocialRails social={social} {...(onInvite ? { onInvite } : {})} />
       </Rail>
 
-      <Rail index={5}>
+      <Rail index={6}>
         <LivePartiesSection
           rooms={snapshot.liveRooms}
           action={
@@ -113,7 +119,7 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
         />
       </Rail>
 
-      <Rail index={6}>
+      <Rail index={7}>
         <RoomListSection
           title={t("home.recent.title")}
           description={t("home.recent.description")}
@@ -124,7 +130,7 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
       </Rail>
 
       {snapshot.pendingInvites.length > 0 ? (
-        <Rail index={7}>
+        <Rail index={8}>
           <section className="space-y-4">
             <SectionHeader
               title={t("home.invites.title")}
@@ -146,7 +152,7 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
         </Rail>
       ) : null}
 
-      <Rail index={8}>
+      <Rail index={9}>
         <HomeQuickSettings />
       </Rail>
     </div>
