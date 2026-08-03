@@ -8,6 +8,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { useAuth } from "@/features/auth";
+import { NotificationBadge, useNotifications } from "@/features/notifications";
 import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ import { NAV_DESTINATIONS } from "../nav-destinations";
 export function BottomNav() {
   const { t } = useTranslation();
   const auth = useAuth();
+  const badges = useNotifications();
 
   if (!auth.isAuthenticated) return null;
 
@@ -40,7 +42,19 @@ export function BottomNav() {
                 "data-[status=active]:text-primary",
               )}
             >
-              {item.icon}
+              <span className="relative inline-flex">
+                {item.icon}
+                {item.badge ? (
+                  <NotificationBadge
+                    count={badges[item.badge]}
+                    label={t("nav.badge.unread", {
+                      count: String(badges[item.badge]),
+                      destination: t(item.labelKey),
+                    })}
+                    className="absolute -right-2 -top-1"
+                  />
+                ) : null}
+              </span>
               <span>{t(item.labelKey)}</span>
             </Link>
           </li>
