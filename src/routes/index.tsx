@@ -26,12 +26,14 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       {
         property: "og:image",
-        content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb",
       },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:image",
-        content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb",
       },
     ],
     links: [

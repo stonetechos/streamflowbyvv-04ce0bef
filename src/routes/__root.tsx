@@ -42,9 +42,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "twitter:title", content: "StreamFlow — Watch together, perfectly synced" },
-      { name: "twitter:description", content: "StreamFlow keeps a group's playback in sync across the streaming services they already pay for, with a shared countdown and live voice. Own accounts only, nothing re-streamed." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb" },
+      {
+        name: "twitter:description",
+        content:
+          "StreamFlow keeps a group's playback in sync across the streaming services they already pay for, with a shared countdown and live voice. Own accounts only, nothing re-streamed.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/74ea0993-6b2e-4c9e-8f4f-dcbfcd53fbdb",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
