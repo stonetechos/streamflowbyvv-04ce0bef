@@ -11,7 +11,7 @@ import { loadEnv } from "vite";
 
 // Server-side env (no VITE_ prefix) for server routes such as the auth email
 // webhook. Never added to the client define block — these must not be bundled.
-const serverEnv = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "");
+const serverEnv = loadEnv(process.env["NODE_ENV"] ?? "development", process.cwd(), "");
 Object.assign(process.env, serverEnv);
 
 export default defineConfig({
