@@ -9,3 +9,9 @@ export {
   type ProfileService,
   type ProfileServiceDependencies,
 } from "./profile-service";
+export type {
+  ProfileRecord,
+  ProfileRecordPatch,
+  ProfileSettingsPatch,
+  ProfileSettingsRecord,
+} from "@/repository";
