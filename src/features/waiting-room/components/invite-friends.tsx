@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { copyText } from "@/features/shared/copy-text";
 import { useAnnouncer } from "@/foundation/accessibility";
 import { useTranslation } from "@/foundation/localization";
 
@@ -41,14 +42,14 @@ export function InviteFriends({ roomName, roomCode }: InviteFriendsProps) {
 
   const copy = useCallback(
     async (value: string, kind: "link" | "code") => {
-      try {
-        await navigator.clipboard.writeText(value);
-        setCopied(kind);
-        announce(t("invite.share.copied"));
-        window.setTimeout(() => setCopied(null), 2400);
-      } catch {
+      const copiedOk = await copyText(value);
+      if (!copiedOk) {
         announce(t("invite.share.copy_failed"), "assertive");
+        return;
       }
+      setCopied(kind);
+      announce(t("invite.share.copied"));
+      window.setTimeout(() => setCopied(null), 2400);
     },
     [announce, t],
   );
