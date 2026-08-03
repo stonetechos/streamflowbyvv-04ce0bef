@@ -482,20 +482,27 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       return admit(room, profileId, role, operation, intent);
     },
 
-
     async leaveRoom({ roomId, profileId, leftReason = "voluntary" }, intent) {
       const operation = "RoomFlowService.leaveRoom";
       await requireRoom(roomId, operation);
 
       const member = await members.findByRoomAndProfile(roomId, profileId);
-      if (!member || member.state !== "joined") {
+      if (!member) {
         throw domainError("ROOM_MEMBER_NOT_FOUND", { operation, aggregateId: roomId });
       }
+      if (member.state === "removed") {
+        throw domainError("ROOM_MEMBER_REMOVED", { operation, aggregateId: roomId });
+      }
+      // Sprint J.1.5 — leaving twice is not an error. The seat is already
+      // free, so the second call reports the same settled fact rather than
+      // stranding the person in a room they have left.
+      if (member.state === "left") return member;
 
       const updated = await members.update(member.id, { state: "left", leftAt: nowIso() });
       await roomService.leaveMember({ roomId, profileId, leftReason }, intent);
       return updated;
     },
+
 
     async removeMember({ roomId, profileId, actorProfileId }, intent) {
       const operation = "RoomFlowService.removeMember";
