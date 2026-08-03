@@ -28,6 +28,7 @@ import { toRoom, type RoomRow } from "./room-mapper";
 const AGGREGATE = "room";
 const DISCOVER_FUNCTION = "discover_room_by_code";
 const ADMISSION_FUNCTION = "room_admission_row";
+const FACTS_FUNCTION = "room_admission_facts";
 
 interface DiscoveryRow {
   readonly room_id: string;
@@ -38,6 +39,14 @@ interface DiscoveryRow {
   readonly capacity: number;
   readonly status: string;
 }
+
+interface FactsRow extends DiscoveryRow {
+  readonly is_deleted: boolean;
+  readonly is_blocked: boolean;
+  readonly viewer_state: string | null;
+  readonly viewer_other_room_id: string | null;
+}
+
 
 /**
  * The generated schema types do not describe database functions, so the cast is
