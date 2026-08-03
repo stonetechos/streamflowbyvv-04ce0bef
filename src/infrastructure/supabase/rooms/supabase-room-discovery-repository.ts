@@ -12,6 +12,8 @@
  * `rooms` are untouched: a non-member still cannot read or browse the table.
  */
 import type {
+  RoomAdmissionFacts,
+  RoomAdmissionLookup,
   RoomDiscovery,
   RoomDiscoveryRepository,
 } from "@/repository/rooms/room-discovery.types";
