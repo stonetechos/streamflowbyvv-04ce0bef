@@ -178,14 +178,14 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
   // Milestone G — the countdown is over and the room has an anchor: this is a
   // watch party now, not a lobby. The transition is a screen swap, not a
   // route change, so voice and presence are never torn down.
-  if (playback.runtime?.startedAt && playback.runtime.state !== "ended") {
+  if (playback.runtime?.startedAt && playback.runtime.state !== "completed") {
     return (
       <WatchPartyScreen
         room={room}
         members={model.members}
-        providerName={providerLaunch.plan?.providerName ?? room.providerId}
+        providerName={providerLaunch.plan?.providerKey ?? room.providerId}
         startedAt={playback.runtime.startedAt}
-        clockOffsetMs={sync.snapshot?.offsetMs ?? 0}
+        clockOffsetMs={sync.snapshot?.offset?.offsetMs ?? 0}
         voice={voice}
         playbackSync={playbackSync}
         clockSync={sync}
