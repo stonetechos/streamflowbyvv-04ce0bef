@@ -153,6 +153,7 @@ export function PoConsole() {
           pending={po.pending}
           outcome={po.lastOutcome}
           isBusy={po.isBusy}
+          phase={po.phase}
           onAnswer={send}
         />
 
