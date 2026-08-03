@@ -8,7 +8,8 @@
  */
 import { Link } from "@tanstack/react-router";
 
-import { ActionButton, SectionHeader, Surface } from "@/design-system/components";
+import { ActionButton, EmptyState, SectionHeader, Surface } from "@/design-system/components";
+import { PoCompanion } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
 import type { SocialModel } from "../use-social";
@@ -81,15 +82,19 @@ export function HomeSocialRails({ social, onInvite }: HomeSocialRailsProps) {
           }
         />
         {friends.length === 0 ? (
-          <Surface padding="md">
-            <p className="text-sm text-muted-foreground">{t("social.friends.empty.description")}</p>
-            <Link
-              to="/people"
-              className="mt-3 inline-block rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              {t("social.action.find_people")}
-            </Link>
-          </Surface>
+          <EmptyState
+            title={t("social.friends.empty.title")}
+            description={t("social.friends.empty.description")}
+            illustration={<PoCompanion mood="calm" className="h-20 w-28" />}
+            action={
+              <Link
+                to="/people"
+                className="inline-flex min-h-11 items-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                {t("social.action.find_people")}
+              </Link>
+            }
+          />
         ) : (
           <Surface padding="none" as="ul" className="divide-y divide-border overflow-hidden">
             {friends.map((person) => (

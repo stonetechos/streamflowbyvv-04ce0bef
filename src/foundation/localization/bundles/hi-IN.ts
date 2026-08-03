@@ -498,6 +498,26 @@ export const hiINBundle: LocaleBundle = {
     "nav.sign_in": "साइन इन",
     "nav.get_started": "शुरू करें",
     "nav.toggle_theme": "थीम बदलें",
+    "home.hero.question": "\u0906\u091c \u0915\u094d\u092f\u093e \u0926\u0947\u0916\u0947\u0902?",
+    "home.services.title":
+      "\u0906\u092a \u0915\u0939\u093e\u0901 \u0926\u0947\u0916\u0928\u093e \u091a\u093e\u0939\u0924\u0947 \u0939\u0948\u0902?",
+    "home.services.description":
+      "\u090f\u0915 \u0938\u0947\u0935\u093e \u091a\u0941\u0928\u093f\u090f \u2014 StreamFlow \u0906\u092a\u0915\u0947 \u0932\u093f\u090f \u0930\u0942\u092e \u0924\u0948\u092f\u093e\u0930 \u0915\u0930 \u0926\u0947\u0917\u093e\u0964",
+    "home.services.status.coming_soon":
+      "\u091c\u0932\u094d\u0926 \u0906 \u0930\u0939\u093e \u0939\u0948",
+    "home.services.room_name": "{service} \u0928\u093e\u0907\u091f",
+    "home.services.footnote":
+      "StreamFlow \u0915\u0902\u091f\u0947\u0902\u091f \u0928\u0939\u0940\u0902 \u091a\u0932\u093e\u0924\u093e \u2014 \u0906\u092a \u0905\u092a\u0928\u0947 \u0910\u092a \u092e\u0947\u0902 \u0926\u0947\u0916\u0924\u0947 \u0939\u0948\u0902\u0964",
+    "home.live.badge": "\u0932\u093e\u0907\u0935",
+    "home.live.host_other":
+      "\u0926\u094b\u0938\u094d\u0924 \u0939\u094b\u0938\u094d\u091f \u0915\u0930 \u0930\u0939\u093e \u0939\u0948",
+    "home.live.join": "\u091c\u0941\u0921\u093c\u0947\u0902",
+    "home.po.resume":
+      "\u0935\u0939\u0940\u0902 \u0938\u0947 \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902?",
+    "home.po.friends":
+      "\u0906\u092a\u0915\u0947 {count} \u0932\u094b\u0917 \u092f\u0939\u093e\u0901 \u0939\u0948\u0902\u0964",
+    "home.po.idle":
+      "\u090f\u0915 \u0938\u0947\u0935\u093e \u091a\u0941\u0928\u093f\u090f, \u092e\u0948\u0902 \u0930\u0942\u092e \u0924\u0948\u092f\u093e\u0930 \u0915\u0930\u0924\u093e \u0939\u0942\u0901\u0964",
     "home.greeting": "नमस्ते, {name}",
     "home.subtitle.first_time": "अपनी पहली वॉच पार्टी शुरू करें, या कोड से शामिल हों।",
     "home.subtitle.returning": "आपने अब तक {count} वॉच पार्टी होस्ट की हैं।",

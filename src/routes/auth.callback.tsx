@@ -19,7 +19,6 @@ import { ActionButton } from "@/design-system/components";
 import { AuthShell, claimCallbackPayload, traceCallback, useAuth } from "@/features/auth";
 import { useTranslation } from "@/foundation/localization";
 
-
 export const Route = createFileRoute("/auth/callback")({
   head: () => ({
     meta: [
@@ -135,7 +134,6 @@ function AuthCallbackPage() {
     }, SETTLE_TIMEOUT_MS);
     return () => window.clearTimeout(timer);
   }, [auth.isAuthenticated, params.error]);
-
 
   const failed = Boolean(params.error) || timedOut;
 
