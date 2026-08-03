@@ -216,6 +216,17 @@ export function SettingsPanel({ profileId }: { profileId: string | null }) {
         </Surface>
       </section>
 
+      {/* Milestone G — voice. Devices are local to this machine; the three
+          behaviour switches live in the privacy aggregate. */}
+      <VoiceSettingsSection
+        autoJoin={settings?.privacy.voiceAutoJoin ?? false}
+        joinMuted={settings?.privacy.voiceJoinMuted ?? true}
+        pushToTalk={settings?.privacy.voicePushToTalk ?? false}
+        onChange={(patch) => void profile.saveSettings({ privacy: patch })}
+      />
+
+
+
       <section className="space-y-4">
         <SectionHeader title={t("settings.language.title")} />
         <Surface padding="lg" className="space-y-2">
