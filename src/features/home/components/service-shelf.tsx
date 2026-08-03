@@ -187,7 +187,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                       </span>
                     ) : null}
 
-                    {session?.supportsManualSync ? (
+                    {session?.supportsManualSync && card.status !== "manual_sync" ? (
                       <span className="inline-flex w-fit items-center rounded-full border border-info/40 bg-info/10 px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider text-info">
                         {t("provider.capability.manual_sync")}
                       </span>
