@@ -20,7 +20,10 @@ export const Route = createFileRoute("/auth/verify-email")({
         content: "Confirm your email address to finish setting up your StreamFlow account.",
       },
       { property: "og:title", content: "Verify your email — StreamFlow" },
-      { property: "og:description", content: "Confirm your email to finish setting up StreamFlow." },
+      {
+        property: "og:description",
+        content: "Confirm your email to finish setting up StreamFlow.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },

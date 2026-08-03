@@ -157,7 +157,6 @@ export const hiINBundle: LocaleBundle = {
     "auth.validation.display_name_too_short": "प्रदर्शित नाम में कम से कम 2 अक्षर होने चाहिए।",
     "auth.validation.display_name_too_long": "प्रदर्शित नाम अधिकतम 40 अक्षरों का हो सकता है।",
 
-
     "a11y.skip_to_content": "मुख्य सामग्री पर जाएँ",
     "a11y.main_content.label": "मुख्य सामग्री",
     "a11y.loading.announcement": "लोड हो रहा है, कृपया प्रतीक्षा करें",

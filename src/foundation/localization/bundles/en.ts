@@ -160,7 +160,6 @@ export const enBundle: LocaleBundle = {
     "auth.validation.display_name_too_short": "Display names need at least 2 characters.",
     "auth.validation.display_name_too_long": "Display names can be at most 40 characters.",
 
-
     "a11y.skip_to_content": "Skip to main content",
     "a11y.main_content.label": "Main content",
     "a11y.loading.announcement": "Loading, please wait",

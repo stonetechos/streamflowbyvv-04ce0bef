@@ -59,7 +59,6 @@ export interface AuthContextValue extends AuthState {
   can: (permission: Permission) => boolean;
 }
 
-
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -211,7 +210,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       state,
     ],
   );
-
 
   return <AuthContext value={value}>{children}</AuthContext>;
 }

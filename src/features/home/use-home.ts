@@ -101,7 +101,7 @@ export function useHome(viewerProfileId: string | null): HomeModel {
   );
 
   const run = useCallback(
-    async <T,>(
+    async <T>(
       action: Exclude<HomePendingAction, null>,
       operation: () => Promise<T>,
     ): Promise<T | null> => {

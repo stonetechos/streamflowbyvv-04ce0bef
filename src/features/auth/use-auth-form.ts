@@ -57,7 +57,7 @@ export interface UseAuthFormResult extends AuthFormState {
 export function useAuthForm(): UseAuthFormResult {
   const [state, setState] = useState<AuthFormState>(IDLE);
 
-  const submit = useCallback(async <T,>(action: () => Promise<T>): Promise<T | null> => {
+  const submit = useCallback(async <T>(action: () => Promise<T>): Promise<T | null> => {
     setState({ pending: true, errorKey: null, errorCode: null });
     try {
       const result = await action();

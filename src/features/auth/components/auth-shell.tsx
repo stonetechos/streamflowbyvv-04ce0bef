@@ -45,22 +45,22 @@ export function AuthShell({ title, subtitle, children, footer, mood = "calm" }: 
           <h2 className="mt-4 max-w-lg font-display text-4xl font-semibold leading-tight tracking-tight">
             {t("auth.story.headline")}
           </h2>
-          <p className="mt-4 max-w-md text-base text-muted-foreground">
-            {t("auth.story.body")}
-          </p>
+          <p className="mt-4 max-w-md text-base text-muted-foreground">{t("auth.story.body")}</p>
 
           <ul className="mt-8 space-y-3 text-sm">
-            {["auth.story.point.accounts", "auth.story.point.countdown", "auth.story.point.voice"].map(
-              (key) => (
-                <li key={key} className="flex items-start gap-3">
-                  <span
-                    aria-hidden="true"
-                    className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
-                  />
-                  <span className="text-muted-foreground">{t(key)}</span>
-                </li>
-              ),
-            )}
+            {[
+              "auth.story.point.accounts",
+              "auth.story.point.countdown",
+              "auth.story.point.voice",
+            ].map((key) => (
+              <li key={key} className="flex items-start gap-3">
+                <span
+                  aria-hidden="true"
+                  className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
+                />
+                <span className="text-muted-foreground">{t(key)}</span>
+              </li>
+            ))}
           </ul>
 
           <PoCompanion mood={mood} className="mt-10 h-32 w-44" />

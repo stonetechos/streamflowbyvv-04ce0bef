@@ -20,4 +20,3 @@ export {
   validateRoomCode,
 } from "./auth-validation";
 export { toAuthErrorPresentation, useAuthForm, type UseAuthFormResult } from "./use-auth-form";
-
