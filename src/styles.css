@@ -621,3 +621,33 @@
 .sf-po[data-mood="relieved"] .sf-po-tail {
   animation-duration: 5s;
 }
+
+/*
+ * Sprint 2.7 — `encouraging`: a re-sync is pending and Po waits it out. A slow
+ * open-palm sway rather than a wave: the gesture reads as "take your time",
+ * which is the only thing StreamFlow can honestly offer while people line up
+ * their own players. Decorative only (Po Rule); reduced motion neutralises it.
+ */
+@keyframes sf-po-encourage {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(2deg) translateY(-2px); }
+}
+
+.sf-po[data-mood="encouraging"] .sf-po-head {
+  animation: sf-po-encourage 5s var(--ease-standard) infinite;
+}
+
+.sf-po[data-mood="encouraging"] .sf-po-body {
+  animation-duration:
+    5s,
+    4s;
+}
+
+.sf-po[data-mood="encouraging"] .sf-po-ear-left,
+.sf-po[data-mood="encouraging"] .sf-po-ear-right {
+  animation-duration: 5.5s;
+}
+
+.sf-po[data-mood="encouraging"] .sf-po-tail {
+  animation-duration: 6s;
+}
