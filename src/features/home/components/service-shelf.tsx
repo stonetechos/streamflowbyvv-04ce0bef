@@ -29,12 +29,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SectionHeader } from "@/design-system/components";
-import { providerSessionStatusKey } from "@/domain";
 import { useProviderCatalog, useProviderSessions } from "@/features/providers";
 import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
 
-import { buildServiceShelf, serviceStatusLabelKey, type ServiceCardView } from "../service-shelf";
+import { buildServiceShelf, type ServiceCardView } from "../service-shelf";
 import { ServiceLogo } from "./service-logo";
 import type { HomeModel } from "../use-home";
 
@@ -46,22 +45,13 @@ const ACCENT_TILE: Record<ServiceCardView["accent"], string> = {
   accent: "from-accent to-accent/40 text-accent-foreground",
 };
 
-/** Badge tone per adjudicated status. Tokens only; never a raw colour. */
-const STATUS_BADGE: Record<ServiceCardView["status"], string> = {
-  supported: "border-success/40 bg-success/10 text-success",
-  manual_sync: "border-info/40 bg-info/10 text-info",
-  unverified: "border-warning/40 bg-warning/10 text-warning",
-  unavailable: "border-border bg-muted text-muted-foreground",
-  coming_soon: "border-border bg-muted text-muted-foreground",
-};
-
 export interface ServiceShelfProps {
   readonly home: HomeModel;
   readonly profileId: string | null;
 }
 
 export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
-  const { t, formatDate } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const catalog = useProviderCatalog(profileId);
   const [choosingKey, setChoosingKey] = useState<string | null>(null);
