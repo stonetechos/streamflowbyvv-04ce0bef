@@ -49,6 +49,8 @@ export interface RoomSummaryView {
   readonly scheduledStartAt: string | null;
   /** Provider the host has chosen for this room, if any (Sprint 2.2). */
   readonly providerId: string | null;
+  /** Serialized content reference the host chose, if any (Sprint 2.2/2.8). */
+  readonly contentReference: string | null;
   /** Stored countdown length in seconds; clamped to the system envelope. */
   readonly countdownSeconds: number;
 }

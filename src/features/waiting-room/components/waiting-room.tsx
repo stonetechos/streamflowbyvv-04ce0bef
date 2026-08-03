@@ -12,6 +12,7 @@ import { useTranslation } from "@/foundation/localization";
 import { usePlaybackSync } from "../use-playback-sync";
 import { useRoomCountdown } from "../use-room-countdown";
 import { useRoomPlayback } from "../use-room-playback";
+import { useProviderLaunch } from "../use-provider-launch";
 import { useRoomSetup } from "../use-room-setup";
 import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
@@ -20,6 +21,7 @@ import { MembershipActions } from "./membership-actions";
 import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
 import { PlaybackReadinessPanel } from "./playback-readiness-panel";
+import { ProviderLaunchPanel } from "./provider-launch-panel";
 import { RoomSetupCard } from "./room-setup-card";
 import { RoomSyncCard } from "./room-sync-card";
 import { SyncHealthCard } from "./sync-health-card";
@@ -61,6 +63,14 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
   });
 
 
+
+  // Sprint 2.8 — where to send this member. Local to the viewer: StreamFlow
+  // cannot observe whether anyone's provider actually opened.
+  const providerLaunch = useProviderLaunch({
+    providerId: model.room?.providerId ?? null,
+    contentReference: model.room?.contentReference ?? null,
+    enabled: model.status === "ready" && model.viewer.isMember,
+  });
 
   // Sprint 2.7 — the third member of the synchronization pipeline. Everything
   // shown below about timing, drift, or readiness is decided in Domain.
@@ -140,6 +150,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             blockReasonKey={roomSync.blockReasonKey}
             hasSyncAdvisory={roomSync.hasAdvisory}
           />
+          <ProviderLaunchPanel model={providerLaunch} />
           <PlaybackReadinessPanel
             playback={playback}
             members={model.members}
