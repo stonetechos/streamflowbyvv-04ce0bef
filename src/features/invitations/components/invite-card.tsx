@@ -5,7 +5,9 @@
  * invite is still answerable was decided upstream (ADR-006); this card only
  * presents it and reports the answer.
  */
-import { ActionButton, Avatar, Surface } from "@/design-system/components";
+import { ActionButton, Surface } from "@/design-system/components";
+import { parseContentReference, readSeriesTitle } from "@/domain";
+import { ContentPoster } from "@/features/shared/content-poster";
 import { useTranslation } from "@/foundation/localization";
 import type { HomeInviteSummary } from "@/domain";
 
@@ -19,13 +21,24 @@ export interface InviteCardProps {
 export function InviteCard({ summary, busy = false, onAccept, onDecline }: InviteCardProps) {
   const { t } = useTranslation();
   const { invite, room } = summary;
-  const title = room?.name ?? t("invite.unknown_room");
+  // Milestone L — an invitation is about a title, not about a room name.
+  const reference = parseContentReference(room?.contentReference ?? null);
+  const seriesTitle = readSeriesTitle(reference);
+  const title = reference?.title ?? room?.name ?? t("invite.unknown_room");
 
   return (
     <Surface padding="sm" className="flex flex-col gap-4">
       <div className="flex items-start gap-3">
-        <Avatar name={title} size="md" />
+        <ContentPoster
+          artworkUrl={reference?.artworkUrl ?? null}
+          brandKey={reference?.providerKey ?? null}
+          name={title}
+          className="aspect-[16/10] w-24 shrink-0"
+        />
         <div className="min-w-0">
+          {seriesTitle ? (
+            <p className="truncate text-xs text-muted-foreground">{seriesTitle}</p>
+          ) : null}
           <p className="truncate font-display text-base font-semibold">{title}</p>
           <p className="mt-1 text-xs text-muted-foreground">
             {t(`invite.channel.${invite.channel}`)}
