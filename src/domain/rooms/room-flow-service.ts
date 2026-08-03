@@ -53,7 +53,9 @@ import {
   type InviteRepository,
   type Page,
   type RoomMemberRepository,
+  type RoomAdmissionFacts,
   type RoomDiscovery,
+
   type RoomDiscoveryRepository,
   type RoomQuery,
   type RoomRepository,
