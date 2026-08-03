@@ -71,14 +71,26 @@ export function createSupabaseProfileSettingsRepository(
     ...(entityId ? { entityId } : {}),
   });
 
+  /**
+   * The five preference tables share one column shape from this adapter's point
+   * of view, so they are addressed through a structural accessor. The generated
+   * per-table union cannot express "any of these five", and widening it here
+   * keeps the five near-identical query blocks from being written out longhand.
+   */
+  const access = (): PreferenceTableAccess =>
+    connection.client() as unknown as PreferenceTableAccess;
+
   async function read(profileId: EntityId): Promise<ProfileSettingsRecord> {
     requireAvailable(connection, context("read", profileId));
-    const client = connection.client();
+    const client = access();
     const scoped = <T>(table: string, columns: string) =>
       runMaybe<T | null>(
-        client.from(table).select(columns).eq("profile_id", profileId).maybeSingle(),
+        client.from(table).select(columns).eq("profile_id", profileId).maybeSingle() as PromiseLike<
+          PostgrestLike<T | null>
+        >,
         context(`read:${table}`, profileId),
       );
+
 
     const [appearance, notifications, privacy, localization, accessibility] = await Promise.all([
       scoped<AppearanceRow>("appearance_preferences", "theme_mode, density, compact_room_layout"),
