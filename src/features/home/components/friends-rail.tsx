@@ -53,7 +53,14 @@ export function FriendsRail({ social }: { social: SocialModel }) {
                 params={{ profileId: person.profileId }}
                 className="flex w-16 flex-col items-center gap-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <Avatar name={person.displayName} preset={person.avatarPreset} size="md" />
+                <Avatar
+                  name={person.displayName}
+                  {...(person.avatarPreset
+                    ? { preset: person.avatarPreset as AvatarPreset }
+                    : null)}
+                  size="md"
+                />
+
                 <span className="w-full truncate text-center text-xs font-medium">
                   {person.displayName}
                 </span>
