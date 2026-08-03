@@ -52,6 +52,11 @@ export interface WaitingRoomModel {
   readonly pending: WaitingRoomPendingAction;
   /** True once a realtime transport is attached for this room. */
   readonly isLive: boolean;
+  /** Sprint J.2 — this viewer has left or ended the room; go Home. */
+  readonly departed: boolean;
+  /** Sprint J.2 — the room itself has ended for everyone. */
+  readonly hasEnded: boolean;
+
   /** True while a presence store is reporting liveness for this room. */
   readonly isPresenceTracked: boolean;
   /** Live presence rows by profile, for the synchronization pipeline. */
