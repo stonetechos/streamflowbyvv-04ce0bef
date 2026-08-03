@@ -98,6 +98,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isCounting={countdown.isLive}
             hasCompleted={countdown.state === "completed"}
             wasCancelled={countdown.state === "cancelled" || countdown.state === "expired"}
+            isPlaybackReady={playback.isReady}
             gazeToken={model.lastArrivalProfileId}
           />
           <RoomInfoCard room={room} isLive={model.isLive} />
@@ -106,6 +107,11 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isHost={model.viewer.isHost}
             members={model.members}
             hasProvider={room.providerId !== null}
+          />
+          <PlaybackReadinessPanel
+            playback={playback}
+            members={model.members}
+            countdownCompleted={countdown.state === "completed"}
           />
           <MemberList members={model.members} />
           <RoomSetupCard
