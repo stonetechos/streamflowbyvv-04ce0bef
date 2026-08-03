@@ -87,6 +87,22 @@ export {
   type ProviderPreferenceRepository,
 } from "./providers";
 export {
+  PROFILE_REPOSITORY,
+  PROFILE_SETTINGS_REPOSITORY,
+  type AccessibilityPreferencesRecord,
+  type AppearancePreferencesRecord,
+  type LocalizationPreferencesRecord,
+  type NotificationPreferencesRecord,
+  type PrivacyPreferencesRecord,
+  type ProfileRecord,
+  type ProfileRecordPatch,
+  type ProfileRepository,
+  type ProfileSettingsPatch,
+  type ProfileSettingsRecord,
+  type ProfileSettingsRepository,
+} from "./profiles";
+
+export {
   REPOSITORY_ERRORS,
   RepositoryError,
   type RepositoryErrorContext,
