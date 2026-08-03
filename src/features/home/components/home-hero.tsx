@@ -46,7 +46,6 @@ export function HomeHero({
           <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-5xl">
             {t("home.hero.question")}
           </h1>
-
         </div>
 
         <div className="flex shrink-0 flex-col items-center gap-2">

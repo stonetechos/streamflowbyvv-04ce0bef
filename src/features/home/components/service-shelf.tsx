@@ -157,7 +157,6 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                     />
                   ) : null}
                 </span>
-
               </button>
             </li>
           );
