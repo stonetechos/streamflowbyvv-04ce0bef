@@ -29,12 +29,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SectionHeader } from "@/design-system/components";
-import { providerSessionStatusKey } from "@/domain";
 import { useProviderCatalog, useProviderSessions } from "@/features/providers";
 import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
 
-import { buildServiceShelf, serviceStatusLabelKey, type ServiceCardView } from "../service-shelf";
+import { buildServiceShelf, type ServiceCardView } from "../service-shelf";
 import { ServiceLogo } from "./service-logo";
 import type { HomeModel } from "../use-home";
 
@@ -46,22 +45,13 @@ const ACCENT_TILE: Record<ServiceCardView["accent"], string> = {
   accent: "from-accent to-accent/40 text-accent-foreground",
 };
 
-/** Badge tone per adjudicated status. Tokens only; never a raw colour. */
-const STATUS_BADGE: Record<ServiceCardView["status"], string> = {
-  supported: "border-success/40 bg-success/10 text-success",
-  manual_sync: "border-info/40 bg-info/10 text-info",
-  unverified: "border-warning/40 bg-warning/10 text-warning",
-  unavailable: "border-border bg-muted text-muted-foreground",
-  coming_soon: "border-border bg-muted text-muted-foreground",
-};
-
 export interface ServiceShelfProps {
   readonly home: HomeModel;
   readonly profileId: string | null;
 }
 
 export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
-  const { t, formatDate } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const catalog = useProviderCatalog(profileId);
   const [choosingKey, setChoosingKey] = useState<string | null>(null);
@@ -108,15 +98,12 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
 
   return (
     <section className="space-y-4" aria-labelledby="services-heading">
-      <SectionHeader
-        title={t("home.services.title")}
-        description={t("home.services.description")}
-      />
+      <SectionHeader title={t("home.services.title")} />
 
       <ul
         className={cn(
           "-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3",
-          "sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-5",
+          "sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-4",
         )}
       >
         {cards.map((card, index) => {
@@ -126,7 +113,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
           return (
             <li
               key={card.key}
-              className="sf-rail-enter w-40 shrink-0 snap-start sm:w-auto"
+              className="sf-rail-enter w-44 shrink-0 snap-start sm:w-auto"
               style={{ ["--sf-rail-index" as string]: Math.min(index, 8) }}
             >
               <button
@@ -161,51 +148,13 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                   )}
                 </span>
 
-                <span className="flex flex-1 flex-col gap-2 p-3">
+                <span className="flex items-center justify-between gap-2 p-3">
                   <span className="truncate font-display text-sm font-semibold">{card.name}</span>
-
-                  <span className="flex flex-wrap gap-1">
+                  {isConnected ? (
                     <span
-                      className={cn(
-                        "inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider",
-                        STATUS_BADGE[card.status],
-                      )}
-                    >
-                      {t(serviceStatusLabelKey(card.status))}
-                    </span>
-
-                    {session && session.status !== "unavailable" ? (
-                      <span
-                        className={cn(
-                          "inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider",
-                          isConnected
-                            ? "border-success/40 bg-success/10 text-success"
-                            : "border-border bg-muted text-muted-foreground",
-                        )}
-                      >
-                        {t(providerSessionStatusKey(session.status))}
-                      </span>
-                    ) : null}
-
-                    {session?.supportsManualSync && card.status !== "manual_sync" ? (
-                      <span className="inline-flex w-fit items-center rounded-full border border-info/40 bg-info/10 px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider text-info">
-                        {t("provider.capability.manual_sync")}
-                      </span>
-                    ) : null}
-
-                    {session?.hasFutureControl ? (
-                      <span className="inline-flex w-fit items-center rounded-full border border-border bg-muted px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground">
-                        {t("provider.capability.future_control")}
-                      </span>
-                    ) : null}
-                  </span>
-
-                  {session?.lastUsedAt ? (
-                    <span className="text-[0.6875rem] text-muted-foreground">
-                      {t("provider.session.last_used", {
-                        when: formatDate(new Date(session.lastUsedAt)),
-                      })}
-                    </span>
+                      aria-hidden="true"
+                      className="size-1.5 shrink-0 rounded-full bg-success"
+                    />
                   ) : null}
                 </span>
               </button>
@@ -213,8 +162,6 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
           );
         })}
       </ul>
-
-      <p className="text-xs text-muted-foreground">{t("home.services.footnote")}</p>
 
       <Dialog
         open={pendingConnect !== null}

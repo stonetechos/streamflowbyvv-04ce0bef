@@ -1,29 +1,22 @@
 /**
- * Home screen — Milestone H2 (product experience).
+ * Home screen — UX Simplification Pass.
  *
- * The signed-in landing surface, ordered the way a viewer thinks: the question
- * first, then where they watch, then who they watch with, then the machinery.
- * Room creation is no longer a headline — choosing a service creates the room.
- *
- * Everything shown here was decided elsewhere: `HomeReadModel` chose the rooms
- * and invitations, `ProviderCatalogService` chose the services. This component
- * arranges them and nothing more.
+ * Four things, in the order a person thinks about them: what shall we watch,
+ * where were we, who is around, and where have we been. Nothing else lives on
+ * this screen — the machinery it used to expose is either gone from the
+ * default view or reachable from its own destination.
  */
-import { memo, type ReactNode } from "react";
+import { memo, useState, type ReactNode } from "react";
 
-import { ActionButton, SectionHeader } from "@/design-system/components";
-import { InviteCard } from "@/features/invitations";
-import { ShareStartCard } from "@/features/share";
-import { HomeSocialRails, useSocial } from "@/features/social";
+import { useSocial } from "@/features/social";
 import { useTranslation } from "@/foundation/localization";
 
 import type { HomeModel } from "../use-home";
 import { ContinueWatchingCard } from "./continue-watching-card";
+import { FriendsRail } from "./friends-rail";
 import { HomeHero } from "./home-hero";
-import { HomeQuickSettings } from "./home-quick-settings";
 import { HomeSkeleton } from "./home-skeleton";
 import { JoinByCodeCard } from "./join-by-code-card";
-import { LivePartiesSection } from "./live-parties-section";
 import { RoomListSection } from "./room-list-section";
 import { ServiceShelf } from "./service-shelf";
 
@@ -46,12 +39,7 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
   const { t } = useTranslation();
   const { snapshot } = home;
   const social = useSocial(profileId);
-
-  // Quick invite is only offered when there is somewhere to invite people to.
-  const quickInviteRoomId = snapshot.continueRoom?.room.id ?? null;
-  const onInvite = quickInviteRoomId
-    ? (inviteeProfileId: string) => void home.inviteToRoom(quickInviteRoomId, inviteeProfileId)
-    : undefined;
+  const [joining, setJoining] = useState(false);
 
   if (home.isLoading) {
     return (
@@ -85,75 +73,42 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
         />
       </Rail>
 
-      {/* Milestone L — the journey now begins in the streaming app. */}
       <Rail index={1}>
-        <ShareStartCard />
-      </Rail>
-
-      <Rail index={2}>
         <ServiceShelf home={home} profileId={profileId} />
       </Rail>
 
-      <Rail index={3}>
-        <JoinByCodeCard home={home} />
-      </Rail>
-
       {snapshot.continueRoom ? (
-        <Rail index={4}>
+        <Rail index={2}>
           <ContinueWatchingCard summary={snapshot.continueRoom} />
         </Rail>
       ) : null}
 
-      <Rail index={5}>
-        <HomeSocialRails social={social} {...(onInvite ? { onInvite } : {})} />
+      <Rail index={3}>
+        <FriendsRail social={social} />
       </Rail>
 
-      <Rail index={6}>
-        <LivePartiesSection
-          rooms={snapshot.liveRooms}
-          action={
-            <ActionButton size="sm" tone="ghost" onClick={home.refresh}>
-              {t("common.action.refresh")}
-            </ActionButton>
-          }
-        />
-      </Rail>
-
-      <Rail index={7}>
+      <Rail index={4}>
         <RoomListSection
           title={t("home.recent.title")}
-          description={t("home.recent.description")}
           rooms={snapshot.recentRooms}
           emptyTitle={t("home.recent.empty.title")}
           emptyDescription={t("home.recent.empty.description")}
         />
       </Rail>
 
-      {snapshot.pendingInvites.length > 0 ? (
-        <Rail index={8}>
-          <section className="space-y-4">
-            <SectionHeader
-              title={t("home.invites.title")}
-              description={t("home.invites.description")}
-            />
-            <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {snapshot.pendingInvites.map((summary) => (
-                <li key={summary.invite.id}>
-                  <InviteCard
-                    summary={summary}
-                    busy={home.pendingInviteId === summary.invite.id}
-                    onAccept={(id) => void home.acceptInvite(id)}
-                    onDecline={(id) => void home.declineInvite(id)}
-                  />
-                </li>
-              ))}
-            </ul>
-          </section>
-        </Rail>
-      ) : null}
-
-      <Rail index={9}>
-        <HomeQuickSettings />
+      {/* A quiet way in for someone who was handed a code. */}
+      <Rail index={5}>
+        {joining ? (
+          <JoinByCodeCard home={home} />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setJoining(true)}
+            className="mx-auto flex min-h-11 items-center justify-center rounded-full px-4 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {t("home.join.prompt")}
+          </button>
+        )}
       </Rail>
     </div>
   );

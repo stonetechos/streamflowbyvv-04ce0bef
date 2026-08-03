@@ -14,6 +14,7 @@ export {
   type VoiceDevicePreferences,
 } from "./voice-device-preferences";
 export { VoiceControls, type VoiceControlsProps } from "./components/voice-controls";
+export { VoiceDock, type VoiceDockProps } from "./components/voice-dock";
 export { VoicePanel, type VoicePanelProps } from "./components/voice-panel";
 export { VoiceStatus, type VoiceStatusProps } from "./components/voice-status";
 export {

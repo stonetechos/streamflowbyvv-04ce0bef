@@ -15,7 +15,7 @@ import { useProfile } from "@/features/profiles";
 import {
   readVoiceDevicePreferences,
   useVoiceSession,
-  VoicePanel,
+  VoiceDock,
   type VoiceIndicatorState,
 } from "@/features/voice";
 import { WatchPartyScreen } from "@/features/watch-party";
@@ -32,11 +32,15 @@ import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
 import { MemberList } from "./member-list";
 import { MembershipActions } from "./membership-actions";
-import { NowWatchingCard } from "./now-watching-card";
 import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
+import { CountdownOverlay } from "./countdown-overlay";
+import { InviteFriends } from "./invite-friends";
 import { ManualPlayReminder } from "./manual-play-reminder";
+import { MemberStrip } from "./member-strip";
 import { ReadyConfirmationCard } from "./ready-confirmation-card";
+import { RoomDetails } from "./room-details";
+import { RoomStage } from "./room-stage";
 import { RoomSummaryCard } from "./room-summary-card";
 import { PlaybackReadinessPanel } from "./playback-readiness-panel";
 import { ProviderLaunchPanel } from "./provider-launch-panel";
@@ -44,7 +48,6 @@ import { ProviderSessionCard } from "./provider-session-card";
 import { RoomSetupCard } from "./room-setup-card";
 import { RoomSyncCard } from "./room-sync-card";
 import { SyncHealthCard } from "./sync-health-card";
-import { WaitingRoomLayout } from "./waiting-room-layout";
 
 export function WaitingRoom({ roomId }: { roomId: string }) {
   const { t } = useTranslation();
@@ -253,43 +256,82 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     );
   }
 
+  const providerName = providerLaunch.plan?.providerKey ?? room.providerId;
+  const hostLabel = model.members.find((member) => member.isHost)?.label ?? null;
+  const isCountingDown = countdown.state === "counting_down" || countdown.state === "preparing";
+
+  // The room disappears while the countdown runs: three numbers, one line.
+  if (isCountingDown) {
+    return <CountdownOverlay seconds={countdown.remainingSeconds} providerName={providerName} />;
+  }
+
+  const canStart = roomSync.canStartCountdown && (readySnapshot?.countdownAvailable ?? false);
+
   return (
-    <WaitingRoomLayout
-      header={
-        <NowWatchingCard
-          room={room}
-          providerName={providerLaunch.plan?.providerKey ?? room.providerId}
-          hostLabel={model.members.find((member) => member.isHost)?.label ?? null}
-          memberCount={model.members.length}
-          isLive={model.isLive}
+    <>
+      <section
+        aria-label={t("room.waiting_room.region_label")}
+        className="sf-screen-enter mx-auto w-full max-w-xl space-y-6 px-4 py-6 pb-44 sm:px-6 md:pb-32"
+      >
+        <RoomStage room={room} providerName={providerName} hostLabel={hostLabel} />
+
+        <PoWaitingBanner
+          allReady={readySnapshot?.everyoneReady ?? false}
+          isBusy={setup.pending !== null || model.pending !== null}
+          hasProvider={model.room?.providerId !== null}
+          isCounting={countdown.isLive}
+          hasCompleted={countdown.state === "completed"}
+          wasCancelled={countdown.state === "cancelled" || countdown.state === "expired"}
+          isPlaybackReady={playback.isReady}
+          isSyncing={false}
+          isSyncSatisfied={sync.isSatisfactory}
+          isRoomOutOfSync={false}
+          hasRoomRecovered={roomSync.justRecovered}
+          needsSyncEncouragement={false}
+          isSynchronizationReady={playbackSync.justBecameReady}
+          someoneBecameReady={(readySnapshot?.readyCount ?? 0) > 0}
+          isEveryoneReady={readySnapshot?.everyoneReady ?? false}
+          isWaitingForMembers={(readySnapshot?.waitingCount ?? 0) > 0}
+          gazeToken={model.lastArrivalProfileId}
         />
-      }
-      primary={
-        <>
-          <PoWaitingBanner
-            allReady={readySnapshot?.everyoneReady ?? false}
-            isBusy={setup.pending !== null || model.pending !== null}
-            hasProvider={model.room?.providerId !== null}
-            isCounting={countdown.isLive}
-            hasCompleted={countdown.state === "completed"}
-            wasCancelled={countdown.state === "cancelled" || countdown.state === "expired"}
-            isPlaybackReady={playback.isReady}
-            isSyncing={sync.isAvailable && sync.health === "unknown"}
-            isSyncSatisfied={sync.isSatisfactory}
-            isRoomOutOfSync={roomSync.needsResync}
-            hasRoomRecovered={roomSync.justRecovered}
-            needsSyncEncouragement={playbackSync.needsEncouragement}
-            isSynchronizationReady={playbackSync.justBecameReady}
-            someoneBecameReady={(readySnapshot?.readyCount ?? 0) > 0}
-            isEveryoneReady={readySnapshot?.everyoneReady ?? false}
-            isWaitingForMembers={(readySnapshot?.waitingCount ?? 0) > 0}
-            gazeToken={model.lastArrivalProfileId}
+
+        <MemberStrip members={model.members} capacity={room.capacity} />
+
+        <InviteFriends roomName={room.name} roomCode={room.code} />
+
+        <ReadyConfirmationCard ready={ready} />
+
+        {model.viewer.isHost ? (
+          <button
+            type="button"
+            onClick={countdown.start}
+            disabled={!countdown.isAvailable || countdown.pending !== null || !canStart}
+            className="flex min-h-14 w-full items-center justify-center rounded-2xl bg-primary text-base font-semibold text-primary-foreground shadow-e2 transition-[transform,background-color] duration-normal ease-standard hover:bg-primary/90 active:scale-[0.99] disabled:opacity-50 motion-reduce:transform-none"
+          >
+            {t("room.countdown.action.start")}
+          </button>
+        ) : (
+          <p className="text-center text-sm text-muted-foreground">
+            {t("room.countdown.guest_hint")}
+          </p>
+        )}
+
+        {model.viewer.canJoin ? (
+          <MembershipActions
+            viewer={model.viewer}
+            pending={model.pending}
+            canJoin={model.viewer.canJoin}
+            onJoin={model.join}
+            onLeave={model.leave}
           />
+        ) : null}
+
+        <RoomDetails>
           <RoomInfoCard room={room} isLive={model.isLive} />
           <ProviderSessionCard
             room={room}
-            providerName={providerLaunch.plan?.providerKey ?? room.providerId}
-            hostLabel={model.members.find((member) => member.isHost)?.label ?? null}
+            providerName={providerName}
+            hostLabel={hostLabel}
             supportsDeepLink={(providerLaunch.plan?.primaryTarget ?? null) !== null}
           />
           <ManualPlayReminder
@@ -308,9 +350,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             isHost={model.viewer.isHost}
             members={model.members}
             hasProvider={room.providerId !== null}
-            canStartCountdown={
-              roomSync.canStartCountdown && (readySnapshot?.countdownAvailable ?? false)
-            }
+            canStartCountdown={canStart}
             blockReasonKey={roomSync.blockReasonKey}
             hasSyncAdvisory={roomSync.hasAdvisory}
           />
@@ -341,22 +381,11 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
             selectedProviderId={room.providerId}
             countdownSeconds={room.countdownSeconds}
           />
-        </>
-      }
-      secondary={
-        <>
-          <VoicePanel voice={voice} />
-          <ReadyConfirmationCard ready={ready} />
-          <MembershipActions
-            viewer={model.viewer}
-            pending={model.pending}
-            canJoin={model.viewer.canJoin}
-            onJoin={model.join}
-            onLeave={model.leave}
-          />
           <InviteSummary pendingInviteCount={room.pendingInviteCount} roomCode={room.code} />
-        </>
-      }
-    />
+        </RoomDetails>
+      </section>
+
+      <VoiceDock voice={voice} onLeaveRoom={model.leave} isLeaving={model.pending === "leave"} />
+    </>
   );
 }
