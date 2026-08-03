@@ -12,7 +12,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
-import { SectionHeader, Surface } from "@/design-system/components";
+import { SectionHeader } from "@/design-system/components";
 import { useProviderCatalog } from "@/features/providers";
 import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
@@ -73,18 +73,17 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
               className="sf-rail-enter w-40 shrink-0 snap-start sm:w-auto"
               style={{ ["--sf-rail-index" as string]: Math.min(index, 8) }}
             >
-              <Surface
-                as="button"
+              <button
                 type="button"
-                padding="none"
-                interactive={card.isChoosable}
                 aria-disabled={!card.isChoosable}
                 disabled={!card.isChoosable || busy}
                 onClick={() => void onChoose(card)}
                 className={cn(
-                  "group flex h-full w-full flex-col overflow-hidden text-left",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  !card.isChoosable && "opacity-70",
+                  "group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-left text-card-foreground shadow-e1",
+                  "transition-[transform,box-shadow] duration-normal ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  card.isChoosable
+                    ? "hover:-translate-y-0.5 hover:shadow-e3 active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none"
+                    : "opacity-70",
                 )}
               >
                 <span
@@ -108,7 +107,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                     {t(serviceStatusLabelKey(card.status))}
                   </span>
                 </span>
-              </Surface>
+              </button>
             </li>
           );
         })}
