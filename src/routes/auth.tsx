@@ -1,9 +1,11 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 /**
  * Authentication surface layout — Sprint 1.4 §11.
  * Public by design: the sign-in surface must never sit behind the guard.
  */
+
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
