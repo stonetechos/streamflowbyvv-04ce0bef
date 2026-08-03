@@ -10,6 +10,7 @@ import { PoWaitingBanner } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 
 import { useRoomCountdown } from "../use-room-countdown";
+import { useRoomPlayback } from "../use-room-playback";
 import { useRoomSetup } from "../use-room-setup";
 import { useWaitingRoom } from "../use-waiting-room";
 import { InviteSummary } from "./invite-summary";
@@ -17,6 +18,7 @@ import { MemberList } from "./member-list";
 import { MembershipActions } from "./membership-actions";
 import { RoomInfoCard } from "./room-info-card";
 import { CountdownPanel } from "./countdown-panel";
+import { PlaybackReadinessPanel } from "./playback-readiness-panel";
 import { RoomSetupCard } from "./room-setup-card";
 import { WaitingRoomLayout } from "./waiting-room-layout";
 
