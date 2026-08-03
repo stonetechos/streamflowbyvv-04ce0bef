@@ -98,6 +98,9 @@ export function ServiceLogo({ brandKey, name, className }: ServiceLogoProps) {
   const raw = style.text ?? name;
   const label = style.uppercase ? raw.toUpperCase() : raw;
   const hasGlyph = Boolean(style.glyph);
+  // Keeps long names inside the same optical box as short ones.
+  const available = hasGlyph ? 168 : 216;
+  const fontSize = Math.min(38, Math.round((available / Math.max(label.length, 1)) * 1.75));
 
   return (
     <svg
@@ -116,13 +119,10 @@ export function ServiceLogo({ brandKey, name, className }: ServiceLogoProps) {
         dominantBaseline="central"
         fill="currentColor"
         fontFamily="var(--font-display, inherit)"
-        fontSize="34"
+        fontSize={fontSize}
         fontWeight={style.weight ?? 700}
         fontStyle={style.italic ? "italic" : "normal"}
         letterSpacing={style.tracking ?? 0}
-        // Keeps long names inside the same optical box as short ones.
-        textLength={hasGlyph ? 168 : undefined}
-        lengthAdjust={hasGlyph ? "spacingAndGlyphs" : undefined}
       >
         {label}
       </text>
