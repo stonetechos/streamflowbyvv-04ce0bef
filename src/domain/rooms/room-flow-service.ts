@@ -634,7 +634,13 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
         intent,
       );
 
+      // Sprint J.1.5 — the same truthful refusals apply to an invited guest.
+      if (room.hostProfileId !== profileId) {
+        await adjudicate({ roomId: room.id }, profileId, operation);
+      }
+
       const member = await admit(room, profileId, "guest", operation, intent);
+
       const accepted = await invites.update(inviteId, {
         status: "accepted",
         acceptedAt: nowIso(),
