@@ -9,6 +9,16 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
  */
 export const Route = createFileRoute("/auth/")({
   beforeLoad: () => {
+    // Sprint H1.6 §3 — emails sent before the callback route existed return
+    // here carrying the provider's outcome in the query or the hash. Forward
+    // it intact rather than dropping a valid confirmation on the sign-in page.
+    if (typeof window !== "undefined") {
+      const raw = `${window.location.search}${window.location.hash}`;
+      if (/(access_token|refresh_token|[?&#]code=|error|type=)/.test(raw)) {
+        window.location.replace(`/auth/callback${window.location.search}${window.location.hash}`);
+        return;
+      }
+    }
     throw redirect({ to: "/auth/sign-in", replace: true });
   },
 });
