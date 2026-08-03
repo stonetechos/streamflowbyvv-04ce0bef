@@ -1,20 +1,18 @@
 /**
- * Home screen — Milestone E, integrated in Milestone G.5.
+ * Home screen — Milestone H2 (product experience).
  *
- * The signed-in landing surface. It composes rails whose contents were all
- * decided elsewhere: `HomeReadModel` chose which room is resumable and which
- * invites are pending, `ProviderCatalogService` chose which services may be
- * offered. This component arranges them and nothing more.
+ * The signed-in landing surface, ordered the way a viewer thinks: the question
+ * first, then where they watch, then who they watch with, then the machinery.
+ * Room creation is no longer a headline — choosing a service creates the room.
  *
- * The order is fixed by the consumer specification: continue watching,
- * invitations, rooms, friends, providers, settings. Each rail rises into place
- * in that same reading order.
+ * Everything shown here was decided elsewhere: `HomeReadModel` chose the rooms
+ * and invitations, `ProviderCatalogService` chose the services. This component
+ * arranges them and nothing more.
  */
 import { memo, type ReactNode } from "react";
 
-import { ActionButton, EmptyState, SectionHeader } from "@/design-system/components";
+import { ActionButton, SectionHeader } from "@/design-system/components";
 import { InviteCard } from "@/features/invitations";
-import { PoCompanion } from "@/features/po";
 import { HomeSocialRails, useSocial } from "@/features/social";
 import { useTranslation } from "@/foundation/localization";
 
@@ -23,9 +21,10 @@ import { ContinueWatchingCard } from "./continue-watching-card";
 import { HomeHero } from "./home-hero";
 import { HomeQuickSettings } from "./home-quick-settings";
 import { HomeSkeleton } from "./home-skeleton";
-import { ProvidersSection } from "./providers-section";
-import { RoomEntryCards } from "./room-entry-cards";
+import { JoinByCodeCard } from "./join-by-code-card";
+import { LivePartiesSection } from "./live-parties-section";
 import { RoomListSection } from "./room-list-section";
+import { ServiceShelf } from "./service-shelf";
 
 export interface HomeScreenProps {
   readonly home: HomeModel;
@@ -65,37 +64,67 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
     );
   }
 
+  // Po speaks only in gentle observations, and only about what is on screen.
+  const friendCount = social.overview.friends.length;
+  const poLine = snapshot.continueRoom
+    ? t("home.po.resume")
+    : friendCount > 0
+      ? t("home.po.friends", { count: friendCount })
+      : t("home.po.idle");
+
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-10 px-4 py-8 pb-28 sm:px-6 lg:py-12 md:pb-12">
+    <div className="mx-auto w-full max-w-6xl space-y-10 px-4 py-8 pb-32 sm:px-6 lg:py-12 md:pb-12">
       <Rail index={0}>
         <HomeHero
           displayName={displayName}
           isFirstTime={snapshot.isFirstTime}
           hostedRoomCount={snapshot.hostedRoomCount}
           mood={snapshot.continueRoom ? "happy" : "calm"}
+          poLine={poLine}
         />
       </Rail>
 
-      {!home.isAvailable ? (
-        <EmptyState
-          title={t("home.unavailable.title")}
-          description={t("home.unavailable.description")}
-          illustration={<PoCompanion mood="waiting" className="h-24 w-36" />}
-        />
-      ) : null}
+      <Rail index={1}>
+        <ServiceShelf home={home} profileId={profileId} />
+      </Rail>
+
+      <Rail index={2}>
+        <JoinByCodeCard home={home} />
+      </Rail>
 
       {snapshot.continueRoom ? (
-        <Rail index={1}>
+        <Rail index={3}>
           <ContinueWatchingCard summary={snapshot.continueRoom} />
         </Rail>
       ) : null}
 
-      <Rail index={2}>
-        <RoomEntryCards home={home} />
+      <Rail index={4}>
+        <HomeSocialRails social={social} {...(onInvite ? { onInvite } : {})} />
+      </Rail>
+
+      <Rail index={5}>
+        <LivePartiesSection
+          rooms={snapshot.liveRooms}
+          action={
+            <ActionButton size="sm" tone="ghost" onClick={home.refresh}>
+              {t("common.action.refresh")}
+            </ActionButton>
+          }
+        />
+      </Rail>
+
+      <Rail index={6}>
+        <RoomListSection
+          title={t("home.recent.title")}
+          description={t("home.recent.description")}
+          rooms={snapshot.recentRooms}
+          emptyTitle={t("home.recent.empty.title")}
+          emptyDescription={t("home.recent.empty.description")}
+        />
       </Rail>
 
       {snapshot.pendingInvites.length > 0 ? (
-        <Rail index={3}>
+        <Rail index={7}>
           <section className="space-y-4">
             <SectionHeader
               title={t("home.invites.title")}
@@ -116,39 +145,6 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
           </section>
         </Rail>
       ) : null}
-
-      <Rail index={4}>
-        <RoomListSection
-          title={t("home.live.title")}
-          description={t("home.live.description")}
-          rooms={snapshot.liveRooms}
-          emptyTitle={t("home.live.empty.title")}
-          emptyDescription={t("home.live.empty.description")}
-          action={
-            <ActionButton size="sm" tone="ghost" onClick={home.refresh}>
-              {t("common.action.refresh")}
-            </ActionButton>
-          }
-        />
-      </Rail>
-
-      <Rail index={5}>
-        <RoomListSection
-          title={t("home.recent.title")}
-          description={t("home.recent.description")}
-          rooms={snapshot.recentRooms}
-          emptyTitle={t("home.recent.empty.title")}
-          emptyDescription={t("home.recent.empty.description")}
-        />
-      </Rail>
-
-      <Rail index={6}>
-        <HomeSocialRails social={social} {...(onInvite ? { onInvite } : {})} />
-      </Rail>
-
-      <Rail index={7}>
-        <ProvidersSection profileId={profileId} />
-      </Rail>
 
       <Rail index={8}>
         <HomeQuickSettings />
