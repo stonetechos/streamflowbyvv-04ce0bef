@@ -4,6 +4,11 @@
  */
 export { WaitingRoom } from "./components/waiting-room";
 export { WaitingRoomLayout } from "./components/waiting-room-layout";
+export { RoomStage } from "./components/room-stage";
+export { MemberStrip } from "./components/member-strip";
+export { InviteFriends } from "./components/invite-friends";
+export { CountdownOverlay } from "./components/countdown-overlay";
+export { RoomDetails } from "./components/room-details";
 export { RoomInfoCard } from "./components/room-info-card";
 export { MemberList } from "./components/member-list";
 export { MembershipActions } from "./components/membership-actions";
