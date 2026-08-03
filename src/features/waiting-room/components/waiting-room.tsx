@@ -4,7 +4,9 @@
  * Composes the lobby from the hook's model and resolves loading, error, and
  * empty states in one place so no child has to know about them.
  */
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useNavigate } from "@tanstack/react-router";
+
 
 import { ErrorState, LoadingState } from "@/app-shell";
 import type { SyncHealth } from "@/domain";
