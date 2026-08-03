@@ -108,8 +108,16 @@ export function parseContentReference(raw: string | null): ContentReference | nu
       kind: parsed.kind as ContentReferenceKind,
       value: parsed.value,
       title: parsed.title ?? null,
+      contentKind: (CONTENT_KINDS as readonly string[]).includes(String(parsed.contentKind))
+        ? (parsed.contentKind as ContentKind)
+        : "unknown",
       seasonNumber: parsed.seasonNumber ?? null,
       episodeNumber: parsed.episodeNumber ?? null,
+      artworkUrl: parsed.artworkUrl ?? null,
+      providerMetadata:
+        typeof parsed.providerMetadata === "object" && parsed.providerMetadata !== null
+          ? (parsed.providerMetadata as Readonly<Record<string, unknown>>)
+          : NO_METADATA,
       durationMs: parsed.durationMs ?? null,
     });
   } catch {
