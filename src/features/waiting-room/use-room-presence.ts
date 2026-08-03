@@ -34,10 +34,21 @@ export interface RoomPresenceModel {
 
 const EMPTY: ReadonlyMap<string, MemberPresence> = new Map();
 
+/**
+ * Sprint 2.6 — the measurements a heartbeat carries alongside liveness. They
+ * come from `ClockSyncService` and are written to the existing presence
+ * columns; this hook transports them and interprets nothing.
+ */
+export interface PresenceSyncMetrics {
+  readonly clockOffsetMs: number | null;
+  readonly latencyMs: number | null;
+}
+
 export function useRoomPresence(
   roomId: string,
   profileId: string | null,
   enabled: boolean,
+  metrics: PresenceSyncMetrics | null = null,
 ): RoomPresenceModel {
   const coordinator = useMemo(
     () => (isServiceBound(PRESENCE_COORDINATOR) ? resolveService(PRESENCE_COORDINATOR) : null),
@@ -50,6 +61,10 @@ export function useRoomPresence(
   const [isTracking, setIsTracking] = useState(false);
   const [isRoomInactive, setIsRoomInactive] = useState(false);
   const mounted = useRef(true);
+  // Read at beat time so a fresh measurement rides the next heartbeat without
+  // restarting the interval.
+  const metricsRef = useRef<PresenceSyncMetrics | null>(metrics);
+  metricsRef.current = metrics;
 
   const active = enabled && coordinator !== null && coordinator.isAvailable();
 
@@ -87,8 +102,16 @@ export function useRoomPresence(
         typeof document !== "undefined" && document.visibilityState === "hidden"
           ? "idle"
           : "online";
+      const measured = metricsRef.current;
       void coordinator
-        .heartbeat({ roomId, profileId, connectionId: connection, status })
+        .heartbeat({
+          roomId,
+          profileId,
+          connectionId: connection,
+          status,
+          clockOffsetMs: measured?.clockOffsetMs ?? null,
+          latencyMs: measured?.latencyMs ?? null,
+        })
         .catch((cause: unknown) =>
           logger.warn("Heartbeat failed", { module: MODULE, roomId, error: cause }),
         );

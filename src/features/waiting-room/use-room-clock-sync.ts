@@ -19,7 +19,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   CLOCK_SYNC_SERVICE,
-  crossesHealthCategory,
   isHealthSatisfactory,
   isServiceBound,
   requiresResync,
@@ -27,7 +26,6 @@ import {
   type SyncHealth,
   type SyncSnapshot,
 } from "@/domain";
-import { useAnnouncer } from "@/foundation/accessibility";
 import { logger } from "@/foundation/logging";
 import { useTranslation } from "@/foundation/localization";
 import { SYNC_RUNTIME } from "@/shared/constants/system-constants";
@@ -68,9 +66,6 @@ export function useRoomClockSync({
   profileId,
   enabled,
 }: UseRoomClockSyncInput): RoomClockSyncModel {
-  const { t } = useTranslation();
-  const announce = useAnnouncer();
-
   const service = useMemo(
     () => (isServiceBound(CLOCK_SYNC_SERVICE) ? resolveService(CLOCK_SYNC_SERVICE) : null),
     [],
@@ -81,7 +76,6 @@ export function useRoomClockSync({
 
   const mounted = useRef(true);
   const inFlight = useRef(false);
-  const lastHealth = useRef<SyncHealth>("unknown");
 
   const available = service !== null && service.isAvailable() && enabled;
 
@@ -136,20 +130,10 @@ export function useRoomClockSync({
     return () => service.forget(roomId);
   }, [roomId, service]);
 
-  // Accessibility: category crossings only. Latency moving from 40ms to 70ms
-  // is not news; Good becoming Warning is.
+  // Accessibility: Sprint 2.6 moves the spoken update to the room-level hook,
+  // so this device's own band changes are no longer announced twice. The
+  // measurement remains visible in the diagnostics card.
   const health = snapshot?.health ?? "unknown";
-  useEffect(() => {
-    if (!crossesHealthCategory(lastHealth.current, health)) {
-      lastHealth.current = health;
-      return;
-    }
-    lastHealth.current = health;
-    announce(
-      t("room.sync.announce.health_changed", { health: t(SYNC_HEALTH_KEYS[health]) }),
-      isHealthSatisfactory(health) ? "polite" : "assertive",
-    );
-  }, [announce, health, t]);
 
   return {
     snapshot,
