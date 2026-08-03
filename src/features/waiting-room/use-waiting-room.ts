@@ -274,6 +274,13 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     presenceRefresh.current();
   }, [load]);
 
+  /**
+   * Sprint J.2 — the room is over for this viewer. Either the read model says
+   * the room ended, or the load was refused because it ended. Domain decided
+   * both; this is a projection, not an inference.
+   */
+  const hasEnded = snapshot?.room.status === "ended" || error?.code === "SF-ROOM-ENDED";
+
   return {
     status,
     error,
@@ -286,7 +293,10 @@ export function useWaitingRoom(roomId: string): WaitingRoomModel {
     roomSync,
     viewer,
     pending,
+    departed,
+    hasEnded,
     isLive: realtime.isLive,
+
     refresh,
     join,
     leave,
