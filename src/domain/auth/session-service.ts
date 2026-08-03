@@ -29,6 +29,8 @@ export interface SessionService {
   getCurrentSession(): Promise<AuthSession | null>;
   refreshSession(): Promise<AuthSession | null>;
   requestPasswordReset(email: string, returnPath: string): Promise<void>;
+  /** Completes recovery for the signed-in subject. Sprint H1.6. */
+  updatePassword(newPassword: string): Promise<void>;
   resendVerification(email: string): Promise<void>;
   onSessionChanged(listener: (session: AuthSession | null) => void): () => void;
   /** Session expiry read against a supplied clock; never against device time alone. */
@@ -57,6 +59,7 @@ export function createSessionService(): SessionService {
     signOut: () => auth("signOut").signOut(),
     requestPasswordReset: (email, returnPath) =>
       auth("requestPasswordReset").requestPasswordReset(email, returnPath),
+    updatePassword: (newPassword) => auth("updatePassword").updatePassword(newPassword),
     resendVerification: (email) => auth("resendVerification").resendVerification(email),
 
     getCurrentSession: async () => {

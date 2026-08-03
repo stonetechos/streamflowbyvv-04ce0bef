@@ -53,6 +53,8 @@ export interface AuthContextValue extends AuthState {
   refresh: () => Promise<void>;
   /** Sends a reset link. Milestone E — the recovery journey (MVP §3.4). */
   requestPasswordReset: (email: string, returnPath: string) => Promise<void>;
+  /** Sets a new password using the session a recovery link established. */
+  updatePassword: (newPassword: string) => Promise<void>;
   /** Re-sends the verification email for an address awaiting confirmation. */
   resendVerification: (email: string) => Promise<void>;
   hasRole: (role: AppRole) => boolean;
@@ -176,6 +178,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [sessions],
   );
 
+  const updatePassword = useCallback(
+    (newPassword: string) => sessions.updatePassword(newPassword),
+    [sessions],
+  );
+
   const resendVerification = useCallback(
     (email: string) => sessions.resendVerification(email),
     [sessions],
@@ -193,6 +200,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       refresh,
       requestPasswordReset,
+      updatePassword,
       resendVerification,
       hasRole: (role) => roles.includes(role),
       can: (permission) => permissions.can(roles, permission),
@@ -201,6 +209,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       permissions,
       refresh,
       requestPasswordReset,
+      updatePassword,
       resendVerification,
       roles,
       sessions,

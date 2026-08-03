@@ -25,6 +25,12 @@ export interface AuthRepository {
   signIn(credentials: AuthCredentials): Promise<AuthOutcome>;
   signOut(): Promise<void>;
   requestPasswordReset(email: string, returnPath: string): Promise<void>;
+  /**
+   * Sets a new password for the currently authenticated subject. Sprint H1.6 —
+   * the second half of recovery; the provider authorises it from the session
+   * the recovery link established, so no old password crosses this boundary.
+   */
+  updatePassword(newPassword: string): Promise<void>;
   resendVerification(email: string): Promise<void>;
 }
 
