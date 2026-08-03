@@ -76,7 +76,7 @@ export function deriveProviderSession(input: ProviderSessionInput): ProviderSess
   const control = selectProviderControl({
     isSelectable: input.isSelectable,
     canDeepLink: input.supportsDeepLink,
-    isNativeRuntime: input.isNativeRuntime,
+    ...(input.isNativeRuntime === undefined ? {} : { isNativeRuntime: input.isNativeRuntime }),
   });
 
   const status: ProviderSessionStatus = !input.isSelectable
