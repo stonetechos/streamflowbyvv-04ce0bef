@@ -12,7 +12,7 @@ import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
 import { AuthProvider } from "@/features/auth";
-import { PoProvider } from "@/features/po";
+import { PoProvider, PoReactionProvider } from "@/features/po";
 import { AccessibilityProvider } from "@/foundation/accessibility";
 import { FeatureFlagProvider } from "@/foundation/feature-flags";
 import { LocalizationProvider } from "@/foundation/localization";
@@ -38,7 +38,10 @@ export function AppProviders({
           <LocalizationProvider>
             <FeatureFlagProvider>
               <AuthProvider>
-                <PoProvider>{children}</PoProvider>
+                <PoProvider>
+                  {/* Milestone F.0: Po's decorative reactions to social moments. */}
+                  <PoReactionProvider>{children}</PoReactionProvider>
+                </PoProvider>
               </AuthProvider>
             </FeatureFlagProvider>
           </LocalizationProvider>

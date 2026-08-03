@@ -83,6 +83,8 @@ import {
   HOME_READ_MODEL,
 } from "../rooms/home-read-model";
 import { createProfileService, PROFILE_SERVICE } from "../profiles/profile-service";
+import { createSocialService, SOCIAL_SERVICE } from "../social/social-service";
+import { createSocialReadModel, SOCIAL_READ_MODEL } from "../social/social-read-model";
 
 import {
   bindService,
@@ -317,6 +319,10 @@ export function registerDomainServices(options: DomainServiceOptions = {}): void
     // Milestone E: profile and preference orchestration, on top of USER_SERVICE
     // so every profile edit still emits its documented domain event.
     [PROFILE_SERVICE, () => createProfileService({ users: resolveService(USER_SERVICE) })],
+    // Milestone F.0: the friend graph, and the single cross-aggregate read the
+    // social surfaces share. Both sit on USER_SERVICE for block/unblock events.
+    [SOCIAL_SERVICE, () => createSocialService({ users: resolveService(USER_SERVICE) })],
+    [SOCIAL_READ_MODEL, () => createSocialReadModel({ social: resolveService(SOCIAL_SERVICE) })],
 
     [PROVIDER_SERVICE, () => createProviderService(context())],
     [FEATURE_FLAG_SERVICE, () => createFeatureFlagDomainService(context())],

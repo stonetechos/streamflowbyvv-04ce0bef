@@ -6,6 +6,12 @@ export {
 export { PoCompanion, type PoCompanionProps, type PoMood } from "./components/po-companion";
 export { PoProvider, usePo, type PoContextValue } from "./po-provider";
 export {
+  PoReactionProvider,
+  usePoReaction,
+  type PoReactionContextValue,
+  type PoSocialMoment,
+} from "./po-reactions";
+export {
   getPoTool,
   isPoToolRegistered,
   listPoTools,

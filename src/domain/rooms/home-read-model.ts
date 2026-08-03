@@ -63,6 +63,11 @@ export interface HomeSnapshot {
   /** Rooms that have finished, newest first. */
   readonly recentRooms: readonly HomeRoomSummary[];
   readonly pendingInvites: readonly HomeInviteSummary[];
+  /**
+   * Milestone F.0 — invitations already answered or lapsed, newest first, so a
+   * declined or expired invite is a visible record rather than a dead end.
+   */
+  readonly answeredInvites: readonly HomeInviteSummary[];
   readonly hostedRoomCount: number;
   /** True when this profile has never been in a room — drives first-run copy. */
   readonly isFirstTime: boolean;
@@ -126,19 +131,31 @@ export function createHomeReadModel(deps: HomeReadModelDependencies): HomeReadMo
       // belongs in the invitations rail, not in a resume affordance.
       const continueRoom = live.find((entry) => entry.isResumable) ?? null;
 
-      const invitePage = await invites.listForInvitee(viewerProfileId, { statuses: ["pending"] });
-      const pendingInvites = await Promise.all(
-        invitePage.items.map(async (invite): Promise<HomeInviteSummary> => ({
-          invite,
-          room: await rooms.findById(invite.roomId).catch(() => null),
-        })),
-      );
+      const hydrate = async (invite: Invite): Promise<HomeInviteSummary> => ({
+        invite,
+        room: await rooms.findById(invite.roomId).catch(() => null),
+      });
+
+      const [invitePage, answeredPage] = await Promise.all([
+        invites.listForInvitee(viewerProfileId, { statuses: ["pending"] }),
+        invites
+          .listForInvitee(viewerProfileId, { statuses: ["accepted", "declined", "expired"] })
+          .catch(() => ({ items: [] as Invite[] })),
+      ]);
+
+      const [pendingInvites, answeredInvites] = await Promise.all([
+        Promise.all(invitePage.items.map(hydrate)),
+        Promise.all(answeredPage.items.map(hydrate)),
+      ]);
 
       return Object.freeze({
         continueRoom,
         liveRooms: live.filter((entry) => entry !== continueRoom),
         recentRooms: closed,
         pendingInvites,
+        answeredInvites: [...answeredInvites].sort((a, b) =>
+          b.invite.createdAt.localeCompare(a.invite.createdAt),
+        ),
         hostedRoomCount: present.filter((entry) => entry.isHost).length,
         isFirstTime: present.length === 0 && pendingInvites.length === 0,
       });
