@@ -98,6 +98,43 @@ export const DOMAIN_ERRORS = Object.freeze({
     severity: "warning",
     retryable: false,
   },
+  /** Sprint J.1.5 — the room existed, then the host ended it. */
+  ROOM_ENDED: {
+    code: "SF-ROOM-ENDED",
+    messageKey: "error.room.ended",
+    severity: "warning",
+    retryable: false,
+  },
+  /** Sprint J.1.5 — the room row is soft-deleted (archived). */
+  ROOM_DELETED: {
+    code: "SF-ROOM-DELETED",
+    messageKey: "error.room.deleted",
+    severity: "warning",
+    retryable: false,
+  },
+  /** Sprint J.1.5 — a block exists between the caller and the host (ADR-011). */
+  ROOM_BLOCKED: {
+    code: "SF-ROOM-BLOCKED",
+    messageKey: "error.room.blocked",
+    severity: "warning",
+    retryable: false,
+  },
+  /** Sprint J.1.5 — the caller is still joined to a different open room. */
+  ROOM_ALREADY_IN_ANOTHER_ROOM: {
+    code: "SF-ROOM-ALREADY-IN-ANOTHER-ROOM",
+    messageKey: "error.room.already_in_another_room",
+    severity: "warning",
+    retryable: false,
+    recoveryActionKey: "error.action.leave_other_room",
+  },
+  /** Sprint J.1.5 — the host removed this person from the room. */
+  ROOM_MEMBER_REMOVED: {
+    code: "SF-ROOM-MEMBER-REMOVED",
+    messageKey: "error.room.member_removed",
+    severity: "warning",
+    retryable: false,
+  },
+
   ROOM_MEMBER_NOT_FOUND: {
     code: "SF-ROOM-MEMBER-NOT-FOUND",
     messageKey: "error.room.member_not_found",
