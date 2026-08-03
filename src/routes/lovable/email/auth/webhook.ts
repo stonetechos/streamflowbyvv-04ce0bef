@@ -9,11 +9,11 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "streamflowbyvv"
+const SITE_NAME = "StreamFlow"
 const SENDER_DOMAIN = "email.mail.streamflow.stonetech.in"
 const ROOT_DOMAIN = "mail.streamflow.stonetech.in"
 const FROM_DOMAIN = "email.mail.streamflow.stonetech.in"
-const SITE_URL = `https://${ROOT_DOMAIN}`
+const SITE_URL = "https://streamflow.stonetech.in"
 
 // The SDK handler owns verification, dispatch, and retry semantics; this file
 // owns only the email decisions: subjects, templates, and per-type props.
