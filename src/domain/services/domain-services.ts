@@ -47,18 +47,20 @@ import {
   createProviderCatalogService,
   resolveProviderCatalogDependencies,
   PROVIDER_CATALOG_SERVICE,
-  PROVIDER_LAUNCHER,
-  PROVIDER_LAUNCH_COORDINATOR,
-  createDeepLinkRegistry,
-  createNoopProviderLauncher,
-  createProviderLaunchCoordinator,
-  resolveProviderLaunchCoordinatorDependencies,
 } from "../providers/provider-catalog-service";
 import {
   createProviderPreferenceService,
   resolveProviderPreferenceDependencies,
   PROVIDER_PREFERENCE_SERVICE,
 } from "../providers/provider-preference-service";
+import {
+  PROVIDER_LAUNCHER,
+  PROVIDER_LAUNCH_COORDINATOR,
+  createDeepLinkRegistry,
+  createNoopProviderLauncher,
+  createProviderLaunchCoordinator,
+  resolveProviderLaunchCoordinatorDependencies,
+} from "../providers";
 import { createDeepLinkService, type DeepLinkService } from "../providers/deep-link-service";
 import {
   createRoomSetupService,
