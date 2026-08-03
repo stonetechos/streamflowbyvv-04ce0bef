@@ -32,9 +32,20 @@ import { cn } from "@/lib/utils";
  * - `counting` — a countdown is running
  * - `celebrating` — the countdown reached zero
  * - `disappointed` — the countdown was cancelled; brief, then back to calm
+ *
+ * Sprint 2.4 adds one more: `excited`, for the moment the room becomes ready
+ * to watch. Po smiles and stands up. Still decorative — Po does not know what
+ * playback is, cannot start it, and says nothing (Po Rule).
  */
 export type PoMood =
-  "calm" | "thinking" | "delighted" | "focused" | "counting" | "celebrating" | "disappointed";
+  | "calm"
+  | "thinking"
+  | "delighted"
+  | "focused"
+  | "counting"
+  | "celebrating"
+  | "disappointed"
+  | "excited";
 
 export interface PoCompanionProps {
   readonly mood?: PoMood;
@@ -150,7 +161,7 @@ export function PoCompanion({ mood = "calm", gazeToken = null, className }: PoCo
           <path
             className="sf-po-smile"
             d={
-              mood === "delighted" || mood === "celebrating"
+              mood === "delighted" || mood === "celebrating" || mood === "excited"
                 ? "M74 63 q6 7 12 0"
                 : mood === "disappointed"
                   ? "M75 65 q5 -4 10 0"
