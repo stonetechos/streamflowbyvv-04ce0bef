@@ -39,7 +39,10 @@ export function JoinByCodeCard({ home }: { home: HomeModel }) {
     <Surface padding="md" as="section" aria-labelledby="join-room-heading">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <h2 id="join-room-heading" className="font-display text-base font-semibold tracking-tight">
+          <h2
+            id="join-room-heading"
+            className="font-display text-base font-semibold tracking-tight"
+          >
             {t("home.join.title")}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">{t("home.join.description")}</p>

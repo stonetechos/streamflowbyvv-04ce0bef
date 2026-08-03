@@ -14,7 +14,8 @@
 import type { ProviderOptionView } from "@/features/providers";
 
 /** How a card is labelled. `coming_soon` is presentation-only. */
-export type ServiceStatus = "supported" | "manual_sync" | "unverified" | "unavailable" | "coming_soon";
+export type ServiceStatus =
+  "supported" | "manual_sync" | "unverified" | "unavailable" | "coming_soon";
 
 export interface ServiceCardView {
   /** Stable presentation key; the catalog key when one exists. */

@@ -7,7 +7,13 @@
  */
 import { Link } from "@tanstack/react-router";
 
-import { Avatar, EmptyState, SectionHeader, Surface, presetForName } from "@/design-system/components";
+import {
+  Avatar,
+  EmptyState,
+  SectionHeader,
+  Surface,
+  presetForName,
+} from "@/design-system/components";
 import { PoCompanion } from "@/features/po";
 import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
@@ -69,17 +75,15 @@ export function LivePartiesSection({ rooms, action }: LivePartiesSectionProps) {
                       {t("home.live.badge")}
                     </span>
                     <span aria-hidden="true">·</span>
-                    <span>{t("home.room.members", { count: memberCount, capacity: room.maxMembers })}</span>
+                    <span>
+                      {t("home.room.members", { count: memberCount, capacity: room.maxMembers })}
+                    </span>
                   </p>
                 </div>
 
                 <div className="mt-auto flex items-center justify-between gap-3">
                   <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Avatar
-                      name={room.name}
-                      preset={presetForName(room.name)}
-                      size="sm"
-                    />
+                    <Avatar name={room.name} preset={presetForName(room.name)} size="sm" />
                     {isHost ? t("home.room.you_host") : t("home.live.host_other")}
                   </span>
 

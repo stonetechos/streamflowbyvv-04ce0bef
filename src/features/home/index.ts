@@ -3,7 +3,10 @@ export { HomeScreen, type HomeScreenProps } from "./components/home-screen";
 export { HomeHero, type HomeHeroProps } from "./components/home-hero";
 export { ContinueWatchingCard } from "./components/continue-watching-card";
 export { RoomListSection, type RoomListSectionProps } from "./components/room-list-section";
-export { LivePartiesSection, type LivePartiesSectionProps } from "./components/live-parties-section";
+export {
+  LivePartiesSection,
+  type LivePartiesSectionProps,
+} from "./components/live-parties-section";
 export { ServiceShelf, type ServiceShelfProps } from "./components/service-shelf";
 export { JoinByCodeCard } from "./components/join-by-code-card";
 export { FriendsPlaceholder, UpcomingPartiesPlaceholder } from "./components/home-placeholders";
