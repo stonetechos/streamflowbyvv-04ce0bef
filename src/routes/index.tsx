@@ -24,7 +24,21 @@ export const Route = createFileRoute("/")({
           "Watch together on your own subscriptions with synchronized playback, a shared countdown and live voice chat.",
       },
       { property: "og:type", content: "website" },
+      {
+        property: "og:image",
+        content: "https://project--9fb64234-2e83-4a74-bb9c-83d15f6b5a75.lovable.app/og-image.jpg",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:image",
+        content: "https://project--9fb64234-2e83-4a74-bb9c-83d15f6b5a75.lovable.app/og-image.jpg",
+      },
+    ],
+    links: [
+      {
+        rel: "canonical",
+        href: "https://project--9fb64234-2e83-4a74-bb9c-83d15f6b5a75.lovable.app/",
+      },
     ],
   }),
   component: LandingPage,

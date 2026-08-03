@@ -1,17 +1,47 @@
 {
-  "name": "StreamFlow — Watch together, perfectly synced",
+  "id": "/",
+  "name": "StreamFlow — Watch together, in sync",
   "short_name": "StreamFlow",
   "description": "Share a movie or episode from your streaming app and watch it together, perfectly synced, with voice.",
   "start_url": "/home",
   "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#0b0d12",
   "theme_color": "#0b0d12",
+  "categories": ["entertainment", "social"],
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "48x48",
-      "type": "image/x-icon"
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "url": "/home"
     }
   ],
   "share_target": {

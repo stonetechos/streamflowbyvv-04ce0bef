@@ -10,6 +10,20 @@ import { useTranslation } from "@/foundation/localization";
  * Account management itself is a later sprint (Build Rules §1).
  */
 export const Route = createFileRoute("/_authenticated/account")({
+  head: () => ({
+    meta: [
+      { title: "Your account — StreamFlow" },
+      {
+        name: "description",
+        content: "Review the StreamFlow account you are signed in with.",
+      },
+      { property: "og:title", content: "Your account — StreamFlow" },
+      { property: "og:description", content: "Review the account you are signed in with." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: AccountPlaceholder,
 });
 

@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
+import { ActionButton } from "@/design-system/components";
 import { useAuth } from "@/features/auth";
 import { useTranslation } from "@/foundation/localization";
 import { logger } from "@/foundation/logging";
@@ -12,6 +13,17 @@ import { logger } from "@/foundation/logging";
  * clear session, clear local state, navigate with history replace.
  */
 export const Route = createFileRoute("/auth/sign-out")({
+  head: () => ({
+    meta: [
+      { title: "Sign out — StreamFlow" },
+      { name: "description", content: "Sign out of StreamFlow on this device." },
+      { property: "og:title", content: "Sign out — StreamFlow" },
+      { property: "og:description", content: "Sign out of StreamFlow on this device." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: SignOutPage,
 });
 
@@ -35,13 +47,9 @@ function SignOutPage() {
     <section className="mx-auto flex min-h-[60dvh] max-w-md flex-col justify-center gap-4 px-4">
       <h1 className="text-2xl font-semibold tracking-tight">{t("auth.sign_out.title")}</h1>
       <p className="text-sm text-muted-foreground">{t("auth.sign_out.subtitle")}</p>
-      <button
-        type="button"
-        onClick={() => void handleSignOut()}
-        className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-      >
+      <ActionButton type="button" onClick={() => void handleSignOut()}>
         {t("auth.action.sign_out")}
-      </button>
+      </ActionButton>
       {message ? (
         <p role="alert" className="text-sm text-muted-foreground">
           {message}
