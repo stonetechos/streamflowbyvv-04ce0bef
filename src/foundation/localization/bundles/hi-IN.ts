@@ -142,6 +142,13 @@ export const hiINBundle: LocaleBundle = {
     "auth.verify.sent": "हमने {email} पर सत्यापन लिंक भेजा है।",
     "auth.verify.hint": "खाता पूरा करने के लिए इसे इसी डिवाइस पर खोलें।",
     "auth.sign_up.have_account": "पहले से खाता है?",
+    "auth.sign_up.title": "अपना StreamFlow खाता बनाएँ",
+    "auth.sign_up.subtitle": "एक खाता, हर कमरा जिसे आप बनाएँ या जिसमें शामिल हों।",
+    "auth.forgot_password.title": "अपना पासवर्ड रीसेट करें",
+    "auth.forgot_password.subtitle": "नया पासवर्ड चुनने के लिए हम आपको लिंक ईमेल करेंगे।",
+    "auth.verify.title": "अपना ईमेल सत्यापित करें",
+    "auth.verify.subtitle": "एक क्लिक और आप अंदर।",
+
     "auth.validation.email_required": "अपना ईमेल पता दर्ज करें।",
     "auth.validation.email_invalid": "यह ईमेल पते जैसा नहीं लगता।",
     "auth.validation.password_required": "अपना पासवर्ड दर्ज करें।",
