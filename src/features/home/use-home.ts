@@ -81,6 +81,11 @@ export function useHome(viewerProfileId: string | null): HomeModel {
     () => (isServiceBound(ROOM_FLOW_SERVICE) ? resolveService(ROOM_FLOW_SERVICE) : null),
     [],
   );
+  const setup = useMemo(
+    () => (isServiceBound(ROOM_SETUP_SERVICE) ? resolveService(ROOM_SETUP_SERVICE) : null),
+    [],
+  );
+
 
   useEffect(() => {
     if (!home || !viewerProfileId) {
