@@ -103,7 +103,9 @@ export function toAuthError(
   const message = (error.message ?? "").toLowerCase();
 
   let key: AuthErrorKey = "PROVIDER_UNAVAILABLE";
-  if (
+  if (code === "weak_password") {
+    key = "WEAK_PASSWORD";
+  } else if (
     status === 429 ||
     code === "over_request_rate_limit" ||
     code === "over_email_send_rate_limit"
