@@ -30,6 +30,7 @@ import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
 import { Route as JoinCodeRouteImport } from './routes/join.$code'
 import { Route as AuthenticatedPeopleProfileIdRouteImport } from './routes/_authenticated.people.$profileId'
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
+import { Route as ApiDebugConfigRouteImport } from './routes/api/debug/config'
 import { Route as ApiPublicTimeRouteImport } from './routes/api/public/time'
 import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice/token'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -141,6 +142,11 @@ const AuthenticatedRoomsRoomIdRoute =
     path: '/rooms/$roomId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ApiDebugConfigRoute = ApiDebugConfigRouteImport.update({
+  id: '/api/debug/config',
+  path: '/api/debug/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTimeRoute = ApiPublicTimeRouteImport.update({
   id: '/api/public/time',
   path: '/api/public/time',
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/auth/': typeof AuthIndexRoute
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/api/debug/config': typeof ApiDebugConfigRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/api/debug/config': typeof ApiDebugConfigRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/_authenticated/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/api/debug/config': typeof ApiDebugConfigRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/people/$profileId'
     | '/rooms/$roomId'
+    | '/api/debug/config'
     | '/api/public/time'
     | '/api/voice/token'
     | '/lovable/email/auth/preview'
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/people/$profileId'
     | '/rooms/$roomId'
+    | '/api/debug/config'
     | '/api/public/time'
     | '/api/voice/token'
     | '/lovable/email/auth/preview'
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/_authenticated/people/$profileId'
     | '/_authenticated/rooms/$roomId'
+    | '/api/debug/config'
     | '/api/public/time'
     | '/api/voice/token'
     | '/lovable/email/auth/preview'
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   JoinCodeRoute: typeof JoinCodeRoute
+  ApiDebugConfigRoute: typeof ApiDebugConfigRoute
   ApiPublicTimeRoute: typeof ApiPublicTimeRoute
   ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -482,6 +495,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRoomsRoomIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/debug/config': {
+      id: '/api/debug/config'
+      path: '/api/debug/config'
+      fullPath: '/api/debug/config'
+      preLoaderRoute: typeof ApiDebugConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/time': {
       id: '/api/public/time'
       path: '/api/public/time'
@@ -579,6 +599,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   JoinCodeRoute: JoinCodeRoute,
+  ApiDebugConfigRoute: ApiDebugConfigRoute,
   ApiPublicTimeRoute: ApiPublicTimeRoute,
   ApiVoiceTokenRoute: ApiVoiceTokenRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
@@ -587,13 +608,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

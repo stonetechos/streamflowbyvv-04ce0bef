@@ -104,6 +104,9 @@ export const hiINBundle: LocaleBundle = {
     "error.auth.permission_denied": "आपके खाते को यह पृष्ठ खोलने की अनुमति नहीं है।",
     "error.auth.rate_limited.title": "बहुत अधिक प्रयास",
     "error.auth.rate_limited": "दोबारा प्रयास करने से पहले कुछ देर प्रतीक्षा करें।",
+    "error.auth.weak_password.title": "एक मज़बूत पासवर्ड चुनें",
+    "error.auth.weak_password":
+      "यह पासवर्ड बहुत आसान है। अक्षरों, संख्याओं और चिह्नों का मिश्रण रखते हुए लंबा पासवर्ड आज़माएँ।",
     "error.auth.sign_out_failed.title": "साइन-आउट पूरा नहीं हुआ",
     "error.auth.sign_out_failed": "हम आपको साइन आउट नहीं कर सके। कृपया दोबारा प्रयास करें।",
 

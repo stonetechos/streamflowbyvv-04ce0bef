@@ -64,6 +64,12 @@ export const AUTH_ERRORS = Object.freeze({
     retryable: true,
     recoveryActionKey: "error.action.retry",
   },
+  WEAK_PASSWORD: {
+    code: "SF-AUTH-WEAK-PASSWORD",
+    messageKey: "error.auth.weak_password",
+    severity: "warning",
+    retryable: true,
+  },
   SIGN_OUT_FAILED: {
     code: "SF-AUTH-SIGN-OUT-FAILED",
     messageKey: "error.auth.sign_out_failed",

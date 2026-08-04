@@ -33,7 +33,9 @@ const envSchema = z.object({
   // with none of them present, and each subsystem reports itself unavailable
   // rather than throwing at import time.
   VITE_SUPABASE_URL: urlLike.optional(),
+  // Lovable Cloud may supply the public key under either name; both are aliases.
   VITE_SUPABASE_PUBLISHABLE_KEY: z.string().min(1).optional(),
+  VITE_SUPABASE_ANON_KEY: z.string().min(1).optional(),
   VITE_LIVEKIT_URL: z.string().min(1).optional(),
   VITE_API_BASE_URL: z.string().min(1).optional(),
   VITE_HTTP_TIMEOUT_MS: z.coerce.number().int().positive().max(120_000).optional(),

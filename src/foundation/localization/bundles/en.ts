@@ -107,6 +107,9 @@ export const enBundle: LocaleBundle = {
     "error.auth.permission_denied": "Your account doesn't have permission to open this page.",
     "error.auth.rate_limited.title": "Too many attempts",
     "error.auth.rate_limited": "Wait a moment before trying again.",
+    "error.auth.weak_password.title": "Choose a stronger password",
+    "error.auth.weak_password":
+      "That password is too easy to guess. Try a longer one with a mix of letters, numbers, and symbols.",
     "error.auth.sign_out_failed.title": "Sign-out didn't finish",
     "error.auth.sign_out_failed": "We couldn't sign you out. Please try again.",
 

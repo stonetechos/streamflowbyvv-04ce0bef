@@ -23,6 +23,7 @@ import {
   validatePassword,
 } from "../auth-validation";
 import { useAuthForm } from "../use-auth-form";
+import { claimDestination } from "../pending-destination";
 
 const STRENGTH_CLASS = {
   weak: "w-1/3 bg-destructive",
@@ -70,8 +71,11 @@ export function SignUpForm() {
     setPassword("");
 
     if (outcome.kind === "session") {
-      // A confirmed account goes straight into first-run setup.
-      void navigate({ to: "/onboarding", replace: true });
+      // A confirmed account goes straight into the app, but if they were in the
+      // middle of an invite, a room, or a shared title, that intent wins over
+      // the default first-run setup.
+      const destination = claimDestination() ?? "/onboarding";
+      void navigate({ to: destination, replace: true });
       return;
     }
     void navigate({
