@@ -47,7 +47,13 @@ export interface HomeModel {
   /** Id of the invite currently being answered, for per-row busy state. */
   readonly pendingInviteId: string | null;
   refresh(): void;
-  createRoom(name: string): Promise<string | null>;
+  /**
+   * Creates a room and, when the person chose a service to watch on, records
+   * that choice on the room straight away. A room without a provider can never
+   * reach the countdown, so the choice must not be left behind on Home.
+   */
+  createRoom(name: string, providerId?: string | null): Promise<string | null>;
+
   joinByCode(code: string): Promise<string | null>;
   acceptInvite(inviteId: string): Promise<string | null>;
   /**
