@@ -995,7 +995,7 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--color-background);
+  background: var(--boot-backdrop);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
     env(safe-area-inset-left);
   animation: sf-boot-veil 1.6s var(--ease-standard, ease) forwards;
