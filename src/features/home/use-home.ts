@@ -11,10 +11,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   HOME_READ_MODEL,
   ROOM_FLOW_SERVICE,
+  ROOM_SETUP_SERVICE,
   isServiceBound,
   resolveService,
   type HomeSnapshot,
 } from "@/domain";
+
 import { logger } from "@/foundation/logging";
 
 import { refreshBadges } from "@/features/notifications";
@@ -45,7 +47,13 @@ export interface HomeModel {
   /** Id of the invite currently being answered, for per-row busy state. */
   readonly pendingInviteId: string | null;
   refresh(): void;
-  createRoom(name: string): Promise<string | null>;
+  /**
+   * Creates a room and, when the person chose a service to watch on, records
+   * that choice on the room straight away. A room without a provider can never
+   * reach the countdown, so the choice must not be left behind on Home.
+   */
+  createRoom(name: string, providerId?: string | null): Promise<string | null>;
+
   joinByCode(code: string): Promise<string | null>;
   acceptInvite(inviteId: string): Promise<string | null>;
   /**
@@ -73,6 +81,11 @@ export function useHome(viewerProfileId: string | null): HomeModel {
     () => (isServiceBound(ROOM_FLOW_SERVICE) ? resolveService(ROOM_FLOW_SERVICE) : null),
     [],
   );
+  const setup = useMemo(
+    () => (isServiceBound(ROOM_SETUP_SERVICE) ? resolveService(ROOM_SETUP_SERVICE) : null),
+    [],
+  );
+
 
   useEffect(() => {
     if (!home || !viewerProfileId) {
@@ -136,18 +149,37 @@ export function useHome(viewerProfileId: string | null): HomeModel {
   );
 
   const createRoom = useCallback(
-    async (name: string) => {
+    async (name: string, providerId?: string | null) => {
       if (!rooms || !viewerProfileId) return null;
       return run("create", async () => {
         const result = await rooms.createRoom(
           { hostProfileId: viewerProfileId, name: name.trim(), visibility: "private" },
           intent(),
         );
+        // Carry the chosen service onto the room. Selectability and compliance
+        // stay RoomSetupService's decision; a refusal must not strand the host
+        // outside a room that already exists, so the room id is still returned.
+        if (providerId && setup) {
+          try {
+            await setup.selectProvider(
+              { roomId: result.room.id, providerId, actorProfileId: viewerProfileId },
+              intent(),
+            );
+          } catch (cause) {
+            logger.warn("Provider could not be applied to the new room", {
+              module: MODULE,
+              roomId: result.room.id,
+              providerId,
+              error: cause,
+            });
+          }
+        }
         return result.room.id;
       });
     },
-    [intent, rooms, run, viewerProfileId],
+    [intent, rooms, run, setup, viewerProfileId],
   );
+
 
   const joinByCode = useCallback(
     async (code: string) => {

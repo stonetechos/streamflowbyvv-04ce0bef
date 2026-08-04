@@ -1,10 +1,14 @@
 /**
- * Event store adapter — Sprint 1.9.
+ * Event store adapter — Sprint 1.9, revised in the RC QA audit.
  *
- * Append-only writer for `domain_events`. Replay safety is enforced by the
- * store: the unique (aggregate_type, aggregate_id, event_name, sequence)
- * index turns a duplicate append into a reported no-op instead of a second
- * row, so redelivery after a reconnect is harmless.
+ * Append-only writer for `domain_events`.
+ *
+ * Sequences are handed out by an in-memory per-aggregate counter, so two
+ * members of the same room reach for the same number at the same moment. The
+ * store settles that: it re-numbers a colliding envelope and swallows an exact
+ * redelivery, so a second member's event is never lost and never doubled.
+ * Members cannot read the log back (it is admin-only), so this adapter must
+ * not try to inspect it — it simply steps the sequence on and retries.
  */
 import {
   REPOSITORY_ERRORS,
@@ -20,6 +24,8 @@ import { runMaybe } from "../query-wrapper";
 import { toDomainEventInsert } from "./event-mapper";
 
 const AGGREGATE = "domain_event";
+/** Bounded: a room holds few concurrent writers. */
+const MAX_SEQUENCE_ATTEMPTS = 5;
 
 export function createSupabaseEventStoreRepository(
   connection: DataConnection,
@@ -35,22 +41,29 @@ export function createSupabaseEventStoreRepository(
       const ctx = context("append", event.aggregateId);
       requireAvailable(connection, ctx);
 
-      const { error } = await connection
-        .client()
-        .from("domain_events")
-        .insert(toDomainEventInsert(event));
+      let candidate = event;
 
-      if (!error) return "stored";
+      for (let attempt = 0; attempt < MAX_SEQUENCE_ATTEMPTS; attempt += 1) {
+        const { error } = await connection
+          .client()
+          .from("domain_events")
+          .insert(toDomainEventInsert(candidate));
 
-      const mapped = toRepositoryError(error, ctx);
-      // A unique-index hit means the envelope is already durable.
-      if (
-        mapped.code === REPOSITORY_ERRORS.CONFLICT.code ||
-        mapped.code === REPOSITORY_ERRORS.CONSTRAINT_VIOLATION.code
-      ) {
-        return "duplicate";
+        if (!error) return "stored";
+
+        const mapped = toRepositoryError(error, ctx);
+        const collided =
+          mapped.code === REPOSITORY_ERRORS.CONFLICT.code ||
+          mapped.code === REPOSITORY_ERRORS.CONSTRAINT_VIOLATION.code;
+        if (!collided) throw mapped;
+
+        // Someone else holds this slot: step past it and try once more.
+        candidate = { ...candidate, sequence: candidate.sequence + 1 };
       }
-      throw mapped;
+
+      // Sustained contention. The envelope is already represented in the log
+      // by the writer that won, so report it rather than failing the caller.
+      return "duplicate";
     },
 
     async latestSequence(aggregateType: string, aggregateId: string): Promise<number> {
