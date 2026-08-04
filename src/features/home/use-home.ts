@@ -144,18 +144,37 @@ export function useHome(viewerProfileId: string | null): HomeModel {
   );
 
   const createRoom = useCallback(
-    async (name: string) => {
+    async (name: string, providerId?: string | null) => {
       if (!rooms || !viewerProfileId) return null;
       return run("create", async () => {
         const result = await rooms.createRoom(
           { hostProfileId: viewerProfileId, name: name.trim(), visibility: "private" },
           intent(),
         );
+        // Carry the chosen service onto the room. Selectability and compliance
+        // stay RoomSetupService's decision; a refusal must not strand the host
+        // outside a room that already exists, so the room id is still returned.
+        if (providerId && setup) {
+          try {
+            await setup.selectProvider(
+              { roomId: result.room.id, providerId, actorProfileId: viewerProfileId },
+              intent(),
+            );
+          } catch (cause) {
+            logger.warn("Provider could not be applied to the new room", {
+              module: MODULE,
+              roomId: result.room.id,
+              providerId,
+              error: cause,
+            });
+          }
+        }
         return result.room.id;
       });
     },
-    [intent, rooms, run, viewerProfileId],
+    [intent, rooms, run, setup, viewerProfileId],
   );
+
 
   const joinByCode = useCallback(
     async (code: string) => {
