@@ -668,10 +668,17 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
         intent,
       );
 
-      // Sprint J.1.5 — the same truthful refusals apply to an invited guest.
+      // Sprint J.1.5 — the same truthful refusals apply to an invited guest,
+      // except an unclosed earlier lobby, which is released for them.
       if (room.hostProfileId !== profileId) {
-        await adjudicate({ roomId: room.id }, profileId, operation);
+        const facts = await adjudicate({ roomId: room.id }, profileId, operation, {
+          allowRoomSwitch: true,
+        });
+        if (facts?.viewerOtherRoomId) {
+          await releasePriorSeat(facts.viewerOtherRoomId, profileId, intent);
+        }
       }
+
 
       const member = await admit(room, profileId, "guest", operation, intent);
 
