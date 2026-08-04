@@ -35,13 +35,23 @@ export function createSupabaseRealtimeEventPublisher(
       config: { broadcast: { ack: false, self: false } },
     });
     channels.set(name, channel);
+    // Wait for the socket to actually join. Sending before the join completes
+    // makes supabase-js fall back to the REST broadcast endpoint, which the
+    // other members' websocket subscriptions do not reliably receive — the
+    // lobby then never learns that somebody arrived. The wait is bounded so a
+    // degraded transport delays a notice instead of blocking a mutation.
     await new Promise<void>((resolve) => {
-      channel.subscribe(() => resolve());
-      // Subscription state is advisory; publishing proceeds regardless.
-      resolve();
+      const timer = setTimeout(resolve, 3000);
+      channel.subscribe((status) => {
+        if (status === "SUBSCRIBED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          clearTimeout(timer);
+          resolve();
+        }
+      });
     });
     return channel;
   };
+
 
   return {
     async publish(event: StoredDomainEvent): Promise<void> {
