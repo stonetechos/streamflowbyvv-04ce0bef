@@ -14,10 +14,12 @@
  */
 import {
   REPOSITORY_ERRORS,
+  RepositoryError,
   type EventAppendResult,
   type EventStoreRepository,
   type StoredDomainEvent,
 } from "@/repository";
+
 
 import type { DataConnection } from "../connection";
 import { toRepositoryError } from "../error-mapping";
