@@ -61,7 +61,6 @@ export function acquireChannel(
   const joined = new Promise<void>((resolve) => {
     const timer = setTimeout(resolve, 5000);
     channel.subscribe((status) => {
-      logger.warn("RT status", { module: MODULE, name, status });
       if (status === "SUBSCRIBED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
         clearTimeout(timer);
         resolve();

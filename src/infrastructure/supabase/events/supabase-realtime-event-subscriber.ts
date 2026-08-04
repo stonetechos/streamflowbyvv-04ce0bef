@@ -46,7 +46,6 @@ export function createSupabaseRealtimeEventSubscriber(
       try {
         lease = acquireChannel(connection.client(), name, (channel) => {
           channel.on("broadcast", { event: "*" }, (message) => {
-            logger.warn("RT recv", { module: MODULE, name, message: JSON.stringify(message).slice(0,120) });
             if (released) return;
             const event = asStoredEvent((message as { payload?: unknown }).payload);
             if (event) listener(event);
