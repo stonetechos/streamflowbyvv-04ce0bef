@@ -107,11 +107,10 @@ export function createSupabaseEventStoreRepository(
 
       // Sustained contention: the envelope is not durable, and saying so is
       // better than reporting a duplicate that never happened.
-      throw toRepositoryError(
-        { code: "23505", message: "sequence contention", details: "", hint: "", name: "" },
-        ctx,
-      );
+      throw new RepositoryError(REPOSITORY_ERRORS.CONFLICT, ctx);
     },
+
+
 
 
     async latestSequence(aggregateType: string, aggregateId: string): Promise<number> {
