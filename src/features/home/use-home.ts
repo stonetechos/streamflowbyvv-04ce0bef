@@ -11,10 +11,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   HOME_READ_MODEL,
   ROOM_FLOW_SERVICE,
+  ROOM_SETUP_SERVICE,
   isServiceBound,
   resolveService,
   type HomeSnapshot,
 } from "@/domain";
+
 import { logger } from "@/foundation/logging";
 
 import { refreshBadges } from "@/features/notifications";
