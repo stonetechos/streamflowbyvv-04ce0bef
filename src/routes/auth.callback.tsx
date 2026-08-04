@@ -123,16 +123,17 @@ function AuthCallbackPage() {
   }, [auth.isAuthenticated]);
 
   useEffect(() => {
-    if (params.error || !auth.isAuthenticated || redirected.current) return;
+    if (!auth.isAuthenticated || redirected.current) return;
     redirected.current = true;
     // A recovery link signs the person in so they can choose a new password;
     // anyone else is simply confirmed and belongs in the app.
     // A confirmed person continues to whatever they were opening — an invite,
     // a room, a shared title — and only falls back to Home when there was none.
+    // If the link is already spent but the session is present, the session wins.
     const to = isRecovery ? "/auth/reset-password" : (claimDestination() ?? "/home");
     traceCallback("redirect", to);
     void navigate({ to, replace: true });
-  }, [auth.isAuthenticated, isRecovery, navigate, params.error]);
+  }, [auth.isAuthenticated, isRecovery, navigate]);
 
   useEffect(() => {
     if (params.error || auth.isAuthenticated) return;
