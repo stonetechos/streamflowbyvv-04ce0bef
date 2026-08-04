@@ -27,7 +27,6 @@ import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
 import { Route as AuthSignOutRouteImport } from './routes/auth.sign-out'
 import { Route as AuthSignUpRouteImport } from './routes/auth.sign-up'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
-import { Route as DebugConfigRouteImport } from './routes/debug.config'
 import { Route as JoinCodeRouteImport } from './routes/join.$code'
 import { Route as AuthenticatedPeopleProfileIdRouteImport } from './routes/_authenticated.people.$profileId'
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
@@ -126,11 +125,6 @@ const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => AuthRoute,
 } as any)
-const DebugConfigRoute = DebugConfigRouteImport.update({
-  id: '/debug/config',
-  path: '/debug/config',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const JoinCodeRoute = JoinCodeRouteImport.update({
   id: '/join/$code',
   path: '/join/$code',
@@ -191,7 +185,6 @@ export interface FileRoutesByFullPath {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
-  '/debug/config': typeof DebugConfigRoute
   '/join/$code': typeof JoinCodeRoute
   '/auth/': typeof AuthIndexRoute
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
@@ -218,7 +211,6 @@ export interface FileRoutesByTo {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
-  '/debug/config': typeof DebugConfigRoute
   '/join/$code': typeof JoinCodeRoute
   '/auth': typeof AuthIndexRoute
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
@@ -248,7 +240,6 @@ export interface FileRoutesById {
   '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
-  '/debug/config': typeof DebugConfigRoute
   '/join/$code': typeof JoinCodeRoute
   '/auth/': typeof AuthIndexRoute
   '/_authenticated/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
@@ -278,7 +269,6 @@ export interface FileRouteTypes {
     | '/auth/sign-out'
     | '/auth/sign-up'
     | '/auth/verify-email'
-    | '/debug/config'
     | '/join/$code'
     | '/auth/'
     | '/people/$profileId'
@@ -305,7 +295,6 @@ export interface FileRouteTypes {
     | '/auth/sign-out'
     | '/auth/sign-up'
     | '/auth/verify-email'
-    | '/debug/config'
     | '/join/$code'
     | '/auth'
     | '/people/$profileId'
@@ -334,7 +323,6 @@ export interface FileRouteTypes {
     | '/auth/sign-out'
     | '/auth/sign-up'
     | '/auth/verify-email'
-    | '/debug/config'
     | '/join/$code'
     | '/auth/'
     | '/_authenticated/people/$profileId'
@@ -350,7 +338,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
-  DebugConfigRoute: typeof DebugConfigRoute
   JoinCodeRoute: typeof JoinCodeRoute
   ApiDebugConfigRoute: typeof ApiDebugConfigRoute
   ApiPublicTimeRoute: typeof ApiPublicTimeRoute
@@ -487,13 +474,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/debug/config': {
-      id: '/debug/config'
-      path: '/debug/config'
-      fullPath: '/debug/config'
-      preLoaderRoute: typeof DebugConfigRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/join/$code': {
       id: '/join/$code'
       path: '/join/$code'
@@ -618,7 +598,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
-  DebugConfigRoute: DebugConfigRoute,
   JoinCodeRoute: JoinCodeRoute,
   ApiDebugConfigRoute: ApiDebugConfigRoute,
   ApiPublicTimeRoute: ApiPublicTimeRoute,
