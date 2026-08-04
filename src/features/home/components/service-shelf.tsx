@@ -80,7 +80,10 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
     setChoosingKey(card.key);
     // Remember only that the provider has been connected and last used.
     providerSessions.connect(card.key);
-    const roomId = await home.createRoom(t("home.services.room_name", { service: card.name }));
+    const roomId = await home.createRoom(
+      t("home.services.room_name", { service: card.name }),
+      card.providerId,
+    );
     setChoosingKey(null);
     if (roomId) void navigate({ to: "/rooms/$roomId", params: { roomId } });
   }
