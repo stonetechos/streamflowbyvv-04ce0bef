@@ -1008,36 +1008,38 @@
 }
 
 .sf-boot-mark {
-  width: clamp(7.5rem, 34vw, 15rem);
+  /* Square brand lockup: bounded by the shorter axis so it never crops or
+     overflows, from small phones through to large desktops. */
+  width: min(86vw, 58vh);
+  max-width: 26rem;
   height: auto;
+  border-radius: 1.25rem;
   animation: sf-boot-travel 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.sf-boot-chevron--back {
-  fill: var(--color-primary);
-}
-
-.sf-boot-chevron--front {
-  fill: var(--color-info);
-  animation: sf-boot-chevron-lead 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+@media (min-width: 768px) {
+  .sf-boot-mark {
+    width: min(60vw, 62vh);
+    max-width: 30rem;
+  }
 }
 
 @media (min-width: 1024px) {
   .sf-boot-mark {
-    width: clamp(11rem, 16vw, 18rem);
+    width: min(42vw, 66vh);
+    max-width: 34rem;
   }
 }
 
 .sf-boot[data-reduced="true"],
-.sf-boot[data-reduced="true"] .sf-boot-mark,
-.sf-boot[data-reduced="true"] .sf-boot-chevron--front {
+.sf-boot[data-reduced="true"] .sf-boot-mark {
   animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sf-boot,
-  .sf-boot-mark,
-  .sf-boot-chevron--front {
+  .sf-boot-mark {
     animation: none;
   }
 }
+
