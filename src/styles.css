@@ -117,6 +117,11 @@
 :root {
   --radius: 0.75rem;
 
+  /* Boot veil backdrop — deliberately theme-independent so the brand lockup
+     always opens against the same midnight field. */
+  --boot-backdrop: oklch(0.13 0.02 260);
+
+
   /* Base spacing step; all Tailwind spacing utilities derive from it. */
   --spacing: 0.25rem;
   --space-inset-xs: 0.5rem;
