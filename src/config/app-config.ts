@@ -71,8 +71,11 @@ function resolveDefaultLocale(): LocaleCode {
 }
 
 function resolvePersistence(): PersistenceClientConfig {
+  // Lovable Cloud supplies the publishable key as either VITE_SUPABASE_ANON_KEY
+  // or VITE_SUPABASE_PUBLISHABLE_KEY, depending on the project generation. Both
+  // are the same Supabase anon/public key; we accept whichever is present.
   const endpointUrl = env.VITE_SUPABASE_URL ?? null;
-  const publicKey = env.VITE_SUPABASE_PUBLISHABLE_KEY ?? null;
+  const publicKey = env.VITE_SUPABASE_PUBLISHABLE_KEY ?? env.VITE_SUPABASE_ANON_KEY ?? null;
   return Object.freeze({
     endpointUrl,
     publicKey,

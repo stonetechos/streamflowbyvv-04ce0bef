@@ -20,7 +20,7 @@ import {
   TextField,
   type AvatarPreset,
 } from "@/design-system/components";
-import { validateDisplayName } from "@/features/auth";
+import { claimDestination, validateDisplayName } from "@/features/auth";
 import { PoCompanion, type PoMood } from "@/features/po";
 import { useProviderCatalog } from "@/features/providers";
 import { useAccessibility } from "@/foundation/accessibility";
@@ -100,7 +100,8 @@ export function OnboardingWizard({
     // Onboarding is complete for this device even when persistence is not
     // configured; the profile write is the authority, this is only a hint.
     writeLocalPreference(LOCAL_PREFERENCE_KEYS.ONBOARDING, ok ? "complete" : "skipped");
-    void navigate({ to: "/home", replace: true });
+    const destination = claimDestination() ?? "/home";
+    void navigate({ to: destination, replace: true });
   }
 
   function toggleFavorite(providerId: string) {

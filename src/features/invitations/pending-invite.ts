@@ -2,8 +2,10 @@
  * Pending invite continuation — Beta UX Overhaul.
  *
  * A guest who opens an invite link while signed out is sent to sign in. This
- * remembers, for that one browser tab only, which room they were on their way
- * to, so the app can continue the journey the moment a session exists.
+ * remembers which room they were on their way to, so the app can continue the
+ * journey the moment a session exists. It is persisted in `localStorage` rather
+ * than `sessionStorage` because emailed confirmation or magic links often open
+ * in a new tab, and the journey must survive that.
  *
  * Presentation-layer memory only: a room code, never a credential, never a
  * decision about whether the person may enter. Admission remains the domain's
@@ -19,7 +21,7 @@ function isPlausibleCode(code: string): boolean {
 export function rememberPendingInvite(code: string): void {
   if (typeof window === "undefined" || !isPlausibleCode(code)) return;
   try {
-    window.sessionStorage.setItem(STORAGE_KEY, code.toUpperCase());
+    window.localStorage.setItem(STORAGE_KEY, code.toUpperCase());
   } catch {
     // A blocked storage is not a reason to break the journey.
   }
@@ -28,7 +30,7 @@ export function rememberPendingInvite(code: string): void {
 export function readPendingInvite(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    const value = window.sessionStorage.getItem(STORAGE_KEY);
+    const value = window.localStorage.getItem(STORAGE_KEY);
     return value && isPlausibleCode(value) ? value : null;
   } catch {
     return null;
@@ -38,7 +40,7 @@ export function readPendingInvite(): string | null {
 export function clearPendingInvite(): void {
   if (typeof window === "undefined") return;
   try {
-    window.sessionStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(STORAGE_KEY);
   } catch {
     // Nothing to do.
   }
