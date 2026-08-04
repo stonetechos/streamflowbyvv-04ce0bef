@@ -498,17 +498,24 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
 
       if (!room) {
         // Sprint J.1.5 — never claim "no such room" until that is the truth.
-        await adjudicate({ roomId }, profileId, operation);
+        await adjudicate({ roomId }, profileId, operation, { allowRoomSwitch: true });
         throw domainError("ROOM_NOT_FOUND", { operation, aggregateId: roomId });
       }
 
       // The room loaded, so the refusal (if any) is about this person: already
-      // joined, removed, blocked, or busy in another open room.
+      // joined, removed or blocked. A stale seat in an older lobby is released
+      // rather than held against them.
       if (room.hostProfileId !== profileId) {
-        await adjudicate({ roomId }, profileId, operation);
+        const facts = await adjudicate({ roomId }, profileId, operation, {
+          allowRoomSwitch: true,
+        });
+        if (facts?.viewerOtherRoomId) {
+          await releasePriorSeat(facts.viewerOtherRoomId, profileId, intent);
+        }
       }
 
       return admit(room, profileId, role, operation, intent);
+
     },
 
     async leaveRoom({ roomId, profileId, leftReason = "voluntary" }, intent) {
