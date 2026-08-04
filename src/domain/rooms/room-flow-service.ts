@@ -242,6 +242,7 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     lookup: { code?: string; roomId?: EntityId },
     profileId: EntityId | null,
     operation: string,
+    options: { allowRoomSwitch?: boolean } = {},
   ): Promise<RoomAdmissionFacts | null> => {
     if (!discovery) return null;
 
@@ -260,7 +261,11 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     if (profileId) {
       if (facts.viewerState === "joined") throw domainError("ROOM_ALREADY_MEMBER", context);
       if (facts.viewerState === "removed") throw domainError("ROOM_MEMBER_REMOVED", context);
-      if (facts.viewerOtherRoomId) {
+      // A person can only watch in one room at a time, but an older lobby they
+      // never closed must not stand between them and the invitation they were
+      // just handed. When the caller is deliberately walking into a new room,
+      // the previous seat is released for them (see `releasePriorSeat`).
+      if (facts.viewerOtherRoomId && !options.allowRoomSwitch) {
         throw domainError("ROOM_ALREADY_IN_ANOTHER_ROOM", context);
       }
     }
@@ -272,6 +277,32 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
 
     return facts;
   };
+
+  /**
+   * Frees the seat the caller still holds in an earlier room so a deliberate
+   * join can proceed. It is an ordinary leave — the same event, the same
+   * bookkeeping — never a removal, and a failure to release is not allowed to
+   * fail the join the person actually asked for.
+   */
+  const releasePriorSeat = async (
+    otherRoomId: EntityId,
+    profileId: EntityId,
+    intent: Intent,
+  ): Promise<void> => {
+    try {
+      const member = await members.findByRoomAndProfile(otherRoomId, profileId);
+      if (!member || member.state !== "joined") return;
+      await members.update(member.id, { state: "left", leftAt: nowIso() });
+      await roomService.leaveMember(
+        { roomId: otherRoomId, profileId, leftReason: "switched_room" },
+        intent,
+      );
+    } catch {
+      // The new room is the one that matters.
+    }
+  };
+
+
 
   /** Admits a profile, enforcing capacity and re-using a prior membership row. */
   const admit = async (
@@ -467,17 +498,24 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
 
       if (!room) {
         // Sprint J.1.5 — never claim "no such room" until that is the truth.
-        await adjudicate({ roomId }, profileId, operation);
+        await adjudicate({ roomId }, profileId, operation, { allowRoomSwitch: true });
         throw domainError("ROOM_NOT_FOUND", { operation, aggregateId: roomId });
       }
 
       // The room loaded, so the refusal (if any) is about this person: already
-      // joined, removed, blocked, or busy in another open room.
+      // joined, removed or blocked. A stale seat in an older lobby is released
+      // rather than held against them.
       if (room.hostProfileId !== profileId) {
-        await adjudicate({ roomId }, profileId, operation);
+        const facts = await adjudicate({ roomId }, profileId, operation, {
+          allowRoomSwitch: true,
+        });
+        if (facts?.viewerOtherRoomId) {
+          await releasePriorSeat(facts.viewerOtherRoomId, profileId, intent);
+        }
       }
 
       return admit(room, profileId, role, operation, intent);
+
     },
 
     async leaveRoom({ roomId, profileId, leftReason = "voluntary" }, intent) {
@@ -630,10 +668,17 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
         intent,
       );
 
-      // Sprint J.1.5 — the same truthful refusals apply to an invited guest.
+      // Sprint J.1.5 — the same truthful refusals apply to an invited guest,
+      // except an unclosed earlier lobby, which is released for them.
       if (room.hostProfileId !== profileId) {
-        await adjudicate({ roomId: room.id }, profileId, operation);
+        const facts = await adjudicate({ roomId: room.id }, profileId, operation, {
+          allowRoomSwitch: true,
+        });
+        if (facts?.viewerOtherRoomId) {
+          await releasePriorSeat(facts.viewerOtherRoomId, profileId, intent);
+        }
       }
+
 
       const member = await admit(room, profileId, "guest", operation, intent);
 

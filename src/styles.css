@@ -117,6 +117,11 @@
 :root {
   --radius: 0.75rem;
 
+  /* Boot veil backdrop — deliberately theme-independent so the brand lockup
+     always opens against the same midnight field. */
+  --boot-backdrop: oklch(0.13 0.02 260);
+
+
   /* Base spacing step; all Tailwind spacing utilities derive from it. */
   --spacing: 0.25rem;
   --space-inset-xs: 0.5rem;
@@ -982,17 +987,6 @@
   }
 }
 
-@keyframes sf-boot-chevron-lead {
-  0% {
-    opacity: 0;
-    transform: translate3d(14%, 0, 0);
-  }
-  40%,
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
 
 .sf-boot {
   position: fixed;
@@ -1001,43 +995,45 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--color-background);
+  background: var(--boot-backdrop);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
     env(safe-area-inset-left);
   animation: sf-boot-veil 1.6s var(--ease-standard, ease) forwards;
 }
 
 .sf-boot-mark {
-  width: clamp(7.5rem, 34vw, 15rem);
+  /* Square brand lockup: bounded by the shorter axis so it never crops or
+     overflows, from small phones through to large desktops. */
+  width: min(86vw, 58vh);
+  max-width: 26rem;
   height: auto;
+  border-radius: 1.25rem;
   animation: sf-boot-travel 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.sf-boot-chevron--back {
-  fill: var(--color-primary);
-}
-
-.sf-boot-chevron--front {
-  fill: var(--color-info);
-  animation: sf-boot-chevron-lead 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+@media (min-width: 768px) {
+  .sf-boot-mark {
+    width: min(60vw, 62vh);
+    max-width: 30rem;
+  }
 }
 
 @media (min-width: 1024px) {
   .sf-boot-mark {
-    width: clamp(11rem, 16vw, 18rem);
+    width: min(42vw, 66vh);
+    max-width: 34rem;
   }
 }
 
 .sf-boot[data-reduced="true"],
-.sf-boot[data-reduced="true"] .sf-boot-mark,
-.sf-boot[data-reduced="true"] .sf-boot-chevron--front {
+.sf-boot[data-reduced="true"] .sf-boot-mark {
   animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sf-boot,
-  .sf-boot-mark,
-  .sf-boot-chevron--front {
+  .sf-boot-mark {
     animation: none;
   }
 }
+
