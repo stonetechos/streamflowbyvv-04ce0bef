@@ -10,7 +10,7 @@
  * Po appears at each step as encouragement, never as an assistant (Po Rule).
  */
 import { useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import {
   ActionButton,
@@ -87,7 +87,14 @@ export function OnboardingWizard({
     setStepIndex((index) => Math.max(index - 1, 0));
   }
 
+  // Onboarding may be completed from two places (Skip and Finish). A second
+  // submission while the first is in flight duplicates the profile write and
+  // surfaces as a conflict, so entry is guarded here.
+  const finishing = useRef(false);
+
   async function finish() {
+    if (finishing.current) return;
+    finishing.current = true;
     const name = displayName.trim();
     const ok = await profile.completeOnboarding({
       displayName: name,
@@ -101,6 +108,7 @@ export function OnboardingWizard({
     // configured; the profile write is the authority, this is only a hint.
     writeLocalPreference(LOCAL_PREFERENCE_KEYS.ONBOARDING, ok ? "complete" : "skipped");
     const destination = claimDestination() ?? "/home";
+    finishing.current = false;
     void navigate({ to: destination, replace: true });
   }
 
