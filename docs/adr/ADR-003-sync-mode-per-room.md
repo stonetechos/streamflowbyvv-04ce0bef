@@ -25,3 +25,7 @@ Two concurrent authorities over one timeline is unresolvable at runtime. The roo
 ## Consequences
 
 `RoomProviderSelected` carries `sync_mode`. No schema change — this fixes the semantics of an existing column.
+
+## Amendment (ADR-014)
+
+ADR-014 supersedes this record's implied expectation that the `supported` provider set grows over time. Per the feasibility assessment, `controlled` is reachable **only** for YouTube and local files; every premium OTT provider is permanently `manual`. The decision above is unchanged — one sync mode per room, owned by the room — but the mapping from provider to mode is now a closed set, not a roadmap.
