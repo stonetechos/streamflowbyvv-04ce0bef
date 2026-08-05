@@ -1037,3 +1037,30 @@
   }
 }
 
+
+/* Watch Party Engine v2.0 — reaction bursts. */
+@keyframes sf-reaction-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0) scale(0.7);
+  }
+  15% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--sf-reaction-drift, 0), -7rem, 0) scale(1);
+  }
+}
+
+.sf-reaction {
+  animation: sf-reaction-rise 1800ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-reaction {
+    animation-duration: 900ms;
+    animation-timing-function: linear;
+  }
+}

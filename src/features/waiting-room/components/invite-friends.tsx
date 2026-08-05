@@ -5,7 +5,8 @@
  * WhatsApp, copy link, copy code, and the platform share sheet. No invite
  * counts, no history, no menus.
  */
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import QRCode from "qrcode";
 
 import { ActionButton } from "@/design-system/components";
 import {
@@ -39,6 +40,24 @@ export function InviteFriends({ roomName, roomCode }: InviteFriendsProps) {
   }, [roomCode]);
 
   const message = t("invite.share.text", { room: roomName });
+
+  // A phone pointed at a laptop is the fastest invite there is. The code is
+  // rendered locally from the join link; nothing leaves the device.
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    void QRCode.toDataURL(joinUrl, { width: 320, margin: 1 })
+      .then((url) => {
+        if (!cancelled) setQrDataUrl(url);
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, joinUrl]);
 
   const copy = useCallback(
     async (value: string, kind: "link" | "code") => {
@@ -82,6 +101,19 @@ export function InviteFriends({ roomName, roomCode }: InviteFriendsProps) {
           <DialogTitle>{t("room.invite.action")}</DialogTitle>
           <DialogDescription>{t("room.invite.description")}</DialogDescription>
         </DialogHeader>
+
+        {qrDataUrl ? (
+          <figure className="flex flex-col items-center gap-2">
+            <img
+              src={qrDataUrl}
+              alt={t("room.invite.qr_alt", { room: roomName })}
+              className="size-40 rounded-2xl border border-border bg-background p-2"
+            />
+            <figcaption className="text-xs text-muted-foreground">
+              {t("room.invite.qr_caption")}
+            </figcaption>
+          </figure>
+        ) : null}
 
         <div className="grid gap-2">
           <a
