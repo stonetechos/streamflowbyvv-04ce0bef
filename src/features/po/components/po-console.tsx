@@ -96,7 +96,7 @@ export function PoConsole() {
 
   if (!isOpen) {
     return (
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-end p-4 pb-24 md:pb-6">
+      <div className="sf-po-anchor pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-end p-4 pb-24 md:pb-6">
         <Button
           ref={triggerRef}
           type="button"
@@ -116,7 +116,7 @@ export function PoConsole() {
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-end p-3 pb-20 md:p-4 md:pb-6">
+    <div className="sf-po-anchor pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-end p-3 pb-20 md:p-4 md:pb-6">
       <section
         id={panelId}
         aria-label={t("po.console.title")}
