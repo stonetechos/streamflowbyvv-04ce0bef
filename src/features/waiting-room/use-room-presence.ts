@@ -24,7 +24,6 @@ import { PRESENCE } from "@/shared/constants/system-constants";
 
 import { refusalCode } from "@/features/shared/refusal-message";
 
-
 const MODULE = "waiting-room-presence";
 
 export interface RoomPresenceModel {
@@ -136,7 +135,6 @@ export function useRoomPresence(
       beat();
       void observe();
     }, PRESENCE.HEARTBEAT_INTERVAL_MS);
-
 
     return () => {
       stopped = true;

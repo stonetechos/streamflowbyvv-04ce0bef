@@ -11,7 +11,12 @@
 import { useState } from "react";
 
 import { Surface } from "@/design-system/components";
-import { parseContentReference, providerTier, providerTierSummaryKey, readSeriesTitle } from "@/domain";
+import {
+  parseContentReference,
+  providerTier,
+  providerTierSummaryKey,
+  readSeriesTitle,
+} from "@/domain";
 import { PoCompanion } from "@/features/po";
 import { ContentPoster } from "@/features/shared/content-poster";
 import { VoicePanel, type VoiceIndicatorState } from "@/features/voice";
@@ -122,7 +127,9 @@ export function WatchPartyScreen({
 
       <Surface padding="lg" tone="glass" className="mt-5 space-y-4">
         <SharedElapsedTimer elapsed={elapsed} />
-        <p className="text-center text-xs text-muted-foreground">{t(providerTierSummaryKey(tier))}</p>
+        <p className="text-center text-xs text-muted-foreground">
+          {t(providerTierSummaryKey(tier))}
+        </p>
       </Surface>
 
       <div className="mt-5 space-y-5">

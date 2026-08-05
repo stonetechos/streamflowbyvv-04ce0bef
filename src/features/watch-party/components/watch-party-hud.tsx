@@ -163,7 +163,9 @@ function HudButton({
       title={label}
       className={cn(
         "grid size-11 place-items-center rounded-full border text-base transition-colors duration-fast",
-        active ? "border-primary/40 bg-primary/15" : "border-border/60 bg-surface/60 hover:bg-accent",
+        active
+          ? "border-primary/40 bg-primary/15"
+          : "border-border/60 bg-surface/60 hover:bg-accent",
       )}
     >
       {children}
