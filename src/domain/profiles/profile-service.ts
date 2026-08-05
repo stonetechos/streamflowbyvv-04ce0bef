@@ -144,15 +144,27 @@ export function createProfileService(deps: ProfileServiceDependencies): ProfileS
     },
 
     async completeOnboarding(profileId, completion, intent) {
-      const handle = completion.handle.trim().toLowerCase();
-      if (!HANDLE_PATTERN.test(handle)) {
+      const requested = completion.handle.trim().toLowerCase();
+      if (!HANDLE_PATTERN.test(requested)) {
         throw domainError("INVALID_INPUT", {
           operation: "ProfileService.completeOnboarding",
           aggregateId: profileId,
         });
       }
 
-      const updated = await profiles("ProfileService.completeOnboarding").update(profileId, {
+      // The handle is derived from a display name, and display names are not
+      // unique. Onboarding must never fail because two people chose the same
+      // name, so a free variant is resolved before the write.
+      const repository = profiles("ProfileService.completeOnboarding");
+      let handle = requested;
+      for (let attempt = 2; attempt <= 20; attempt += 1) {
+        const existing = await repository.findByHandle(handle);
+        if (existing === null || existing.id === profileId) break;
+        const suffix = String(attempt);
+        handle = `${requested.slice(0, 24 - suffix.length)}${suffix}`;
+      }
+
+      const updated = await repository.update(profileId, {
         displayName: completion.displayName.trim(),
         handle,
         avatarPreset: completion.avatarPreset,
@@ -162,6 +174,7 @@ export function createProfileService(deps: ProfileServiceDependencies): ProfileS
         // decision survives a new device (Session Continuity Rule).
         onboardingCompletedAt: new Date().toISOString(),
       });
+
 
       await users.updateProfile(
         {

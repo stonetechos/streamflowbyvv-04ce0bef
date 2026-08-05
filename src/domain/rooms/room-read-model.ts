@@ -150,15 +150,25 @@ export function createRoomReadModel(deps: RoomReadModelDependencies): RoomReadMo
       });
     },
 
-    setReadiness(memberId, ready) {
-      return members
-        .findById(memberId)
-        .then((member) =>
-          member === null
-            ? Promise.reject(new Error("SF-ROOM-MEMBER-NOT-FOUND"))
-            : members.update(memberId, { metadata: withReadiness(member.metadata, ready) }),
-        );
+    async setReadiness(memberId, ready) {
+      const member = await members.findById(memberId);
+      if (member === null) throw new Error("SF-ROOM-MEMBER-NOT-FOUND");
+
+      const updated = await members.update(memberId, {
+        metadata: withReadiness(member.metadata, ready),
+      });
+
+      // Readiness is a room-wide signal: without a published event the other
+      // members receive no realtime notice and their roster never re-reads
+      // (Foundation §4). The catalog event is the only transport.
+      await roomService.setReady(
+        { roomId: updated.roomId, profileId: updated.profileId, isReady: ready },
+        { correlationId: crypto.randomUUID(), actorProfileId: updated.profileId },
+      );
+
+      return updated;
     },
+
 
     isReady,
 
