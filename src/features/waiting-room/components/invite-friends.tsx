@@ -20,13 +20,19 @@ import {
 import { copyText } from "@/features/shared/copy-text";
 import { useAnnouncer } from "@/foundation/accessibility";
 import { useTranslation } from "@/foundation/localization";
+import { cn } from "@/lib/utils";
 
 export interface InviteFriendsProps {
   readonly roomName: string;
   readonly roomCode: string;
+  /**
+   * Sprint 85 — when inviting is the only thing to do on the screen, the
+   * trigger carries the primary weight. Elsewhere it stays a quiet option.
+   */
+  readonly emphasis?: "primary" | "secondary";
 }
 
-export function InviteFriends({ roomName, roomCode }: InviteFriendsProps) {
+export function InviteFriends({ roomName, roomCode, emphasis = "secondary" }: InviteFriendsProps) {
   const { t } = useTranslation();
   const announce = useAnnouncer();
   const [open, setOpen] = useState(false);
@@ -90,7 +96,14 @@ export function InviteFriends({ roomName, roomCode }: InviteFriendsProps) {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border border-border bg-surface/70 text-base font-semibold transition-colors duration-fast hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className={cn(
+            "flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-semibold",
+            "transition-[transform,background-color] duration-fast ease-standard active:scale-[0.99] motion-reduce:transform-none",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            emphasis === "primary"
+              ? "bg-primary text-primary-foreground shadow-e2 hover:bg-primary/90"
+              : "border border-border bg-surface/70 hover:bg-accent",
+          )}
         >
           {t("room.invite.action")}
         </button>

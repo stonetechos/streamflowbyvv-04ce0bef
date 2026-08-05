@@ -48,11 +48,17 @@ export function ContentPoster({ artworkUrl, brandKey, name, className, alt }: Co
       ) : (
         <span
           aria-hidden="true"
-          className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent to-accent/30 p-[14%] text-accent-foreground"
+          data-sf-brand={brandKey ?? "local_file"}
+          className="sf-brand-tile relative flex h-full w-full items-center justify-center p-[14%]"
         >
-          <ServiceLogo brandKey={brandKey ?? "local_file"} name={name} className="h-full w-full" />
+          <ServiceLogo
+            brandKey={brandKey ?? "local_file"}
+            name={name}
+            className="relative z-10 h-full w-full"
+          />
         </span>
       )}
+
     </div>
   );
 }

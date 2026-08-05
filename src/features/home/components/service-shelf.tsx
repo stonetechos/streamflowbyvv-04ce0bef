@@ -37,13 +37,11 @@ import { buildServiceShelf, type ServiceCardView } from "../service-shelf";
 import { ServiceLogo } from "./service-logo";
 import type { HomeModel } from "../use-home";
 
-const ACCENT_TILE: Record<ServiceCardView["accent"], string> = {
-  primary: "from-primary/70 to-primary/25 text-primary-foreground",
-  info: "from-info/70 to-info/25 text-info-foreground",
-  success: "from-success/70 to-success/25 text-success-foreground",
-  warning: "from-warning/70 to-warning/25 text-warning-foreground",
-  accent: "from-accent to-accent/40 text-accent-foreground",
-};
+/**
+ * Sprint 85 — brand colour lives in CSS (`[data-sf-brand]` in styles.css), not
+ * here. The tile only declares which brand it is.
+ */
+
 
 export interface ServiceShelfProps {
   readonly home: HomeModel;
@@ -110,8 +108,8 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
 
       <ul
         className={cn(
-          "-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3",
-          "sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-4",
+          "-mx-4 flex snap-x snap-mandatory scroll-pl-4 gap-3 overflow-x-auto px-4 pb-3",
+          "sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6",
         )}
       >
         {cards.map((card, index) => {
@@ -121,7 +119,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
           return (
             <li
               key={card.key}
-              className="sf-rail-enter w-44 shrink-0 snap-start sm:w-auto"
+              className="sf-rail-enter w-36 shrink-0 snap-start sm:w-auto"
               style={{ ["--sf-rail-index" as string]: Math.min(index, 8) }}
             >
               <button
@@ -132,42 +130,41 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                 disabled={!card.isChoosable || busy}
                 onClick={() => onChoose(card)}
                 className={cn(
-                  "group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-left text-card-foreground shadow-e1",
-                  "will-change-transform focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                  "transition-[transform,box-shadow] duration-normal ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  card.isChoosable
-                    ? "hover:-translate-y-1 hover:shadow-e3 active:scale-[0.98] active:shadow-e1 motion-reduce:transform-none motion-reduce:transition-none"
-                    : "opacity-70",
+                  "group flex h-full w-full flex-col gap-2 text-left",
+                  "rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  !card.isChoosable && "opacity-60",
                 )}
               >
                 <span
-                  aria-hidden="true"
+                  data-sf-brand={card.key}
                   className={cn(
-                    "flex aspect-[16/10] w-full items-center justify-center overflow-hidden bg-gradient-to-br p-[12%]",
-                    ACCENT_TILE[card.accent],
+                    "sf-brand-tile relative flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl p-[14%] shadow-e1",
+                    "will-change-transform transition-[transform,box-shadow] duration-normal ease-standard",
+                    card.isChoosable &&
+                      "group-hover:-translate-y-1 group-hover:shadow-e3 group-active:scale-[0.98] group-active:shadow-e1 motion-reduce:transform-none motion-reduce:transition-none",
                   )}
                 >
                   {busy ? (
-                    <span className="size-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    <span className="relative z-10 size-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   ) : (
                     <ServiceLogo
                       brandKey={card.key}
                       name={card.name}
-                      className="h-full w-full transition-transform duration-normal ease-standard group-hover:scale-[1.04] motion-reduce:transform-none motion-reduce:transition-none"
+                      className="relative z-10 h-full w-full"
                     />
                   )}
                 </span>
 
-                <span className="flex items-center justify-between gap-2 p-3">
-                  <span className="truncate font-display text-sm font-semibold">{card.name}</span>
+                <span className="flex items-center gap-1.5 px-0.5">
                   {isConnected ? (
-                    <span
-                      aria-hidden="true"
-                      className="size-1.5 shrink-0 rounded-full bg-success"
-                    />
+                    <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-success" />
                   ) : null}
+                  <span className="truncate text-xs font-medium text-muted-foreground">
+                    {card.name}
+                  </span>
                 </span>
               </button>
+
             </li>
           );
         })}

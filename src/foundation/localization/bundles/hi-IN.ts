@@ -196,6 +196,10 @@ export const hiINBundle: LocaleBundle = {
     "auth.validation.email_invalid": "यह ईमेल पते जैसा नहीं लगता।",
     "auth.validation.password_required": "अपना पासवर्ड दर्ज करें।",
     "auth.validation.password_too_short": "पासवर्ड में कम से कम 8 अक्षर होने चाहिए।",
+    "auth.password.strength.weak": "कमज़ोर — थोड़ा लंबा करें या अंक जोड़ें।",
+    "auth.password.strength.fair": "ठीक है — एक चिह्न जोड़ें तो और बेहतर।",
+    "auth.password.strength.strong": "मज़बूत पासवर्ड।",
+
     "auth.validation.display_name_required": "एक प्रदर्शित नाम चुनें।",
     "auth.validation.display_name_too_short": "प्रदर्शित नाम में कम से कम 2 अक्षर होने चाहिए।",
     "auth.validation.display_name_too_long": "प्रदर्शित नाम अधिकतम 40 अक्षरों का हो सकता है।",
