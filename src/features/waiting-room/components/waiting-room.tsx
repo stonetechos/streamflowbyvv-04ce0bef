@@ -269,6 +269,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           providerLaunch.plan?.providerKey ??
           room.providerId
         }
+        providerKey={providerLaunch.plan?.providerKey ?? null}
         startedAt={playback.runtime.startedAt}
         clockOffsetMs={sync.snapshot?.offset?.offsetMs ?? 0}
         voice={voice}
@@ -329,6 +330,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           providerName={providerName}
           providerKey={providerKey}
           hostLabel={hostLabel}
+          isVoiceConnected={voice.isConnected}
         />
 
         {/* One stage, one instruction. */}
