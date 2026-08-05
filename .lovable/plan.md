@@ -1,58 +1,48 @@
-## Git Discipline v1.0 — Memory Update Plan
+# ADR-014 — Hearo-Style Synchronized OTT Playback: Feasibility Assessment
 
-### Goal
+Stop implementation. Produce one honest engineering assessment document that answers whether the intended experience (share from Netflix → auto room → host controls play/pause/seek for everyone) is achievable, and if not, what the closest legal and technical architecture is.
 
-Formalize the Git Discipline rules as a project-level constraint that amends the current Build Rules v1.0 change discipline without modifying the frozen `Build-Rules-v1.0.md` document.
+No code. No feature work. One new document plus small status edits to existing records.
 
-### Scope
+## Deliverable
 
-- Create `mem://constraints/git-discipline.md` with the six rules and their reconciliation with Build Rules §6.
-- Update `mem://index.md` to reference the new constraint.
-- No changes to `docs/development/Build-Rules-v1.0.md` and no new ADR, per the "Memory only" change-control requirement.
+`docs/adr/ADR-014-synchronized-ott-playback-feasibility.md`
 
-### Reconciliation with Build Rules v1.0 §26
+## What the ADR will contain
 
-The frozen Build Rules v1.0 rule 26 says: _"Keep commits small, modular, and reversible. One concern per commit, each independently revertable."_
-Git Discipline v1.0 reconciles this as:
+**1. The intended experience, restated precisely**
+The 10-step flow you described, written as the acceptance criteria the assessment is measured against — so "achievable" is never ambiguous.
 
-- During a sprint: keep local branch commits small, modular, and reversible (one concern per commit).
-- At the sprint boundary: squash the local branch into one public commit per sprint.
-- Never rewrite the history of a completed sprint.
-- Never modify the scope of a completed sprint unless fixing a defect.
-- Keep the repository portable to standard Git tooling.
-- Never depend on Lovable-only Git features.
+**2. Capability assessment across the 15 mechanisms**
+For each of browser/PWA, Android native, iOS native, Android Accessibility Services, MediaSession, share intents, deep links, OTT public SDKs, OTT partner APIs, Cast, AirPlay, DRM, Widevine/FairPlay, app-to-app IPC, and overlays: what it actually grants, what it cannot grant, and the platform-policy risk of relying on it. Explicit verdict per mechanism — usable, usable-with-limits, or unusable.
 
-### Memory file content
+**3. Provider matrix**
+All 15 providers (Netflix, Prime Video, Disney+, JioHotstar, SonyLIV, Zee5, Apple TV+, YouTube, Hulu, HBO Max, Crunchyroll, Peacock, Paramount+, Pluto TV, Tubi) scored on: launch title, deep-link to title, detect playback, control play, control pause, control seek, synchronize, legal restrictions, technical restrictions. Every cell reasoned from the provider's public surface — no optimistic entries.
 
-`mem://constraints/git-discipline.md`:
+**4. Why the exact Hearo experience is not reproducible for premium OTT**
+The precise chain: no public playback-control API, DRM/secure-surface isolation, ToS clauses forbidding automated control and modification, app sandboxing on iOS with no cross-app IPC, and store-policy exposure for Accessibility-Service-driven control on Android. Named per provider, not generalised.
 
-```text
----
-name: Git Discipline v1.0
-description: Amends Build Rules v1.0 §6 by requiring one public commit per sprint while keeping local commits small, modular, and reversible; prohibits rewriting completed sprint history and Lovable-only Git features.
-type: constraint
----
-Git Discipline v1.0 — StreamFlow by Vedora Vision
+**5. What the assessment says about StreamFlow's current build**
+Where the shipped implementation (share intake, deep-link launch coordinator, countdown, manual sync mode, ADR-003) already sits at the honest ceiling, and where the product story overpromises relative to it.
 
-- Commit only when the sprint is complete.
-- One sprint = one public commit.
-- Local commits during a sprint must remain small, modular, and reversible (one concern per commit).
-- Never rewrite previous sprint history.
-- Never modify completed sprint scope unless fixing a defect.
-- Keep the repository portable to standard Git tooling.
-- Never depend on Lovable-only Git features.
+**6. Closest achievable architecture**
+Tiered by what each provider actually permits:
+- Tier A — true controlled sync (YouTube IFrame API, local files, Cast-controlled receivers where permitted)
+- Tier B — assisted sync (deep link to the exact title + shared clock + host-triggered pause/resume signals that participants act on, with drift correction cues)
+- Tier C — coordinated manual sync (current countdown behaviour)
+Plus what an Android native build genuinely adds (MediaSession *observation* on some apps, share/intent fidelity) versus what it does not add (control of DRM playback), and what iOS adds (essentially nothing beyond share sheet fidelity).
 
-Note: This memory constraint conceptually amends Build Rules v1.0 §6. Because Build Rules v1.0 is frozen and change-controlled only via ADR, and per project decision this change is stored in memory only, the source file `docs/development/Build-Rules-v1.0.md` remains unchanged.
-```
+**7. Decision points requiring your answer**
+Whether to pursue OTT partnership conversations, whether to ship a native Android build for observation-only gains, and whether the product positioning changes from "sync" to "watch together".
 
-### Index update
+**8. Recommendation**
+A direct answer to "web app or native", with reasoning, and the conditions under which the answer would flip.
 
-Add to `mem://index.md` under **Memories**:
+## Companion edits
 
-```text
-- [Git Discipline v1.0](mem://constraints/git-discipline.md) — Amends Build Rules v1.0 §6; one public commit per sprint, local commits stay small and reversible.
-```
+- `docs/adr/ADR-003-sync-mode-per-room.md` — append a note that ADR-014 supersedes its implied provider expectations for premium OTT.
+- `mem://features/mvp-scope.md` — record the feasibility ceiling so future sessions never re-propose automated OTT control.
 
-### Outcome
+## Not in scope
 
-After approval, the constraint will be part of the automatically-applied project memory. Every future Build Mode sprint will be committed as one public commit at the sprint boundary, while local work remains small and reversible. The frozen documentation set is not touched.
+No source changes, no migrations, no UI edits. If you approve the reframing afterwards, that becomes a separate build plan.
