@@ -126,8 +126,13 @@ export function createProfileService(deps: ProfileServiceDependencies): ProfileS
     async isHandleAvailable(handle, forProfileId) {
       const normalized = handle.trim().toLowerCase();
       if (!HANDLE_PATTERN.test(normalized)) return false;
-      const existing = await profiles("ProfileService.isHandleAvailable").findByHandle(normalized);
-      return existing === null || existing.id === forProfileId;
+      // Availability is a persistence verdict, not a client one: RLS hides the
+      // handles this viewer does not own, so only the allocator can answer.
+      const allocated = await profiles("ProfileService.isHandleAvailable").allocateHandle(
+        normalized,
+        forProfileId,
+      );
+      return allocated === normalized;
     },
 
     async updateProfile(profileId, patch, intent) {
@@ -138,7 +143,17 @@ export function createProfileService(deps: ProfileServiceDependencies): ProfileS
         return load(profileId, "ProfileService.updateProfile");
       }
 
-      const updated = await profiles("ProfileService.updateProfile").update(profileId, patch);
+      const repository = profiles("ProfileService.updateProfile");
+      // A requested handle is a wish, never a guarantee; the allocator settles it.
+      const resolved =
+        patch.handle === undefined
+          ? patch
+          : {
+              ...patch,
+              handle: await repository.allocateHandle(patch.handle.trim().toLowerCase(), profileId),
+            };
+
+      const updated = await repository.update(profileId, resolved);
       await users.updateProfile({ profileId, changedFields }, intent);
       return updated;
     },
@@ -152,17 +167,12 @@ export function createProfileService(deps: ProfileServiceDependencies): ProfileS
         });
       }
 
-      // The handle is derived from a display name, and display names are not
-      // unique. Onboarding must never fail because two people chose the same
-      // name, so a free variant is resolved before the write.
+      // Display names are not unique, so the handle derived from one is not
+      // either. The database allocates a free variant atomically — the former
+      // client-side probe could not see conflicting handles under RLS and let
+      // collisions reach `profiles_handle_lower_uq` as an HTTP 409.
       const repository = profiles("ProfileService.completeOnboarding");
-      let handle = requested;
-      for (let attempt = 2; attempt <= 20; attempt += 1) {
-        const existing = await repository.findByHandle(handle);
-        if (existing === null || existing.id === profileId) break;
-        const suffix = String(attempt);
-        handle = `${requested.slice(0, 24 - suffix.length)}${suffix}`;
-      }
+      const handle = await repository.allocateHandle(requested, profileId);
 
       const updated = await repository.update(profileId, {
         displayName: completion.displayName.trim(),

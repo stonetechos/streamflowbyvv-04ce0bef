@@ -595,6 +595,7 @@ export const enBundle: LocaleBundle = {
     "home.live.join": "Join",
     "home.po.resume": "Ready to pick up where you left off?",
     "home.po.friends": "{count} of your people are around.",
+    "home.notice.room_ended": "This watch party has ended.",
     "home.po.idle": "Pick a service and I\u2019ll get the room ready.",
     "home.greeting": "Hello, {name}",
     "home.subtitle.first_time": "Start your first watch party, or join one with a code.",

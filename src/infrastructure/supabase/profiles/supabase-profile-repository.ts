@@ -37,20 +37,24 @@ export function createSupabaseProfileRepository(connection: DataConnection): Pro
       return row ? toProfileRecord(row) : null;
     },
 
-    async findByHandle(handle: string): Promise<ProfileRecord | null> {
-      requireAvailable(connection, context("findByHandle"));
-      const row = await runMaybe<ProfileRow | null>(
-        connection
-          .client()
-          .from("profiles")
-          .select(PROFILE_COLUMNS)
-          .eq("handle", handle)
-          .is("deleted_at", null)
-          .maybeSingle(),
-        context("findByHandle"),
+    /**
+     * Production Certification Sprint — collisions on `profiles_handle_lower_uq`
+     * used to reach the database because RLS hides other people's handles from
+     * the client. The allocator decides uniqueness inside the database, under
+     * an advisory lock, and returns only the handle it allocated.
+     */
+    async allocateHandle(desired: string, forProfileId: EntityId | null): Promise<string> {
+      requireAvailable(connection, context("allocateHandle"));
+      return runQuery<string>(
+        connection.client().rpc("allocate_profile_handle", {
+          _desired: desired,
+          ...(forProfileId ? { _profile_id: forProfileId } : {}),
+        }),
+        context("allocateHandle"),
       );
-      return row ? toProfileRecord(row) : null;
     },
+
+
 
     async update(profileId: EntityId, patch: ProfileRecordPatch): Promise<ProfileRecord> {
       requireAvailable(connection, context("update", profileId));

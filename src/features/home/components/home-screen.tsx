@@ -6,8 +6,9 @@
  * this screen — the machinery it used to expose is either gone from the
  * default view or reachable from its own destination.
  */
-import { memo, useState, type ReactNode } from "react";
+import { memo, useEffect, useState, type ReactNode } from "react";
 
+import { claimRoomEndedNotice } from "@/features/shared/room-ended-notice";
 import { useSocial } from "@/features/social";
 import { useTranslation } from "@/foundation/localization";
 
@@ -41,6 +42,14 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
   const social = useSocial(profileId);
   const [joining, setJoining] = useState(false);
 
+  // The watch party ended while this person was in it; Home says so once.
+  const [endedNotice, setEndedNotice] = useState(false);
+  useEffect(() => {
+    if (claimRoomEndedNotice()) setEndedNotice(true);
+  }, []);
+
+
+
   if (home.isLoading) {
     return (
       <div
@@ -63,7 +72,24 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-10 px-4 py-8 pb-32 sm:px-6 lg:py-12 md:pb-12">
+      {endedNotice ? (
+        <div
+          role="status"
+          className="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/60 px-4 py-3 text-sm"
+        >
+          <span>{t("home.notice.room_ended")}</span>
+          <button
+            type="button"
+            onClick={() => setEndedNotice(false)}
+            className="min-h-9 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
+          >
+            {t("common.action.dismiss")}
+          </button>
+        </div>
+      ) : null}
+
       <Rail index={0}>
+
         <HomeHero
           displayName={displayName}
           isFirstTime={snapshot.isFirstTime}
