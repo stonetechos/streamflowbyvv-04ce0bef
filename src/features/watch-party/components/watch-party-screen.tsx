@@ -1,21 +1,20 @@
 /**
- * Watch Party screen — Milestone G.
+ * Watch Party screen — Watch Party Engine v2.0.
  *
- * Where the room lands once the countdown finishes. It answers four questions
- * and refuses to imply a fifth:
+ * Once the countdown lands, StreamFlow gets out of the way. What remains is a
+ * cinematic reminder of what the room is watching, who is in it, and a single
+ * floating HUD.
  *
- *   • How long have we been watching?  — the shared elapsed timer
- *   • Where are we watching?           — the provider, named plainly
- *   • Who is here, and who is talking? — the roster and voice
- *   • Are we still together?           — synchronization status and re-sync
- *
- * The fifth question — "can StreamFlow control my player?" — is answered no,
- * explicitly and repeatedly, by the manual-sync reminder. Nothing on this
- * screen sends a play, pause, or seek anywhere (MVP §5, ADR-003).
+ * The one thing this screen never does is touch a player: no play, no pause,
+ * no seek is sent anywhere (MVP §5, ADR-003, ADR-014).
  */
-import { ActionButton, Surface } from "@/design-system/components";
+import { useState } from "react";
+
+import { Surface } from "@/design-system/components";
+import { parseContentReference, providerTier, providerTierSummaryKey, readSeriesTitle } from "@/domain";
 import { PoCompanion } from "@/features/po";
-import { VoiceControls, VoicePanel, type VoiceIndicatorState } from "@/features/voice";
+import { ContentPoster } from "@/features/shared/content-poster";
+import { VoicePanel, type VoiceIndicatorState } from "@/features/voice";
 import {
   MemberList,
   type MemberView,
@@ -28,13 +27,16 @@ import type { SyncHealth } from "@/domain";
 import type { VoiceSessionModel } from "@/features/voice";
 
 import { useElapsedTime } from "../use-elapsed-time";
+import { CatchUpSheet } from "./catch-up-sheet";
+import { ReactionLayer, useReactionBursts } from "./reaction-burst";
 import { SharedElapsedTimer } from "./shared-elapsed-timer";
-import { WatchPartyStatus } from "./watch-party-status";
+import { WatchPartyHud } from "./watch-party-hud";
 
 export interface WatchPartyScreenProps {
   readonly room: RoomSummaryView;
   readonly members: readonly MemberView[];
   readonly providerName: string | null;
+  readonly providerKey?: string | null;
   /** Room anchor the elapsed timer counts from. */
   readonly startedAt: string | null;
   readonly clockOffsetMs: number;
@@ -51,11 +53,10 @@ export function WatchPartyScreen({
   room,
   members,
   providerName,
+  providerKey = null,
   startedAt,
   clockOffsetMs,
   voice,
-  playbackSync,
-  clockSync,
   voiceByProfileId,
   syncByProfileId,
   onLeave,
@@ -63,6 +64,22 @@ export function WatchPartyScreen({
 }: WatchPartyScreenProps) {
   const { t } = useTranslation();
   const elapsed = useElapsedTime(startedAt, clockOffsetMs);
+  const reactions = useReactionBursts();
+  const [catchUpOpen, setCatchUpOpen] = useState(false);
+
+  const reference = parseContentReference(room.contentReference);
+  const seriesTitle = readSeriesTitle(reference);
+  const title = seriesTitle ?? reference?.title ?? room.name;
+  const hostLabel = members.find((member) => member.isHost)?.label ?? null;
+  const tier = providerTier(reference?.providerKey ?? providerKey);
+
+  const episodeLabel =
+    reference?.seasonNumber !== null && reference?.seasonNumber !== undefined
+      ? t("room.provider.episode_value", {
+          season: reference.seasonNumber,
+          episode: reference.episodeNumber ?? 0,
+        })
+      : null;
 
   return (
     <section
@@ -70,73 +87,73 @@ export function WatchPartyScreen({
       data-sf-screen="watch-party"
       data-sf-started-at={startedAt ?? ""}
       data-sf-elapsed-seconds={elapsed.totalSeconds}
-      className="sf-screen-enter mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-12"
+      className="sf-screen-enter mx-auto w-full max-w-2xl px-4 py-6 pb-40 sm:px-6"
     >
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("watch_party.eyebrow")}
-          </p>
-          <h1 className="mt-2 truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-            {room.name}
-          </h1>
-          <p className="mt-2 inline-flex items-center rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
-            {providerName
-              ? t("watch_party.watching_on", { provider: providerName })
-              : t("watch_party.no_provider")}
-          </p>
-        </div>
+      <header className="flex items-center justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {t("watch_party.eyebrow")}
+        </p>
         <PoCompanion mood="watching" size="sm" />
       </header>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-        <div className="min-w-0 space-y-6">
-          <Surface padding="lg" tone="glass" className="space-y-5">
-            <SharedElapsedTimer elapsed={elapsed} />
-            <div className="rounded-2xl border border-dashed border-border px-4 py-3 text-center">
-              <p className="text-sm font-medium">{t("watch_party.manual_reminder.title")}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("watch_party.manual_reminder.body")}
-              </p>
-            </div>
-          </Surface>
-
-          <WatchPartyStatus
-            sync={playbackSync}
-            health={clockSync.health}
-            isMeasuring={clockSync.isMeasuring}
-            onResync={clockSync.remeasure}
-          />
-
-          <MemberList
-            members={members}
-            readyCount={members.filter((member) => member.isReady).length}
-            readyTotal={members.length}
-            voiceByProfileId={voiceByProfileId}
-            syncByProfileId={syncByProfileId}
-          />
-        </div>
-
-        <aside className="space-y-6 lg:sticky lg:top-20">
-          <VoicePanel voice={voice} />
-          <Surface padding="lg" className="space-y-3">
-            <h2 className="font-display text-base font-semibold">{t("watch_party.leave.title")}</h2>
-            <p className="text-sm text-muted-foreground">{t("watch_party.leave.body")}</p>
-            <ActionButton tone="ghost" onClick={onLeave} loading={isLeaving}>
-              {t("watch_party.leave.action")}
-            </ActionButton>
-          </Surface>
-        </aside>
-      </div>
-
-      {/* Mobile: the call stays reachable without scrolling. */}
-      <div className="sf-watch-bar fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
-          <span className="font-mono text-sm tabular-nums">{elapsed.label}</span>
-          <VoiceControls voice={voice} compact />
+      <div className="relative mt-4 overflow-hidden rounded-3xl shadow-e3">
+        <ContentPoster
+          artworkUrl={reference?.artworkUrl ?? null}
+          brandKey={reference?.providerKey ?? providerKey ?? null}
+          name={providerName ?? title}
+          className="aspect-[16/9] w-full rounded-3xl border-0"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"
+        />
+        <div className="absolute inset-x-0 bottom-0 space-y-1 p-4 text-left">
+          {providerName ? (
+            <span className="inline-flex rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-[11px] font-semibold tracking-wide backdrop-blur">
+              {providerName}
+            </span>
+          ) : null}
+          <h1 className="text-balance font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            {title}
+          </h1>
+          {episodeLabel ? <p className="text-sm text-muted-foreground">{episodeLabel}</p> : null}
         </div>
       </div>
-      <div aria-hidden="true" className="h-20 lg:hidden" />
+
+      <Surface padding="lg" tone="glass" className="mt-5 space-y-4">
+        <SharedElapsedTimer elapsed={elapsed} />
+        <p className="text-center text-xs text-muted-foreground">{t(providerTierSummaryKey(tier))}</p>
+      </Surface>
+
+      <div className="mt-5 space-y-5">
+        <MemberList
+          members={members}
+          readyCount={members.filter((member) => member.isReady).length}
+          readyTotal={members.length}
+          voiceByProfileId={voiceByProfileId}
+          syncByProfileId={syncByProfileId}
+        />
+        <VoicePanel voice={voice} />
+      </div>
+
+      <ReactionLayer bursts={reactions.bursts} />
+
+      <CatchUpSheet
+        open={catchUpOpen}
+        onOpenChange={setCatchUpOpen}
+        startedAt={startedAt}
+        clockOffsetMs={clockOffsetMs}
+      />
+
+      <WatchPartyHud
+        hostLabel={hostLabel}
+        elapsedLabel={elapsed.label}
+        voice={voice}
+        onReact={reactions.send}
+        onCatchUp={() => setCatchUpOpen(true)}
+        onLeave={onLeave}
+        isLeaving={isLeaving}
+      />
     </section>
   );
 }
