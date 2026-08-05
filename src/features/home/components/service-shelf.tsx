@@ -37,13 +37,11 @@ import { buildServiceShelf, type ServiceCardView } from "../service-shelf";
 import { ServiceLogo } from "./service-logo";
 import type { HomeModel } from "../use-home";
 
-const ACCENT_TILE: Record<ServiceCardView["accent"], string> = {
-  primary: "from-primary/70 to-primary/25 text-primary-foreground",
-  info: "from-info/70 to-info/25 text-info-foreground",
-  success: "from-success/70 to-success/25 text-success-foreground",
-  warning: "from-warning/70 to-warning/25 text-warning-foreground",
-  accent: "from-accent to-accent/40 text-accent-foreground",
-};
+/**
+ * Sprint 85 — brand colour lives in CSS (`[data-sf-brand]` in styles.css), not
+ * here. The tile only declares which brand it is.
+ */
+
 
 export interface ServiceShelfProps {
   readonly home: HomeModel;
