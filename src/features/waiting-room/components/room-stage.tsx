@@ -16,10 +16,12 @@ import type { RoomSummaryView } from "../waiting-room.types";
 export interface RoomStageProps {
   readonly room: RoomSummaryView;
   readonly providerName: string | null;
+  /** Brand key of the chosen service, for the fallback brand mark. */
+  readonly providerKey?: string | null;
   readonly hostLabel: string | null;
 }
 
-export function RoomStage({ room, providerName, hostLabel }: RoomStageProps) {
+export function RoomStage({ room, providerName, providerKey, hostLabel }: RoomStageProps) {
   const { t } = useTranslation();
 
   const reference = parseContentReference(room.contentReference);
@@ -37,7 +39,7 @@ export function RoomStage({ room, providerName, hostLabel }: RoomStageProps) {
     <section className="flex flex-col items-center text-center">
       <ContentPoster
         artworkUrl={reference?.artworkUrl ?? null}
-        brandKey={reference?.providerKey ?? null}
+        brandKey={reference?.providerKey ?? providerKey ?? null}
         name={providerName ?? title}
         className="aspect-[16/9] w-full max-w-md rounded-3xl shadow-e3"
       />

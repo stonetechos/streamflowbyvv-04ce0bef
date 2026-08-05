@@ -10,6 +10,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { ErrorState, LoadingState } from "@/app-shell";
 import type { SyncHealth } from "@/domain";
 import { Skeleton } from "@/components/ui/skeleton";
+import { serviceBrandName } from "@/features/home";
 import { PoWaitingBanner } from "@/features/po";
 import { useProfile } from "@/features/profiles";
 import {
@@ -242,7 +243,11 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
       <WatchPartyScreen
         room={room}
         members={model.members}
-        providerName={providerLaunch.plan?.providerKey ?? room.providerId}
+        providerName={
+          serviceBrandName(providerLaunch.plan?.providerKey) ??
+          providerLaunch.plan?.providerKey ??
+          room.providerId
+        }
         startedAt={playback.runtime.startedAt}
         clockOffsetMs={sync.snapshot?.offset?.offsetMs ?? 0}
         voice={voice}
@@ -256,7 +261,8 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     );
   }
 
-  const providerName = providerLaunch.plan?.providerKey ?? room.providerId;
+  const providerKey = providerLaunch.plan?.providerKey ?? null;
+  const providerName = serviceBrandName(providerKey) ?? providerKey ?? room.providerId;
   const hostLabel = model.members.find((member) => member.isHost)?.label ?? null;
   const isCountingDown = countdown.state === "counting_down" || countdown.state === "preparing";
 
@@ -289,7 +295,12 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
         aria-label={t("room.waiting_room.region_label")}
         className="sf-screen-enter mx-auto w-full max-w-xl space-y-8 px-4 py-6 pb-48 sm:px-6 md:pb-36"
       >
-        <RoomStage room={room} providerName={providerName} hostLabel={hostLabel} />
+        <RoomStage
+          room={room}
+          providerName={providerName}
+          providerKey={providerKey}
+          hostLabel={hostLabel}
+        />
 
         {/* One stage, one instruction. */}
         <div className="space-y-6 text-center">
