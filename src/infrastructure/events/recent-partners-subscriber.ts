@@ -15,6 +15,8 @@ import {
   eventKey,
   type OrderedDispatcher,
 } from "./event-dispatch";
+import { isViewerProfile } from "@/foundation/session";
+
 import { payloadStrings } from "./event-serializer";
 
 /** Expands a completed session into directed partner pairings. Pure. */
@@ -37,6 +39,8 @@ export interface RecentPartnersSubscriberOptions {
   readonly bus: EventBus;
   readonly projection: RecentPartnersProjection;
   readonly dispatcher?: OrderedDispatcher;
+  /** Same ownership rule as the timeline: a tab writes only its own pairings. */
+  readonly ownsRow?: (profileId: string) => boolean;
 }
 
 export function createRecentPartnersSubscriber(
@@ -45,8 +49,12 @@ export function createRecentPartnersSubscriber(
   const dispatcher = options.dispatcher ?? createOrderedDispatcher("events.recent_partners");
   const guard = createReplayGuard();
 
+  const ownsRow = options.ownsRow ?? isViewerProfile;
+
   return options.bus.subscribe("RoomEnded", (event) => {
-    const observations = toPartnerObservations(event as CatalogEvent);
+    const observations = toPartnerObservations(event as CatalogEvent).filter((observation) =>
+      ownsRow(observation.profileId),
+    );
     if (observations.length === 0) return;
     if (!guard.admit(`partners:${eventKey(event as CatalogEvent)}`)) return;
 

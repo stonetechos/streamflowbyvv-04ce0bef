@@ -19,7 +19,11 @@ import {
   type MemberPresence,
 } from "@/domain";
 import { logger } from "@/foundation/logging";
+import { REPOSITORY_ERRORS } from "@/repository";
 import { PRESENCE } from "@/shared/constants/system-constants";
+
+import { refusalCode } from "@/features/shared/refusal-message";
+
 
 const MODULE = "waiting-room-presence";
 
@@ -112,9 +116,17 @@ export function useRoomPresence(
           clockOffsetMs: measured?.clockOffsetMs ?? null,
           latencyMs: measured?.latencyMs ?? null,
         })
-        .catch((cause: unknown) =>
-          logger.warn("Heartbeat failed", { module: MODULE, roomId, error: cause }),
-        );
+        .catch((cause: unknown) => {
+          // A refusal means the seat is gone — the room ended or this person
+          // was removed. Beating on would repeat a write that can never
+          // succeed, once every interval, for as long as the screen is open.
+          if (refusalCode(cause) === REPOSITORY_ERRORS.PERMISSION_DENIED.code) {
+            stopped = true;
+            window.clearInterval(timer);
+            return;
+          }
+          logger.warn("Heartbeat failed", { module: MODULE, roomId, error: cause });
+        });
     };
 
     beat();
@@ -124,6 +136,7 @@ export function useRoomPresence(
       beat();
       void observe();
     }, PRESENCE.HEARTBEAT_INTERVAL_MS);
+
 
     return () => {
       stopped = true;
