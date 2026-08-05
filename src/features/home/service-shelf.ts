@@ -151,3 +151,15 @@ export function buildServiceShelf(
 export function serviceStatusLabelKey(status: ServiceStatus): string {
   return `home.services.status.${status}`;
 }
+
+/**
+ * Human brand name for a provider key. Presentation only: a room knows the
+ * key ("youtube"), a person knows the name ("YouTube").
+ */
+export function serviceBrandName(key: string | null | undefined): string | null {
+  if (!key) return null;
+  const brand = BRANDS.find(
+    (candidate) => candidate.key === key || (candidate.catalogKeys ?? []).includes(key),
+  );
+  return brand?.name ?? null;
+}
