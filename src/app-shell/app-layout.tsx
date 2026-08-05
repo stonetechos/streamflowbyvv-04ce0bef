@@ -50,11 +50,14 @@ export function AppLayout({ children, chrome = "full" }: AppLayoutProps) {
         {children}
       </main>
 
-      <footer role="contentinfo" className="border-t border-border">
-        <div className="mx-auto w-full max-w-6xl px-4 py-4 pb-24 text-xs text-muted-foreground md:pb-4">
+      {/* Sprint 85 — the tagline is desktop chrome; on a phone the bottom bar
+          owns that edge and the footer only reserves room for it. */}
+      <footer role="contentinfo" className="border-t border-border max-md:border-0">
+        <div className="mx-auto w-full max-w-6xl px-4 pb-24 text-xs text-muted-foreground max-md:sr-only md:py-4 md:pb-4">
           {t("common.app.tagline")}
         </div>
       </footer>
+
 
       {showNav ? <BottomNav /> : null}
       {/* Milestone H1 — Po sits beside the app, never over it. */}
