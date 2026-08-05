@@ -16,6 +16,7 @@ export { HomeQuickSettings } from "./components/home-quick-settings";
 export { HomeSkeleton } from "./components/home-skeleton";
 export {
   buildServiceShelf,
+  serviceBrandName,
   serviceStatusLabelKey,
   type ServiceCardView,
   type ServiceStatus,
