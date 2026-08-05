@@ -108,7 +108,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
 
       <ul
         className={cn(
-          "-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3",
+          "-mx-4 flex snap-x snap-mandatory scroll-pl-4 gap-3 overflow-x-auto px-4 pb-3",
           "sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6",
         )}
       >

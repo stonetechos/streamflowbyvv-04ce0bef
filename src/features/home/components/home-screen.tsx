@@ -73,7 +73,7 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
   return (
     <div
       data-sf-screen="home"
-      className="mx-auto w-full max-w-6xl space-y-10 px-4 py-8 pb-32 sm:px-6 lg:py-12 md:pb-12"
+      className="mx-auto w-full max-w-6xl space-y-8 px-4 py-6 pb-32 sm:px-6 lg:py-12 md:pb-12"
     >
       {endedNotice ? (
         <div
