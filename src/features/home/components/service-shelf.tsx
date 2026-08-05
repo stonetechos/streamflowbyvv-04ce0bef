@@ -100,7 +100,12 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
   }
 
   return (
-    <section className="space-y-4" aria-labelledby="services-heading">
+    <section
+      className="space-y-4"
+      aria-labelledby="services-heading"
+      data-sf-shelf={catalog.status}
+      data-sf-shelf-count={cards.length}
+    >
       <SectionHeader title={t("home.services.title")} />
 
       <ul
@@ -121,6 +126,8 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
             >
               <button
                 type="button"
+                data-sf-service={card.key}
+                data-sf-service-busy={busy ? "true" : "false"}
                 aria-disabled={!card.isChoosable}
                 disabled={!card.isChoosable || busy}
                 onClick={() => onChoose(card)}

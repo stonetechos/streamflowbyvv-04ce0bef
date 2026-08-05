@@ -71,7 +71,10 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
       : t("home.po.idle");
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-10 px-4 py-8 pb-32 sm:px-6 lg:py-12 md:pb-12">
+    <div
+      data-sf-screen="home"
+      className="mx-auto w-full max-w-6xl space-y-10 px-4 py-8 pb-32 sm:px-6 lg:py-12 md:pb-12"
+    >
       {endedNotice ? (
         <div
           role="status"
