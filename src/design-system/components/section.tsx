@@ -56,14 +56,15 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-10 text-center",
+        "flex flex-col items-start gap-2 rounded-2xl bg-muted/40 px-5 py-6 text-left",
         className,
       )}
     >
       {illustration ? <div className="mb-1">{illustration}</div> : null}
-      <p className="font-display text-base font-semibold">{title}</p>
+      <p className="font-display text-sm font-semibold">{title}</p>
       <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
       {action ? <div className="mt-2">{action}</div> : null}
     </div>
   );
 }
+
