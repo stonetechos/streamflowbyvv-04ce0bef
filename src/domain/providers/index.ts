@@ -123,3 +123,12 @@ export {
   type ProviderSelectionClass,
   type ProviderSelectionOption,
 } from "./provider.types";
+export {
+  providerTier,
+  providerTierLabelKey,
+  providerTierSummaryKey,
+  tierRequiresManualPlay,
+  PROVIDER_TIERS,
+  type ProviderTier,
+  type ProviderTierContext,
+} from "./provider-tier";
