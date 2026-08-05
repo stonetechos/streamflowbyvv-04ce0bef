@@ -344,7 +344,7 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           </h2>
 
           {stage === "invite" ? (
-            <InviteFriends roomName={room.name} roomCode={room.code} />
+            <InviteFriends roomName={room.name} roomCode={room.code} emphasis="primary" />
           ) : (
             <>
               <MemberStrip members={model.members} capacity={room.capacity} />
@@ -397,9 +397,16 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           isWaitingForMembers={(readySnapshot?.waitingCount ?? 0) > 0}
           gazeToken={model.lastArrivalProfileId}
         />
-        <p className="text-center text-sm text-muted-foreground" aria-live="polite">
-          {guideLine}
-        </p>
+        {/* Sprint 85 — on the invite stage the heading already says this. */}
+        {stage === "invite" ? (
+          <p className="sr-only" aria-live="polite">
+            {guideLine}
+          </p>
+        ) : (
+          <p className="text-center text-sm text-muted-foreground" aria-live="polite">
+            {guideLine}
+          </p>
+        )}
 
         {model.viewer.canJoin ? (
           <MembershipActions
