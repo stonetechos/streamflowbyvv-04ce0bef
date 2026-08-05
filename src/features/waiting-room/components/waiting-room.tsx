@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { serviceBrandName } from "@/features/home";
 import { PoWaitingBanner } from "@/features/po";
 import { useProfile } from "@/features/profiles";
+import { markRoomEnded } from "@/features/shared/room-ended-notice";
 import {
   readVoiceDevicePreferences,
   useVoiceSession,
@@ -143,12 +144,15 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
    */
   const navigate = useNavigate();
   const isOver = model.departed || model.hasEnded;
+  const roomHasEnded = model.hasEnded;
   const leaveVoice = voice.leave;
   useEffect(() => {
     if (!isOver) return;
     leaveVoice();
+    // The room ending is news; leaving voluntarily is not.
+    if (roomHasEnded) markRoomEnded();
     void navigate({ to: "/home" });
-  }, [isOver, leaveVoice, navigate]);
+  }, [isOver, leaveVoice, navigate, roomHasEnded]);
 
   // Per-member voice and clock standing, keyed by profile so the roster can
   // stay a pure renderer.

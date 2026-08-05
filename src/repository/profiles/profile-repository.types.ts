@@ -46,8 +46,15 @@ export interface ProfileRecordPatch {
 
 export interface ProfileRepository {
   findById(profileId: EntityId): Promise<ProfileRecord | null>;
-  /** Used by the handle-availability check during onboarding. */
-  findByHandle(handle: string): Promise<ProfileRecord | null>;
+  /**
+   * Asks persistence for a globally unique handle derived from `desired`.
+   *
+   * Uniqueness is decided inside the store, under its own lock, because a
+   * caller can only see the handles it is allowed to see and would therefore
+   * miss collisions with other people. The store never reveals the conflicting
+   * handle — only the free one it allocated.
+   */
+  allocateHandle(desired: string, forProfileId: EntityId | null): Promise<string>;
   update(profileId: EntityId, patch: ProfileRecordPatch): Promise<ProfileRecord>;
 }
 

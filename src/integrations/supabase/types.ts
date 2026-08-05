@@ -2260,6 +2260,10 @@ export type Database = {
     }
     Functions: {
       allocate_code: { Args: { _prefix: string }; Returns: string }
+      allocate_profile_handle: {
+        Args: { _desired: string; _profile_id?: string }
+        Returns: string
+      }
       current_auth_user_id: { Args: never; Returns: string }
       current_profile_id: { Args: never; Returns: string }
       discover_room_by_code: {
@@ -2336,6 +2340,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      was_room_member: { Args: { _room_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
