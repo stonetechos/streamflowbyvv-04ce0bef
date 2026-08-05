@@ -188,6 +188,10 @@ export const enBundle: LocaleBundle = {
     "auth.validation.email_invalid": "That doesn't look like an email address.",
     "auth.validation.password_required": "Enter your password.",
     "auth.validation.password_too_short": "Passwords need at least 8 characters.",
+    "auth.password.strength.weak": "Weak — add length or a number.",
+    "auth.password.strength.fair": "Getting there — a symbol would help.",
+    "auth.password.strength.strong": "Strong password.",
+
     "auth.validation.display_name_required": "Choose a display name.",
     "auth.validation.display_name_too_short": "Display names need at least 2 characters.",
     "auth.validation.display_name_too_long": "Display names can be at most 40 characters.",
