@@ -239,6 +239,23 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
   // forwards them (Milestone D.5).
   const readySnapshot = ready.snapshot;
 
+  // Watch Party Engine v2.0 — when the countdown lands, the call opens itself.
+  // Nobody should have to find a microphone button while the film starts. It
+  // is attempted once per transition and never retried over an error.
+  const isWatching =
+    Boolean(playback.runtime?.startedAt) && playback.runtime?.state !== "completed";
+  const joinVoice = voice.join;
+  const canAutoJoinVoice =
+    isWatching &&
+    voice.isAvailable &&
+    !voice.isConnected &&
+    !voice.isConnecting &&
+    voice.error === null;
+  useEffect(() => {
+    if (!canAutoJoinVoice) return;
+    joinVoice();
+  }, [canAutoJoinVoice, joinVoice]);
+
   // Milestone G — the countdown is over and the room has an anchor: this is a
   // watch party now, not a lobby. The transition is a screen swap, not a
   // route change, so voice and presence are never torn down.
