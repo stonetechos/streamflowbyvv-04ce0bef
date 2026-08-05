@@ -67,6 +67,9 @@ export function WatchPartyScreen({
   return (
     <section
       aria-label={t("watch_party.region_label")}
+      data-sf-screen="watch-party"
+      data-sf-started-at={startedAt ?? ""}
+      data-sf-elapsed-seconds={elapsed.totalSeconds}
       className="sf-screen-enter mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-12"
     >
       <header className="flex flex-wrap items-start justify-between gap-4">

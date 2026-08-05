@@ -297,6 +297,14 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
     <>
       <section
         aria-label={t("room.waiting_room.region_label")}
+        data-sf-screen="waiting-room"
+        data-sf-stage={stage}
+        data-sf-live={model.isLive ? "true" : "false"}
+        data-sf-room-code={room.code}
+        data-sf-joined={joinedCount}
+        data-sf-ready-count={readySnapshot?.readyCount ?? 0}
+        data-sf-viewer-ready={model.viewer.isReady ? "true" : "false"}
+        data-sf-can-start={canStart ? "true" : "false"}
         className="sf-screen-enter mx-auto w-full max-w-xl space-y-8 px-4 py-6 pb-48 sm:px-6 md:pb-36"
       >
         <RoomStage

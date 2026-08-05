@@ -99,6 +99,13 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // Hydration marker: lets automated checks wait for an interactive document
+  // instead of guessing with timers. Purely observational.
+  useEffect(() => {
+    document.documentElement.dataset["sfHydrated"] = "true";
+  }, []);
+
+
   return (
     <AppProviders queryClient={queryClient}>
       <BootScreen />
