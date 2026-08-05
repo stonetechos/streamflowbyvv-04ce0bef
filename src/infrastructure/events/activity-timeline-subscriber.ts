@@ -15,6 +15,8 @@ import {
   eventKey,
   type OrderedDispatcher,
 } from "./event-dispatch";
+import { isViewerProfile } from "@/foundation/session";
+
 import { payloadString, payloadStrings } from "./event-serializer";
 
 const SUMMARY_KEYS: Readonly<Record<ActivityType, string>> = Object.freeze({
@@ -88,6 +90,13 @@ export interface ActivityTimelineSubscriberOptions {
   readonly bus: EventBus;
   readonly projection: ActivityTimelineProjection;
   readonly dispatcher?: OrderedDispatcher;
+  /**
+   * Decides which timeline rows this client may write. A timeline row is owned
+   * by one profile, so a browser tab projects only its own rows; every other
+   * participant's tab writes theirs. Without this each tab attempted a write
+   * per participant and collected a permission refusal for all but one.
+   */
+  readonly ownsRow?: (profileId: string) => boolean;
 }
 
 export function createActivityTimelineSubscriber(
@@ -96,8 +105,10 @@ export function createActivityTimelineSubscriber(
   const dispatcher = options.dispatcher ?? createOrderedDispatcher("events.activity_timeline");
   const guard = createReplayGuard();
 
+  const ownsRow = options.ownsRow ?? isViewerProfile;
+
   return options.bus.subscribeAll((event: CatalogEvent) => {
-    const entries = toActivityEntries(event);
+    const entries = toActivityEntries(event).filter((item) => ownsRow(item.profileId));
     if (entries.length === 0) return;
     if (!guard.admit(`activity:${eventKey(event)}`)) return;
 

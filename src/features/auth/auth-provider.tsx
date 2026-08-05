@@ -34,6 +34,7 @@ import {
 } from "@/domain/auth";
 import { resolveService } from "@/domain";
 import { logger } from "@/foundation/logging";
+import { setViewerProfileId } from "@/foundation/session";
 
 import { authReducer, initialAuthState, isSettled } from "./auth-state";
 import { registerAuthFeatureFlags } from "./auth-feature-flags";
@@ -96,6 +97,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unsubscribe();
     };
   }, [sessions]);
+
+  // Infrastructure read models are per-profile, so the projection subscribers
+  // need to know who this tab is before they attempt any write.
+  useEffect(() => {
+    setViewerProfileId(state.session?.identity.profileId ?? null);
+  }, [state.session]);
 
   // Platform privilege is read from the authorization service, never from the
   // session payload the client could tamper with (ADR-009).
