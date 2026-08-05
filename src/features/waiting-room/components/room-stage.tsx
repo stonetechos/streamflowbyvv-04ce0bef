@@ -80,11 +80,14 @@ export function RoomStage({
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/45 to-transparent"
         />
 
-        {providerName ? (
+        {/* Sprint 85 — the brand mark already names the service when it stands
+            in for missing artwork; the chip would only repeat it. */}
+        {providerName && reference?.artworkUrl ? (
           <span className="absolute left-4 top-4 inline-flex rounded-full border border-border/50 bg-background/70 px-2.5 py-1 text-[11px] font-semibold tracking-wide backdrop-blur">
             {providerName}
           </span>
         ) : null}
+
 
         {isVoiceConnected ? (
           <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-success/20 px-2.5 py-1 text-[11px] font-semibold text-success backdrop-blur">
