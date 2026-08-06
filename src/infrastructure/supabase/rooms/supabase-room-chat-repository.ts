@@ -23,7 +23,7 @@ interface RoomMessageRow {
   readonly room_id: string;
   readonly profile_id: string;
   readonly body: string;
-  readonly metadata: Record<string, unknown> | null;
+  readonly metadata: unknown;
   readonly created_at: string;
 }
 
@@ -33,7 +33,10 @@ function toMessage(row: RoomMessageRow): RoomMessage {
     roomId: row.room_id,
     profileId: row.profile_id,
     body: row.body,
-    metadata: row.metadata ?? {},
+    metadata:
+      row.metadata !== null && typeof row.metadata === "object" && !Array.isArray(row.metadata)
+        ? (row.metadata as Readonly<Record<string, unknown>>)
+        : {},
     createdAt: row.created_at,
   };
 }
@@ -77,7 +80,7 @@ export function createSupabaseRoomChatRepository(connection: DataConnection): Ro
             room_id: draft.roomId,
             profile_id: draft.profileId,
             body: draft.body,
-            metadata: draft.metadata ?? {},
+            metadata: (draft.metadata ?? {}) as never,
           })
           .select(COLUMNS)
           .single(),
