@@ -151,7 +151,7 @@ export function useYouTubePlayer({ videoId, onPhase }: UseYouTubePlayerInput): Y
       })
       .catch((error: unknown) => {
         if (cancelled) return;
-        logger.warn(MODULE, "player_unavailable", { error: String(error) });
+        logger.warn("player_unavailable", { module: MODULE, error: String(error) });
         setHasFailed(true);
       });
 
