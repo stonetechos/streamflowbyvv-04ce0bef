@@ -337,6 +337,21 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           isVoiceConnected={voice.isConnected}
         />
 
+        {/* Sprint H1: the lobby's way into the shared watch surface. */}
+        {model.viewer.isMember ? (
+          <div className="text-center">
+            <Link
+              to="/theater/$roomId"
+              params={{ roomId: room.id }}
+              className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground shadow-e1 hover:bg-primary/90"
+              data-sf-open-theater="true"
+            >
+              {t("theater.action.open")}
+            </Link>
+          </div>
+        ) : null}
+
+
         {/* One stage, one instruction. */}
         <div className="space-y-6 text-center">
           <h2 className="text-balance font-display text-xl font-semibold tracking-tight sm:text-2xl">
