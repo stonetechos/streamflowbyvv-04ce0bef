@@ -57,15 +57,22 @@ test.describe("M1 experience", () => {
     const findings: string[] = [];
     const visited: string[] = [];
 
+    // Only success criteria a machine can decide: 4.1.2 (accessible name on
+    // every control), 3.1.1 (page language) and 2.4.2 (page title).
+    const audit = async (label: string, target: typeof page): Promise<void> => {
+      visited.push(label);
+      const unnamed = await unnamedControls(target);
+      const semantics = await documentSemantics(target);
+      if (unnamed.length > 0)
+        findings.push(`${label}: ${unnamed.length} control(s) without an accessible name (WCAG 4.1.2)`);
+      if (semantics.lang.trim().length === 0) findings.push(`${label}: no lang on <html> (WCAG 3.1.1)`);
+      if (semantics.title.trim().length === 0) findings.push(`${label}: empty document title (WCAG 2.4.2)`);
+    };
+
     for (const surface of PUBLIC_SURFACES) {
       await page.goto(`${BASE_URL}${surface}`, { waitUntil: "domcontentloaded" });
       await page.waitForTimeout(800);
-      visited.push(surface);
-      const unnamed = await unnamedControls(page);
-      const headings = await page.locator("h1").count();
-      if (unnamed.length > 0)
-        findings.push(`${surface}: ${unnamed.length} control(s) without an accessible name`);
-      if (headings !== 1) findings.push(`${surface}: ${headings} h1 element(s)`);
+      await audit(surface, page);
     }
     await context.close();
 
@@ -74,10 +81,7 @@ test.describe("M1 experience", () => {
       if (session) {
         await session.page.goto(`${BASE_URL}/rooms/${room.id}`, { waitUntil: "domcontentloaded" });
         await session.page.waitForTimeout(1200);
-        visited.push("/rooms/:roomId");
-        const unnamed = await unnamedControls(session.page);
-        if (unnamed.length > 0)
-          findings.push(`/rooms/:roomId: ${unnamed.length} control(s) without an accessible name`);
+        await audit("/rooms/:roomId", session.page);
         await session.context.close();
       }
     }
@@ -88,8 +92,9 @@ test.describe("M1 experience", () => {
       status: findings.length === 0 ? "unmeasured" : "fail",
       detail:
         findings.length === 0
-          ? `The automatable subset (accessible names, single-h1) is clean across ${visited.join(", ")}. WCAG 2.1 AA also requires contrast, focus order and screen-reader review under PROF-09 (manual); this row cannot pass on automation alone.`
+          ? `The automatable subset (WCAG 4.1.2, 3.1.1, 2.4.2) is clean across ${visited.join(", ")}. WCAG 2.1 AA also requires contrast, focus order and screen-reader review under PROF-09 (manual); this row cannot pass on automation alone.`
           : `Automated accessibility findings on launch surfaces: ${findings.join("; ")}.`,
+
       profileId: "PROF-09",
       browser: browserName,
       platform: "web-desktop",
