@@ -44,7 +44,7 @@ export function WatchStage({
     );
   }
 
-  if (source.kind !== "youtube" || !capability.allowsEmbeddedPlayback) {
+  if (source.kind !== "direct" || !capability.allowsEmbeddedPlayback) {
     return (
       <Surface
         tone="glass"

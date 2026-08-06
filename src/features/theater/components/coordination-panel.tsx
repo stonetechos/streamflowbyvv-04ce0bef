@@ -27,7 +27,7 @@ export function CoordinationPanel({
   onNudge,
 }: CoordinationPanelProps) {
   const { t } = useTranslation();
-  const openUrl = source && source.kind !== "youtube" ? source.url : null;
+  const openUrl = source && source.kind !== "direct" ? source.url : null;
 
   return (
     <Surface
