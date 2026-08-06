@@ -58,9 +58,16 @@ Chat and Moderation have no existing implementation and are marked contract-only
 1. **Experience (UX) Engine** — a full engine section plus its own chapter, since it spans every surface: motion, animation, transitions, haptics, accessibility, empty states, loading states, onboarding, delight, and visual consistency. It owns the emotional quality of StreamFlow and explicitly owns no business logic; it maps onto the existing design system, localization, and accessibility foundations.
 2. **State Management Principles** — one document classifying persistent, realtime, session, cached, derived, and offline state, with rules for ownership, invalidation, and conflict resolution. Binding on every engine.
 3. **Performance Budget** — numeric targets with measurement method and pass/fail threshold for invite-to-join latency, voice connection latency, ready propagation latency, countdown spread, reconnect recovery, cold launch, warm launch, memory, CPU, battery impact, and network utilization. These are certification targets for every future release.
-4. **Product Principles** — immutable principles written as architecture constraints: never fake synchronization; always disclose provider limitations; people over content; the room experience is the product; minimize friction; voice should feel effortless. Cross-referenced from the engines they constrain.
+4. **Product Principles** — immutable principles written as architecture constraints: never fake synchronization; always disclose provider limitations; people are more important than content; the room experience is the product; minimize friction; voice should always feel effortless; be transparent about degraded modes; preserve trust over feature breadth. Cross-referenced from the engines they constrain.
+5. **Launch Envelope** — a first-class section of the Product Operating Brief and the formal boundary of v2.0:
+   - Audience: private groups of 2–8 people watching remotely. Max room size 2–8.
+   - Platforms: web desktop first, Android second, iOS after room and voice certification, TV deferred.
+   - Content modes: Tier A controlled/authorized sources, Tier B observation/assisted, Tier C deep-link + countdown + voice + coordinated manual playback.
+   - Exclusions: no premium OTT playback automation, no screen-capture sync, no accessibility-service automation, no public event discovery in M1, no mandatory AI companion, no large-room video conferencing.
+   - Success criteria: invitees land in the intended room; users understand provider capabilities; playback or coordinated start begins correctly; voice connects when enabled; temporary disconnects do not destroy the room; leave and rejoin preserves context.
+   - Anything outside the envelope requires a new ADR and its own milestone.
 
-On completion the set is frozen and labelled **StreamFlow v2.0 Architecture Constitution**, amendable only by numbered ADR.
+On completion the set is frozen and published as **StreamFlow v2.0 Architecture Constitution**, amendable only by numbered ADR. Implementation waits for explicit approval to enter Build Mode.
 
 ## Ground rules the blueprint enforces
 
