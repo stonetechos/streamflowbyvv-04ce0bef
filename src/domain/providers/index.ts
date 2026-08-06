@@ -124,11 +124,25 @@ export {
   type ProviderSelectionOption,
 } from "./provider.types";
 export {
+  CAPABILITY_CERTIFICATIONS,
+  CAPABILITY_TIERS,
+  CERTIFICATION_STATUSES,
+  findCapabilityCertification,
+  isCertificationValid,
+  type CapabilityCertification,
+  type CapabilityTier,
+  type CapabilityTuple,
+  type CapabilityTupleQuery,
+  type CertificationStatus,
+} from "./capability-certification";
+export {
   providerTier,
+  resolveCapabilityTier,
   providerTierLabelKey,
   providerTierSummaryKey,
   tierRequiresManualPlay,
   PROVIDER_TIERS,
   type ProviderTier,
+  type CapabilityTierResolution,
   type ProviderTierContext,
 } from "./provider-tier";
