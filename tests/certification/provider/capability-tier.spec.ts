@@ -6,11 +6,8 @@
  * is ever reintroduced.
  */
 import { test, expect } from "@playwright/test";
-import {
-  providerTier,
-  resolveCapabilityTier,
-  CAPABILITY_CERTIFICATIONS,
-} from "../../../src/domain/providers/capability-index";
+import { providerTier, resolveCapabilityTier } from "../../../src/domain/providers/provider-tier";
+import { CAPABILITY_CERTIFICATIONS } from "../../../src/domain/providers/capability-certification";
 import { writeEvidence } from "../helpers/evidence";
 
 const NAME_CLAIMS = ["youtube", "local_file", "local", "google_drive", "netflix", "prime_video"];
