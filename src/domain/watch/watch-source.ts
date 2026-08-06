@@ -172,8 +172,42 @@ const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
     "show",
     "episode",
   ]),
+  // Sprint H4 — brands the home shelf already names get the same honest
+  // launch-only room flow, so a host is never sent to a dead end.
+  ottProvider("hbo_max", "HBO Max", /(^|\.)(max\.com|hbomax\.com)$/i, "https://www.max.com", [
+    "movie",
+    "show",
+    "video",
+  ]),
+  ottProvider("hulu", "Hulu", /(^|\.)hulu\.com$/i, "https://www.hulu.com", ["movie", "series"]),
+  ottProvider("peacock", "Peacock", /(^|\.)peacocktv\.com$/i, "https://www.peacocktv.com", [
+    "watch",
+    "asset",
+  ]),
+  ottProvider(
+    "paramount_plus",
+    "Paramount+",
+    /(^|\.)paramountplus\.com$/i,
+    "https://www.paramountplus.com",
+    ["movies", "shows", "video"],
+  ),
+  ottProvider(
+    "crunchyroll",
+    "Crunchyroll",
+    /(^|\.)crunchyroll\.com$/i,
+    "https://www.crunchyroll.com",
+    ["series", "watch"],
+  ),
+  ottProvider(
+    "google_drive",
+    "Google Drive",
+    /(^|\.)drive\.google\.com$/i,
+    "https://drive.google.com",
+    ["file", "d"],
+  ),
   DIRECT,
 ]);
+
 
 /** Providers offered in the room's provider bar, in display order. */
 export const WATCH_PROVIDERS: readonly WatchProviderCapability[] = Object.freeze(
