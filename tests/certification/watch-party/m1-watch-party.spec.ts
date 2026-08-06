@@ -1,12 +1,24 @@
 /**
- * M1 watch-party certification — WP1 (spec homes for CERT-WP-01 and CERT-WP-02).
+ * M1 watch-party certification — WP6 (Countdown synchronization and stage
+ * progression), Watch Party engine, rows CERT-WP-01 and CERT-WP-02.
  *
- * Both rows depend on observing per-client countdown-zero and stage timing.
- * WP1 is a test/infrastructure sprint: it may not add production
- * instrumentation, and it may not assert a pass it did not measure. These
- * specs therefore drive the real surface, probe for an observable countdown
- * signal, and record `unmeasured` with the named missing hook when there is
- * none (unknown U-02 in M1.1 §7).
+ * WP1 could only park these two rows as `unmeasured`: countdown zero was not
+ * observable from outside the app, and `room_state` carries no stage column.
+ * WP6 closes both. Production now surfaces the instant each client observed
+ * the shared countdown target pass (`data-sf-countdown-zero-at`, written by
+ * `useRoomCountdown`), and the lobby already publishes its journey stage
+ * (`data-sf-stage`). Both are read here from real browsers.
+ *
+ * The countdown itself is written the way the host's client writes it — the
+ * durable runtime keys owned by `src/domain/countdown/countdown-runtime.ts`,
+ * through the Data API under the host's own RLS privileges. No product code is
+ * bypassed on the reading side: every client derives zero from the same
+ * server-written `countdown_target_at`.
+ *
+ * User journey: host starts; everyone counts down together and reaches the
+ * stage together. Watch-party objective: the moment of starting together
+ * actually lands together, and every participant sees the same "what happens
+ * next" state.
  */
 import { test } from "@playwright/test";
 
@@ -22,10 +34,51 @@ import {
   type CertRoom,
   type SignedInSession,
 } from "../fixtures/identities";
-import { countdownTimestampProbe, measureConvergence } from "../helpers/instrumentation";
+import { measureConvergence } from "../helpers/instrumentation";
 import { recordM1Row } from "../helpers/m1-rows";
 
 const BASE_URL = process.env["CERT_BASE_URL"] ?? "http://localhost:8080";
+
+/** C4 performance budget: countdown spread ≤ 250 ms p95. */
+const COUNTDOWN_SPREAD_BUDGET_MS = 250;
+
+/** Long enough for every client to have loaded the runtime before zero. */
+const COUNTDOWN_LEAD_MS = 12_000;
+
+/**
+ * Arms a countdown exactly as the host's client would: the durable runtime
+ * keys in the room metadata bag, merged over whatever the room already holds.
+ */
+async function armCountdown(
+  host: CertParticipant,
+  room: CertRoom,
+  leadMs: number,
+): Promise<string | null> {
+  const { data: current } = await host.identity.client
+    .from("rooms")
+    .select("metadata")
+    .eq("id", room.id)
+    .maybeSingle();
+  const now = Date.now();
+  const targetAt = new Date(now + leadMs).toISOString();
+  const metadata = {
+    ...((current?.["metadata"] as Record<string, unknown> | null) ?? {}),
+    countdown_state: "counting_down",
+    countdown_target_at: targetAt,
+    countdown_started_at: new Date(now).toISOString(),
+    countdown_host_profile_id: host.profileId,
+    countdown_reason: null,
+    countdown_revision: 1,
+    countdown_seconds: Math.round(leadMs / 1000),
+  };
+  const { data } = await host.identity.client
+    .from("rooms")
+    .update({ metadata })
+    .eq("id", room.id)
+    .select("id")
+    .maybeSingle();
+  return data ? targetAt : null;
+}
 
 test.describe("M1 watch party", () => {
   test.slow();
@@ -33,38 +86,30 @@ test.describe("M1 watch party", () => {
 
   let participants: readonly CertParticipant[] | null = null;
   let room: CertRoom | null = null;
-  const sessions: SignedInSession[] = [];
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async () => {
     if (!backendConfigured) return;
-    participants = await provisionParticipants(2, "wp");
+    participants = await provisionParticipants(3, "wp");
     if (!participants) return;
     room = await createRoomWithCapacity(participants[0]!, 4, "M1 watch party");
     if (!room) return;
     await seatHost(participants[0]!, room);
     await joinAsGuest(participants[1]!, room);
-    for (const participant of participants) {
-      const session = await signedInContext(browser, participant, BASE_URL);
-      if (session) {
-        await session.page.goto(`${BASE_URL}/rooms/${room.id}`, { waitUntil: "domcontentloaded" });
-        sessions.push(session);
-      }
-    }
+    await joinAsGuest(participants[2]!, room);
   });
 
   test.afterAll(async () => {
-    for (const session of sessions) await session.context.close();
     if (participants && room) await disposeRoom(participants[0]!, room);
   });
 
   test("CERT-WP-01 all participants reach countdown zero within spread", async ({
+    browser,
     browserName,
   }) => {
-    if (!participants || !room || sessions.length < 2) {
+    if (!participants || !room) {
       recordM1Row("CERT-WP-01", {
         status: "unmeasured",
-        detail:
-          "Two concurrent signed-in participants could not be placed in one lobby in this environment.",
+        detail: "Certification identities or a lobby could not be provisioned in this environment.",
         profileId: "PROF-07",
         browser: browserName,
         platform: "web-desktop",
@@ -73,66 +118,115 @@ test.describe("M1 watch party", () => {
       return;
     }
 
-    const probes = await Promise.all(
-      sessions.map((session) => countdownTimestampProbe(session.page)),
-    );
-    const observable = probes.every((probe) => probe.observable);
-    if (!observable) {
+    const sessions: SignedInSession[] = [];
+    try {
+      for (const participant of participants) {
+        const session = await signedInContext(browser, participant, BASE_URL);
+        if (!session) continue;
+        await session.page.goto(`${BASE_URL}/rooms/${room.id}`, {
+          waitUntil: "domcontentloaded",
+        });
+        sessions.push(session);
+      }
+
+      if (sessions.length < 2) {
+        recordM1Row("CERT-WP-01", {
+          status: "unmeasured",
+          detail: "Fewer than two concurrent signed-in browsers reached the lobby.",
+          profileId: "PROF-07",
+          browser: browserName,
+          platform: "web-desktop",
+        });
+        return;
+      }
+
+      // Every client must already be in the lobby before the host arms the
+      // countdown. A client that arrives after the target has passed is not
+      // measuring "counting down together", it is measuring a late join.
+      for (const session of sessions) {
+        await session.page.waitForSelector("[data-sf-stage]", { timeout: 45_000 });
+      }
+
+      const targetAt = await armCountdown(participants[0]!, room, COUNTDOWN_LEAD_MS);
+      if (targetAt === null) {
+        recordM1Row("CERT-WP-01", {
+          status: "unmeasured",
+          detail: "The host could not write the countdown runtime for this room.",
+          profileId: "PROF-07",
+          browser: browserName,
+          platform: "web-desktop",
+        });
+        return;
+      }
+
+      const result = await measureConvergence(
+        sessions.map((session, index) => ({
+          label: `client-${index}`,
+          read: () =>
+            session.page.evaluate(
+              () =>
+                document
+                  .querySelector("[data-sf-countdown-zero-at]")
+                  ?.getAttribute("data-sf-countdown-zero-at") ?? null,
+            ),
+        })),
+        (value) => value !== null,
+        { timeoutMs: COUNTDOWN_LEAD_MS + 30_000, pollMs: 25 },
+      );
+
+      if (!result.converged) {
+        recordM1Row("CERT-WP-01", {
+          status: "fail",
+          detail: `Not every client reached countdown zero. Observations: ${JSON.stringify(
+            result.samples.map((sample) => ({ label: sample.label, zeroAt: sample.value })),
+          )}.`,
+          profileId: "PROF-07",
+          browser: browserName,
+          platform: "web-desktop",
+        });
+        return;
+      }
+
+      // The reported instants are the clients' own observations of the shared
+      // target, not the harness's polling times: the spread is measured from
+      // the timestamps the product itself wrote.
+      const instants = result.samples
+        .map((sample) => Date.parse(String(sample.value)))
+        .filter((value) => Number.isFinite(value));
+      const spreadMs = Math.max(...instants) - Math.min(...instants);
+      const withinBudget = spreadMs <= COUNTDOWN_SPREAD_BUDGET_MS;
+
       recordM1Row("CERT-WP-01", {
-        status: "unmeasured",
-        detail: `Countdown-zero spread is not observable from the client surface. ${probes[0]!.detail} Closing this row needs a production-side countdown-zero signal, which is out of WP1 scope (test/infrastructure only).`,
+        status: withinBudget ? "pass" : "fail",
+        detail: withinBudget
+          ? `All ${sessions.length} participants reached countdown zero; observed spread ${spreadMs} ms against the C4 budget of ${COUNTDOWN_SPREAD_BUDGET_MS} ms.`
+          : `All ${sessions.length} participants reached countdown zero, but the observed spread of ${spreadMs} ms exceeds the C4 budget of ${COUNTDOWN_SPREAD_BUDGET_MS} ms.`,
         profileId: "PROF-07",
         browser: browserName,
         platform: "web-desktop",
+        metric: {
+          metricId: "watch_party.countdown_zero_spread",
+          sampleCount: instants.length,
+          p50: spreadMs,
+          p95: spreadMs,
+          p99: spreadMs,
+          failures: withinBudget ? 0 : 1,
+          unit: "ms" as const,
+        },
       });
-      return;
+    } finally {
+      for (const session of sessions) await session.context.close();
     }
-
-    const result = await measureConvergence(
-      sessions.map((session, index) => ({
-        label: `client-${index}`,
-        read: () =>
-          session.page.evaluate(
-            () =>
-              document
-                .querySelector("[data-countdown-zero-at]")
-                ?.getAttribute("data-countdown-zero-at") ?? null,
-          ),
-      })),
-      (value) => value !== null,
-      { timeoutMs: 30_000, pollMs: 50 },
-    );
-
-    recordM1Row("CERT-WP-01", {
-      status: result.converged ? "pass" : "unmeasured",
-      detail: result.converged
-        ? `Every participant reached countdown zero; observed spread ${result.spreadMs} ms.`
-        : "A countdown-zero signal exists but no countdown ran during this measurement window.",
-      profileId: "PROF-07",
-      browser: browserName,
-      platform: "web-desktop",
-      ...(result.spreadMs !== null
-        ? {
-            metric: {
-              metricId: "watch_party.countdown_zero_spread",
-              sampleCount: result.samples.length,
-              p50: result.spreadMs,
-              p95: result.spreadMs,
-              p99: result.spreadMs,
-              failures: 0,
-              unit: "ms" as const,
-            },
-          }
-        : {}),
-    });
   });
 
-  test("CERT-WP-02 stages advance identically for host and members", async ({ browserName }) => {
-    if (!participants || !room || sessions.length < 2) {
+  test("CERT-WP-02 stages advance identically for host and members", async ({
+    browser,
+    browserName,
+  }) => {
+    if (!participants || !room) {
       recordM1Row("CERT-WP-02", {
         status: "unmeasured",
-        detail:
-          "Two concurrent signed-in participants could not be placed in one lobby in this environment.",
+        detail: "Certification identities or a lobby could not be provisioned in this environment.",
         profileId: "PROF-07",
         browser: browserName,
         platform: "web-desktop",
@@ -141,36 +235,83 @@ test.describe("M1 watch party", () => {
       return;
     }
 
-    // Stage is server-authoritative in `room_state`; peer agreement on it is
-    // measurable today, but a stage only advances when a host drives the
-    // session, which needs the provider launcher WP1 must not touch.
-    const result = await measureConvergence(
-      participants.map((participant) => ({
-        label: participant.label,
-        read: async () => {
-          const { data } = await participant.identity.client
-            .from("room_state")
-            .select("stage")
-            .eq("room_id", room!.id)
-            .maybeSingle();
-          return (data?.["stage"] as string | undefined) ?? null;
-        },
-      })),
-      (stage) => stage !== null,
-      { timeoutMs: 10_000, pollMs: 250 },
-    );
+    // Clear the countdown armed by CERT-WP-01 so the lobby renders its journey
+    // stage rather than the countdown overlay.
+    const { data: current } = await participants[0]!.identity.client
+      .from("rooms")
+      .select("metadata")
+      .eq("id", room.id)
+      .maybeSingle();
+    const cleared = { ...((current?.["metadata"] as Record<string, unknown> | null) ?? {}) };
+    for (const key of [
+      "countdown_state",
+      "countdown_target_at",
+      "countdown_started_at",
+      "countdown_host_profile_id",
+      "countdown_reason",
+    ]) {
+      delete cleared[key];
+    }
+    await participants[0]!.identity.client
+      .from("rooms")
+      .update({ metadata: { ...cleared, countdown_revision: 2 } })
+      .eq("id", room.id);
 
-    const stages = new Set(result.samples.map((sample) => sample.value));
-    const agree = result.converged && stages.size === 1;
+    const sessions: SignedInSession[] = [];
+    try {
+      for (const participant of participants) {
+        const session = await signedInContext(browser, participant, BASE_URL);
+        if (!session) continue;
+        await session.page.goto(`${BASE_URL}/rooms/${room.id}`, {
+          waitUntil: "domcontentloaded",
+        });
+        sessions.push(session);
+      }
 
-    recordM1Row("CERT-WP-02", {
-      status: "unmeasured",
-      detail: agree
-        ? `Host and member read the identical stage (${[...stages][0]}), but no stage advance occurred: driving an advance requires the session-start path, which WP1 (test/infrastructure) does not exercise. Stage identity is observable; stage progression remains unmeasured.`
-        : `Stage progression was not measured. Peer readings: ${JSON.stringify(result.samples.map((s) => ({ label: s.label, stage: s.value })))}.`,
-      profileId: "PROF-07",
-      browser: browserName,
-      platform: "web-desktop",
-    });
+      if (sessions.length < 2) {
+        recordM1Row("CERT-WP-02", {
+          status: "unmeasured",
+          detail: "Fewer than two concurrent signed-in browsers reached the lobby.",
+          profileId: "PROF-07",
+          browser: browserName,
+          platform: "web-desktop",
+        });
+        return;
+      }
+
+      const readStage = (session: SignedInSession) => () =>
+        session.page.evaluate(
+          () => document.querySelector("[data-sf-stage]")?.getAttribute("data-sf-stage") ?? null,
+        );
+
+      // Three members are seated, so every client — host and members alike —
+      // must leave the single-occupant "invite" stage and agree on the same
+      // next stage.
+      const result = await measureConvergence(
+        sessions.map((session, index) => ({
+          label: index === 0 ? "host" : `member-${index}`,
+          read: readStage(session),
+        })),
+        (value) => value !== null && value !== "invite",
+        { timeoutMs: 45_000, pollMs: 250 },
+      );
+
+      const stages = new Set(result.samples.map((sample) => String(sample.value)));
+      const identical = result.converged && stages.size === 1;
+
+      recordM1Row("CERT-WP-02", {
+        status: identical ? "pass" : "fail",
+        detail: identical
+          ? `Host and both members advanced past the invite stage to the identical stage "${[...stages][0]}" for a three-member room; observed spread ${result.spreadMs} ms.`
+          : `Stages did not advance identically. Observations: ${JSON.stringify(
+              result.samples.map((sample) => ({ label: sample.label, stage: sample.value })),
+            )}.`,
+        profileId: "PROF-07",
+        browser: browserName,
+        platform: "web-desktop",
+      });
+    } finally {
+      for (const session of sessions) await session.context.close();
+    }
   });
 });

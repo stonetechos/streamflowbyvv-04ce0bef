@@ -39,6 +39,12 @@ export const COUNTDOWN_RUNTIME = Object.freeze({
   TICK_INTERVAL_MS: 250,
   EXPIRY_GRACE_MS: 30 * SECOND_MS,
   ANNOUNCE_FROM_SECONDS: 5,
+  /**
+   * M1 WP6 (CERT-WP-01) — a small settle added to the exact-instant countdown
+   * timer so the projection is evaluated just after the shared target rather
+   * than on its edge. Operational, not normative.
+   */
+  ZERO_SETTLE_MS: 10,
 });
 
 /**
