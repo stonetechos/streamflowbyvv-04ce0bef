@@ -8,6 +8,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   CHAT_MESSAGE_MAX_LENGTH,
+  decodeCoordination,
+  encodeCoordination,
+  type CoordinationKind,
   WATCH_CHAT_SERVICE,
   isServiceBound,
   resolveService,
@@ -26,14 +29,29 @@ export interface ChatLine {
   readonly isPending: boolean;
 }
 
+/**
+ * Sprint H5 — a durable room event addressed to people. It rides the room
+ * message channel, is filtered out of chat, and never mutates playback state.
+ */
+export interface RoomEventLine {
+  readonly id: string;
+  readonly kind: CoordinationKind;
+  readonly profileId: string;
+  readonly createdAt: string;
+}
+
 export interface RoomChatModel {
   readonly isAvailable: boolean;
   readonly isLoading: boolean;
   readonly isLive: boolean;
   readonly lines: readonly ChatLine[];
+  /** Coordination requests, newest last. Chat and events never mix. */
+  readonly events: readonly RoomEventLine[];
   readonly maxLength: number;
   readonly error: "empty" | "too_long" | "failed" | null;
   send(body: string): void;
+  /** Broadcasts a coordination request; returns false when unavailable. */
+  sendCoordination(kind: CoordinationKind, body: string): boolean;
 }
 
 export interface UseRoomChatInput {
@@ -66,6 +84,7 @@ export function useRoomChat({ roomId, profileId, enabled }: UseRoomChatInput): R
   const isAvailable = service?.isAvailable() ?? false;
 
   const [lines, setLines] = useState<readonly ChatLine[]>([]);
+  const [events, setEvents] = useState<readonly RoomEventLine[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLive, setIsLive] = useState(false);
   const [error, setError] = useState<RoomChatModel["error"]>(null);
@@ -82,7 +101,26 @@ export function useRoomChat({ roomId, profileId, enabled }: UseRoomChatInput): R
       .history(roomId)
       .then((history) => {
         if (cancelled) return;
-        setLines(history.map((message) => toLine(message, viewerRef.current)));
+        setLines(
+          history
+            .filter((message) => decodeCoordination(message.metadata) === null)
+            .map((message) => toLine(message, viewerRef.current)),
+        );
+        setEvents(
+          history.flatMap((message) => {
+            const kind = decodeCoordination(message.metadata);
+            return kind
+              ? [
+                  {
+                    id: message.id,
+                    kind,
+                    profileId: message.profileId,
+                    createdAt: message.createdAt,
+                  },
+                ]
+              : [];
+          }),
+        );
       })
       .catch((cause: unknown) => {
         logger.warn("history_failed", { module: MODULE, roomId, error: String(cause) });
@@ -93,6 +131,23 @@ export function useRoomChat({ roomId, profileId, enabled }: UseRoomChatInput): R
 
     void service
       .subscribe(roomId, (message) => {
+        const kind = decodeCoordination(message.metadata);
+        if (kind) {
+          setEvents((current) =>
+            current.some((event) => event.id === message.id)
+              ? current
+              : [
+                  ...current.slice(-49),
+                  {
+                    id: message.id,
+                    kind,
+                    profileId: message.profileId,
+                    createdAt: message.createdAt,
+                  },
+                ],
+          );
+          return;
+        }
         setLines((current) => merge(current, toLine(message, viewerRef.current)));
       })
       .then((unsubscribe) => {
@@ -150,13 +205,26 @@ export function useRoomChat({ roomId, profileId, enabled }: UseRoomChatInput): R
     [service, profileId, roomId],
   );
 
+  const sendCoordination = useCallback(
+    (kind: CoordinationKind, body: string) => {
+      if (!service || !profileId) return false;
+      void service.sendEvent(roomId, profileId, body, encodeCoordination(kind)).catch(() => {
+        logger.warn("coordination_failed", { module: MODULE, roomId, kind });
+      });
+      return true;
+    },
+    [service, profileId, roomId],
+  );
+
   return {
     isAvailable,
     isLoading,
     isLive,
     lines,
+    events,
     maxLength: CHAT_MESSAGE_MAX_LENGTH,
     error,
     send,
+    sendCoordination,
   };
 }
