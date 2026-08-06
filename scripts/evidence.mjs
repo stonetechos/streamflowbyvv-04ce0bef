@@ -108,7 +108,27 @@ if (records.length === 0 || missing.length > 0) {
   });
 }
 
-// 3. Already sealed and validated: preserve it byte-for-byte unless forced.
+// 3. Pre-RET-1 runs sealed before the manifest contract existed are preserved
+//    untouched; their retention state is reported, never rewritten.
+const existingManifest = readManifest(runId);
+if (existingSummary?.sealed && !existingManifest) {
+  console.log(
+    `Run ${runId} was sealed before the M1.17 manifest contract; preserved unchanged (no manifest).`,
+  );
+  process.exit(0);
+}
+
+// 4. RET-1 retention contract: exact source revision, work package, row
+//    mapping, artifact manifest and a destination the repository really keeps.
+const manifest = buildManifest({ runId, records, counts, runState });
+const retentionProblems = [...manifestViolations(manifest), ...artifactViolations(runId, manifest)];
+if (retentionProblems.length > 0) {
+  refuse(runState === "PASSED" ? "BLOCKED" : runState, "retention-validation", {
+    detail: retentionProblems,
+  });
+}
+
+// 5. Already sealed and validated: preserve it byte-for-byte unless forced.
 if (existingSummary?.sealed && !forced) {
   if (!existsSync(markerPath)) {
     writeFileEnsured(
@@ -120,6 +140,8 @@ if (existingSummary?.sealed && !forced) {
           runState: existingSummary.runState ?? runState,
           sealedAt: existingSummary.collectedAt ?? new Date().toISOString(),
           counts: existingSummary.counts ?? counts,
+          sourceRevision: existingManifest.sourceRevision?.sha ?? null,
+          workPackage: existingManifest.workPackage ?? null,
         },
         null,
         2,
@@ -132,15 +154,21 @@ if (existingSummary?.sealed && !forced) {
   process.exit(0);
 }
 
-// 4. Seal.
+// 6. Seal. Order is load-bearing: manifest, then index, then summary, and the
+//    completion marker strictly last — an interrupted seal stays incomplete.
 const summary = {
   runId,
   sealed: true,
   runState,
   complete: true,
   commit: records[0]?.commit ?? "unknown",
+  sourceRevision: manifest.sourceRevision.sha,
+  workPackage: manifest.workPackage,
+  engines: manifest.engines,
   environmentProfile: records[0]?.environmentProfile ?? "unknown",
   region: records[0]?.region ?? "unknown",
+  retention: manifest.retention,
+  manifest: MANIFEST_FILE,
   collectedAt: new Date().toISOString(),
   counts,
   rows: records
@@ -148,16 +176,44 @@ const summary = {
     .sort((a, b) => a.evidenceId.localeCompare(b.evidenceId)),
 };
 
-writeFileEnsured(summaryPath, JSON.stringify(summary, null, 2));
-writeFileEnsured(join(runDir, "index.json"), JSON.stringify(records, null, 2));
+writeFileEnsured(join(runDir, MANIFEST_FILE), JSON.stringify(manifest, null, 2));
 writeFileEnsured(
-  markerPath,
+  join(runDir, "index.json"),
   JSON.stringify(
-    { runId, complete: true, runState, sealedAt: summary.collectedAt, counts },
+    {
+      runId,
+      complete: true,
+      runState,
+      sourceRevision: manifest.sourceRevision.sha,
+      workPackage: manifest.workPackage,
+      engines: manifest.engines,
+      destination: manifest.retention.destination,
+      manifest: MANIFEST_FILE,
+      records,
+    },
     null,
     2,
   ),
 );
+writeFileEnsured(summaryPath, JSON.stringify(summary, null, 2));
+writeFileEnsured(
+  markerPath,
+  JSON.stringify(
+    {
+      runId,
+      complete: true,
+      runState,
+      sealedAt: summary.collectedAt,
+      counts,
+      sourceRevision: manifest.sourceRevision.sha,
+      workPackage: manifest.workPackage,
+      manifest: MANIFEST_FILE,
+    },
+    null,
+    2,
+  ),
+);
+
 
 console.log(`Evidence collected for ${runId} — run state ${runState}`);
 console.log(
