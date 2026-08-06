@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-VOICE-02",
+  "profileId": "PROF-08",
+  "browser": "n/a",
+  "platform": "n/a",
+  "status": "blocked",
+  "detail": "Live-transport assertion blocked by PROF-08. Static equivalent is certified as CERT-SA-01.",
+  "runId": "RUN-M0R-001",
+  "commit": "ca4cb39",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:39:52.344Z"
+}

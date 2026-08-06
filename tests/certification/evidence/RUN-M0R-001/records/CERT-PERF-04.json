@@ -1,0 +1,22 @@
+{
+  "evidenceId": "CERT-PERF-04",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "metric": {
+    "metricId": "clock_offset",
+    "sampleCount": 10,
+    "p50": 762,
+    "p95": 824,
+    "p99": null,
+    "failures": 0,
+    "unit": "ms"
+  },
+  "detail": "Absolute offset between local clock and server Date header, HTTP-midpoint estimated. Second-granularity header caps resolution at ~1000ms.",
+  "runId": "RUN-M0R-001",
+  "commit": "ca4cb39",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:39:21.829Z"
+}

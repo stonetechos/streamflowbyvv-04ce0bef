@@ -1,0 +1,22 @@
+{
+  "evidenceId": "CERT-PERF-05",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "metric": {
+    "metricId": "reconnect_recovery",
+    "sampleCount": 5,
+    "p50": 128,
+    "p95": 150,
+    "p99": null,
+    "failures": 0,
+    "unit": "ms"
+  },
+  "detail": "Cold realtime channel establishment time (proxy for post-outage resubscribe). Full client reconnect+reconcile remains UNMEASURED pending PROF-04 UI runs.",
+  "runId": "RUN-M0R-001",
+  "commit": "ca4cb39",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:39:26.839Z"
+}

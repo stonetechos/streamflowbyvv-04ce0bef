@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-AUTHZ-06",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "detail": "Cross-room ownership rewrite affected zero rows.",
+  "runId": "RUN-M0R-001",
+  "commit": "ca4cb39",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:39:51.565Z"
+}

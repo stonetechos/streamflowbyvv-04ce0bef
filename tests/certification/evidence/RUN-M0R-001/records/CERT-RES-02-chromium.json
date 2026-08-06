@@ -1,0 +1,22 @@
+{
+  "evidenceId": "CERT-RES-02-chromium",
+  "profileId": "PROF-05",
+  "browser": "chromium",
+  "platform": "linux",
+  "status": "pass",
+  "metric": {
+    "metricId": "cold_start",
+    "sampleCount": 5,
+    "p50": 310,
+    "p95": 342,
+    "p99": null,
+    "failures": 0,
+    "unit": "ms"
+  },
+  "detail": "Cold-context first load of the public shell against the dev server. Baseline only.",
+  "runId": "RUN-M0R-001",
+  "commit": "ca4cb39",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:39:46.855Z"
+}

@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-SA-02",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "detail": "Monotonic room_state.version trigger is present in committed migrations.",
+  "runId": "RUN-M0R-001",
+  "commit": "ca4cb39",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:39:51.964Z"
+}

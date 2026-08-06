@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-SA-05",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "detail": "Playback session revisions are not readable without authorization.",
+  "runId": "RUN-M0R-001",
+  "commit": "ca4cb39",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:39:52.310Z"
+}
