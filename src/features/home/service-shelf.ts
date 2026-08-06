@@ -59,7 +59,6 @@ const BRANDS: readonly BrandSeed[] = [
   { key: "jiohotstar", name: "JioHotstar", monogram: "JH", accent: "primary" },
   { key: "sonyliv", name: "SonyLIV", monogram: "SL", accent: "accent" },
   { key: "apple_tv_plus", name: "Apple TV+", monogram: "TV", accent: "accent" },
-  { key: "youtube", name: "YouTube", monogram: "YT", accent: "success" },
   { key: "crunchyroll", name: "Crunchyroll", monogram: "CR", accent: "warning" },
   { key: "hbo_max", name: "HBO Max", monogram: "HM", accent: "primary" },
   { key: "hulu", name: "Hulu", monogram: "HU", accent: "success" },
@@ -154,7 +153,7 @@ export function serviceStatusLabelKey(status: ServiceStatus): string {
 
 /**
  * Human brand name for a provider key. Presentation only: a room knows the
- * key ("youtube"), a person knows the name ("YouTube").
+ * key ("netflix"), a person knows the name ("Netflix").
  */
 export function serviceBrandName(key: string | null | undefined): string | null {
   if (!key) return null;

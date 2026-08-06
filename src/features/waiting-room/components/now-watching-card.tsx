@@ -11,7 +11,12 @@
  */
 import { Badge } from "@/components/ui/badge";
 import { Surface } from "@/design-system/components";
-import { parseContentReference, readSeriesTitle } from "@/domain";
+import {
+  mediaRefSelection,
+  parseContentReference,
+  readSeriesTitle,
+  watchSelectionLabel,
+} from "@/domain";
 import { ContentPoster } from "@/features/shared/content-poster";
 import { useTranslation } from "@/foundation/localization";
 
@@ -37,7 +42,10 @@ export function NowWatchingCard({
 
   const reference = parseContentReference(room.contentReference);
   const seriesTitle = readSeriesTitle(reference);
-  const title = reference?.title ?? room.name;
+  // Shared room state first: what the room picked is what everyone sees.
+  const sharedLabel = watchSelectionLabel(mediaRefSelection(room.mediaRef));
+  const sharedProvider = room.mediaRef?.providerName ?? null;
+  const title = sharedLabel ?? reference?.title ?? room.name;
   const episodeLabel =
     reference?.seasonNumber !== null && reference?.seasonNumber !== undefined
       ? t("room.provider.episode_value", {
@@ -52,7 +60,7 @@ export function NowWatchingCard({
         <ContentPoster
           artworkUrl={reference?.artworkUrl ?? null}
           brandKey={reference?.providerKey ?? null}
-          name={providerName ?? room.name}
+          name={sharedProvider ?? providerName ?? room.name}
           className="aspect-[16/10] w-full shrink-0 sm:w-52"
         />
 
@@ -72,7 +80,9 @@ export function NowWatchingCard({
 
           <div className="flex flex-wrap items-center gap-2">
             {episodeLabel ? <Badge variant="outline">{episodeLabel}</Badge> : null}
-            <Badge variant="outline">{providerName ?? t("room.provider.none")}</Badge>
+            <Badge variant="outline">
+              {sharedProvider ?? providerName ?? t("room.provider.none")}
+            </Badge>
             <Badge variant={isLive ? "default" : "secondary"}>
               {t(`room.status.${room.status}`)}
             </Badge>

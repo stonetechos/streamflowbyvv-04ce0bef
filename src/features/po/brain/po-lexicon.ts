@@ -311,7 +311,7 @@ export const PO_INTENT_RULES: readonly IntentRule[] = [
     name: "provider.select",
     category: "provider_action",
     patterns: [
-      /\b(watch|use|pick|choose|select|switch to|set)\b.*\b(on|to)?\b.*\b(netflix|youtube|prime|disney|hotstar|jiocinema|sonyliv|zee5|apple tv|local file|provider)\b/i,
+      /\b(watch|use|pick|choose|select|switch to|set)\b.*\b(on|to)?\b.*\b(netflix|prime|disney|hotstar|jiocinema|sonyliv|zee5|apple tv|local file|provider)\b/i,
       /\bset\b.*\bprovider\b/i,
     ],
     required: ["provider_hint"],

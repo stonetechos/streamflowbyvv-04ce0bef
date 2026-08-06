@@ -202,10 +202,8 @@ export function createProviderCatalogService(
 
           const status = deriveProviderStatus(provider, own);
           const isControlCertified =
-            resolveCapabilityTier(
-              provider.key,
-              query.platform ? { platform: query.platform } : {},
-            ).tier === "a";
+            resolveCapabilityTier(provider.key, query.platform ? { platform: query.platform } : {})
+              .tier === "a";
           const selectionClass = deriveSelectionClass(
             status,
             verdict.action,

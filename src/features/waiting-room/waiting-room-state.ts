@@ -8,6 +8,7 @@
 import {
   COUNTDOWN_SECONDS_METADATA_KEY,
   normalizeCountdownSeconds,
+  readRoomMediaRef,
   type MemberPresence,
   type MetadataBag,
   type RoomMember,
@@ -124,6 +125,7 @@ export function toRoomSummary(snapshot: WaitingRoomSnapshot): RoomSummaryView {
     scheduledStartAt: snapshot.room.scheduledStartAt,
     providerId: snapshot.room.providerId,
     contentReference: snapshot.room.contentReference,
+    mediaRef: readRoomMediaRef(snapshot.room.metadata),
     countdownSeconds: readCountdownSeconds(snapshot.room.metadata),
   };
 }

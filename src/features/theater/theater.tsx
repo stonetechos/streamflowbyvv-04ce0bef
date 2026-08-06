@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
-import { NETFLIX_BROWSE_URL, watchProviderById, type WatchProviderCapability } from "@/domain";
+import { providerBrowseUrl, watchProviderById, type WatchProviderCapability } from "@/domain";
 import {
   useMemberNames,
   useRoomCountdown,
@@ -30,7 +30,7 @@ import { WatchStage } from "./components/watch-stage";
 import { useRoomChat } from "./use-room-chat";
 import { useWatchSource } from "./use-watch-source";
 import { useWatchSync } from "./use-watch-sync";
-import { useYouTubePlayer } from "./use-youtube-player";
+import { useDirectPlayer } from "./use-direct-player";
 
 export interface TheaterProps {
   readonly roomId: string;
@@ -52,12 +52,13 @@ export function Theater({ roomId }: TheaterProps) {
   const profileId = room.viewer.profileId;
   const enabled = room.viewer.isMember && room.room !== null;
 
+  // The selection is shared room state: it arrives with the snapshot, so the
+  // host, every guest, and every late joiner render exactly the same choice.
   const source = useWatchSource({
     roomId,
     profileId,
     isHost,
-    enabled,
-    revision: room.members.length,
+    mediaRef: room.room?.mediaRef ?? null,
   });
 
   const [providerId, setProviderId] = useState<string | null>(null);
@@ -67,7 +68,7 @@ export function Theater({ roomId }: TheaterProps) {
     [activeProviderId],
   );
 
-  const videoId = source.source?.kind === "youtube" ? source.source.videoId : null;
+  const directUrl = source.source?.kind === "direct" ? source.source.url : null;
   const [localPositionMs, setLocalPositionMs] = useState<number | null>(null);
   const [durationMs, setDurationMs] = useState<number | null>(null);
   const [volume, setVolume] = useState(80);
@@ -75,8 +76,8 @@ export function Theater({ roomId }: TheaterProps) {
   const suppressUntil = useRef(0);
   const stageRef = useRef<HTMLDivElement | null>(null);
 
-  const player = useYouTubePlayer({
-    videoId,
+  const player = useDirectPlayer({
+    url: directUrl,
     onPhase: (_phase, positionMs) => setLocalPositionMs(positionMs),
   });
 
@@ -84,7 +85,7 @@ export function Theater({ roomId }: TheaterProps) {
     roomId,
     profileId,
     isHost,
-    enabled: enabled && videoId !== null,
+    enabled: enabled && directUrl !== null,
     clockOffsetMs: room.clockSync.snapshot?.offset?.offsetMs ?? 0,
     readLocalPositionMs: () => player.positionMs(),
     applyRemote: ({ phase, positionMs, hardSeek }) => {
@@ -140,11 +141,11 @@ export function Theater({ roomId }: TheaterProps) {
     if (target !== null) player.seekTo(target);
     // Only on the transition into readiness for this source.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [player.isReady, videoId]);
+  }, [player.isReady, directUrl]);
 
   const isPlaying = sync.state?.phase === "playing";
   const capability = source.capability;
-  const isEmbedded = capability.allowsEmbeddedPlayback && videoId !== null;
+  const isEmbedded = capability.allowsEmbeddedPlayback && directUrl !== null;
 
   const togglePlay = useCallback(() => {
     const position = player.positionMs() ?? sync.targetPositionMs() ?? 0;
@@ -188,8 +189,9 @@ export function Theater({ roomId }: TheaterProps) {
   const selectProvider = useCallback(
     (provider: WatchProviderCapability) => {
       setProviderId(provider.providerId);
-      if (provider.providerId === "netflix" && !source.source) {
-        window.open(NETFLIX_BROWSE_URL, "_blank", "noopener,noreferrer");
+      const browseUrl = providerBrowseUrl(provider.providerId);
+      if (provider.selectionMode === "browse" && browseUrl && !source.source) {
+        window.open(browseUrl, "_blank", "noopener,noreferrer");
       }
     },
     [source.source],

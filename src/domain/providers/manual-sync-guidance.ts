@@ -34,7 +34,6 @@ const BASE_STEPS: readonly string[] = Object.freeze([
  * purpose: a wall of instructions is a sign the product is asking too much.
  */
 const PROVIDER_STEPS: Readonly<Record<string, readonly string[]>> = Object.freeze({
-  youtube: Object.freeze([`${PREFIX}.youtube.pause_at_start`]),
   netflix: Object.freeze([`${PREFIX}.netflix.skip_intro_together`]),
   prime_video: Object.freeze([`${PREFIX}.prime_video.check_audio_track`]),
   disney_hotstar: Object.freeze([`${PREFIX}.disney_hotstar.check_language`]),

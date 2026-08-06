@@ -52,15 +52,6 @@ const EMPTY_ENTRY: ProviderLaunchEntry = Object.freeze({
  * provider's own sign-in.
  */
 const DEFAULT_ENTRIES: Readonly<Record<string, ProviderLaunchEntry>> = Object.freeze({
-  youtube: Object.freeze({
-    appScheme: Object.freeze({
-      ios: "youtube://www.youtube.com/watch?v={ref}",
-      android: "vnd.youtube:{ref}",
-    }),
-    storeIosUrl: "https://apps.apple.com/app/id544007664",
-    storeAndroidUrl: "https://play.google.com/store/apps/details?id=com.google.android.youtube",
-    homepageUrl: "https://www.youtube.com",
-  }),
   netflix: Object.freeze({
     appScheme: Object.freeze({
       ios: "nflx://www.netflix.com/title/{ref}",

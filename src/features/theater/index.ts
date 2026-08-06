@@ -11,4 +11,4 @@ export { WatchStage, type WatchStageProps } from "./components/watch-stage";
 export { useRoomChat, type ChatLine, type RoomChatModel } from "./use-room-chat";
 export { useWatchSource, type WatchSourceModel } from "./use-watch-source";
 export { useWatchSync, type WatchSyncModel } from "./use-watch-sync";
-export { useYouTubePlayer, type YouTubePlayerHandle } from "./use-youtube-player";
+export { useDirectPlayer, type DirectPlayerHandle } from "./use-direct-player";

@@ -351,7 +351,6 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           </div>
         ) : null}
 
-
         {/* One stage, one instruction. */}
         <div className="space-y-6 text-center">
           <h2 className="text-balance font-display text-xl font-semibold tracking-tight sm:text-2xl">

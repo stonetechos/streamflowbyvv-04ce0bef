@@ -36,7 +36,6 @@ const MODULE = "share";
 const CATALOG_ALIASES: Readonly<Record<string, readonly string[]>> = {
   netflix: ["netflix"],
   prime_video: ["prime_video", "amazon_prime_video"],
-  youtube: ["youtube"],
   disney_hotstar: ["disney_hotstar", "disney_plus", "hotstar", "jiohotstar"],
 };
 

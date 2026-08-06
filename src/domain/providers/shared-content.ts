@@ -108,12 +108,6 @@ function extractProviderId(providerKey: string, url: string): string | null {
   }
   const path = parsed.pathname;
 
-  if (providerKey === "youtube") {
-    const query = parsed.searchParams.get("v");
-    if (query) return query;
-    const short = /^\/(?:shorts\/|embed\/|live\/)?([A-Za-z0-9_-]{6,})$/.exec(path);
-    return short?.[1] ?? null;
-  }
   if (providerKey === "netflix") {
     return /\/title\/(\d+)/.exec(path)?.[1] ?? null;
   }
@@ -150,10 +144,7 @@ function readTitles(
 
   const cleaned = source
     .replace(/^(watch|check out|now watching)\s+/i, "")
-    .replace(
-      /\s+on\s+(netflix|prime video|disney\+?\s*hotstar|hotstar|youtube|jiohotstar)\.?$/i,
-      "",
-    )
+    .replace(/\s+on\s+(netflix|prime video|disney\+?\s*hotstar|hotstar|jiohotstar)\.?$/i, "")
     .trim();
 
   // "Series: Season 4: Chapter One" — the part before the season is the series.
@@ -181,7 +172,6 @@ function inferContentKind(
   episode: number | null,
 ): ContentKind {
   if (season !== null || episode !== null) return "episode";
-  if (providerKey === "youtube") return "video";
   return "movie";
 }
 
