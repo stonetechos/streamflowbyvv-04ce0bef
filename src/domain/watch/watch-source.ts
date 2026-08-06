@@ -31,7 +31,7 @@ export type PlaybackControlMode =
   | "launch-only"
   | "unavailable";
 
-export interface ProviderCapability {
+export interface WatchProviderCapability {
   readonly providerId: string;
   readonly displayName: string;
   readonly supported: boolean;
@@ -46,9 +46,9 @@ export interface ProviderCapability {
 }
 
 /** Retained name from Sprint H1; the shape is now the full capability record. */
-export type WatchSourceCapability = ProviderCapability;
+export type WatchSourceCapability = WatchProviderCapability;
 
-const YOUTUBE: ProviderCapability = {
+const YOUTUBE: WatchProviderCapability = {
   providerId: "youtube",
   displayName: "YouTube",
   supported: true,
@@ -65,7 +65,7 @@ const YOUTUBE: ProviderCapability = {
   ],
 };
 
-const NETFLIX: ProviderCapability = {
+const NETFLIX: WatchProviderCapability = {
   providerId: "netflix",
   displayName: "Netflix",
   supported: true,
@@ -83,7 +83,7 @@ const NETFLIX: ProviderCapability = {
   ],
 };
 
-const LOCAL: ProviderCapability = {
+const LOCAL: WatchProviderCapability = {
   providerId: "local",
   displayName: "Direct video link",
   supported: true,
@@ -101,14 +101,14 @@ const LOCAL: ProviderCapability = {
 };
 
 /** Providers offered in the room's provider bar, in display order. */
-export const WATCH_PROVIDERS: readonly ProviderCapability[] = Object.freeze([
+export const WATCH_PROVIDERS: readonly WatchProviderCapability[] = Object.freeze([
   NETFLIX,
   YOUTUBE,
   LOCAL,
 ]);
 
 /** Anything pasted that is not a provider we describe. */
-export function unknownProviderCapability(displayName: string): ProviderCapability {
+export function unknownProviderCapability(displayName: string): WatchProviderCapability {
   return {
     providerId: displayName || "unknown",
     displayName: displayName || "This service",
@@ -128,7 +128,7 @@ export function unknownProviderCapability(displayName: string): ProviderCapabili
   };
 }
 
-export function providerCapability(providerId: string): ProviderCapability | null {
+export function providerCapability(providerId: string): WatchProviderCapability | null {
   return WATCH_PROVIDERS.find((entry) => entry.providerId === providerId) ?? null;
 }
 
@@ -277,7 +277,7 @@ export function parseWatchSource(input: string): WatchSource | null {
 }
 
 /** The honest capability statement for a parsed source. */
-export function watchSourceCapability(source: WatchSource | null): ProviderCapability {
+export function watchSourceCapability(source: WatchSource | null): WatchProviderCapability {
   if (!source) return unknownProviderCapability("This service");
   if (source.kind === "youtube") return YOUTUBE;
   if (source.kind === "netflix") return NETFLIX;

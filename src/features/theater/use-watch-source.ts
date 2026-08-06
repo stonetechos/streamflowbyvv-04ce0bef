@@ -12,7 +12,7 @@ import {
   resolveService,
   watchSelectionLabel,
   watchSourceCapability,
-  type ProviderCapability,
+  type WatchProviderCapability,
   type WatchSelection,
   type WatchSource,
 } from "@/domain";
@@ -27,7 +27,7 @@ export interface WatchSourceModel {
   readonly source: WatchSource | null;
   /** Host-typed title, or an honest derived label, or null. */
   readonly label: string | null;
-  readonly capability: ProviderCapability;
+  readonly capability: WatchProviderCapability;
   readonly isSaving: boolean;
   readonly error: string | null;
   save(input: string, title?: string | null): void;
