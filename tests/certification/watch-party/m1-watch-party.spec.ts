@@ -118,19 +118,6 @@ test.describe("M1 watch party", () => {
       return;
     }
 
-    const targetAt = await armCountdown(participants[0]!, room, COUNTDOWN_LEAD_MS);
-    if (targetAt === null) {
-      recordM1Row("CERT-WP-01", {
-        status: "unmeasured",
-        detail: "The host could not write the countdown runtime for this room.",
-        profileId: "PROF-07",
-        browser: browserName,
-        platform: "web-desktop",
-      });
-      test.skip();
-      return;
-    }
-
     const sessions: SignedInSession[] = [];
     try {
       for (const participant of participants) {
@@ -152,6 +139,26 @@ test.describe("M1 watch party", () => {
         });
         return;
       }
+
+      // Every client must already be in the lobby before the host arms the
+      // countdown. A client that arrives after the target has passed is not
+      // measuring "counting down together", it is measuring a late join.
+      for (const session of sessions) {
+        await session.page.waitForSelector("[data-sf-stage]", { timeout: 45_000 });
+      }
+
+      const targetAt = await armCountdown(participants[0]!, room, COUNTDOWN_LEAD_MS);
+      if (targetAt === null) {
+        recordM1Row("CERT-WP-01", {
+          status: "unmeasured",
+          detail: "The host could not write the countdown runtime for this room.",
+          profileId: "PROF-07",
+          browser: browserName,
+          platform: "web-desktop",
+        });
+        return;
+      }
+
 
       const result = await measureConvergence(
         sessions.map((session, index) => ({
