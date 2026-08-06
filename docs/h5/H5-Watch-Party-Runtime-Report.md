@@ -37,15 +37,15 @@ no drift, and applies no correction.
 
 New files:
 
-| File | Role |
-| --- | --- |
-| `src/domain/watch/room-runtime.ts` | All H5 rules, pure and testable |
-| `src/features/theater/use-room-runtime.ts` | Client runtime and reconciliation |
-| `src/features/theater/runtime-telemetry.ts` | Development counters and drift stats |
-| `src/features/theater/components/manual-coordination.tsx` | Launch-only controls |
-| `src/features/theater/components/participant-rail.tsx` | Presence and readiness |
-| `src/features/theater/components/room-drawer.tsx` | Mobile chat/people sheet |
-| `tests/product/h5-room-runtime.test.ts` | 24 product tests |
+| File                                                      | Role                                 |
+| --------------------------------------------------------- | ------------------------------------ |
+| `src/domain/watch/room-runtime.ts`                        | All H5 rules, pure and testable      |
+| `src/features/theater/use-room-runtime.ts`                | Client runtime and reconciliation    |
+| `src/features/theater/runtime-telemetry.ts`               | Development counters and drift stats |
+| `src/features/theater/components/manual-coordination.tsx` | Launch-only controls                 |
+| `src/features/theater/components/participant-rail.tsx`    | Presence and readiness               |
+| `src/features/theater/components/room-drawer.tsx`         | Mobile chat/people sheet             |
+| `tests/product/h5-room-runtime.test.ts`                   | 24 product tests                     |
 
 `components/coordination-panel.tsx` was replaced by `manual-coordination.tsx`.
 
@@ -55,8 +55,8 @@ New files:
 
 ```ts
 type PlaybackState = {
-  status: "idle" | "countdown" | "playing" | "paused" | "seeking"
-        | "buffering" | "ended" | "manual-sync";
+  status:
+    "idle" | "countdown" | "playing" | "paused" | "seeking" | "buffering" | "ended" | "manual-sync";
   positionSeconds: number;
   anchorServerTimeMs: number;
   playbackRate: number;
@@ -115,12 +115,12 @@ policy is the switch that disables the whole correction path.
 
 Default policy (configurable per adapter):
 
-| Band | Threshold | Action |
-| --- | --- | --- |
-| Ignore | < 150 ms | nothing |
-| Soft | 150–1000 ms | playback rate nudge to 1.05 |
-| Hard | > 1000 ms | seek to the projected position |
-| Suppressed | buffering, or < 1500 ms since a seek | nothing |
+| Band       | Threshold                            | Action                         |
+| ---------- | ------------------------------------ | ------------------------------ |
+| Ignore     | < 150 ms                             | nothing                        |
+| Soft       | 150–1000 ms                          | playback rate nudge to 1.05    |
+| Hard       | > 1000 ms                            | seek to the projected position |
+| Suppressed | buffering, or < 1500 ms since a seek | nothing                        |
 
 Host commands update the authoritative state; guests reconcile once per second
 against the projected position; the host re-anchors every 10 s while playing so
@@ -178,12 +178,12 @@ rail shows "2 of 3 ready" and "Waiting for Alex".
 
 ## 8. Volume, fullscreen, orientation, zoom
 
-| Concern | Behaviour |
-| --- | --- |
-| Volume | Local only. Never broadcast, never in playback state, never shared. |
-| Fullscreen | Offered only for the embedded player we control; launch-only rooms point at the provider's own control. |
-| Orientation | Landscape is requested after fullscreen and failure is ignored; playback is never blocked on it. |
-| Zoom | Not exposed. No adapter reports zoom support, so no control is rendered and none is simulated. |
+| Concern     | Behaviour                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------- |
+| Volume      | Local only. Never broadcast, never in playback state, never shared.                                     |
+| Fullscreen  | Offered only for the embedded player we control; launch-only rooms point at the provider's own control. |
+| Orientation | Landscape is requested after fullscreen and failure is ignored; playback is never blocked on it.        |
+| Zoom        | Not exposed. No adapter reports zoom support, so no control is rendered and none is simulated.          |
 
 ---
 
