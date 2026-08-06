@@ -24,6 +24,7 @@ interface YouTubePlayer {
   getCurrentTime(): number;
   getDuration(): number;
   setPlaybackRate(rate: number): void;
+  setVolume(volume: number): void;
   loadVideoById(options: { videoId: string; startSeconds?: number }): void;
   destroy(): void;
 }
@@ -75,6 +76,8 @@ export interface YouTubePlayerHandle {
   pause(): void;
   seekTo(positionMs: number): void;
   setRate(rate: number): void;
+  /** Per-device only. Volume is never shared with the room. */
+  setVolume(volume: number): void;
   positionMs(): number | null;
   durationMs(): number | null;
 }
@@ -179,6 +182,13 @@ export function useYouTubePlayer({ videoId, onPhase }: UseYouTubePlayerInput): Y
       // Rate nudging is an optimization; never a failure path.
     }
   }, []);
+  const setVolume = useCallback((volume: number) => {
+    try {
+      playerRef.current?.setVolume(Math.max(0, Math.min(100, Math.round(volume))));
+    } catch {
+      // Volume is a local comfort control; a refusal is never a failure path.
+    }
+  }, []);
   const positionMs = useCallback(() => {
     const seconds = playerRef.current?.getCurrentTime();
     return typeof seconds === "number" ? Math.round(seconds * 1000) : null;
@@ -188,5 +198,17 @@ export function useYouTubePlayer({ videoId, onPhase }: UseYouTubePlayerInput): Y
     return typeof seconds === "number" && seconds > 0 ? Math.round(seconds * 1000) : null;
   }, []);
 
-  return { containerRef, isReady, hasFailed, phase, play, pause, seekTo, setRate, positionMs, durationMs };
+  return {
+    containerRef,
+    isReady,
+    hasFailed,
+    phase,
+    play,
+    pause,
+    seekTo,
+    setRate,
+    setVolume,
+    positionMs,
+    durationMs,
+  };
 }
