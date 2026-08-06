@@ -52,7 +52,6 @@ const SERVICE_MARKS: readonly { key: string; name: string }[] = [
   { key: "prime_video", name: "Prime Video" },
   { key: "disney_hotstar", name: "Disney+" },
   { key: "jiohotstar", name: "JioHotstar" },
-  { key: "youtube", name: "YouTube" },
   { key: "apple_tv_plus", name: "Apple TV+" },
 ];
 

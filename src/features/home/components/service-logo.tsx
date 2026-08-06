@@ -36,7 +36,6 @@ const MARKS: Record<string, WordmarkStyle> = {
   jiohotstar: { text: "JioHotstar", weight: 700 },
   sonyliv: { text: "SonyLIV", uppercase: true, weight: 800, tracking: 1 },
   apple_tv_plus: { text: "tv", weight: 700, tracking: 1, glyph: "plus" },
-  youtube: { text: "YouTube", weight: 800, glyph: "play" },
   crunchyroll: { text: "crunchyroll", weight: 700, glyph: "leaf" },
   hbo_max: { text: "HBO Max", uppercase: true, weight: 800, tracking: 1 },
   hulu: { text: "hulu", weight: 800, tracking: -1 },

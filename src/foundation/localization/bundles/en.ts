@@ -289,7 +289,6 @@ export const enBundle: LocaleBundle = {
     "provider.badge.default": "Your default",
     "provider.action.favorite": "Add {provider} to favourites",
     "provider.action.unfavorite": "Remove {provider} from favourites",
-    "provider.youtube.name": "YouTube",
     "provider.local_file.name": "Local file",
     "provider.netflix.name": "Netflix",
     "provider.prime_video.name": "Prime Video",
@@ -598,7 +597,6 @@ export const enBundle: LocaleBundle = {
     "provider.guidance.step.find_title": "Find the title the host chose and load it.",
     "provider.guidance.step.return_and_wait": "Come back to StreamFlow and wait for the countdown.",
     "provider.guidance.step.press_play_on_zero": "Press play in your app exactly at zero.",
-    "provider.guidance.youtube.pause_at_start": "Pause at the very start so you begin together.",
     "provider.guidance.netflix.skip_intro_together":
       "Agree on skipping the intro before you start.",
     "provider.guidance.prime_video.check_audio_track": "Check everyone has the same audio track.",

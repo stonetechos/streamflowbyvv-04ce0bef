@@ -39,10 +39,6 @@ interface DeepLinkRule {
 
 /** Public, human-visible landing pages only (MVP Spec §7). */
 const DEFAULT_RULES: Readonly<Record<string, DeepLinkRule>> = Object.freeze({
-  youtube: {
-    template: "https://www.youtube.com/watch?v={ref}",
-    hosts: ["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"],
-  },
   netflix: {
     template: "https://www.netflix.com/title/{ref}",
     hosts: ["netflix.com", "www.netflix.com"],

@@ -298,7 +298,6 @@ export const hiINBundle: LocaleBundle = {
     "provider.badge.default": "आपकी डिफ़ॉल्ट",
     "provider.action.favorite": "{provider} को पसंदीदा में जोड़ें",
     "provider.action.unfavorite": "{provider} को पसंदीदा से हटाएं",
-    "provider.youtube.name": "YouTube",
     "provider.local_file.name": "लोकल फ़ाइल",
     "provider.netflix.name": "Netflix",
     "provider.prime_video.name": "Prime Video",
@@ -597,7 +596,6 @@ export const hiINBundle: LocaleBundle = {
     "provider.guidance.step.find_title": "होस्ट द्वारा चुना गया शीर्षक खोलें।",
     "provider.guidance.step.return_and_wait": "StreamFlow पर लौटें और काउंटडाउन का इंतज़ार करें।",
     "provider.guidance.step.press_play_on_zero": "शून्य पर अपने ऐप में प्ले दबाएँ।",
-    "provider.guidance.youtube.pause_at_start": "शुरुआत में रोक कर रखें ताकि सब साथ शुरू करें।",
     "provider.guidance.netflix.skip_intro_together": "इंट्रो स्किप करने पर पहले सहमत हों।",
     "provider.guidance.prime_video.check_audio_track":
       "सुनिश्चित करें सबका ऑडियो ट्रैक एक जैसा है।",
