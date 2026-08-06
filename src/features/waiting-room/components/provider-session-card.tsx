@@ -10,7 +10,7 @@
  */
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { parseContentReference, selectProviderControl } from "@/domain";
+import { mediaRefSelection, parseContentReference, selectProviderControl, watchSelectionLabel } from "@/domain";
 import { useTranslation } from "@/foundation/localization";
 
 import type { RoomSummaryView } from "../waiting-room.types";
@@ -38,7 +38,10 @@ export function ProviderSessionCard({
     canDeepLink: supportsDeepLink,
   });
 
-  const title = reference?.title ?? null;
+  // Shared room state first (Sprint H3), then the share-intake reference.
+  const sharedLabel = watchSelectionLabel(mediaRefSelection(room.mediaRef));
+  const sharedProvider = room.mediaRef?.providerName ?? null;
+  const title = sharedLabel ?? reference?.title ?? null;
   const episodeLabel =
     reference?.seasonNumber !== null && reference?.seasonNumber !== undefined
       ? t("room.provider.episode_value", {
@@ -61,7 +64,7 @@ export function ProviderSessionCard({
             <dt className="text-xs uppercase tracking-wide text-muted-foreground">
               {t("room.provider.service")}
             </dt>
-            <dd className="mt-1 text-base">{providerName ?? t("room.provider.none")}</dd>
+            <dd className="mt-1 text-base">{sharedProvider ?? providerName ?? t("room.provider.none")}</dd>
           </div>
           <div>
             <dt className="text-xs uppercase tracking-wide text-muted-foreground">
