@@ -34,6 +34,14 @@ import {
   tally,
   writeFileEnsured,
 } from "./lib/evidence-io.mjs";
+import {
+  MANIFEST_FILE,
+  artifactViolations,
+  buildManifest,
+  manifestViolations,
+  readManifest,
+} from "./lib/evidence-manifest.mjs";
+
 
 const argRun = process.argv.includes("--run")
   ? process.argv[process.argv.indexOf("--run") + 1]
