@@ -7,16 +7,16 @@
  */
 import {
   generatedHeader,
-  latestRun,
+  latestSealedRun,
   loadRegistry,
   recordsById,
   writeFileEnsured,
 } from "./lib/evidence-io.mjs";
 
 const { milestones } = loadRegistry("milestones");
-const run = latestRun();
+const run = latestSealedRun();
 if (!run) {
-  console.error("No evidence runs found. Run `npm run cert` first.");
+  console.error("No successfully sealed evidence run found. Run `npm run certify` first.");
   process.exit(1);
 }
 const all = [...recordsById(run).values()];

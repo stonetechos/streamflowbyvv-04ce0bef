@@ -14,6 +14,7 @@ import { spawnSync } from "node:child_process";
 import { execSync } from "node:child_process";
 import { join } from "node:path";
 import { EVIDENCE_ROOT, ensureRunLayout, writeFileEnsured } from "./lib/evidence-io.mjs";
+import { classifyStageFailure } from "./lib/result-state.mjs";
 
 function safeExec(command, fallback) {
   try {
@@ -58,7 +59,14 @@ const stages = [
     skip: SKIP_PLAYWRIGHT,
     skipReason: "Browser stage skipped (--no-browser).",
   },
-  { id: "evidence", label: "Evidence collection", command: "node", args: ["scripts/evidence.mjs"] },
+  {
+    id: "evidence",
+    label: "Evidence collection",
+    command: "node",
+    args: ["scripts/evidence.mjs"],
+    // An unsealed run must never reach the release recommendation.
+    haltOnBlocked: true,
+  },
   {
     id: "performance",
     label: "Performance baselines",
@@ -121,19 +129,33 @@ for (const stage of stages) {
     continue;
   }
   const startedAt = new Date().toISOString();
-  const result = spawnSync(stage.command, stage.args, { stdio: "inherit", env: process.env });
+  const result = spawnSync(stage.command, stage.args, {
+    encoding: "utf8",
+    env: process.env,
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
+  process.stdout.write(output);
   const exitCode = result.status ?? 1;
-  const status = exitCode === 0 ? "pass" : "fail";
+  // GATE-03: an environment that cannot run the stage is `blocked`, never `fail`.
+  const classified = exitCode === 0 ? { state: "pass", reason: "" } : classifyStageFailure(output);
+  const status = classified.state;
+  writeFileEnsured(join(EVIDENCE_ROOT, RUN_ID, "logs", `${stage.id}.log`), output || "(no output)");
   results.push({
     id: stage.id,
     label: stage.label,
     status,
     exitCode,
+    detail: classified.reason || undefined,
     startedAt,
     finishedAt: new Date().toISOString(),
   });
-  console.log(`- ${stage.label}: ${status} (exit ${exitCode})\n`);
-  if (status === "fail") halted = true;
+  console.log(
+    `- ${stage.label}: ${status} (exit ${exitCode})${status === "blocked" ? ` — ${classified.reason}` : ""}\n`,
+  );
+  // A blocked stage does not halt the pipeline: downstream evidence validation
+  // decides honestly whether the run can be sealed.
+  if (status === "fail" || (status === "blocked" && stage.haltOnBlocked)) halted = true;
 }
 
 const summary = {
@@ -144,6 +166,11 @@ const summary = {
   environmentProfile: process.env["CERT_ENVIRONMENT"] ?? "local-dev",
   region: process.env["CERT_REGION"] ?? "unknown",
   complete: !halted,
+  runState: results.some((s) => s.status === "fail")
+    ? "FAILED"
+    : results.some((s) => s.status === "blocked")
+      ? "BLOCKED"
+      : "PASSED",
   stages: results,
 };
 
@@ -160,7 +187,6 @@ writeFileEnsured(
   `# Certification Pipeline — ${RUN_ID}\n\nCommit \`${COMMIT}\`, started ${STARTED_AT}.\n\n| Stage | Status | Exit |\n| --- | --- | --- |\n${table}\n\nPipeline complete: ${!halted}\n`,
 );
 
-console.log(
-  `\nPipeline ${halted ? "FAILED" : "completed"}. Evidence: ${join(EVIDENCE_ROOT, RUN_ID)}`,
-);
-process.exit(halted ? 1 : 0);
+console.log(`\nPipeline ${summary.runState}. Evidence: ${join(EVIDENCE_ROOT, RUN_ID)}`);
+// 0 = passed, 1 = failed, 2 = blocked. Blocked is never a success.
+process.exit(summary.runState === "PASSED" ? 0 : summary.runState === "BLOCKED" ? 2 : 1);

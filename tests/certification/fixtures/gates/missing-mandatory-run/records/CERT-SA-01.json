@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-SA-01",
+  "runId": "FIXTURE",
+  "commit": "fixture",
+  "environmentProfile": "fixture",
+  "region": "fixture",
+  "profileId": "PROF-01",
+  "browser": "none",
+  "platform": "fixture",
+  "status": "pass",
+  "detail": "fixture record",
+  "measuredAt": "2026-08-06T00:00:00.000Z"
+}
