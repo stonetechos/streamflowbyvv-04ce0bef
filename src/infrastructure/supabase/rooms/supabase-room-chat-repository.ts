@@ -16,13 +16,14 @@ import type { DataConnection } from "../connection";
 import { runQuery } from "../query-wrapper";
 
 const AGGREGATE = "room_messages";
-const COLUMNS = "id, room_id, profile_id, body, created_at";
+const COLUMNS = "id, room_id, profile_id, body, metadata, created_at";
 
 interface RoomMessageRow {
   readonly id: string;
   readonly room_id: string;
   readonly profile_id: string;
   readonly body: string;
+  readonly metadata: Record<string, unknown> | null;
   readonly created_at: string;
 }
 
@@ -32,6 +33,7 @@ function toMessage(row: RoomMessageRow): RoomMessage {
     roomId: row.room_id,
     profileId: row.profile_id,
     body: row.body,
+    metadata: row.metadata ?? {},
     createdAt: row.created_at,
   };
 }
@@ -71,7 +73,12 @@ export function createSupabaseRoomChatRepository(connection: DataConnection): Ro
         connection
           .client()
           .from("room_messages")
-          .insert({ room_id: draft.roomId, profile_id: draft.profileId, body: draft.body })
+          .insert({
+            room_id: draft.roomId,
+            profile_id: draft.profileId,
+            body: draft.body,
+            metadata: draft.metadata ?? {},
+          })
           .select(COLUMNS)
           .single(),
         context("send", draft.roomId),
