@@ -11,8 +11,8 @@ import {
   WATCH_CHAT_SERVICE,
   isServiceBound,
   resolveService,
-  type RoomMessage,
 } from "@/domain";
+import type { RoomMessage } from "@/repository";
 import { logger } from "@/foundation/logging";
 
 const MODULE = "theater-chat";
