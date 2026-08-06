@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-AUTHZ-05",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "unmeasured",
+  "detail": "No provisionable host identity in this environment.",
+  "runId": "RUN-20260806T0634-d4e46ea",
+  "commit": "d4e46ea",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:34:59.450Z"
+}

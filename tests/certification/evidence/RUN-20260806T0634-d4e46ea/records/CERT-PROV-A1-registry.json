@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-PROV-A1-registry",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "detail": "Registry holds 0 certified capabilities; all evidence-gated.",
+  "runId": "RUN-20260806T0634-d4e46ea",
+  "commit": "d4e46ea",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:34:54.787Z"
+}

@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-SA-04",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "detail": "Tier resolution reads the certification registry only; no name list, no client override.",
+  "runId": "RUN-20260806T0634-d4e46ea",
+  "commit": "d4e46ea",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:35:01.177Z"
+}
