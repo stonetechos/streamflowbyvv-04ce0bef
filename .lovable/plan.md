@@ -1,54 +1,55 @@
-# M1.0 — Implementation Planning Package (documentation only)
+# M1.0 Planning Package, then M1.1 Certification Harness Discovery
 
-This produces the five M1 planning documents. No product code, schema, CI, evidence, or constitution content is touched.
+Two sequential documentation-only sprints. No product code, UI, migrations, schema, provider behaviour, CI workflows, or certification semantics are touched in either. M1 remains unauthorized throughout.
 
-## Pre-flight audit (already executed, read-only)
+## Pre-flight audit (first step of M1.0)
 
-| Check | Result |
+Verify actual repository state rather than trusting the M0.6 report:
+
+- Confirm `docs/blueprint/` (17 docs), `docs/registry/required-evidence.json`, `docs/m0.6/M0.6-Certification-Gate-Remediation-Report.md` exist and are consistent.
+- Confirm the M0.6 gate fixes are real: `scripts/lib/result-state.mjs`, `scripts/lib/evidence-io.mjs`, `scripts/check-gates.mjs`, and the `gates:check` script wired into `verify`.
+- Confirm sealed evidence `RUN-M0R-001` validates and that zero Tier A / Tier B claims exist.
+- Record every discrepancy between report claims and repository reality in the plan documents. Do not fix them.
+
+## Stage 1 — M1.0 planning package (5 documents)
+
+Created under `docs/m1/`:
+
+| File | Contents |
 | --- | --- |
-| M0.6 report | Present at `docs/m0.6/M0.6-Certification-Gate-Remediation-Report.md` |
-| `npm run verify` | PASS (0 errors, 21 lint warnings under the 25 cap) |
-| `npm run cert:check` | PASS — tiering is evidence-based |
-| `npm run gates:check` | Exists, PASS — 15/15 GATE-01/02/03 assertions |
-| `npm run certify` | Not re-run (would mutate/append evidence) — recorded as Unmeasured |
-| `npm run release-check` | Not re-run (regenerates dashboards) — recorded as Unmeasured |
-| Sealed run `RUN-M0R-001` | 25 records: 22 pass, 2 blocked (CERT-VOICE-01/02, PROF-08 unsupported), 1 unmeasured (CERT-AUTHZ-05) |
-| Tier A capabilities | 0 |
-| Tier B capabilities | 0 |
-| Tier C capabilities | All 18 providers, evidenced |
-| M1 authorization | Still pending explicit human approval |
+| `M1-Implementation-Plan.md` | M1 launch envelope (2–8 private participants, web desktop first, Tier C only), work packages WP1–WP10 with scope, non-goals, exit criteria |
+| `M1-Backlog.md` | Per-package tasks, owning engine, acceptance criteria, certification rows each package must satisfy |
+| `M1-Dependency-Graph.md` | Package dependencies, critical path, parallelizable tracks (text/ASCII diagram) |
+| `M1-Certification-Checklist.md` | The 14 in-scope M1 rows plus the 4 voice/debt items, mapped to packages and required profiles |
+| `M1-Risk-Register.md` | Risks with likelihood, impact, mitigation, owning engine, and linkage to `docs/blueprint/J-technical-debt.md` |
 
-Principal gap found (not previously recorded): the M1 rows named in the Milestone Roadmap — `CERT-ROOM-01..04`, `CERT-PRES-01..02`, `CERT-WP-01..02`, `CERT-SYNC-C-01..02`, `CERT-PROV-01..02`, `CERT-EXP-01..02` — exist in `K-launch-certification.md` but have **no harness implementation** and are absent from `docs/registry/required-evidence.json`. Every M1 package therefore carries a certification-discovery gap rather than a ready gate. This will be stated plainly, not papered over.
+Every package is marked planned, blocked, or needing discovery. No implementation.
 
-## Documents to create
+## Stage 2 — M1.1 certification harness discovery spike (1 document)
 
-1. `docs/m1/M1-Implementation-Plan.md` — pre-flight audit, assumptions, objective, scope/non-scope, common M1 Definition of Done, full work-package specs (identity, objective, user value, scope, non-scope, existing modules, expected file changes, dependencies, critical path, acceptance criteria with Given/When/Then + evidence, certification requirements, risks, rollback, estimate), sequencing, recommendation, open questions.
-2. `docs/m1/M1-Backlog.md` — one entry per backlog item with unique BL IDs, "As a … I want … so that …" stories, priority, status, acceptance criteria, dependencies, estimate, certification gate, owner, rollback, traceability.
-3. `docs/m1/M1-Dependency-Graph.md` — Mermaid graph plus an equivalent plain-text dependency table, critical path, parallel lanes, cycle check, human-approval gate.
-4. `docs/m1/M1-Certification-Checklist.md` — package-by-package gates using only existing row and profile IDs, with explicit "certification discovery required" entries where no runnable row exists; alpha/beta/launch gating columns; blocked never counted as pass.
-5. `docs/m1/M1-Risk-Register.md` — methodology, unique risk IDs, the mandated risk areas, mitigation ownership, contingency, escalation triggers, release impact.
+Creates exactly one file: `docs/m1/M1.1-Certification-Harness-Discovery.md`. No other file is created or modified.
 
-## Candidate work-package classification (to be written up)
+Rows investigated (existing only, never renamed, merged, split, or added):
+CERT-ROOM-01..04, CERT-PRES-01/02, CERT-WP-01/02, CERT-SYNC-C-01/02, CERT-PROV-01/02, CERT-EXP-01/02.
+Voice dependency state documented read-only: CERT-VOICE-01, CERT-VOICE-02, PROF-08, DEBT-005 — described, not fixed.
 
-| ID | Package | Planned status |
-| --- | --- | --- |
-| WP1 | Private room lifecycle polish | Partially complete — invite/join shipped, lifecycle transitions uncertified |
-| WP2 | Lobby readiness improvements | Partially complete |
-| WP3 | Presence reliability | Planned — rows exist, harness missing |
-| WP4 | Countdown reliability | Planned |
-| WP5 | Tier C watch experience polish | Planned — coordinated manual play preserved exactly |
-| WP6 | Voice reliability | Blocked by dependency — PROF-08 unsupported, no LiveKit test project (DEBT-005) |
-| WP7 | Text chat | Not in Launch Envelope for M1 — Chat is contract-only and gated to M3 |
-| WP8 | Reconnect and recovery polish | Planned |
-| WP9 | Accessibility and degraded-mode polish | Planned — automated a11y subset passes, manual WCAG audit outstanding |
-| WP10 | Launch readiness review | Planned — release-gates everything |
-| WP11 | M1 certification harness discovery spike (new, derived from evidence) | Needs discovery — must precede WP1–WP5 gating |
+For each row, the 17 discovery questions are answered against real repository paths in `tests/certification/{room,realtime,provider,voice,resilience,accessibility,profiles,fixtures,helpers,evidence}`, `src/`, `docs/registry/required-evidence.json`, and `.github/workflows/`.
 
-Ordering, dependency edges, and estimates will be justified per package from repository evidence only.
+Document sections:
 
-## Guardrails applied
+1. Scope, non-goals, and authoritative inputs actually read (with any path discrepancies recorded).
+2. Pre-flight verification result carried forward from M1.0.
+3. **Traceability matrix** — one row per certification ID with all 21 required columns. Any path that does not exist is written as "None found", never guessed.
+4. **Minimal change analysis** — for each row not "Runnable now", the smallest next step classified as test-only, certification-only, registry-only, production-code, schema, provider, or architecture change, with a Constitution/Launch-Envelope permissibility verdict.
+5. Voice dependency state (CERT-VOICE-01/02, PROF-08, DEBT-005) and its relationship to M1.
+6. Blocking severity ranking and recommended execution order for making rows runnable.
+7. Unresolved unknowns, explicitly listed rather than guessed.
 
-- No capability is upgraded above Tier C; no OTT playback automation, capture, or overlay work is planned (ADR-014 binding).
-- No new certification rows, profiles, evidence records, or scripts are created.
-- Anything unverified is labelled Assumption / Needs discovery / Unverified / Blocked.
-- Final answer will state that M1 implementation was not performed and remains pending human authorization.
+Status vocabulary is restricted to: Runnable now, Harness missing, Implementation missing, Registry mapping missing, Profile unavailable, Environment unavailable, Evidence writer missing, Blocked by policy, Blocked by dependency, Not applicable, Unknown. No row is marked Pass unless it executed; none marked Certified unless valid evidence already exists; no "Blocked" without a named blocking dependency.
+
+## Constraints honoured
+
+- Documentation only — `src/`, migrations, UI, provider classification, CI workflows, and certification semantics are untouched.
+- No new certification rows, profiles, or registry evidence entries.
+- Constitution v2.0.0 and Launch Envelope remain frozen; any needed change is recorded as a proposed ADR, not applied.
+- Closing statement in both stages: M1 implementation was not performed; M1 remains pending explicit human authorization.
