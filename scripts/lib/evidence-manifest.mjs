@@ -212,7 +212,8 @@ export function manifestViolations(manifest) {
     problems.push("manifest maps no certification row");
   } else {
     for (const row of manifest.rows) {
-      if (!row.engine) problems.push(`${row.evidenceId}: no owning engine in the evidence registry`);
+      if (!row.engine)
+        problems.push(`${row.evidenceId}: no owning engine in the evidence registry`);
     }
   }
   if (!Array.isArray(manifest.artifacts) || manifest.artifacts.length === 0) {

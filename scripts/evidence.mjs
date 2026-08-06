@@ -42,7 +42,6 @@ import {
   readManifest,
 } from "./lib/evidence-manifest.mjs";
 
-
 const argRun = process.argv.includes("--run")
   ? process.argv[process.argv.indexOf("--run") + 1]
   : undefined;
@@ -221,7 +220,6 @@ writeFileEnsured(
     2,
   ),
 );
-
 
 console.log(`Evidence collected for ${runId} — run state ${runState}`);
 console.log(
