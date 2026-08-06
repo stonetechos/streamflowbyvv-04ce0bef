@@ -104,7 +104,7 @@ export function SourcePicker({
           description={
             isNetflix ? t("theater.netflix.paste_description") : t("theater.source.description")
           }
-          placeholder={PLACEHOLDER[provider.providerId] ?? PLACEHOLDER.youtube}
+          placeholder={PLACEHOLDER[provider.providerId] ?? PLACEHOLDER['youtube']}
           value={value}
           error={error}
           onChange={(event) => setValue(event.target.value)}
