@@ -10,9 +10,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import {
+  DEFAULT_READINESS_THRESHOLD,
   deriveRoomPhase,
   providerBrowseUrl,
+  summarizeReadiness,
   watchProviderById,
+  type CoordinationKind,
+  type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
 import {
@@ -25,7 +29,9 @@ import {
 import { useTranslation } from "@/foundation/localization";
 
 import { ChatPanel } from "./components/chat-panel";
-import { CoordinationPanel } from "./components/coordination-panel";
+import { ManualCoordination } from "./components/manual-coordination";
+import { ParticipantRail } from "./components/participant-rail";
+import { RoomDrawer } from "./components/room-drawer";
 import { HostTransport } from "./components/host-transport";
 import { MediaCard } from "./components/media-card";
 import { ProviderBar } from "./components/provider-bar";
@@ -34,7 +40,7 @@ import { SyncBadge } from "./components/sync-badge";
 import { WatchStage } from "./components/watch-stage";
 import { useRoomChat } from "./use-room-chat";
 import { useWatchSource } from "./use-watch-source";
-import { useWatchSync } from "./use-watch-sync";
+import { useRoomRuntime } from "./use-room-runtime";
 import { useDirectPlayer } from "./use-direct-player";
 
 export interface TheaterProps {
@@ -81,45 +87,60 @@ export function Theater({ roomId }: TheaterProps) {
   const suppressUntil = useRef(0);
   const stageRef = useRef<HTMLDivElement | null>(null);
 
-  const player = useDirectPlayer({
-    url: directUrl,
-    onPhase: (_phase, positionMs) => setLocalPositionMs(positionMs),
-  });
-
-  const sync = useWatchSync({
-    roomId,
-    profileId,
-    isHost,
-    enabled: enabled && directUrl !== null,
-    clockOffsetMs: room.clockSync.snapshot?.offset?.offsetMs ?? 0,
-    readLocalPositionMs: () => player.positionMs(),
-    applyRemote: ({ phase, positionMs, hardSeek }) => {
-      if (!player.isReady) return;
-      // A local correction must never be read back as a host intent.
-      if (Date.now() < suppressUntil.current) return;
-
-      if (hardSeek) {
-        player.seekTo(positionMs);
-        suppressUntil.current = Date.now() + 600;
-      }
-
-      if (phase === "playing") {
-        const drift = (player.positionMs() ?? positionMs) - positionMs;
-        player.setRate(!hardSeek && drift < 0 ? NUDGE_RATE : 1);
-        player.play();
-      } else if (phase === "paused" || phase === "idle") {
-        player.setRate(1);
-        player.pause();
-      }
-    },
-  });
-
   const countdown = useRoomCountdown({
     roomId,
     actorProfileId: profileId,
     isHost,
     durationSeconds: room.room?.countdownSeconds ?? 5,
     enabled: enabled && room.status === "ready",
+  });
+  const countdownRemaining =
+    countdown.state === "counting_down" ? Math.max(0, countdown.remainingSeconds) : null;
+
+  const player = useDirectPlayer({
+    url: directUrl,
+    onPhase: (phase, positionMs) => {
+      setLocalPositionMs(positionMs);
+      setIsBuffering(phase === "buffering");
+    },
+  });
+
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [selfReady, setSelfReady] = useState(false);
+
+  const runtime = useRoomRuntime({
+    roomId,
+    profileId,
+    isHost,
+    enabled,
+    capability: source.capability,
+    hasMedia: source.source !== null,
+    mediaValid: (room.room?.mediaRef?.validity ?? "valid") !== "invalid",
+    roomClosed: room.room?.status === "abandoned" || room.room?.status === "ended",
+    isCountingDown: countdownRemaining !== null,
+    clockOffsetMs: room.clockSync.snapshot?.offset?.offsetMs ?? 0,
+    readLocalPositionSeconds: () => {
+      const ms = player.positionMs();
+      return ms === null ? null : ms / 1000;
+    },
+    isBuffering,
+    applyRemote: ({ status, positionSeconds, correction, rate }) => {
+      if (!player.isReady) return;
+      // A local correction must never be read back as a host intent.
+      if (Date.now() < suppressUntil.current) return;
+
+      if (correction === "hard") {
+        player.seekTo(Math.round(positionSeconds * 1000));
+        suppressUntil.current = Date.now() + 600;
+      }
+      if (status === "playing") {
+        player.setRate(rate);
+        player.play();
+      } else if (status === "paused" || status === "idle") {
+        player.setRate(1);
+        player.pause();
+      }
+    },
   });
 
   const chat = useRoomChat({ roomId, profileId, enabled });
@@ -141,29 +162,35 @@ export function Theater({ roomId }: TheaterProps) {
 
   // A guest that arrives mid-film lands where the room already is.
   useEffect(() => {
-    if (isHost || !player.isReady || !sync.state) return;
-    const target = sync.targetPositionMs();
-    if (target !== null) player.seekTo(target);
+    if (isHost || !player.isReady || runtime.playback.revision < 0) return;
+    player.seekTo(Math.round(runtime.positionSeconds() * 1000));
     // Only on the transition into readiness for this source.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.isReady, directUrl]);
 
-  const isPlaying = sync.state?.phase === "playing";
+  const isPlaying = runtime.playback.status === "playing";
   const capability = source.capability;
   const isEmbedded = capability.allowsEmbeddedPlayback && directUrl !== null;
 
   const togglePlay = useCallback(() => {
-    const position = player.positionMs() ?? sync.targetPositionMs() ?? 0;
-    if (isPlaying) sync.pause(position);
-    else sync.play(position);
-  }, [isPlaying, player, sync]);
+    const seconds = (player.positionMs() ?? 0) / 1000 || runtime.positionSeconds();
+    runtime.send(
+      isPlaying
+        ? { kind: "pause", positionSeconds: seconds }
+        : { kind: "play", positionSeconds: seconds },
+    );
+  }, [isPlaying, player, runtime]);
 
   const seekBy = useCallback(
     (deltaMs: number) => {
-      const base = player.positionMs() ?? sync.targetPositionMs() ?? 0;
-      sync.seek(Math.max(0, base + deltaMs), isPlaying);
+      const base = player.positionMs() ?? runtime.positionSeconds() * 1000;
+      runtime.send({
+        kind: "seek",
+        positionSeconds: Math.max(0, base + deltaMs) / 1000,
+        playing: isPlaying,
+      });
     },
-    [isPlaying, player, sync],
+    [isPlaying, player, runtime],
   );
 
   const requestFullscreen = useCallback(() => {
@@ -209,8 +236,7 @@ export function Theater({ roomId }: TheaterProps) {
     [room.members],
   );
 
-  const countdownSeconds =
-    countdown.state === "counting_down" ? Math.max(0, countdown.remainingSeconds) : null;
+  const countdownSeconds = countdownRemaining;
 
   // One derivation, one snapshot: the host and every guest read the same phase.
   const mediaRef = room.room?.mediaRef ?? null;
