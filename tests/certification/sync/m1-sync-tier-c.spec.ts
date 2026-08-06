@@ -79,26 +79,109 @@ test.describe("M1 Tier C sync", () => {
       return;
     }
 
-    await session.page.goto(`${BASE_URL}/rooms/${room.id}`, { waitUntil: "domcontentloaded" });
-    await session.page.waitForTimeout(1500);
+    const { page, context } = session;
+    await page.goto(`${BASE_URL}/rooms/${room.id}`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector('[data-sf-screen="waiting-room"]', { timeout: 30_000 });
+
+    // The host picks a provider the way a real host does: through the lobby
+    // radiogroup, not by writing the room row behind the UI.
+    const choices = page.locator('[role="radiogroup"] [role="radio"]:not([disabled])');
+    const choiceCount = await choices.count();
+    if (choiceCount === 0) {
+      await context.close();
+      recordM1Row("CERT-SYNC-C-01", {
+        status: "unmeasured",
+        detail:
+          "The lobby offered no selectable provider, so no Tier C launch could be exercised. No claim is made about the launch path.",
+        browser: browserName,
+        platform: "web-desktop",
+      });
+      return;
+    }
+    await choices.first().click();
+
+    const panel = page.locator("[data-sf-launch-panel]");
+    let panelVisible = true;
+    try {
+      await panel.waitFor({ state: "visible", timeout: 20_000 });
+    } catch {
+      panelVisible = false;
+    }
+    if (!panelVisible) {
+      await context.close();
+      recordM1Row("CERT-SYNC-C-01", {
+        status: "fail",
+        detail:
+          "After a provider was selected the lobby rendered no launch panel, so the room has no hand-off route to the provider.",
+        browser: browserName,
+        platform: "web-desktop",
+      });
+      return;
+    }
+
+    const launchClass = await panel.getAttribute("data-sf-launch-class");
+    const manualPlay = (await panel.getAttribute("data-sf-launch-manual")) === "true";
+
+    // Capture the hand-off instead of performing it: the certification run
+    // must not navigate to a third-party provider, and StreamFlow only ever
+    // claims that the platform accepted the request (ADR-014).
+    await page.evaluate(() => {
+      const store: string[] = [];
+      (window as unknown as { __sfLaunches: string[] }).__sfLaunches = store;
+      window.open = ((url?: string | URL) => {
+        store.push(String(url ?? ""));
+        return null;
+      }) as typeof window.open;
+    });
+
+    const primary = panel.locator('[data-sf-launch-primary="true"]').first();
+    const hasPrimary = (await primary.count()) > 0 && (await primary.isEnabled());
+    if (hasPrimary) await primary.click();
+    await page.waitForTimeout(500);
+
+    const launched = await page.evaluate(
+      () => (window as unknown as { __sfLaunches?: string[] }).__sfLaunches ?? [],
+    );
+    const launchStatus = await panel.getAttribute("data-sf-launch-status");
+
     const offenders: string[] = [];
     for (const selector of FALSE_SYNC_AFFORDANCES) {
-      const count = await session.page.locator(selector).count();
+      const count = await page.locator(selector).count();
       if (count > 0) offenders.push(`${selector} ×${count}`);
     }
-    const url = session.page.url();
-    await session.context.close();
+    const url = page.url();
+    await context.close();
 
     const reachedRoom = new RegExp(`/rooms/${room.id}`).test(url);
-    const clean = reachedRoom && offenders.length === 0;
+    const target = launched[0] ?? "";
+    const external = /^https?:/i.test(target)
+      ? !target.startsWith(new URL(BASE_URL).origin)
+      : /^[a-z][a-z0-9+.-]*:/i.test(target);
+    const tierCClass = launchClass === "manual_sync" || launchClass === "deep_link";
+    const clean =
+      reachedRoom &&
+      hasPrimary &&
+      launched.length === 1 &&
+      external &&
+      tierCClass &&
+      manualPlay &&
+      offenders.length === 0;
+
+    const reasons: string[] = [];
+    if (!reachedRoom) reasons.push(`the room did not open (landed at ${url})`);
+    if (!hasPrimary) reasons.push("the launch panel offered no enabled primary destination");
+    if (launched.length !== 1) reasons.push(`the launch produced ${launched.length} hand-offs`);
+    else if (!external) reasons.push(`the hand-off target was not external (${target})`);
+    if (!tierCClass) reasons.push(`the launch class was "${launchClass}", not a Tier C hand-off`);
+    if (!manualPlay) reasons.push("the panel did not require manual play");
+    if (offenders.length > 0)
+      reasons.push(`playback-control affordances are rendered: ${offenders.join(", ")}`);
 
     recordM1Row("CERT-SYNC-C-01", {
       status: clean ? "pass" : "fail",
-      detail: reachedRoom
-        ? offenders.length === 0
-          ? "The room surface opened and exposed no transport, scrubber, or play/pause affordance — consistent with ADR-014 Tier C. Countdown coordination itself is measured by CERT-WP-01."
-          : `The room surface exposes playback affordances that imply provider control (ADR-014): ${offenders.join(", ")}.`
-        : `The room deep link did not open the room; landed at ${url}.`,
+      detail: clean
+        ? `A Tier C provider selected in the lobby produced a "${launchClass}" plan whose primary destination handed off exactly one external deep link (${target}); the panel then reported status "${launchStatus}" and required manual play. The room surface exposes no transport, scrubber, or play/pause affordance, so no provider control is implied (ADR-014). Countdown coordination itself is measured by CERT-WP-01.`
+        : `Tier C coordination is not correct: ${reasons.join("; ")}.`,
       browser: browserName,
       platform: "web-desktop",
     });
