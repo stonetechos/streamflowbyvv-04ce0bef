@@ -14,5 +14,7 @@ jobs:
         run: node scripts/check-certification.mjs
       - name: Certification gate self-test
         run: node scripts/check-gates.mjs
+      - name: Evidence retention self-test (RET-1)
+        run: node scripts/check-retention.mjs
       - name: Technical debt register validation
         run: node scripts/report-debt.mjs
