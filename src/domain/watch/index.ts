@@ -41,6 +41,7 @@ export {
   WATCH_CHAT_SERVICE,
   createWatchChatService,
   type ChatRejection,
+  type RoomMessage,
   type WatchChatService,
 } from "./watch-chat-service";
 export {

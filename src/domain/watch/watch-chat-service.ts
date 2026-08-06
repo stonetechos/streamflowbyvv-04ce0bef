@@ -15,6 +15,8 @@ import {
   type RoomMessage,
 } from "@/repository";
 
+export type { RoomMessage } from "@/repository";
+
 export const CHAT_MESSAGE_MAX_LENGTH = 500;
 const DEFAULT_PAGE = 100;
 
