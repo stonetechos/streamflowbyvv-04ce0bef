@@ -229,7 +229,10 @@ test.describe("M1 Tier C sync", () => {
     });
   });
 
-  test("CERT-SYNC-C-02 same guarantee on web-mobile", async ({ browser, browserName }, testInfo) => {
+  test("CERT-SYNC-C-02 same guarantee on web-mobile", async ({
+    browser,
+    browserName,
+  }, testInfo) => {
     // The row is executable; only its environment is missing. When the harness
     // is run under a `web-mobile` project the identical desktop measurement is
     // applied to the mobile viewport. Otherwise the row is `blocked`, never
