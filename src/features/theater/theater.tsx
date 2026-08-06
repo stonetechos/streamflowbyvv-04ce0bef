@@ -9,7 +9,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
-import { providerBrowseUrl, watchProviderById, type WatchProviderCapability } from "@/domain";
+import {
+  deriveRoomPhase,
+  providerBrowseUrl,
+  watchProviderById,
+  type WatchProviderCapability,
+} from "@/domain";
 import {
   useMemberNames,
   useRoomCountdown,
@@ -207,6 +212,16 @@ export function Theater({ roomId }: TheaterProps) {
   const countdownSeconds =
     countdown.state === "counting_down" ? Math.max(0, countdown.remainingSeconds) : null;
 
+  // One derivation, one snapshot: the host and every guest read the same phase.
+  const mediaRef = room.room?.mediaRef ?? null;
+  const phase = deriveRoomPhase({
+    mediaRef,
+    isCountingDown: countdownSeconds !== null,
+    playbackPhase: sync.state?.phase ?? null,
+    roomClosed: room.room?.status === "closed",
+    roomEnded: room.room?.status === "ended",
+  });
+
   if (!room.room) {
     return (
       <main className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4">
@@ -218,7 +233,7 @@ export function Theater({ roomId }: TheaterProps) {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6">
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6" data-sf-phase={phase}>
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:flex-wrap sm:justify-between">
         <div className="flex min-w-0 flex-col">
           <h1 className="truncate text-xl font-semibold sm:text-2xl">{room.room.name}</h1>
@@ -261,7 +276,13 @@ export function Theater({ roomId }: TheaterProps) {
             isHost={isHost}
             participantCount={presentMembers.length}
             countdownSeconds={countdownSeconds}
-            canStart={source.source !== null && countdown.isAvailable}
+            phase={phase}
+            validity={mediaRef?.validity ?? null}
+            canStart={
+              source.source !== null &&
+              mediaRef?.validity !== "invalid" &&
+              countdown.isAvailable
+            }
             isStarting={countdown.pending === "start"}
             onStart={countdown.start}
             onCancel={countdown.cancel}
