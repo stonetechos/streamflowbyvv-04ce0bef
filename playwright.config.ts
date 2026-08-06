@@ -39,7 +39,12 @@ export default defineConfig({
     viewport: { width: 1280, height: 900 },
   },
   projects: [
-    { name: "web-chromium", use: { ...devices["Desktop Chrome"] } },
+    {
+      name: "web-chromium",
+      // Full Chromium, not the headless shell: the shell lacks system libs in
+      // some CI images, and a browser that cannot launch is not evidence.
+      use: { ...devices["Desktop Chrome"], channel: "chromium" },
+    },
     { name: "web-firefox", use: { ...devices["Desktop Firefox"] } },
     { name: "web-webkit", use: { ...devices["Desktop Safari"] } },
   ],

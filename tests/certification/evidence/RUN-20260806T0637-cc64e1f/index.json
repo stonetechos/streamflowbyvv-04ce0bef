@@ -1,0 +1,28 @@
+[
+  {
+    "evidenceId": "CERT-VOICE-01",
+    "profileId": "PROF-08",
+    "browser": "n/a",
+    "platform": "n/a",
+    "status": "blocked",
+    "detail": "Blocked by PROF-08 (unsupported): BLOCKING: no LiveKit test project is provisioned. Voice rows cannot be certified.",
+    "runId": "RUN-20260806T0637-cc64e1f",
+    "commit": "cc64e1f",
+    "environmentProfile": "local-dev",
+    "region": "unknown",
+    "measuredAt": "2026-08-06T06:37:01.117Z"
+  },
+  {
+    "evidenceId": "CERT-VOICE-02",
+    "profileId": "PROF-08",
+    "browser": "n/a",
+    "platform": "n/a",
+    "status": "blocked",
+    "detail": "Live-transport assertion blocked by PROF-08. Static equivalent is certified as CERT-SA-01.",
+    "runId": "RUN-20260806T0637-cc64e1f",
+    "commit": "cc64e1f",
+    "environmentProfile": "local-dev",
+    "region": "unknown",
+    "measuredAt": "2026-08-06T06:37:01.147Z"
+  }
+]
