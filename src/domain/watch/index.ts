@@ -12,6 +12,11 @@ import {
   WATCH_CHAT_SERVICE,
 } from "./watch-chat-service";
 import {
+  createWatchSourceService,
+  resolveWatchSourceDependencies,
+  WATCH_SOURCE_SERVICE,
+} from "./watch-source-service";
+import {
   createWatchSyncService,
   resolveWatchSyncDependencies,
   WATCH_SYNC_SERVICE,
@@ -23,6 +28,11 @@ export function registerWatchServices(): void {
   }
   if (!isServiceBound(WATCH_SYNC_SERVICE)) {
     bindService(WATCH_SYNC_SERVICE, () => createWatchSyncService(resolveWatchSyncDependencies()));
+  }
+  if (!isServiceBound(WATCH_SOURCE_SERVICE)) {
+    bindService(WATCH_SOURCE_SERVICE, () =>
+      createWatchSourceService(resolveWatchSourceDependencies()),
+    );
   }
 }
 
@@ -53,3 +63,8 @@ export {
   type WatchSource,
   type WatchSourceCapability,
 } from "./watch-source";
+export {
+  WATCH_SOURCE_SERVICE,
+  createWatchSourceService,
+  type WatchSourceService,
+} from "./watch-source-service";

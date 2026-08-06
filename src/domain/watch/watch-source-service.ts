@@ -65,7 +65,7 @@ export function createWatchSourceService(deps: WatchSourceDependencies): WatchSo
     async set(roomId, actorProfileId, input) {
       const operation = "WatchSourceService.set";
       const source = parseWatchSource(input);
-      if (!source) throw domainError("VALIDATION_FAILED", { operation, aggregateId: roomId });
+      if (!source) throw domainError("INVALID_INPUT", { operation, aggregateId: roomId });
       const { store, room } = await loadOwned(roomId, actorProfileId, operation);
       await store.update(roomId, {
         metadata: {
