@@ -34,18 +34,18 @@ for (const file of files) {
     violations.push(`${file}: filename does not contain an ADR id.`);
     continue;
   }
-  const statusMatch = source.match(/\*\*Status:\*\*\s*([A-Za-z]+)/);
+  const statusMatch = source.match(/(?:\*\*Status:\*\*|^Status:)\s*([A-Za-z]+)/m);
   if (!statusMatch) {
-    violations.push(`${file}: no "**Status:**" declaration found.`);
+    violations.push(`${file}: no Status declaration found.`);
   } else if (!VALID_STATUS.includes(statusMatch[1])) {
     violations.push(
       `${file}: status "${statusMatch[1]}" is not one of ${VALID_STATUS.join(" / ")} (I-governance §ADR lifecycle).`,
     );
   }
   const status = statusMatch?.[1] ?? "Unknown";
-  const supersededBy = source.match(/\*\*Superseded by:\*\*\s*(ADR-\d{3})/)?.[1] ?? null;
+  const supersededBy = source.match(/(?:\*\*Superseded by:\*\*|^Superseded by:)\s*(ADR-\d{3})/m)?.[1] ?? null;
   if (status === "Superseded" && !supersededBy) {
-    violations.push(`${file}: status is Superseded but no "**Superseded by:** ADR-nnn" is declared.`);
+    violations.push(`${file}: status is Superseded but no "Superseded by: ADR-nnn" is declared.`);
   }
   adrs.set(id, { file, status, supersededBy });
 }
