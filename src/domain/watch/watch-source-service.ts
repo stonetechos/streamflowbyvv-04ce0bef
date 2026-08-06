@@ -1,13 +1,10 @@
 /**
- * Watch selection service — Sprint H1, extended in H2.
+ * Watch selection service — Sprint H1, extended in H2, generalized in H3.
  *
  * Who may decide what the room is watching, and where that decision lives.
- * The host alone may set it; it is stored on the room aggregate's metadata so
- * a late joiner and a reconnecting guest read exactly the same answer.
- *
- * H2 adds the optional host-typed title that accompanies a provider handoff:
- * when StreamFlow cannot ask a provider what was chosen, it asks the host,
- * rather than inventing metadata it does not have.
+ * The host alone may set it; it is stored on the room aggregate as a shared
+ * `RoomMediaRef`, so a late joiner, a guest, and a reconnecting participant
+ * all read exactly the same answer.
  */
 import { domainError } from "@/domain/errors/domain-errors";
 import { createServiceToken } from "@/domain/service-registry";
@@ -20,10 +17,15 @@ import {
 } from "@/repository";
 
 import {
+  EMPTY_WATCH_SELECTION,
+  WATCH_MEDIA_METADATA_KEY,
   WATCH_SOURCE_METADATA_KEY,
   WATCH_TITLE_METADATA_KEY,
+  mediaRefSelection,
   parseWatchSource,
   readWatchSelection,
+  toRoomMediaRef,
+  type RoomMediaRef,
   type WatchSelection,
 } from "./watch-source";
 
@@ -52,8 +54,6 @@ export function resolveWatchSourceDependencies(): WatchSourceDependencies {
   };
 }
 
-const EMPTY: WatchSelection = { source: null, title: null };
-
 export function createWatchSourceService(deps: WatchSourceDependencies): WatchSourceService {
   const { rooms } = deps;
 
@@ -71,9 +71,9 @@ export function createWatchSourceService(deps: WatchSourceDependencies): WatchSo
     isAvailable: () => rooms !== null,
 
     async read(roomId) {
-      if (!rooms) return EMPTY;
+      if (!rooms) return EMPTY_WATCH_SELECTION;
       const room = await rooms.findById(roomId);
-      return room ? readWatchSelection(room.metadata) : EMPTY;
+      return room ? readWatchSelection(room.metadata) : EMPTY_WATCH_SELECTION;
     },
 
     async set(roomId, actorProfileId, input, title) {
@@ -83,21 +83,26 @@ export function createWatchSourceService(deps: WatchSourceDependencies): WatchSo
 
       const cleanTitle = (title ?? "").trim().slice(0, TITLE_MAX_LENGTH);
       const { store, room } = await loadOwned(roomId, actorProfileId, operation);
+      const ref: RoomMediaRef = toRoomMediaRef(source, cleanTitle.length > 0 ? cleanTitle : null);
+
       const metadata: Record<string, unknown> = {
         ...room.metadata,
+        [WATCH_MEDIA_METADATA_KEY]: JSON.stringify(ref),
+        // Legacy keys stay in step so older readers never disagree.
         [WATCH_SOURCE_METADATA_KEY]: source.url ?? "",
       };
-      if (cleanTitle.length > 0) metadata[WATCH_TITLE_METADATA_KEY] = cleanTitle;
+      if (ref.title) metadata[WATCH_TITLE_METADATA_KEY] = ref.title;
       else delete metadata[WATCH_TITLE_METADATA_KEY];
 
       await store.update(roomId, { metadata });
-      return { source, title: cleanTitle.length > 0 ? cleanTitle : null };
+      return mediaRefSelection(ref);
     },
 
     async clear(roomId, actorProfileId) {
       const operation = "WatchSourceService.clear";
       const { store, room } = await loadOwned(roomId, actorProfileId, operation);
       const next = { ...room.metadata };
+      delete next[WATCH_MEDIA_METADATA_KEY];
       delete next[WATCH_SOURCE_METADATA_KEY];
       delete next[WATCH_TITLE_METADATA_KEY];
       await store.update(roomId, { metadata: next });
