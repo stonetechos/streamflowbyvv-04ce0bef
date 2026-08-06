@@ -44,6 +44,7 @@ function readJsonFile(path) {
 
 /** Synthesize a complete, schema-valid record set for a throwaway run. */
 function stageRun(runId, { workPackage = "WP-RETENTION-SELFTEST" } = {}) {
+  const recordWorkPackage = workPackage || undefined;
   const dir = join(EVIDENCE_ROOT, runId);
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(join(dir, "records"), { recursive: true });
@@ -63,7 +64,7 @@ function stageRun(runId, { workPackage = "WP-RETENTION-SELFTEST" } = {}) {
           browser: "none",
           platform: "none",
           status: "unmeasured",
-          workPackage,
+          ...(recordWorkPackage ? { workPackage: recordWorkPackage } : {}),
           detail: "Retention self-test fixture. Not certification evidence.",
           measuredAt: new Date().toISOString(),
         },
@@ -171,7 +172,7 @@ try {
 
   // --- R7: no manifest, no seal -------------------------------------------
   const noManifestId = "RUN-RETSELFTEST-NO-MANIFEST";
-  const noManifestDir = stageRun(noManifestId);
+  const noManifestDir = stageRun(noManifestId, { workPackage: "" });
   const noWp = runEvidence(noManifestId, { CERT_WORK_PACKAGE: "" });
   check(
     "R7/R9 a run without a work-package mapping refuses the seal",
