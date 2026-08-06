@@ -186,7 +186,6 @@ export async function documentSemantics(page: Page): Promise<DocumentSemantics> 
   }));
 }
 
-
 /** Interactive controls with no accessible name — the automated WCAG subset. */
 export async function unnamedControls(page: Page): Promise<readonly string[]> {
   return page.evaluate(() => {

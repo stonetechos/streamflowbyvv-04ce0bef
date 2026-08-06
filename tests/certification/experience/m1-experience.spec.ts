@@ -21,7 +21,7 @@ import {
   type CertParticipant,
   type CertRoom,
 } from "../fixtures/identities";
-import { movingElements, unnamedControls } from "../helpers/instrumentation";
+import { documentSemantics, movingElements, unnamedControls } from "../helpers/instrumentation";
 import { recordM1Row } from "../helpers/m1-rows";
 
 const BASE_URL = process.env["CERT_BASE_URL"] ?? "http://localhost:8080";
@@ -64,9 +64,13 @@ test.describe("M1 experience", () => {
       const unnamed = await unnamedControls(target);
       const semantics = await documentSemantics(target);
       if (unnamed.length > 0)
-        findings.push(`${label}: ${unnamed.length} control(s) without an accessible name (WCAG 4.1.2)`);
-      if (semantics.lang.trim().length === 0) findings.push(`${label}: no lang on <html> (WCAG 3.1.1)`);
-      if (semantics.title.trim().length === 0) findings.push(`${label}: empty document title (WCAG 2.4.2)`);
+        findings.push(
+          `${label}: ${unnamed.length} control(s) without an accessible name (WCAG 4.1.2)`,
+        );
+      if (semantics.lang.trim().length === 0)
+        findings.push(`${label}: no lang on <html> (WCAG 3.1.1)`);
+      if (semantics.title.trim().length === 0)
+        findings.push(`${label}: empty document title (WCAG 2.4.2)`);
     };
 
     for (const surface of PUBLIC_SURFACES) {
