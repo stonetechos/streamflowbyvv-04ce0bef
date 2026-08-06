@@ -531,3 +531,24 @@ export function watchSelectionLabel(selection: WatchSelection): string | null {
   }
   return source.label;
 }
+
+/**
+ * Where the room stands, derived from state every participant already has
+ * (Sprint H4). Host and guest run the same derivation over the same snapshot,
+ * so nobody sees a phase of their own.
+ */
+export function deriveRoomPhase(input: {
+  readonly mediaRef: RoomMediaRef | null;
+  readonly isCountingDown: boolean;
+  readonly playbackPhase: "playing" | "paused" | "idle" | null;
+  readonly roomClosed: boolean;
+  readonly roomEnded: boolean;
+}): RoomPhase {
+  if (input.roomClosed) return "closed";
+  if (input.roomEnded) return "ended";
+  if (input.isCountingDown) return "countdown";
+  if (input.playbackPhase === "playing") return "watching";
+  if (input.playbackPhase === "paused") return "paused";
+  if (!input.mediaRef || input.mediaRef.validity === "invalid") return "waiting-for-content";
+  return "content-selected";
+}
