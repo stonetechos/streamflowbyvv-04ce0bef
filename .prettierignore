@@ -7,3 +7,11 @@ package-lock.json
 bun.lock
 routeTree.gen.ts
 src/integrations/supabase/types.ts
+
+# Generated engineering documentation (written by scripts/report-*.mjs)
+docs/dashboards/Performance-Dashboard.md
+docs/dashboards/Coverage-Report.md
+docs/dashboards/Technical-Debt.md
+docs/dashboards/Milestone-Coverage.md
+docs/dashboards/Release-Dashboard.md
+docs/engines/
