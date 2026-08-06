@@ -178,6 +178,13 @@ const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
 
 /** Providers offered in the room's provider bar, in display order. */
 export const WATCH_PROVIDERS: readonly WatchProviderCapability[] = Object.freeze(
+  DEFINITIONS.filter((entry) => entry.capability.enabled && entry.capability.visibleInLobby).map(
+    (entry) => entry.capability,
+  ),
+);
+
+/** Every definition the product knows, enabled or not (Sprint H4 matrix). */
+export const WATCH_PROVIDER_DEFINITIONS: readonly WatchProviderCapability[] = Object.freeze(
   DEFINITIONS.map((entry) => entry.capability),
 );
 
@@ -186,6 +193,8 @@ export function unknownProviderCapability(displayName: string): WatchProviderCap
   return {
     providerId: displayName || "unknown",
     displayName: displayName || "This service",
+    enabled: false,
+    visibleInLobby: false,
     supported: false,
     selectionMode: "paste-link",
     playbackControlMode: "unavailable",
@@ -193,7 +202,9 @@ export function unknownProviderCapability(displayName: string): WatchProviderCap
     allowsFullscreenFromRoom: false,
     allowsZoomFromRoom: false,
     requiresOwnSubscription: true,
+    requiresProviderLogin: true,
     supportedPlatforms: [],
+
     limitations: [
       "StreamFlow cannot start, pause, or seek this service for you.",
       "Everyone needs their own account and plays it themselves.",
