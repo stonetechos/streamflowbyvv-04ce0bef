@@ -32,13 +32,19 @@ export function ProviderLaunchPanel({ model }: { model: ProviderLaunchModel }) {
     : [];
 
   return (
-    <Card>
+    <Card
+      data-sf-launch-panel="true"
+      data-sf-launch-class={plan.launchClass}
+      data-sf-launch-status={model.status}
+      data-sf-launch-manual={plan.requiresManualPlay ? "true" : "false"}
+    >
       <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
         <CardTitle className="text-base">{t(guidanceHeadingKey(plan.launchClass))}</CardTitle>
         <Badge variant={plan.launchClass === "unsupported" ? "outline" : "secondary"}>
           {t(`provider.launch.class.${plan.launchClass}`)}
         </Badge>
       </CardHeader>
+
 
       <CardContent className="space-y-4">
         {plan.refusalReason ? (
