@@ -45,7 +45,6 @@ export function ProviderLaunchPanel({ model }: { model: ProviderLaunchModel }) {
         </Badge>
       </CardHeader>
 
-
       <CardContent className="space-y-4">
         {plan.refusalReason ? (
           <p className="text-sm text-muted-foreground">
@@ -65,7 +64,6 @@ export function ProviderLaunchPanel({ model }: { model: ProviderLaunchModel }) {
                 disabled={!plan.canLaunch || model.status === "launching"}
                 onClick={() => model.launch(target)}
               >
-
                 {t(target.labelKey)}
               </Button>
             ))}
