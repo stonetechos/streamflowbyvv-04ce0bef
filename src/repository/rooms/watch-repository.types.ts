@@ -17,6 +17,8 @@ export interface RoomMessage {
   readonly roomId: EntityId;
   readonly profileId: EntityId;
   readonly body: string;
+  /** Opaque bag. Sprint H5 carries coordination events here. */
+  readonly metadata: Readonly<Record<string, unknown>>;
   readonly createdAt: string;
 }
 
@@ -24,6 +26,7 @@ export interface RoomMessageDraft {
   readonly roomId: EntityId;
   readonly profileId: EntityId;
   readonly body: string;
+  readonly metadata?: Readonly<Record<string, unknown>>;
 }
 
 export type RoomMessageUnsubscribe = () => void;

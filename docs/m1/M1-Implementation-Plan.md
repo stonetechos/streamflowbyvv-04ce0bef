@@ -9,18 +9,18 @@ Sprint: M1.0. Mode: Build mode, documentation-only output. Constitution: v2.0.0 
 
 Verified directly against the repository rather than trusting `docs/m0.6/M0.6-Certification-Gate-Remediation-Report.md`.
 
-| Claim under test                          | Method                                                                                | Result                                                                            |
-| ----------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Blueprint present and frozen              | `ls docs/blueprint`                                                                    | Confirmed — 17 documents plus `ADR-015-engine-decomposition.md`                    |
-| Mandatory evidence registry exists        | read `docs/registry/required-evidence.json`                                            | Confirmed — version 1.0.0, 24 required entries                                     |
-| M0.6 gate libraries exist                 | `ls scripts/lib`                                                                       | Confirmed — `result-state.mjs`, `evidence-io.mjs`; `scripts/check-gates.mjs` present |
-| `gates:check` wired into the green gate   | read `package.json`                                                                    | Confirmed — `verify` = format:check, lint, typecheck, arch:check, cert:check, gates:check, adr:check |
-| Sealed evidence `RUN-M0R-001` exists      | `ls tests/certification/evidence`                                                      | Confirmed — 25 records, `index.json`, `artifacts/`                                 |
-| Zero Tier A / Tier B claims               | read `docs/blueprint/B-capability-matrix.md`, `src/domain/providers/provider-tier.ts`  | Confirmed — all launch OTT rows are Tier C                                          |
-| Voice rows blocked, not failed            | read `records/CERT-VOICE-01.json`                                                      | Confirmed — `status: "blocked"`, reason names PROF-08                              |
-| Certification spec tree                   | `ls tests/certification/*/`                                                            | Confirmed — 7 spec files across accessibility, provider, realtime, resilience, room, voice |
-| Playwright projects                       | read `playwright.config.ts`                                                            | Confirmed — `web-chromium`, `web-firefox`, `web-webkit` only                        |
-| Unit/integration test tree                | repository scan                                                                        | **None found** — `tests/` contains only `tests/certification/`                     |
+| Claim under test                        | Method                                                                                | Result                                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Blueprint present and frozen            | `ls docs/blueprint`                                                                   | Confirmed — 17 documents plus `ADR-015-engine-decomposition.md`                                      |
+| Mandatory evidence registry exists      | read `docs/registry/required-evidence.json`                                           | Confirmed — version 1.0.0, 24 required entries                                                       |
+| M0.6 gate libraries exist               | `ls scripts/lib`                                                                      | Confirmed — `result-state.mjs`, `evidence-io.mjs`; `scripts/check-gates.mjs` present                 |
+| `gates:check` wired into the green gate | read `package.json`                                                                   | Confirmed — `verify` = format:check, lint, typecheck, arch:check, cert:check, gates:check, adr:check |
+| Sealed evidence `RUN-M0R-001` exists    | `ls tests/certification/evidence`                                                     | Confirmed — 25 records, `index.json`, `artifacts/`                                                   |
+| Zero Tier A / Tier B claims             | read `docs/blueprint/B-capability-matrix.md`, `src/domain/providers/provider-tier.ts` | Confirmed — all launch OTT rows are Tier C                                                           |
+| Voice rows blocked, not failed          | read `records/CERT-VOICE-01.json`                                                     | Confirmed — `status: "blocked"`, reason names PROF-08                                                |
+| Certification spec tree                 | `ls tests/certification/*/`                                                           | Confirmed — 7 spec files across accessibility, provider, realtime, resilience, room, voice           |
+| Playwright projects                     | read `playwright.config.ts`                                                           | Confirmed — `web-chromium`, `web-firefox`, `web-webkit` only                                         |
+| Unit/integration test tree              | repository scan                                                                       | **None found** — `tests/` contains only `tests/certification/`                                       |
 
 **Discrepancies recorded (not fixed in this sprint):**
 
@@ -36,9 +36,9 @@ Verified directly against the repository rather than trusting `docs/m0.6/M0.6-Ce
 
 Each assumption is labelled with how it would be invalidated. None of them is treated as proven.
 
-1. The Launch Envelope in `docs/blueprint/D-milestone-roadmap.md` §M1 is authoritative and unchanged. *Invalidated by:* any amendment ADR.
-2. The 14 rows listed in §5 are the complete M1 product row set, plus the two voice rows that are Blocked by dependency. *Invalidated by:* a differing reading of D or K.
-3. Existing product modules named in `M1-Backlog.md` already implement the behavior under test, so most M1 work is test-only. *Status:* Unknown until execution; the harness may reveal product defects.
+1. The Launch Envelope in `docs/blueprint/D-milestone-roadmap.md` §M1 is authoritative and unchanged. _Invalidated by:_ any amendment ADR.
+2. The 14 rows listed in §5 are the complete M1 product row set, plus the two voice rows that are Blocked by dependency. _Invalidated by:_ a differing reading of D or K.
+3. Existing product modules named in `M1-Backlog.md` already implement the behavior under test, so most M1 work is test-only. _Status:_ Unknown until execution; the harness may reveal product defects.
 4. The M0.5 Constitutional Limit forbids new infrastructure but its ruling on harness-**configuration** changes (WP8) is Unknown.
 5. `blocked` and `unmeasured` never count as pass; this is enforced by `scripts/lib/result-state.mjs`.
 
@@ -74,18 +74,18 @@ Identical to the list in `M1-Backlog.md` §"Common M1 Definition of Done" and go
 
 ## 7. Work packages (summary; full specifications in `M1-Backlog.md`)
 
-| ID   | Package                             | Engine      | Status                | Critical path |
-| ---- | ----------------------------------- | ----------- | --------------------- | ------------- |
-| WP1  | Certification harness extension     | Engineering | Needs discovery       | Yes           |
-| WP2  | Registry and checklist wiring       | Engineering | Registry mapping missing | Yes        |
-| WP3  | Invite resolution hardening         | Room        | Harness missing       | No            |
-| WP4  | Join, capacity, leave/rejoin        | Room        | Harness missing       | No            |
-| WP5  | Presence accuracy                   | Presence    | Harness missing       | No            |
-| WP6  | Watch-party stage and countdown     | Watch Party | Harness missing       | No            |
-| WP7  | Tier C coordination correctness     | Sync        | Harness missing       | No            |
-| WP8  | Web-mobile certification surface    | Sync        | Environment unavailable | No          |
-| WP9  | Provider disclosure and fallback    | Provider    | Harness missing       | No            |
-| WP10 | Experience: a11y and reduced motion | Experience  | Partially complete    | No            |
+| ID   | Package                             | Engine      | Status                   | Critical path |
+| ---- | ----------------------------------- | ----------- | ------------------------ | ------------- |
+| WP1  | Certification harness extension     | Engineering | Needs discovery          | Yes           |
+| WP2  | Registry and checklist wiring       | Engineering | Registry mapping missing | Yes           |
+| WP3  | Invite resolution hardening         | Room        | Harness missing          | No            |
+| WP4  | Join, capacity, leave/rejoin        | Room        | Harness missing          | No            |
+| WP5  | Presence accuracy                   | Presence    | Harness missing          | No            |
+| WP6  | Watch-party stage and countdown     | Watch Party | Harness missing          | No            |
+| WP7  | Tier C coordination correctness     | Sync        | Harness missing          | No            |
+| WP8  | Web-mobile certification surface    | Sync        | Environment unavailable  | No            |
+| WP9  | Provider disclosure and fallback    | Provider    | Harness missing          | No            |
+| WP10 | Experience: a11y and reduced motion | Experience  | Partially complete       | No            |
 
 ---
 

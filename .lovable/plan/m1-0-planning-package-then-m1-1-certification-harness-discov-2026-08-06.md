@@ -15,13 +15,13 @@ Verify actual repository state rather than trusting the M0.6 report:
 
 Created under `docs/m1/`:
 
-| File | Contents |
-| --- | --- |
-| `M1-Implementation-Plan.md` | M1 launch envelope (2–8 private participants, web desktop first, Tier C only), work packages WP1–WP10 with scope, non-goals, exit criteria |
-| `M1-Backlog.md` | Per-package tasks, owning engine, acceptance criteria, certification rows each package must satisfy |
-| `M1-Dependency-Graph.md` | Package dependencies, critical path, parallelizable tracks (text/ASCII diagram) |
-| `M1-Certification-Checklist.md` | The 14 in-scope M1 rows plus the 4 voice/debt items, mapped to packages and required profiles |
-| `M1-Risk-Register.md` | Risks with likelihood, impact, mitigation, owning engine, and linkage to `docs/blueprint/J-technical-debt.md` |
+| File                            | Contents                                                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `M1-Implementation-Plan.md`     | M1 launch envelope (2–8 private participants, web desktop first, Tier C only), work packages WP1–WP10 with scope, non-goals, exit criteria |
+| `M1-Backlog.md`                 | Per-package tasks, owning engine, acceptance criteria, certification rows each package must satisfy                                        |
+| `M1-Dependency-Graph.md`        | Package dependencies, critical path, parallelizable tracks (text/ASCII diagram)                                                            |
+| `M1-Certification-Checklist.md` | The 14 in-scope M1 rows plus the 4 voice/debt items, mapped to packages and required profiles                                              |
+| `M1-Risk-Register.md`           | Risks with likelihood, impact, mitigation, owning engine, and linkage to `docs/blueprint/J-technical-debt.md`                              |
 
 Every package is marked planned, blocked, or needing discovery. No implementation.
 

@@ -8,6 +8,12 @@
  * claims synchronization it has not measured.
  */
 import { createServiceToken } from "@/domain/service-registry";
+import {
+  authorizeCommand,
+  type CommandContext,
+  type CommandRejection,
+  type RoomCommand,
+} from "./room-runtime";
 import type { RoomState } from "@/domain/rooms/room.types";
 import type { PlaybackStatus } from "@/domain/shared/domain-enums";
 import {
@@ -51,6 +57,11 @@ export const DRIFT_HARD_MS = 2_000;
 
 const MAX_WRITE_ATTEMPTS = 3;
 
+/** Result of a state-changing command sent to the room authority. */
+export type CommandOutcome =
+  | { readonly outcome: "applied"; readonly state: WatchState }
+  | { readonly outcome: "rejected"; readonly reason: CommandRejection };
+
 export interface WatchSyncService {
   isAvailable(): boolean;
   read(roomId: EntityId): Promise<WatchState | null>;
@@ -58,6 +69,19 @@ export interface WatchSyncService {
   ensure(roomId: EntityId, actorProfileId: string | null): Promise<WatchState | null>;
   /** Host-only in practice: storage rejects a non-controller write. */
   publish(roomId: EntityId, intent: WatchIntent, actorProfileId: string): Promise<WatchState>;
+  /**
+   * Sprint H5 — the single entry point for a state-changing playback command.
+   * Permissions are validated, the revision is checked, and only then does the
+   * write happen; the caller is always told which of the two occurred.
+   */
+  dispatch(
+    roomId: EntityId,
+    command: RoomCommand,
+    actorProfileId: string | null,
+    context: Omit<CommandContext, "currentRevision"> & { readonly currentRevision?: number },
+  ): Promise<CommandOutcome>;
+  /** Marks the room as manually coordinated; claims no playback control. */
+  markManualSync(roomId: EntityId, actorProfileId: string): Promise<WatchState | null>;
   /** Where the room should be right now, given a synchronized clock. */
   projectPositionMs(state: WatchState, nowEpochMs: number): number;
   classify(driftMs: number | null): WatchVerdict;
@@ -180,6 +204,68 @@ export function createWatchSyncService(deps: WatchSyncDependencies): WatchSyncSe
       }
 
       throw new Error("SF-SYS-CONFLICT");
+    },
+
+    async dispatch(roomId, command, actorProfileId, context) {
+      if (!states) return { outcome: "rejected", reason: "unavailable" };
+      if (!actorProfileId) return { outcome: "rejected", reason: "not-host" };
+
+      const current = await states.findByRoomId(roomId);
+      const currentRevision = context.currentRevision ?? current?.version ?? 0;
+      const verdict = authorizeCommand(command, { ...context, currentRevision });
+      if (!verdict.allowed) return { outcome: "rejected", reason: verdict.reason };
+
+      // Countdown lifecycle is owned by the countdown runtime, which is already
+      // server-timed and durable; the playback row only mirrors its status.
+      if (command.kind === "start-countdown" || command.kind === "finish-countdown") {
+        const base =
+          current ??
+          (await states.create({
+            roomId,
+            playbackStatus: "idle",
+            syncMode: "controlled",
+            positionMs: 0,
+            playbackRate: 1,
+            lastActorProfileId: actorProfileId,
+          }));
+        const result = await states.tryUpdate(roomId, base.version, {
+          playbackStatus: command.kind === "start-countdown" ? "counting_down" : "ready",
+          lastActorProfileId: actorProfileId,
+        });
+        return result.outcome === "applied"
+          ? { outcome: "applied", state: toWatchState(result.state) }
+          : { outcome: "rejected", reason: "stale-revision" };
+      }
+
+      const intent: WatchIntent =
+        command.kind === "play"
+          ? { kind: "play", positionMs: Math.round(command.positionSeconds * 1000) }
+          : command.kind === "pause"
+            ? { kind: "pause", positionMs: Math.round(command.positionSeconds * 1000) }
+            : command.kind === "seek"
+              ? {
+                  kind: "seek",
+                  positionMs: Math.round(command.positionSeconds * 1000),
+                  playing: command.playing,
+                }
+              : { kind: "seek", positionMs: 0, playing: false };
+
+      try {
+        return { outcome: "applied", state: await service.publish(roomId, intent, actorProfileId) };
+      } catch {
+        return { outcome: "rejected", reason: "stale-revision" };
+      }
+    },
+
+    async markManualSync(roomId, actorProfileId) {
+      if (!states) return null;
+      const current = await service.ensure(roomId, actorProfileId);
+      if (!current) return null;
+      const result = await states.tryUpdate(roomId, current.version, {
+        syncMode: "manual",
+        lastActorProfileId: actorProfileId,
+      });
+      return result.outcome === "applied" ? toWatchState(result.state) : current;
     },
 
     projectPositionMs(state, nowEpochMs) {

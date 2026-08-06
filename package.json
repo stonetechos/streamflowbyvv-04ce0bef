@@ -13,6 +13,7 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
+    "test:product": "bun test tests/product",
     "arch:check": "node scripts/check-architecture.mjs",
     "adr:check": "node scripts/check-adrs.mjs",
     "architecture": "bun run arch:check && bun run adr:check",
