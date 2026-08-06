@@ -232,7 +232,7 @@ export interface DriftConditions {
   readonly msSinceSeek: number | null;
 }
 
-export function classifyDrift(
+export function classifyDriftCorrection(
   driftMs: number | null,
   policy: DriftPolicy | null,
   conditions: DriftConditions,

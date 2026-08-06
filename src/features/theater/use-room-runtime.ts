@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   WATCH_SYNC_SERVICE,
-  classifyDrift,
+  classifyDriftCorrection,
   emptyPlaybackState,
   isFreshRevision,
   projectPositionSeconds,
@@ -198,7 +198,7 @@ export function useRoomRuntime(input: UseRoomRuntimeInput): RoomRuntimeModel {
       }
 
       const delta = (local - target) * 1000;
-      const verdict = classifyDrift(delta, policy, {
+      const verdict = classifyDriftCorrection(delta, policy, {
         isBuffering: bufferingRef.current,
         msSinceSeek:
           lastSeekAtRef.current === null ? null : Date.now() - lastSeekAtRef.current,

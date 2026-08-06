@@ -41,7 +41,7 @@ export {
   DEFAULT_DRIFT_POLICY,
   DEFAULT_READINESS_THRESHOLD,
   authorizeCommand,
-  classifyDrift,
+  classifyDriftCorrection,
   createRoomEvent,
   decodeCoordination,
   emptyPlaybackState,
