@@ -1,18 +1,22 @@
 /**
- * Watch stage — Sprint H1.
+ * Watch stage — Sprint H1, extended in H2.
  *
- * The shared screen. It renders exactly one of three honest states: an
- * embeddable source playing inside StreamFlow, a service StreamFlow may only
- * coordinate around, or nothing chosen yet.
+ * The shared screen. It renders exactly one of three honest states: a source
+ * StreamFlow is permitted to embed and play in sync, a service StreamFlow may
+ * only coordinate around, or nothing chosen yet. Fullscreen belongs to the
+ * embedded case only — a provider-native player owns its own fullscreen and
+ * the room never pretends otherwise.
  */
 import { Surface } from "@/design-system/components";
 import { useTranslation } from "@/foundation/localization";
-import type { WatchSource, WatchSourceCapability } from "@/domain";
+import type { WatchProviderCapability, WatchSource } from "@/domain";
 
 export interface WatchStageProps {
   readonly source: WatchSource | null;
-  readonly capability: WatchSourceCapability;
+  readonly capability: WatchProviderCapability;
   readonly containerRef: React.RefObject<HTMLDivElement | null>;
+  /** Element that goes fullscreen; only used for embeddable sources. */
+  readonly stageRef?: React.RefObject<HTMLDivElement | null>;
   readonly hasFailed: boolean;
   readonly isReady: boolean;
 }
@@ -21,6 +25,7 @@ export function WatchStage({
   source,
   capability,
   containerRef,
+  stageRef,
   hasFailed,
   isReady,
 }: WatchStageProps) {
@@ -32,18 +37,20 @@ export function WatchStage({
         tone="glass"
         padding="lg"
         className="flex aspect-video w-full items-center justify-center text-center"
+        data-sf-stage="empty"
       >
         <p className="max-w-sm text-sm text-muted-foreground">{t("theater.stage.empty")}</p>
       </Surface>
     );
   }
 
-  if (source.kind !== "youtube" || !capability.supported) {
+  if (source.kind !== "youtube" || !capability.allowsEmbeddedPlayback) {
     return (
       <Surface
         tone="glass"
         padding="lg"
         className="flex aspect-video w-full flex-col items-center justify-center gap-3 text-center"
+        data-sf-stage="handoff"
       >
         <p className="text-base font-semibold">
           {t("theater.stage.external_title", { provider: capability.displayName })}
@@ -68,7 +75,11 @@ export function WatchStage({
   }
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-e2">
+    <div
+      ref={stageRef}
+      data-sf-stage="embedded"
+      className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-e2"
+    >
       <div ref={containerRef} className="absolute inset-0 [&_iframe]:h-full [&_iframe]:w-full" />
       {hasFailed ? (
         <div className="absolute inset-0 flex items-center justify-center bg-background/85 p-6 text-center">
