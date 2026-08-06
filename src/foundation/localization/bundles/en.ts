@@ -21,6 +21,7 @@ export const enBundle: LocaleBundle = {
     "common.action.retry": "Try again",
     "common.action.go_home": "Go home",
     "common.action.dismiss": "Dismiss",
+    "common.action.close": "Close",
     "common.state.loading": "Loading",
 
     "settings.language.label": "Language",
