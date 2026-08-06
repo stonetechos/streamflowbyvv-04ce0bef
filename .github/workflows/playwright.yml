@@ -1,0 +1,33 @@
+name: Playwright Certification
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  playwright:
+    name: Certification matrix (Playwright)
+    runs-on: ubuntu-latest
+    env:
+      CERT_RUN_ID: RUN-CI-${{ github.run_id }}-${{ github.run_attempt }}
+      CERT_ENVIRONMENT: ci
+      CERT_REGION: github-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Install browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run certification matrix
+        run: npx playwright test --project=web-chromium
+      - name: Collect evidence
+        if: always()
+        run: node scripts/evidence.mjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: certification-evidence-${{ env.CERT_RUN_ID }}
+          path: tests/certification/evidence/${{ env.CERT_RUN_ID }}
+          retention-days: 90
