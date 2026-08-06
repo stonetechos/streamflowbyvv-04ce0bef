@@ -97,3 +97,14 @@ Add to `package.json`, all deterministic:
 - Reports are generated artifacts but committed, so a reviewer sees state without running anything.
 - `blocked` and `unmeasured` never count as pass anywhere in the generators; missing data prints `Unknown`.
 - Final Build Mode authorization stays a human gate; M0.5 only produces the recommendation.
+
+## Constitutional limit (binding)
+
+M0.5 is the **final infrastructure sprint**. After it completes:
+
+- No further infrastructure, governance documents, certification frameworks, dashboards, engineering reports, ADR restructuring, architecture chapters, or developer tooling may be introduced — unless a blocker is discovered during implementation or certification, in which case the fix is scoped to unblocking only.
+- StreamFlow enters **M1 Build Mode immediately** on successful M0.5 completion.
+- All future work prioritises user-facing product capability over engineering infrastructure.
+- The Constitution is **complete**; changes only via numbered ADR.
+
+This clause is recorded in `docs/m0/M0.5-Developer-Infrastructure-Report.md`, `docs/blueprint/I-governance.md`, and project memory so it binds every later session.
