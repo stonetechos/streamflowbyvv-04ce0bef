@@ -249,15 +249,25 @@ test.describe("M1 room lifecycle", () => {
       : await session.page.evaluate(() => document.body.innerText);
     await session.context.close();
 
-    const refusedWithMessage = !enteredRoom && visibleText.trim().length > 0;
+    // WP4 (Room engine): the frozen acceptance criterion asks for a *clear*
+    // refusal, so "any visible text" is not enough. The observed copy must be
+    // the capacity refusal itself — `error.room.capacity_exceeded` and its
+    // `.title` in `src/foundation/localization/bundles/en.ts`. A generic
+    // "we couldn't find that room" fallback is a failure of this row.
+    const normalized = visibleText.replace(/\s+/g, " ").trim();
+    const namesCapacity =
+      /this room is full\.?/i.test(normalized) || /room is full/i.test(normalized);
+    const refusedWithMessage = !enteredRoom && namesCapacity;
     const roster = await readRoster(participants[0]!, room);
     const seated = roster.filter((member) => member.state === "joined").length;
 
     recordM1Row("CERT-ROOM-03", {
       status: refusedWithMessage && seated <= room.maxMembers ? "pass" : "fail",
       detail: refusedWithMessage
-        ? `Overflow joiner was refused in the UI with a message and the lobby held ${seated}/${room.maxMembers} seats. Message shown: ${visibleText.replace(/\s+/g, " ").slice(0, 200)}`
-        : `Overflow joiner was admitted (url ${enteredRoom ? "reached the room" : "unknown"}); lobby now holds ${seated}/${room.maxMembers} seats.`,
+        ? `Overflow joiner was refused with the capacity message and the lobby held ${seated}/${room.maxMembers} seats. Message shown: ${normalized.slice(0, 200)}`
+        : enteredRoom
+          ? `Overflow joiner was admitted; lobby now holds ${seated}/${room.maxMembers} seats.`
+          : `Overflow joiner was refused, but not for capacity: the surface did not name the room as full. Message shown: ${normalized.slice(0, 200)}`,
       profileId: "PROF-07",
       browser: browserName,
       platform: "web-desktop",

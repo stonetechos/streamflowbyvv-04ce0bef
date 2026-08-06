@@ -68,7 +68,16 @@ export interface HomeModel {
 export function useHome(viewerProfileId: string | null): HomeModel {
   const [snapshot, setSnapshot] = useState<HomeSnapshot>(EMPTY_SNAPSHOT);
   const [isLoading, setLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
+  // WP4 (Room engine, CERT-ROOM-03; journey "guest is refused at capacity").
+  // A refusal the person just triggered and a background snapshot re-read are
+  // two different failures. Holding them in one slot let a snapshot that
+  // succeeded moments later erase the refusal, and the surface fell back to a
+  // generic "we couldn't find that room" instead of naming the real reason.
+  const [snapshotError, setSnapshotError] = useState<unknown>(null);
+  const [actionError, setActionError] = useState<unknown>(null);
+  // What the person did last wins; the background read only speaks when the
+  // action had nothing to say.
+  const error = actionError ?? snapshotError;
   const [pending, setPending] = useState<HomePendingAction>(null);
   const [pendingInviteId, setPendingInviteId] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
@@ -101,11 +110,11 @@ export function useHome(viewerProfileId: string | null): HomeModel {
       .then((next) => {
         if (!active) return;
         setSnapshot(next);
-        setError(null);
+        setSnapshotError(null);
       })
       .catch((cause: unknown) => {
         logger.warn("Home snapshot failed", { module: MODULE, error: cause });
-        if (active) setError(cause);
+        if (active) setSnapshotError(cause);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -129,7 +138,7 @@ export function useHome(viewerProfileId: string | null): HomeModel {
       operation: () => Promise<T>,
     ): Promise<T | null> => {
       setPending(action);
-      setError(null);
+      setActionError(null);
       try {
         const result = await operation();
         refresh();
@@ -137,7 +146,7 @@ export function useHome(viewerProfileId: string | null): HomeModel {
         return result;
       } catch (cause) {
         logger.warn("Home action failed", { module: MODULE, action, error: cause });
-        setError(cause);
+        setActionError(cause);
         return null;
       } finally {
         setPending(null);
