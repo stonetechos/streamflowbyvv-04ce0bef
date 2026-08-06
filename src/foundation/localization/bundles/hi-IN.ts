@@ -288,11 +288,12 @@ export const hiINBundle: LocaleBundle = {
     "provider.class.manual_sync": "मैन्युअल सिंक",
     "provider.class.unverified": "असत्यापित",
     "provider.class.unavailable": "अनुपलब्ध",
-    "provider.hint.supported": "StreamFlow इसे सबके लिए साथ में चला और रोक सकता है।",
+    "provider.hint.supported":
+      "इस रूम के लिए प्रमाणित: प्लेबैक सबके लिए एक साथ रहता है। हर सदस्य के पास इस सेवा की अपनी पहुँच होनी चाहिए।",
     "provider.hint.manual_sync":
-      "सब गिनती पर एक साथ प्ले दबाएंगे। StreamFlow प्लेयर को नियंत्रित नहीं करेगा।",
+      "मैन्युअल सिंक: सब एक ही संकेत पर शुरू करते हैं। StreamFlow इस प्लेयर को नियंत्रित नहीं कर सकता, और हर सदस्य के पास इस सेवा की पहुँच होनी चाहिए।",
     "provider.hint.unverified":
-      "हमने इसे अभी सत्यापित नहीं किया है। आप गिनती के साथ फिर भी साथ देख सकते हैं।",
+      "प्लेबैक नियंत्रण के लिए प्रमाणित नहीं, इसलिए रूम मैन्युअल सिंक पर चलता है — सब एक ही संकेत से शुरू करते हैं और हर सदस्य को इस सेवा की पहुँच चाहिए।",
     "provider.hint.unavailable": "इस रूम में यह सेवा अभी उपयोग नहीं हो सकती।",
     "provider.badge.default": "आपकी डिफ़ॉल्ट",
     "provider.action.favorite": "{provider} को पसंदीदा में जोड़ें",
