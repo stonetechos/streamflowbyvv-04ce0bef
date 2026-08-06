@@ -36,15 +36,11 @@ for (const item of items) {
   if (!item.effort) violations.push(`${where}: missing estimated effort.`);
   if (typeof item.blocking !== "boolean") violations.push(`${where}: blocking must be a boolean.`);
   if (!engineIds.has(item.engine)) violations.push(`${where}: engine "${item.engine}" is not in the engine registry.`);
-  if (item.adr && !existsSync(`docs/adr/${item.adr}-`.slice(0, 0) + findAdr(item.adr))) {
+  if (item.adr && !KNOWN_ADRS.has(item.adr)) {
     violations.push(`${where}: linked ${item.adr} does not resolve to a decision record.`);
   }
 }
 
-function findAdr(id) {
-  const fs = require("node:fs");
-  return "";
-}
 
 if (violations.length > 0) {
   console.error("Technical debt register validation failed:\n");
