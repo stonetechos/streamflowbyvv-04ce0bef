@@ -86,6 +86,11 @@ test.describe("M1 Tier C sync", () => {
     // The host picks a provider the way a real host does: through the lobby
     // radiogroup, not by writing the room row behind the UI.
     const choices = page.locator('[role="radiogroup"] [role="radio"]:not([disabled])');
+    try {
+      await choices.first().waitFor({ state: "visible", timeout: 20_000 });
+    } catch {
+      // Fall through: an empty catalog is recorded as unmeasured below.
+    }
     const choiceCount = await choices.count();
     if (choiceCount === 0) {
       await context.close();
