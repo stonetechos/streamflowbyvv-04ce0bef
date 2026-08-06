@@ -13,8 +13,8 @@ import { useEffect, useState, type FormEvent } from "react";
 
 import { ActionButton, Surface, TextField } from "@/design-system/components";
 import {
-  NETFLIX_BROWSE_URL,
   parseWatchSource,
+  providerBrowseUrl,
   watchSourceCapability,
   type WatchProviderCapability,
 } from "@/domain";
@@ -31,8 +31,14 @@ export interface SourcePickerProps {
 
 const PLACEHOLDER: Readonly<Record<string, string>> = {
   netflix: "https://www.netflix.com/title/81234567",
-  youtube: "https://www.youtube.com/watch?v=...",
-  local: "https://example.com/clip.mp4",
+  prime: "https://www.primevideo.com/detail/0ABCDEF",
+  hotstar: "https://www.hotstar.com/in/movies/title/1260012345",
+  disney: "https://www.disneyplus.com/movies/title/abcdef",
+  jiocinema: "https://www.jiocinema.com/movies/title/1234567",
+  sonyliv: "https://www.sonyliv.com/movies/title-1234567",
+  zee5: "https://www.zee5.com/movies/details/title/0-0-123456",
+  appletv: "https://tv.apple.com/movie/umc.cmc.abcdef",
+  direct: "https://example.com/clip.mp4",
 };
 
 export function SourcePicker({
@@ -58,10 +64,15 @@ export function SourcePicker({
   const parsed = parseWatchSource(value);
   const capability = watchSourceCapability(parsed);
   const showPreview = value.trim().length > 0;
-  const isNetflix = provider.providerId === "netflix";
+  // Every OTT service is chosen the same way: browse there, come back with
+  // the public title link. Only a directly reachable file is pasted outright.
+  const isHandoff = provider.selectionMode === "browse";
+  const browseUrl = providerBrowseUrl(provider.providerId);
 
   const openProvider = () => {
-    const target = parsed?.kind === "netflix" ? parsed.url : NETFLIX_BROWSE_URL;
+    const target =
+      parsed?.providerId === provider.providerId && parsed.url ? parsed.url : browseUrl;
+    if (!target) return;
     setHandedOff(true);
     window.open(target, "_blank", "noopener,noreferrer");
   };
@@ -89,15 +100,22 @@ export function SourcePicker({
         ) : null}
       </div>
 
-      {isNetflix ? (
+      {isHandoff ? (
         <div className="flex flex-col gap-2 rounded-xl border border-border/60 p-3">
-          <p className="text-xs text-muted-foreground">{t("theater.netflix.instruction")}</p>
-          <ActionButton tone="secondary" size="sm" onClick={openProvider} data-sf-open-netflix>
-            {t("theater.netflix.open")}
+          <p className="text-xs text-muted-foreground">
+            {t("theater.provider.instruction", { provider: provider.displayName })}
+          </p>
+          <ActionButton
+            tone="secondary"
+            size="sm"
+            onClick={openProvider}
+            data-sf-open-provider={provider.providerId}
+          >
+            {t("theater.provider.open", { provider: provider.displayName })}
           </ActionButton>
           {handedOff ? (
-            <p className="text-xs text-muted-foreground" data-sf-netflix-returned>
-              {t("theater.netflix.returned")}
+            <p className="text-xs text-muted-foreground" data-sf-provider-returned>
+              {t("theater.provider.returned")}
             </p>
           ) : null}
         </div>
@@ -105,11 +123,11 @@ export function SourcePicker({
 
       <form className="flex flex-col gap-3" onSubmit={submit}>
         <TextField
-          label={isNetflix ? t("theater.netflix.paste_label") : t("theater.source.label")}
+          label={isHandoff ? t("theater.provider.paste_label") : t("theater.source.label")}
           description={
-            isNetflix ? t("theater.netflix.paste_description") : t("theater.source.description")
+            isHandoff ? t("theater.provider.paste_description") : t("theater.source.description")
           }
-          placeholder={PLACEHOLDER[provider.providerId] ?? PLACEHOLDER["youtube"]}
+          placeholder={PLACEHOLDER[provider.providerId] ?? PLACEHOLDER["direct"]}
           value={value}
           error={error}
           onChange={(event) => setValue(event.target.value)}
