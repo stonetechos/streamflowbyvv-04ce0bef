@@ -11,7 +11,8 @@ docs/blueprint/
   StreamFlow-Blueprint.md        index + Executive Summary (max 2 pages)
   A-product-operating-brief.md   thesis, users, launch scope, source types,
                                  sync tier model, room lifecycle summary,
-                                 degraded-mode philosophy, KPIs and SLOs
+                                 degraded-mode philosophy, KPIs and SLOs,
+                                 plus the LAUNCH ENVELOPE as a first-class section
   B-capability-matrix.md         source category x platform x sync tier x
                                  host/member limits x fallback x launch status
                                  x user-facing disclosure text
