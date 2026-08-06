@@ -250,9 +250,9 @@ export function Theater({ roomId }: TheaterProps) {
           displayName: nameFor(member.profileId),
           isHost: member.isHost,
           state:
-            member.presence === "offline"
+            member.presence === "unknown"
               ? ("disconnected" as const)
-              : member.presence === "stale"
+              : member.presence === "away"
                 ? ("reconnecting" as const)
                 : member.isViewer && selfReady
                   ? ("ready" as const)
