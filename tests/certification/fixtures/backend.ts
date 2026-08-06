@@ -68,3 +68,26 @@ export async function profileIdFor(identity: CertIdentity): Promise<string | nul
   }
   return null;
 }
+
+/** Create a room the way the app does: server-allocated code, host = caller. */
+export async function createCertRoom(
+  host: CertIdentity,
+  hostProfileId: string,
+  name = "Certification room",
+): Promise<{ id: string; code: string } | null> {
+  const { data: code } = await host.client.rpc("allocate_code", { _prefix: "ROM" });
+  if (!code) return null;
+  const { data } = await host.client
+    .from("rooms")
+    .insert({
+      code,
+      name,
+      host_profile_id: hostProfileId,
+      status: "lobby",
+      max_members: 4,
+    })
+    .select("id, code")
+    .maybeSingle();
+  if (!data) return null;
+  return { id: data["id"] as string, code: data["code"] as string };
+}

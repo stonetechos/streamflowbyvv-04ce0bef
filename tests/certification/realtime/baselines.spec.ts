@@ -12,6 +12,7 @@ import {
   anonClient,
   provisionIdentity,
   profileIdFor,
+  createCertRoom,
   type CertIdentity,
 } from "../fixtures/backend";
 
@@ -290,17 +291,13 @@ test.describe("WP4 measured baselines", () => {
     let failures = 0;
     for (let i = 0; i < 5; i += 1) {
       const started = Date.now();
-      const { data: room } = await host!.client
-        .from("rooms")
-        .insert({ name: `perf-${i}`, host_profile_id: hostProfileId, status: "lobby", max_members: 4 })
-        .select("id, code")
-        .maybeSingle();
-      if (!room?.["code"]) {
+      const room = await createCertRoom(host!, hostProfileId!, `perf-${i}`);
+      if (!room?.code) {
         failures += 1;
         continue;
       }
       const { data: discovered } = await guest!.client.rpc("discover_room_by_code", {
-        _code: room["code"],
+        _code: room.code,
       });
       if (!discovered || (Array.isArray(discovered) && discovered.length === 0)) {
         failures += 1;

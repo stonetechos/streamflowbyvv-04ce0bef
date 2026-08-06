@@ -6,7 +6,13 @@
  * be provisioned the rows are recorded `unmeasured` — never passed.
  */
 import { test, expect } from "@playwright/test";
-import { provisionIdentity, profileIdFor, backendConfigured, type CertIdentity } from "../fixtures/backend";
+import {
+  provisionIdentity,
+  profileIdFor,
+  createCertRoom,
+  backendConfigured,
+  type CertIdentity,
+} from "../fixtures/backend";
 import { writeEvidence } from "../helpers/evidence";
 
 test.describe("WP7 authorization boundaries", () => {
@@ -24,17 +30,8 @@ test.describe("WP7 authorization boundaries", () => {
     if (!host) return;
     hostProfileId = await profileIdFor(host);
     if (!hostProfileId) return;
-    const { data } = await host.client
-      .from("rooms")
-      .insert({
-        name: "Certification room",
-        host_profile_id: hostProfileId,
-        status: "lobby",
-        max_members: 4,
-      })
-      .select("id")
-      .maybeSingle();
-    roomId = (data?.["id"] as string | undefined) ?? null;
+    const room = await createCertRoom(host, hostProfileId);
+    roomId = room?.id ?? null;
   });
 
   function skipUnless(condition: unknown, evidenceId: string, reason: string): boolean {

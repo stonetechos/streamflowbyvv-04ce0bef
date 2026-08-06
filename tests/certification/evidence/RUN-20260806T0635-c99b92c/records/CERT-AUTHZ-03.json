@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-AUTHZ-03",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "detail": "Host-role escalation by an outsider affected zero rows.",
+  "runId": "RUN-20260806T0635-c99b92c",
+  "commit": "c99b92c",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:35:51.840Z"
+}
