@@ -217,8 +217,15 @@ export function Theater({ roomId }: TheaterProps) {
   const phase = deriveRoomPhase({
     mediaRef,
     isCountingDown: countdownSeconds !== null,
-    playbackPhase: sync.state?.phase ?? null,
-    roomClosed: room.room?.status === "closed",
+    playbackPhase:
+      sync.state?.phase === "playing"
+        ? "playing"
+        : sync.state?.phase === "paused"
+          ? "paused"
+          : sync.state
+            ? "idle"
+            : null,
+    roomClosed: room.room?.status === "abandoned",
     roomEnded: room.room?.status === "ended",
   });
 
