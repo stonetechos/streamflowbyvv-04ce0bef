@@ -64,23 +64,23 @@ Exactly one evidence destination exists. It is owned by
 `scripts/lib/evidence-destination.mjs`; no other module, config or workflow may declare
 an evidence root. The value is unchanged from RET-1.
 
-| Item                    | Path                                                                       |
-| ----------------------- | -------------------------------------------------------------------------- |
-| Authoritative root      | `tests/certification/evidence/`                                            |
-| Per-run path            | `tests/certification/evidence/<RUN-ID>/`                                   |
-| RUN-ID path             | the run directory itself; `<RUN-ID>` must be one safe path segment         |
-| Work-package lookup     | `<run>/manifest.json` → `workPackage` (also in `summary.json`, `completed.json`) |
-| Certification-row map   | `<run>/manifest.json` → `rows[]` → `records/<EVIDENCE-ID>.json`            |
-| Manifest                | `<run>/manifest.json`                                                      |
-| Index                   | `<run>/index.json`                                                         |
-| Summary                 | `<run>/summary.json`                                                       |
-| Completion marker       | `<run>/completed.json`                                                     |
-| Reports                 | `<run>/reports/`                                                           |
-| Metrics                 | `<run>/metrics/`                                                           |
-| Logs / screenshots      | `<run>/logs/`, `<run>/screenshots/`                                        |
-| Raw runner workspace    | `<run>/artifacts/`, `<run>/videos/`, `<run>/html/`, `<run>/report.json`    |
-| Legacy path handling    | `RUN-M0R-001` (pre-manifest) stays at the same root, untouched, no manifest |
-| CI relationship         | CI writes to the same root; the uploaded artifact is a derived copy only    |
+| Item                  | Path                                                                             |
+| --------------------- | -------------------------------------------------------------------------------- |
+| Authoritative root    | `tests/certification/evidence/`                                                  |
+| Per-run path          | `tests/certification/evidence/<RUN-ID>/`                                         |
+| RUN-ID path           | the run directory itself; `<RUN-ID>` must be one safe path segment               |
+| Work-package lookup   | `<run>/manifest.json` → `workPackage` (also in `summary.json`, `completed.json`) |
+| Certification-row map | `<run>/manifest.json` → `rows[]` → `records/<EVIDENCE-ID>.json`                  |
+| Manifest              | `<run>/manifest.json`                                                            |
+| Index                 | `<run>/index.json`                                                               |
+| Summary               | `<run>/summary.json`                                                             |
+| Completion marker     | `<run>/completed.json`                                                           |
+| Reports               | `<run>/reports/`                                                                 |
+| Metrics               | `<run>/metrics/`                                                                 |
+| Logs / screenshots    | `<run>/logs/`, `<run>/screenshots/`                                              |
+| Raw runner workspace  | `<run>/artifacts/`, `<run>/videos/`, `<run>/html/`, `<run>/report.json`          |
+| Legacy path handling  | `RUN-M0R-001` (pre-manifest) stays at the same root, untouched, no manifest      |
+| CI relationship       | CI writes to the same root; the uploaded artifact is a derived copy only         |
 
 The raw runner workspace is a **generated temporary workspace** beneath the authoritative
 root. It is never authoritative: `videos/` and `artifacts/` stay ignored, and the manifest

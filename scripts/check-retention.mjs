@@ -278,9 +278,7 @@ try {
   );
   check(
     "D8 generated runner workspace output is not presented as retained evidence",
-    manifest.artifacts.every((a) =>
-      RETAINED_SUBDIRS.some((sub) => a.path.startsWith(`${sub}/`)),
-    ) &&
+    manifest.artifacts.every((a) => RETAINED_SUBDIRS.some((sub) => a.path.startsWith(`${sub}/`))) &&
       !manifest.artifacts.some(
         (a) => a.path.startsWith("videos/") || a.path.startsWith("artifacts/"),
       ),
