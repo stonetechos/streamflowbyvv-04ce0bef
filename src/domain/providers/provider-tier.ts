@@ -64,7 +64,7 @@ export function resolveCapabilityTier(
   const key = source?.trim().toLowerCase();
   if (!key) return { tier: "c", reason: "no_source", certificationId: null };
 
-  const tuple: Partial<CapabilityTuple> = {
+  const tuple: { [K in keyof CapabilityTuple]?: string | undefined } = {
     source: key,
     adapter: context.adapter,
     platform: context.platform,
