@@ -340,6 +340,19 @@ export const WATCH_MEDIA_METADATA_KEY = "watch_media";
 export const WATCH_SOURCE_METADATA_KEY = "watch_source";
 export const WATCH_TITLE_METADATA_KEY = "watch_title";
 
+/** How trustworthy the room's selection is right now (Sprint H4). */
+export type MediaRefValidity = "valid" | "pending" | "needs-user-action" | "invalid";
+
+/** Where the room is in its watch-party lifecycle (Sprint H4). */
+export type RoomPhase =
+  | "waiting-for-content"
+  | "content-selected"
+  | "countdown"
+  | "watching"
+  | "paused"
+  | "ended"
+  | "closed";
+
 /**
  * The room's shared answer to "what are we watching?".
  *
@@ -356,6 +369,16 @@ export interface RoomMediaRef {
   /** Host-typed name of the film or show, when they gave one. */
   readonly title: string | null;
   readonly selectedAt: string | null;
+  /** How the selection was made, copied from the provider definition. */
+  readonly selectionMode: ProviderSelectionMode;
+  /** How far coordination can honestly go for this selection. */
+  readonly syncMode: PlaybackControlMode;
+  /** Profile that chose it; "" for rows written before H4. */
+  readonly selectedByParticipantId: string;
+  /** Server-clock milliseconds at selection; 0 when unknown. */
+  readonly selectedAtServerMs: number;
+  readonly validity: MediaRefValidity;
+  readonly limitations: readonly string[];
 }
 
 export interface WatchSelection {
@@ -369,17 +392,42 @@ export function toRoomMediaRef(
   source: WatchSource,
   title: string | null,
   selectedAt: string = new Date().toISOString(),
+  selectedByParticipantId = "",
+  selectedAtServerMs: number = Date.parse(selectedAt) || 0,
 ): RoomMediaRef {
+  const capability = watchSourceCapability(source);
   return {
     providerId: source.providerId,
-    providerName: watchSourceCapability(source).displayName,
+    providerName: capability.displayName,
     kind: source.kind,
     url: source.url,
     titleId: source.kind === "ott" ? source.titleId : null,
     title: title && title.trim().length > 0 ? title.trim() : null,
     selectedAt,
+    selectionMode: capability.selectionMode,
+    syncMode: capability.playbackControlMode,
+    selectedByParticipantId,
+    selectedAtServerMs,
+    validity: mediaRefValidity(source, capability),
+    limitations: capability.limitations,
   };
 }
+
+/**
+ * A selection is only `valid` when the service is still in the registry and
+ * we hold something the room can actually act on. A room saved against a
+ * service the product no longer offers reads `invalid`, so the host is asked
+ * to pick again rather than being silently moved somewhere else.
+ */
+function mediaRefValidity(
+  source: WatchSource,
+  capability: WatchProviderCapability,
+): MediaRefValidity {
+  if (!capability.enabled) return "invalid";
+  if (!source.url) return "needs-user-action";
+  return "valid";
+}
+
 
 /** Rebuilds a playable/openable source from the shared reference. */
 export function mediaRefToSource(ref: RoomMediaRef | null): WatchSource | null {
