@@ -128,14 +128,12 @@ test.describe("WP7 authorization boundaries", () => {
     )
       test.skip();
     const outsiderProfileId = await profileIdFor(outsider!);
-    const { error } = await outsider!.client
-      .from("room_members")
-      .insert({
-        room_id: roomId!,
-        profile_id: outsiderProfileId,
-        role: "co_host",
-        state: "joined",
-      });
+    const { error } = await outsider!.client.from("room_members").insert({
+      room_id: roomId!,
+      profile_id: outsiderProfileId,
+      role: "co_host",
+      state: "joined",
+    });
     expect(error).not.toBeNull();
     writeEvidence({
       evidenceId: "CERT-AUTHZ-04",
