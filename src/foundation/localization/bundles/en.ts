@@ -279,11 +279,12 @@ export const enBundle: LocaleBundle = {
     "provider.class.manual_sync": "Manual sync",
     "provider.class.unverified": "Unverified",
     "provider.class.unavailable": "Unavailable",
-    "provider.hint.supported": "StreamFlow can start and pause this together for everyone.",
+    "provider.hint.supported":
+      "Certified for this room: playback stays in step for everyone. Each participant still needs their own access to this service.",
     "provider.hint.manual_sync":
-      "Everyone presses play together on a countdown. StreamFlow won't control the player.",
+      "Manual sync: everyone starts from the same cue on the countdown. StreamFlow cannot control this player, and each participant needs access to this service.",
     "provider.hint.unverified":
-      "Not yet verified by us. You can still watch together with a countdown.",
+      "Not certified for playback control, so the room runs on manual sync — everyone starts from the same cue and each participant needs access to this service.",
     "provider.hint.unavailable": "This service can't be used in this room right now.",
     "provider.badge.default": "Your default",
     "provider.action.favorite": "Add {provider} to favourites",

@@ -25,6 +25,8 @@ import {
   type ProviderPreferenceRepository,
 } from "@/repository";
 
+import type { LaunchPlatform } from "./provider-launch.types";
+import { resolveCapabilityTier } from "./provider-tier";
 import type {
   Provider,
   ProviderCapabilityEntry,
@@ -47,6 +49,11 @@ export interface ProviderCatalogQuery {
   readonly profileId: string | null;
   /** Overrides the stored region; used by Po and by tests, never guessed. */
   readonly regionCode?: string;
+  /**
+   * Runtime platform used when resolving capability certification (WP9).
+   * Absent or unknown resolves to Tier C, exactly as the launch surface does.
+   */
+  readonly platform?: LaunchPlatform;
 }
 
 export interface ProviderCatalogSnapshot {
@@ -109,15 +116,25 @@ export function deriveProviderStatus(
   return "unavailable";
 }
 
+/**
+ * WP9 / PROV-A1: the pre-commit surface obeys the same rule WP7 gave the
+ * launch surface. A catalog row may claim control, but a claim is not
+ * evidence: `supported` is only ever announced when the capability
+ * certification registry proves Tier A for the tuple. Anything else is
+ * coordinated manual sync (ADR-014).
+ */
 function deriveSelectionClass(
   status: ProviderStatus,
   complianceAction: ProviderSelectionOption["complianceAction"],
   hasRule: boolean,
+  isControlCertified: boolean,
 ): ProviderSelectionClass {
   if (!hasRule || complianceAction === "block") return "unavailable";
   if (status === "unavailable" || status === "retired") return "unavailable";
   if (complianceAction === "manual_only" || status === "manual_only") return "manual_sync";
-  if (status === "available" && complianceAction === "allow") return "supported";
+  if (status === "available" && complianceAction === "allow") {
+    return isControlCertified ? "supported" : "manual_sync";
+  }
   return "unverified";
 }
 
@@ -184,10 +201,16 @@ export function createProviderCatalogService(
           });
 
           const status = deriveProviderStatus(provider, own);
+          const isControlCertified =
+            resolveCapabilityTier(
+              provider.key,
+              query.platform ? { platform: query.platform } : {},
+            ).tier === "a";
           const selectionClass = deriveSelectionClass(
             status,
             verdict.action,
             selectionRules.length > 0,
+            isControlCertified,
           );
 
           return Object.freeze({
