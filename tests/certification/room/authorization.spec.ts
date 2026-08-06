@@ -48,7 +48,13 @@ test.describe("WP7 authorization boundaries", () => {
   }
 
   test("AUTHZ-01 non-member cannot read another room's state", async () => {
-    if (skipUnless(outsider && roomId, "CERT-AUTHZ-01", "No provisionable identities or room in this environment."))
+    if (
+      skipUnless(
+        outsider && roomId,
+        "CERT-AUTHZ-01",
+        "No provisionable identities or room in this environment.",
+      )
+    )
       test.skip();
     const { data } = await outsider!.client.from("room_state").select("*").eq("room_id", roomId!);
     expect(data ?? []).toHaveLength(0);
@@ -63,7 +69,13 @@ test.describe("WP7 authorization boundaries", () => {
   });
 
   test("AUTHZ-02 non-member cannot update room state", async () => {
-    if (skipUnless(outsider && roomId, "CERT-AUTHZ-02", "No provisionable identities or room in this environment."))
+    if (
+      skipUnless(
+        outsider && roomId,
+        "CERT-AUTHZ-02",
+        "No provisionable identities or room in this environment.",
+      )
+    )
       test.skip();
     const { data } = await outsider!.client
       .from("room_state")
@@ -82,7 +94,13 @@ test.describe("WP7 authorization boundaries", () => {
   });
 
   test("AUTHZ-03 non-member cannot mutate membership (host boundary)", async () => {
-    if (skipUnless(outsider && roomId, "CERT-AUTHZ-03", "No provisionable identities or room in this environment."))
+    if (
+      skipUnless(
+        outsider && roomId,
+        "CERT-AUTHZ-03",
+        "No provisionable identities or room in this environment.",
+      )
+    )
       test.skip();
     const { data } = await outsider!.client
       .from("room_members")
@@ -101,12 +119,23 @@ test.describe("WP7 authorization boundaries", () => {
   });
 
   test("AUTHZ-04 co-host boundary: a member cannot promote themselves", async () => {
-    if (skipUnless(outsider && roomId, "CERT-AUTHZ-04", "No provisionable identities or room in this environment."))
+    if (
+      skipUnless(
+        outsider && roomId,
+        "CERT-AUTHZ-04",
+        "No provisionable identities or room in this environment.",
+      )
+    )
       test.skip();
     const outsiderProfileId = await profileIdFor(outsider!);
     const { error } = await outsider!.client
       .from("room_members")
-      .insert({ room_id: roomId!, profile_id: outsiderProfileId, role: "co_host", state: "joined" });
+      .insert({
+        room_id: roomId!,
+        profile_id: outsiderProfileId,
+        role: "co_host",
+        state: "joined",
+      });
     expect(error).not.toBeNull();
     writeEvidence({
       evidenceId: "CERT-AUTHZ-04",
@@ -119,7 +148,13 @@ test.describe("WP7 authorization boundaries", () => {
   });
 
   test("AUTHZ-05 stale version writes are refused (monotonic room_state)", async () => {
-    if (skipUnless(host && roomId, "CERT-AUTHZ-05", "No provisionable host identity in this environment."))
+    if (
+      skipUnless(
+        host && roomId,
+        "CERT-AUTHZ-05",
+        "No provisionable host identity in this environment.",
+      )
+    )
       test.skip();
     const { data: current } = await host!.client
       .from("room_state")
@@ -153,7 +188,13 @@ test.describe("WP7 authorization boundaries", () => {
   });
 
   test("AUTHZ-06 cross-room mutation is refused", async () => {
-    if (skipUnless(host && outsider, "CERT-AUTHZ-06", "No provisionable identities in this environment."))
+    if (
+      skipUnless(
+        host && outsider,
+        "CERT-AUTHZ-06",
+        "No provisionable identities in this environment.",
+      )
+    )
       test.skip();
     const outsiderProfileId = await profileIdFor(outsider!);
     const { data } = await outsider!.client
@@ -173,7 +214,8 @@ test.describe("WP7 authorization boundaries", () => {
   });
 
   test("AUTHZ-07 anonymous client cannot enumerate rooms", async () => {
-    if (skipUnless(backendConfigured, "CERT-AUTHZ-07", "Backend not configured for this run.")) test.skip();
+    if (skipUnless(backendConfigured, "CERT-AUTHZ-07", "Backend not configured for this run."))
+      test.skip();
     const { anonClient } = await import("../fixtures/backend");
     const { data } = await anonClient().from("rooms").select("id").limit(5);
     expect(data ?? []).toHaveLength(0);

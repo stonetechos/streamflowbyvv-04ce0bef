@@ -53,7 +53,8 @@ export const CERTIFICATION_PROFILES: readonly CertificationProfile[] = [
     expectedBehaviour: "Realtime channel recovers; no duplicated domain events.",
     automationStatus: "not_implemented",
     supportedPlatforms: [],
-    limitations: "BLOCKING: no loss injection available in the CI sandbox. Rows requiring PROF-03 cannot be certified.",
+    limitations:
+      "BLOCKING: no loss injection available in the CI sandbox. Rows requiring PROF-03 cannot be certified.",
   },
   {
     profileId: "PROF-04",
@@ -61,7 +62,8 @@ export const CERTIFICATION_PROFILES: readonly CertificationProfile[] = [
     type: "automated",
     simulationMethod: "context.setOffline(true) then false, with a measured outage window.",
     parameters: { outageMs: 5000 },
-    expectedBehaviour: "Client reconnects, resubscribes, and reconciles server-authoritative state.",
+    expectedBehaviour:
+      "Client reconnects, resubscribes, and reconciles server-authoritative state.",
     automationStatus: "implemented",
     supportedPlatforms: ["web-chromium", "web-firefox", "web-webkit"],
     limitations: "Simulates client-side loss of connectivity only, not server partition.",
@@ -81,9 +83,11 @@ export const CERTIFICATION_PROFILES: readonly CertificationProfile[] = [
     profileId: "PROF-06",
     name: "Background / Throttled Tab",
     type: "manual",
-    simulationMethod: "Tab backgrounding with timer throttling; requires a real user agent session.",
+    simulationMethod:
+      "Tab backgrounding with timer throttling; requires a real user agent session.",
     parameters: { backgroundMs: 30000 },
-    expectedBehaviour: "Countdown reconciles from server clock on foreground, never drifts silently.",
+    expectedBehaviour:
+      "Countdown reconciles from server clock on foreground, never drifts silently.",
     automationStatus: "not_implemented",
     supportedPlatforms: ["web-chromium", "android-shell"],
     limitations: "Headless Chromium does not throttle background timers faithfully.",
@@ -108,7 +112,8 @@ export const CERTIFICATION_PROFILES: readonly CertificationProfile[] = [
     expectedBehaviour: "Audio-only transport establishes; no domain state travels over WebRTC.",
     automationStatus: "not_implemented",
     supportedPlatforms: [],
-    limitations: "BLOCKING: no LiveKit test project is provisioned. Voice rows cannot be certified.",
+    limitations:
+      "BLOCKING: no LiveKit test project is provisioned. Voice rows cannot be certified.",
   },
   {
     profileId: "PROF-09",
@@ -119,7 +124,8 @@ export const CERTIFICATION_PROFILES: readonly CertificationProfile[] = [
     expectedBehaviour: "No focus traps; every interactive control is reachable and named.",
     automationStatus: "partial",
     supportedPlatforms: ["web-chromium"],
-    limitations: "Automated sweeps detect a minority of WCAG 2.1 AA failures; manual audit still required.",
+    limitations:
+      "Automated sweeps detect a minority of WCAG 2.1 AA failures; manual audit still required.",
   },
 ];
 

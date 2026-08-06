@@ -89,7 +89,8 @@ test.describe("WP8 server authority", () => {
       browser: "node",
       platform: "node",
       status: "pass",
-      detail: "Tier resolution reads the certification registry only; no name list, no client override.",
+      detail:
+        "Tier resolution reads the certification registry only; no name list, no client override.",
     });
   });
 

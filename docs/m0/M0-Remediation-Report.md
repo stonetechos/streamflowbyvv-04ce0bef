@@ -14,31 +14,31 @@ claimed by any provider without an evidence record.
 
 ## 2. Work packages
 
-| WP | Outcome |
-| --- | --- |
+| WP                            | Outcome                                                                                                                                                                                                                                                                                                      |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | WP1 Capability classification | `provider-tier.ts` rewritten: tier resolves only from a `source · adapter · platform · version · region` tuple matched against `capability-certification.ts`. The registry is **empty**, so all 18 providers resolve to Tier C with a machine-readable reason. Name-based tiering is impossible and guarded. |
-| WP2 Harness | `playwright.config.ts` + `tests/certification/**` committed. Deterministic run id, per-run evidence directory, artifacts on failure. |
-| WP3 Profiles | Nine profiles executable; PROF-03 and PROF-08 declared `unsupported` and therefore blocking (`docs/certification/Certification-Profiles.md`). |
-| WP4 Baselines | Five baselines measured (§3). |
-| WP5 Evidence schema | `docs/certification/Certification-Evidence-Schema.md`; enforced by `scripts/check-certification.mjs`. |
-| WP6 Authentication ownership | `docs/adr/ADR-016-authentication-ownership.md` — Identity Boundary named, no 14th engine. |
-| WP7 Authorization | Seven negative RLS rows; six pass, `AUTHZ-05` unmeasured (§4). |
-| WP8 Server authority | Five rows pass: voice transport carries no domain mutation, version monotonicity is server-enforced, membership authority is `SECURITY DEFINER`, capability disclosure is not client-raisable, intent revisions persist server-side. |
-| WP9 Hygiene | `cert:check` wired into `verify`; harness documented in `tests/certification/README.md`. |
-| WP10 Reporting | This document. |
+| WP2 Harness                   | `playwright.config.ts` + `tests/certification/**` committed. Deterministic run id, per-run evidence directory, artifacts on failure.                                                                                                                                                                         |
+| WP3 Profiles                  | Nine profiles executable; PROF-03 and PROF-08 declared `unsupported` and therefore blocking (`docs/certification/Certification-Profiles.md`).                                                                                                                                                                |
+| WP4 Baselines                 | Five baselines measured (§3).                                                                                                                                                                                                                                                                                |
+| WP5 Evidence schema           | `docs/certification/Certification-Evidence-Schema.md`; enforced by `scripts/check-certification.mjs`.                                                                                                                                                                                                        |
+| WP6 Authentication ownership  | `docs/adr/ADR-016-authentication-ownership.md` — Identity Boundary named, no 14th engine.                                                                                                                                                                                                                    |
+| WP7 Authorization             | Seven negative RLS rows; six pass, `AUTHZ-05` unmeasured (§4).                                                                                                                                                                                                                                               |
+| WP8 Server authority          | Five rows pass: voice transport carries no domain mutation, version monotonicity is server-enforced, membership authority is `SECURITY DEFINER`, capability disclosure is not client-raisable, intent revisions persist server-side.                                                                         |
+| WP9 Hygiene                   | `cert:check` wired into `verify`; harness documented in `tests/certification/README.md`.                                                                                                                                                                                                                     |
+| WP10 Reporting                | This document.                                                                                                                                                                                                                                                                                               |
 
 ## 3. Measured baselines (WP4)
 
 Percentiles in milliseconds. `p95` is reported only where the sample count supports it.
 
-| Row | Metric | n | p50 | p95 | Failures | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| CERT-PERF-01 | invite-to-join, end to end | 5 | 880 | 1993 | 0 | pass |
-| CERT-PERF-02 | ready propagation, realtime round trip | 10 | 16 | 18 | 0 | pass |
-| CERT-PERF-03 | countdown spread across two subscribers | 10 | 0 | 19 | 0 | pass |
-| CERT-PERF-04 | client-vs-server clock offset | 10 | 762 | 824 | 0 | pass |
-| CERT-PERF-05 | reconnect recovery after forced close | 5 | 128 | 150 | 0 | pass |
-| CERT-RES-02 | cold start of the public shell | 5 | 310 | 342 | 0 | pass |
+| Row          | Metric                                  | n   | p50 | p95  | Failures | Status |
+| ------------ | --------------------------------------- | --- | --- | ---- | -------- | ------ |
+| CERT-PERF-01 | invite-to-join, end to end              | 5   | 880 | 1993 | 0        | pass   |
+| CERT-PERF-02 | ready propagation, realtime round trip  | 10  | 16  | 18   | 0        | pass   |
+| CERT-PERF-03 | countdown spread across two subscribers | 10  | 0   | 19   | 0        | pass   |
+| CERT-PERF-04 | client-vs-server clock offset           | 10  | 762 | 824  | 0        | pass   |
+| CERT-PERF-05 | reconnect recovery after forced close   | 5   | 128 | 150  | 0        | pass   |
+| CERT-RES-02  | cold start of the public shell          | 5   | 310 | 342  | 0        | pass   |
 
 These are **Measured Baselines** in the Constitution's three-value scheme, taken on `local-dev` with an
 unshaped network. They are not Certified Thresholds: a threshold requires the same metric measured on
@@ -50,11 +50,11 @@ characterised.
 
 ## 4. Rows that are not PASS
 
-| Row | Status | Reason | Unblocked by |
-| --- | --- | --- | --- |
+| Row                                          | Status     | Reason                                                                                                                                                                        | Unblocked by                                               |
+| -------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | CERT-AUTHZ-05 (stale version writes refused) | unmeasured | No `room_state` row exists at the point the fixture reaches it, so the monotonicity trigger is never exercised. The invariant itself is separately evidenced by `CERT-SA-02`. | Fixture work: provision `room_state` during room creation. |
-| CERT-VOICE-01 / CERT-VOICE-02 | blocked | PROF-08 unsupported — no media server credentials in the certification environment. | Scoped media credentials for CI. |
-| Every PROF-03 row | blocked | Packet loss cannot be emulated on an established WebSocket from the browser. | OS-level shaper in CI. |
+| CERT-VOICE-01 / CERT-VOICE-02                | blocked    | PROF-08 unsupported — no media server credentials in the certification environment.                                                                                           | Scoped media credentials for CI.                           |
+| Every PROF-03 row                            | blocked    | Packet loss cannot be emulated on an established WebSocket from the browser.                                                                                                  | OS-level shaper in CI.                                     |
 
 ## 5. Effect on Build Readiness
 

@@ -42,9 +42,9 @@ test.describe("WP4 measured baselines", () => {
     let failures = 0;
     for (let i = 0; i < SAMPLES; i += 1) {
       const sent = Date.now();
-      const response = await fetch(`${process.env["VITE_SUPABASE_URL"] ?? ""}/auth/v1/health`).catch(
-        () => null,
-      );
+      const response = await fetch(
+        `${process.env["VITE_SUPABASE_URL"] ?? ""}/auth/v1/health`,
+      ).catch(() => null);
       const received = Date.now();
       const serverDate = response?.headers.get("date");
       if (!serverDate) {

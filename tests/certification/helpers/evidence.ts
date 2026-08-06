@@ -77,7 +77,11 @@ export function percentile(values: readonly number[], p: number): number | null 
   return Math.round(sorted[Math.max(0, index)]!);
 }
 
-export function summarize(metricId: string, values: readonly number[], failures: number): MetricSample {
+export function summarize(
+  metricId: string,
+  values: readonly number[],
+  failures: number,
+): MetricSample {
   return {
     metricId,
     sampleCount: values.length,

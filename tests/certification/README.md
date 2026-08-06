@@ -10,14 +10,14 @@ npx playwright test tests/certification/room --project=web-chromium
 
 ## Layout
 
-| Path | Purpose |
-| --- | --- |
-| `helpers/run-context.ts` | Deterministic run id, commit, environment, region |
-| `helpers/evidence.ts` | Evidence records and metric percentiles (see `docs/certification/Certification-Evidence-Schema.md`) |
-| `profiles/certification-profiles.ts` | The nine execution profiles; `unsupported` profiles block their rows |
-| `fixtures/backend.ts` | Ephemeral identities and rooms against the real backend |
-| `provider/`, `room/`, `realtime/`, `resilience/`, `accessibility/`, `voice/` | Row implementations |
-| `evidence/<runId>/` | Output: `records/*.json`, `index.json`, artifacts |
+| Path                                                                         | Purpose                                                                                             |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `helpers/run-context.ts`                                                     | Deterministic run id, commit, environment, region                                                   |
+| `helpers/evidence.ts`                                                        | Evidence records and metric percentiles (see `docs/certification/Certification-Evidence-Schema.md`) |
+| `profiles/certification-profiles.ts`                                         | The nine execution profiles; `unsupported` profiles block their rows                                |
+| `fixtures/backend.ts`                                                        | Ephemeral identities and rooms against the real backend                                             |
+| `provider/`, `room/`, `realtime/`, `resilience/`, `accessibility/`, `voice/` | Row implementations                                                                                 |
+| `evidence/<runId>/`                                                          | Output: `records/*.json`, `index.json`, artifacts                                                   |
 
 ## Environment
 

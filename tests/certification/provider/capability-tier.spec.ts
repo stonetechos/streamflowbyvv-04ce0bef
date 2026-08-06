@@ -47,7 +47,10 @@ test.describe("PROV-A1 capability classification", () => {
 
   test("the certification registry is empty and every entry would need evidence", async () => {
     for (const record of CAPABILITY_CERTIFICATIONS) {
-      expect(record.evidenceLocation.length, `${record.certificationId} needs evidence`).toBeGreaterThan(0);
+      expect(
+        record.evidenceLocation.length,
+        `${record.certificationId} needs evidence`,
+      ).toBeGreaterThan(0);
       expect(record.runId.length).toBeGreaterThan(0);
     }
     writeEvidence({

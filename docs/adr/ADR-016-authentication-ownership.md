@@ -29,14 +29,14 @@ the Identity Boundary.**
 
 The Identity Boundary is defined as:
 
-| Concern | Owner | Layer |
-| --- | --- | --- |
-| Credential exchange, session issue/refresh/revoke | Identity Boundary | Infrastructure |
-| Auth-user → profile provisioning | Identity Boundary | Infrastructure (DB trigger) |
-| `current_profile_id()` resolution for authorization predicates | Identity Boundary | Infrastructure (SECURITY DEFINER) |
-| Post-auth destination and intent continuation | Identity Boundary | Feature |
-| Sign-in / sign-up / callback surfaces, error copy | Experience subsystem | Presentation |
-| Role and capability checks (`has_role`, `is_room_controller`) | Room Engine and Moderation Engine, reading the boundary | Domain |
+| Concern                                                        | Owner                                                   | Layer                             |
+| -------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------- |
+| Credential exchange, session issue/refresh/revoke              | Identity Boundary                                       | Infrastructure                    |
+| Auth-user → profile provisioning                               | Identity Boundary                                       | Infrastructure (DB trigger)       |
+| `current_profile_id()` resolution for authorization predicates | Identity Boundary                                       | Infrastructure (SECURITY DEFINER) |
+| Post-auth destination and intent continuation                  | Identity Boundary                                       | Feature                           |
+| Sign-in / sign-up / callback surfaces, error copy              | Experience subsystem                                    | Presentation                      |
+| Role and capability checks (`has_role`, `is_room_controller`)  | Room Engine and Moderation Engine, reading the boundary | Domain                            |
 
 Rules that follow from this decision:
 
@@ -64,8 +64,8 @@ Rules that follow from this decision:
 
 ## 4. Rejected alternatives
 
-| Alternative | Why rejected |
-| --- | --- |
-| Create a 14th "Auth Engine" | Authentication carries no domain state or business authority; an engine would be a naming exercise and would invite domain logic into a vendor-coupled area. |
-| Give ownership to the Community Engine | Conflates identity with social graph; a suspended social profile must not imply a revoked session. |
-| Leave ownership implicit | Is the status quo that produced the three recurring failure classes above. |
+| Alternative                            | Why rejected                                                                                                                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Create a 14th "Auth Engine"            | Authentication carries no domain state or business authority; an engine would be a naming exercise and would invite domain logic into a vendor-coupled area. |
+| Give ownership to the Community Engine | Conflates identity with social graph; a suspended social profile must not imply a revoked session.                                                           |
+| Leave ownership implicit               | Is the status quo that produced the three recurring failure classes above.                                                                                   |

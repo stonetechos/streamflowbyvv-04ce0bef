@@ -45,11 +45,7 @@ export interface ProviderTierContext {
 export interface CapabilityTierResolution {
   readonly tier: ProviderTier;
   /** Why the tier is what it is — surfaced in telemetry, never in marketing. */
-  readonly reason:
-    | "certified"
-    | "no_capability_tuple"
-    | "no_certification_record"
-    | "no_source";
+  readonly reason: "certified" | "no_capability_tuple" | "no_certification_record" | "no_source";
   readonly certificationId: string | null;
 }
 

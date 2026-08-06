@@ -15,14 +15,14 @@ function safeExec(command: string, fallback: string): string {
   }
 }
 
-export const COMMIT = process.env["CERT_COMMIT"] ?? safeExec("git rev-parse --short HEAD", "unknown");
+export const COMMIT =
+  process.env["CERT_COMMIT"] ?? safeExec("git rev-parse --short HEAD", "unknown");
 
 export const RUN_STARTED_AT = process.env["CERT_RUN_STARTED_AT"] ?? new Date().toISOString();
 
 /** e.g. `RUN-20260806T0630-ab12cd3` — stable per commit + minute of start. */
 export const RUN_ID =
-  process.env["CERT_RUN_ID"] ??
-  `RUN-${RUN_STARTED_AT.replace(/[-:]/g, "").slice(0, 13)}-${COMMIT}`;
+  process.env["CERT_RUN_ID"] ?? `RUN-${RUN_STARTED_AT.replace(/[-:]/g, "").slice(0, 13)}-${COMMIT}`;
 
 export const EVIDENCE_ROOT = "tests/certification/evidence";
 
