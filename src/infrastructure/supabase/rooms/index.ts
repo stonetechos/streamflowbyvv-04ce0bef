@@ -15,6 +15,10 @@ import { CODE_ALLOCATOR, ROOM_UNIT_OF_WORK } from "@/repository/rooms/room-suppo
 import { ROOM_PRESENCE_REPOSITORY } from "@/repository/rooms/presence-repository.types";
 import { ROOM_DISCOVERY_REPOSITORY } from "@/repository/rooms/room-discovery.types";
 import {
+  ROOM_CHAT_REPOSITORY,
+  ROOM_STATE_WATCHER,
+} from "@/repository/rooms/watch-repository.types";
+import {
   INVITE_REPOSITORY,
   ROOM_MEMBER_REPOSITORY,
   ROOM_REPOSITORY,
@@ -29,6 +33,8 @@ import { createSupabaseRoomPresenceRepository } from "./supabase-room-presence-r
 import { createSupabaseRoomDiscoveryRepository } from "./supabase-room-discovery-repository";
 import { createSupabaseRoomRepository } from "./supabase-room-repository";
 import { createSupabaseRoomStateRepository } from "./supabase-room-state-repository";
+import { createSupabaseRoomChatRepository } from "./supabase-room-chat-repository";
+import { createSupabaseRoomStateWatcher } from "./supabase-room-state-watcher";
 import { createSupabaseRoomUnitOfWork } from "./supabase-unit-of-work";
 
 /** Binds the four room-cluster contracts. Returns false when unconfigured. */
@@ -61,6 +67,13 @@ export function registerSupabaseRoomAdapter(connection?: DataConnection): boolea
   if (!isRepositoryBound(CODE_ALLOCATOR)) {
     bindRepository(CODE_ALLOCATOR, () => createSupabaseCodeAllocator(active));
   }
+  // Sprint H1: room chat and the live playback-state notice.
+  if (!isRepositoryBound(ROOM_CHAT_REPOSITORY)) {
+    bindRepository(ROOM_CHAT_REPOSITORY, () => createSupabaseRoomChatRepository(active));
+  }
+  if (!isRepositoryBound(ROOM_STATE_WATCHER)) {
+    bindRepository(ROOM_STATE_WATCHER, () => createSupabaseRoomStateWatcher(active));
+  }
   if (!isRepositoryBound(ROOM_UNIT_OF_WORK)) {
     bindRepository(ROOM_UNIT_OF_WORK, () => createSupabaseRoomUnitOfWork());
   }
@@ -89,3 +102,5 @@ export {
 export { createSupabaseRoomDiscoveryRepository } from "./supabase-room-discovery-repository";
 export { createSupabaseRoomRepository } from "./supabase-room-repository";
 export { createSupabaseRoomStateRepository } from "./supabase-room-state-repository";
+export { createSupabaseRoomChatRepository } from "./supabase-room-chat-repository";
+export { createSupabaseRoomStateWatcher } from "./supabase-room-state-watcher";
