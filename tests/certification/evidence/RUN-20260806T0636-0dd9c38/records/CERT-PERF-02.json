@@ -1,0 +1,22 @@
+{
+  "evidenceId": "CERT-PERF-02",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "metric": {
+    "metricId": "ready_propagation",
+    "sampleCount": 10,
+    "p50": 16,
+    "p95": 17,
+    "p99": null,
+    "failures": 0,
+    "unit": "ms"
+  },
+  "detail": "Realtime broadcast publish→receive latency between two independent clients. Transport-level baseline; excludes UI render time.",
+  "runId": "RUN-20260806T0636-0dd9c38",
+  "commit": "0dd9c38",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:36:12.495Z"
+}

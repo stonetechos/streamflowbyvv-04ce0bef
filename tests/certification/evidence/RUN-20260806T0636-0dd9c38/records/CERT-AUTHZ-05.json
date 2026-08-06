@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-AUTHZ-05",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "unmeasured",
+  "detail": "Room has no room_state row; monotonic version guard not exercised.",
+  "runId": "RUN-20260806T0636-0dd9c38",
+  "commit": "0dd9c38",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:36:33.331Z"
+}

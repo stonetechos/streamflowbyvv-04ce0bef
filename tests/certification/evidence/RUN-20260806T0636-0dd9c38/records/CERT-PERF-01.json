@@ -1,0 +1,22 @@
+{
+  "evidenceId": "CERT-PERF-01",
+  "profileId": "PROF-01",
+  "browser": "node",
+  "platform": "node",
+  "status": "pass",
+  "metric": {
+    "metricId": "invite_to_join",
+    "sampleCount": 5,
+    "p50": 918,
+    "p95": 1498,
+    "p99": null,
+    "failures": 0,
+    "unit": "ms"
+  },
+  "detail": "Room creation → guest code discovery, backend path only. UI-inclusive invite-to-join remains UNMEASURED.",
+  "runId": "RUN-20260806T0636-0dd9c38",
+  "commit": "0dd9c38",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:36:23.607Z"
+}
