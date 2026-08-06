@@ -128,7 +128,7 @@ export function unknownProviderCapability(displayName: string): WatchProviderCap
   };
 }
 
-export function providerCapability(providerId: string): WatchProviderCapability | null {
+export function watchProviderById(providerId: string): WatchProviderCapability | null {
   return WATCH_PROVIDERS.find((entry) => entry.providerId === providerId) ?? null;
 }
 

@@ -56,11 +56,23 @@ export {
   type WatchVerdict,
 } from "./watch-sync-service";
 export {
+  NETFLIX_BROWSE_URL,
+  WATCH_PROVIDERS,
   WATCH_SOURCE_METADATA_KEY,
+  WATCH_TITLE_METADATA_KEY,
+  netflixTitleUrl,
+  parseNetflixTitleId,
   parseWatchSource,
+  readWatchSelection,
   readWatchSource,
+  unknownProviderCapability,
+  watchProviderById,
+  watchSelectionLabel,
   watchSourceCapability,
   type PlaybackControlMode,
+  type ProviderSelectionMode,
+  type WatchProviderCapability,
+  type WatchSelection,
   type WatchSource,
   type WatchSourceCapability,
 } from "./watch-source";
