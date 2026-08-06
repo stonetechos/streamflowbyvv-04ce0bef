@@ -255,7 +255,8 @@ test.describe("M1 room lifecycle", () => {
     // `.title` in `src/foundation/localization/bundles/en.ts`. A generic
     // "we couldn't find that room" fallback is a failure of this row.
     const normalized = visibleText.replace(/\s+/g, " ").trim();
-    const namesCapacity = /this room is full\.?/i.test(normalized) || /room is full/i.test(normalized);
+    const namesCapacity =
+      /this room is full\.?/i.test(normalized) || /room is full/i.test(normalized);
     const refusedWithMessage = !enteredRoom && namesCapacity;
     const roster = await readRoster(participants[0]!, room);
     const seated = roster.filter((member) => member.state === "joined").length;
@@ -272,7 +273,6 @@ test.describe("M1 room lifecycle", () => {
       platform: "web-desktop",
     });
   });
-
 
   test("CERT-ROOM-04 rejoin within grace restores room context", async ({
     browser,
