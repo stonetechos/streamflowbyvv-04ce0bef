@@ -77,61 +77,85 @@ test.describe("M1 room lifecycle", () => {
     const guest = participants[1]!;
     const inviteUrl = `${BASE_URL}/join/${room.code}`;
 
-    // Leg one, PROF-05: a cold, signed-out visitor must be parked at sign-in
-    // with the destination remembered rather than dropped.
+    // WP3 (Room engine, CERT-ROOM-01, journey "guest receives an invite link
+    // and reaches the room") measures the row the way the backlog defines it:
+    // cold start, interposed sign-in, and re-open by an existing member. The
+    // first two legs are one continuous PROF-05 journey in a single cold
+    // browser context — the same context signs in, so nothing about the
+    // destination is handed to it by the harness.
     const coldContext = await browser.newContext();
     const coldPage = await coldContext.newPage();
+
+    // Leg one: a cold, signed-out visitor must be parked at sign-in with the
+    // destination remembered rather than dropped.
     await coldPage.goto(inviteUrl, { waitUntil: "domcontentloaded" });
     await coldPage.waitForURL(/\/auth/, { timeout: 20_000 }).catch(() => undefined);
     const parkedAtAuth = /\/auth/.test(coldPage.url());
     const remembered = await coldPage.evaluate(() =>
       window.localStorage.getItem("streamflow.pending_invite_code"),
     );
+
+    // Leg two: the sign-in happens between the click and the room. The visitor
+    // types credentials into the shipped form; nothing else is injected.
+    let signedInLanding = coldPage.url();
+    let crossedSignIn = false;
+    if (parkedAtAuth) {
+      await coldPage.getByLabel("Email address").fill(guest.identity.email);
+      await coldPage.getByLabel("Password").fill(guest.identity.password);
+      await coldPage.getByRole("button", { name: "Sign in", exact: true }).click();
+      crossedSignIn = await coldPage
+        .waitForURL(new RegExp(`/rooms/${room.id}`), { timeout: 40_000 })
+        .then(() => true)
+        .catch(() => false);
+      signedInLanding = coldPage.url();
+    }
     await coldContext.close();
 
-    recordM1Row("CERT-ROOM-01", {
-      status: parkedAtAuth && remembered === room.code ? "pass" : "fail",
-      detail: parkedAtAuth
-        ? `Signed-out invite open parked at ${"/auth"} with pending code ${String(remembered)} (expected ${room.code}).`
-        : `Signed-out invite open did not reach sign-in; landed at ${coldPage.url()}.`,
-      profileId: "PROF-05",
-      browser: browserName,
-      platform: "web-desktop",
-    });
-
-    // Leg two, PROF-01: with a session in hand the same link must end in the
-    // room, not at home and not at an error.
+    // Leg three, PROF-01: someone who is already a member re-opens the same
+    // link and must be returned to the room, not to home and not to an error.
     const session = await signedInContext(browser, guest, BASE_URL);
     if (!session) {
       recordM1Row("CERT-ROOM-01", {
         status: "unmeasured",
         detail:
-          "No transplantable session for the guest identity; the signed-in leg was not measured.",
+          "No transplantable session for the guest identity; the existing-member re-open leg was not measured.",
         profileId: "PROF-01",
         browser: browserName,
         platform: "web-desktop",
       });
-      test.skip();
-      return;
+    } else {
+      await session.page.goto(inviteUrl, { waitUntil: "domcontentloaded" });
+      const reopened = await session.page
+        .waitForURL(new RegExp(`/rooms/${room.id}`), { timeout: 30_000 })
+        .then(() => true)
+        .catch(() => false);
+      const reopenUrl = session.page.url();
+      await session.context.close();
+      recordM1Row("CERT-ROOM-01", {
+        status: reopened ? "pass" : "fail",
+        detail: reopened
+          ? `An existing member re-opening the invite link returned to room ${room.id}.`
+          : `An existing member re-opening the invite link ended at ${reopenUrl} instead of /rooms/${room.id}.`,
+        profileId: "PROF-01",
+        browser: browserName,
+        platform: "web-desktop",
+      });
+      expect(reopened).toBe(true);
     }
-    await session.page.goto(inviteUrl, { waitUntil: "domcontentloaded" });
-    const landed = await session.page
-      .waitForURL(new RegExp(`/rooms/${room.id}`), { timeout: 30_000 })
-      .then(() => true)
-      .catch(() => false);
-    const finalUrl = session.page.url();
-    await session.context.close();
 
+    // The row's own evidence is the PROF-05 journey the backlog names: cold
+    // start through sign-in into the intended room.
+    const crossed = parkedAtAuth && remembered === room.code && crossedSignIn;
     recordM1Row("CERT-ROOM-01", {
-      status: landed ? "pass" : "fail",
-      detail: landed
-        ? `Signed-in invite open resolved to the intended room ${room.id}.`
-        : `Signed-in invite open ended at ${finalUrl} instead of /rooms/${room.id}.`,
-      profileId: "PROF-01",
+      status: crossed ? "pass" : "fail",
+      detail: crossed
+        ? `Cold signed-out open parked at sign-in with pending code ${room.code}; after signing in the same context landed in room ${room.id}.`
+        : `Cold invite journey broke: parkedAtAuth=${String(parkedAtAuth)}, pendingCode=${String(remembered)} (expected ${room.code}), landing=${signedInLanding}.`,
+      profileId: "PROF-05",
       browser: browserName,
       platform: "web-desktop",
     });
-    expect(landed).toBe(true);
+    expect(crossed).toBe(true);
   });
 
   test("CERT-ROOM-02 member appears to all peers with correct identity and role", async ({
