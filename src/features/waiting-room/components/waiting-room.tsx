@@ -5,7 +5,7 @@
  * empty states in one place so no child has to know about them.
  */
 import { useEffect, useMemo } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import { ErrorState, LoadingState } from "@/app-shell";
 import type { SyncHealth } from "@/domain";
