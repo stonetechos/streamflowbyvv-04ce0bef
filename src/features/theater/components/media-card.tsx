@@ -7,7 +7,7 @@
  * provider genuinely permits.
  */
 import { ActionButton, Surface } from "@/design-system/components";
-import type { WatchProviderCapability, WatchSource } from "@/domain";
+import type { MediaRefValidity, RoomPhase, WatchProviderCapability, WatchSource } from "@/domain";
 import { useTranslation } from "@/foundation/localization";
 
 import { providerModeKey } from "./provider-bar";
@@ -20,6 +20,10 @@ export interface MediaCardProps {
   readonly participantCount: number;
   /** Seconds left in a running countdown, or null when none is running. */
   readonly countdownSeconds: number | null;
+  /** Shared lifecycle phase, derived from the same snapshot for everyone. */
+  readonly phase: RoomPhase;
+  /** How trustworthy the room's selection is, straight from RoomMediaRef. */
+  readonly validity: MediaRefValidity | null;
   readonly canStart: boolean;
   readonly isStarting: boolean;
   onStart(): void;
@@ -39,6 +43,8 @@ export function MediaCard({
   isHost,
   participantCount,
   countdownSeconds,
+  phase,
+  validity,
   canStart,
   isStarting,
   onStart,
@@ -50,6 +56,9 @@ export function MediaCard({
 }: MediaCardProps) {
   const { t } = useTranslation();
   const isCounting = countdownSeconds !== null;
+  // The host's one button says exactly which of the three situations it is in.
+  const startState: "ready" | "invalid" | "empty" =
+    validity === "invalid" ? "invalid" : source && canStart ? "ready" : "empty";
 
   return (
     <Surface
@@ -58,6 +67,8 @@ export function MediaCard({
       className="flex flex-col gap-4"
       data-sf-media-card={source ? capability.providerId : "none"}
       data-sf-sync-mode={capability.playbackControlMode}
+      data-sf-room-phase={phase}
+      data-sf-media-validity={validity ?? "none"}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
@@ -70,7 +81,9 @@ export function MediaCard({
                   provider: capability.displayName,
                   mode: t(providerModeKey(capability.playbackControlMode)),
                 })
-              : t("theater.media.none_hint")}
+              : isHost
+                ? t("theater.media.none_hint")
+                : t("theater.media.guest_waiting")}
           </p>
         </div>
         <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
@@ -87,6 +100,12 @@ export function MediaCard({
         </p>
       ) : null}
 
+      {validity === "invalid" ? (
+        <p className="text-xs text-destructive" data-sf-media-migration>
+          {t("theater.media.migration")}
+        </p>
+      ) : null}
+
       <ul className="space-y-1 text-xs text-muted-foreground">
         {capability.limitations.map((line) => (
           <li key={line}>{line}</li>
@@ -100,8 +119,20 @@ export function MediaCard({
               {t("theater.party.cancel")}
             </ActionButton>
           ) : (
-            <ActionButton size="sm" onClick={onStart} loading={isStarting} disabled={!canStart}>
-              {t("theater.party.start")}
+            <ActionButton
+              size="sm"
+              onClick={onStart}
+              loading={isStarting}
+              disabled={!canStart}
+              data-sf-start-state={startState}
+            >
+              {t(
+                startState === "ready"
+                  ? "theater.party.start"
+                  : startState === "invalid"
+                    ? "theater.party.fix"
+                    : "theater.party.select",
+              )}
             </ActionButton>
           )
         ) : null}

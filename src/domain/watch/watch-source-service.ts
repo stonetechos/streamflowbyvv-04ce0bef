@@ -83,7 +83,14 @@ export function createWatchSourceService(deps: WatchSourceDependencies): WatchSo
 
       const cleanTitle = (title ?? "").trim().slice(0, TITLE_MAX_LENGTH);
       const { store, room } = await loadOwned(roomId, actorProfileId, operation);
-      const ref: RoomMediaRef = toRoomMediaRef(source, cleanTitle.length > 0 ? cleanTitle : null);
+      const selectedAt = new Date().toISOString();
+      const ref: RoomMediaRef = toRoomMediaRef(
+        source,
+        cleanTitle.length > 0 ? cleanTitle : null,
+        selectedAt,
+        actorProfileId,
+        Date.parse(selectedAt),
+      );
 
       const metadata: Record<string, unknown> = {
         ...room.metadata,

@@ -38,6 +38,12 @@ const PLACEHOLDER: Readonly<Record<string, string>> = {
   sonyliv: "https://www.sonyliv.com/movies/title-1234567",
   zee5: "https://www.zee5.com/movies/details/title/0-0-123456",
   appletv: "https://tv.apple.com/movie/umc.cmc.abcdef",
+  hbo_max: "https://www.max.com/movie/abcdef",
+  hulu: "https://www.hulu.com/movie/abcdef",
+  peacock: "https://www.peacocktv.com/watch/asset/abcdef",
+  paramount_plus: "https://www.paramountplus.com/movies/video/abcdef",
+  crunchyroll: "https://www.crunchyroll.com/series/ABCDEF",
+  google_drive: "https://drive.google.com/file/d/abcdef/view",
   direct: "https://example.com/clip.mp4",
 };
 

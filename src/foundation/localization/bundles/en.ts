@@ -521,6 +521,11 @@ export const enBundle: LocaleBundle = {
     "theater.media.none": "Nothing chosen yet",
     "theater.media.none_hint": "The host picks a service and a title to get started.",
     "theater.media.meta": "{provider} · {mode}",
+    "theater.media.guest_waiting": "Waiting for the host to choose content.",
+    "theater.media.migration":
+      "This room was set to a service StreamFlow no longer offers. The host needs to pick again.",
+    "theater.party.select": "Select content",
+    "theater.party.fix": "Fix selection",
     "theater.party.start": "Start the party",
     "theater.party.cancel": "Cancel countdown",
     "theater.fullscreen.embedded": "Fullscreen",

@@ -523,6 +523,11 @@ export const hiINBundle: LocaleBundle = {
     "theater.media.none": "अभी कुछ नहीं चुना",
     "theater.media.none_hint": "शुरू करने के लिए होस्ट सेवा और टाइटल चुनता है।",
     "theater.media.meta": "{provider} · {mode}",
+    "theater.media.guest_waiting": "होस्ट के कुछ चुनने का इंतज़ार है।",
+    "theater.media.migration":
+      "यह रूम ऐसी सेवा पर सेट था जो अब StreamFlow में उपलब्ध नहीं है। होस्ट को दोबारा चुनना होगा।",
+    "theater.party.select": "कंटेंट चुनें",
+    "theater.party.fix": "चयन ठीक करें",
     "theater.party.start": "पार्टी शुरू करें",
     "theater.party.cancel": "काउंटडाउन रद्द करें",
     "theater.fullscreen.embedded": "फ़ुलस्क्रीन",

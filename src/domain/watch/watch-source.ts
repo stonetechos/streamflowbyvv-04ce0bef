@@ -15,7 +15,7 @@
  */
 
 /** How the host tells the room what to watch. */
-export type ProviderSelectionMode = "browse" | "paste-link" | "direct-title";
+export type ProviderSelectionMode = "browse" | "paste-link" | "direct-title" | "direct-link";
 
 /**
  * How far playback coordination can honestly go.
@@ -29,9 +29,20 @@ export type ProviderSelectionMode = "browse" | "paste-link" | "direct-title";
 export type PlaybackControlMode =
   "automatic" | "assisted" | "manual" | "launch-only" | "unavailable";
 
+/**
+ * The single definitive description of a service (Sprint H4).
+ *
+ * Every product-visible claim — tab, chip, instruction, control, limitation —
+ * is rendered from this record and from nothing else.
+ */
 export interface WatchProviderCapability {
   readonly providerId: string;
   readonly displayName: string;
+  /** Whether the service exists in the product at all. */
+  readonly enabled: boolean;
+  /** Whether it may appear as a selectable tab in a room or lobby. */
+  readonly visibleInLobby: boolean;
+  /** Retained H2 name for `enabled`; kept so older call sites keep reading. */
   readonly supported: boolean;
   readonly selectionMode: ProviderSelectionMode;
   readonly playbackControlMode: PlaybackControlMode;
@@ -39,6 +50,7 @@ export interface WatchProviderCapability {
   readonly allowsFullscreenFromRoom: boolean;
   readonly allowsZoomFromRoom: boolean;
   readonly requiresOwnSubscription: boolean;
+  readonly requiresProviderLogin: boolean;
   readonly supportedPlatforms: readonly string[];
   readonly limitations: readonly string[];
 }
@@ -78,6 +90,8 @@ function ottProvider(
     capability: Object.freeze({
       providerId,
       displayName,
+      enabled: true,
+      visibleInLobby: true,
       supported: true,
       selectionMode: "browse" as const,
       playbackControlMode: "launch-only" as const,
@@ -85,6 +99,7 @@ function ottProvider(
       allowsFullscreenFromRoom: false,
       allowsZoomFromRoom: false,
       requiresOwnSubscription: true,
+      requiresProviderLogin: true,
       supportedPlatforms: WEB_PLATFORMS,
       limitations: ottLimitations(displayName),
     }),
@@ -98,13 +113,16 @@ const DIRECT: ProviderDefinition = Object.freeze({
   capability: Object.freeze({
     providerId: "direct",
     displayName: "Direct video link",
+    enabled: true,
+    visibleInLobby: true,
     supported: true,
-    selectionMode: "paste-link" as const,
+    selectionMode: "direct-link" as const,
     playbackControlMode: "automatic" as const,
     allowsEmbeddedPlayback: true,
     allowsFullscreenFromRoom: true,
     allowsZoomFromRoom: false,
     requiresOwnSubscription: false,
+    requiresProviderLogin: false,
     supportedPlatforms: WEB_PLATFORMS,
     limitations: Object.freeze([
       "The file has to be openly reachable — no protected or paywalled stream.",
@@ -154,11 +172,51 @@ const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
     "show",
     "episode",
   ]),
+  // Sprint H4 — brands the home shelf already names get the same honest
+  // launch-only room flow, so a host is never sent to a dead end.
+  ottProvider("hbo_max", "HBO Max", /(^|\.)(max\.com|hbomax\.com)$/i, "https://www.max.com", [
+    "movie",
+    "show",
+    "video",
+  ]),
+  ottProvider("hulu", "Hulu", /(^|\.)hulu\.com$/i, "https://www.hulu.com", ["movie", "series"]),
+  ottProvider("peacock", "Peacock", /(^|\.)peacocktv\.com$/i, "https://www.peacocktv.com", [
+    "watch",
+    "asset",
+  ]),
+  ottProvider(
+    "paramount_plus",
+    "Paramount+",
+    /(^|\.)paramountplus\.com$/i,
+    "https://www.paramountplus.com",
+    ["movies", "shows", "video"],
+  ),
+  ottProvider(
+    "crunchyroll",
+    "Crunchyroll",
+    /(^|\.)crunchyroll\.com$/i,
+    "https://www.crunchyroll.com",
+    ["series", "watch"],
+  ),
+  ottProvider(
+    "google_drive",
+    "Google Drive",
+    /(^|\.)drive\.google\.com$/i,
+    "https://drive.google.com",
+    ["file", "d"],
+  ),
   DIRECT,
 ]);
 
 /** Providers offered in the room's provider bar, in display order. */
 export const WATCH_PROVIDERS: readonly WatchProviderCapability[] = Object.freeze(
+  DEFINITIONS.filter((entry) => entry.capability.enabled && entry.capability.visibleInLobby).map(
+    (entry) => entry.capability,
+  ),
+);
+
+/** Every definition the product knows, enabled or not (Sprint H4 matrix). */
+export const WATCH_PROVIDER_DEFINITIONS: readonly WatchProviderCapability[] = Object.freeze(
   DEFINITIONS.map((entry) => entry.capability),
 );
 
@@ -167,6 +225,8 @@ export function unknownProviderCapability(displayName: string): WatchProviderCap
   return {
     providerId: displayName || "unknown",
     displayName: displayName || "This service",
+    enabled: false,
+    visibleInLobby: false,
     supported: false,
     selectionMode: "paste-link",
     playbackControlMode: "unavailable",
@@ -174,7 +234,9 @@ export function unknownProviderCapability(displayName: string): WatchProviderCap
     allowsFullscreenFromRoom: false,
     allowsZoomFromRoom: false,
     requiresOwnSubscription: true,
+    requiresProviderLogin: true,
     supportedPlatforms: [],
+
     limitations: [
       "StreamFlow cannot start, pause, or seek this service for you.",
       "Everyone needs their own account and plays it themselves.",
@@ -310,6 +372,19 @@ export const WATCH_MEDIA_METADATA_KEY = "watch_media";
 export const WATCH_SOURCE_METADATA_KEY = "watch_source";
 export const WATCH_TITLE_METADATA_KEY = "watch_title";
 
+/** How trustworthy the room's selection is right now (Sprint H4). */
+export type MediaRefValidity = "valid" | "pending" | "needs-user-action" | "invalid";
+
+/** Where the room is in its watch-party lifecycle (Sprint H4). */
+export type RoomPhase =
+  | "waiting-for-content"
+  | "content-selected"
+  | "countdown"
+  | "watching"
+  | "paused"
+  | "ended"
+  | "closed";
+
 /**
  * The room's shared answer to "what are we watching?".
  *
@@ -326,6 +401,16 @@ export interface RoomMediaRef {
   /** Host-typed name of the film or show, when they gave one. */
   readonly title: string | null;
   readonly selectedAt: string | null;
+  /** How the selection was made, copied from the provider definition. */
+  readonly selectionMode: ProviderSelectionMode;
+  /** How far coordination can honestly go for this selection. */
+  readonly syncMode: PlaybackControlMode;
+  /** Profile that chose it; "" for rows written before H4. */
+  readonly selectedByParticipantId: string;
+  /** Server-clock milliseconds at selection; 0 when unknown. */
+  readonly selectedAtServerMs: number;
+  readonly validity: MediaRefValidity;
+  readonly limitations: readonly string[];
 }
 
 export interface WatchSelection {
@@ -339,16 +424,40 @@ export function toRoomMediaRef(
   source: WatchSource,
   title: string | null,
   selectedAt: string = new Date().toISOString(),
+  selectedByParticipantId = "",
+  selectedAtServerMs: number = Date.parse(selectedAt) || 0,
 ): RoomMediaRef {
+  const capability = watchSourceCapability(source);
   return {
     providerId: source.providerId,
-    providerName: watchSourceCapability(source).displayName,
+    providerName: capability.displayName,
     kind: source.kind,
     url: source.url,
     titleId: source.kind === "ott" ? source.titleId : null,
     title: title && title.trim().length > 0 ? title.trim() : null,
     selectedAt,
+    selectionMode: capability.selectionMode,
+    syncMode: capability.playbackControlMode,
+    selectedByParticipantId,
+    selectedAtServerMs,
+    validity: mediaRefValidity(source, capability),
+    limitations: capability.limitations,
   };
+}
+
+/**
+ * A selection is only `valid` when the service is still in the registry and
+ * we hold something the room can actually act on. A room saved against a
+ * service the product no longer offers reads `invalid`, so the host is asked
+ * to pick again rather than being silently moved somewhere else.
+ */
+function mediaRefValidity(
+  source: WatchSource,
+  capability: WatchProviderCapability,
+): MediaRefValidity {
+  if (!capability.enabled) return "invalid";
+  if (!source.url) return "needs-user-action";
+  return "valid";
 }
 
 /** Rebuilds a playable/openable source from the shared reference. */
@@ -381,17 +490,43 @@ export function readRoomMediaRef(metadata: Readonly<Record<string, unknown>>): R
     try {
       const parsed = JSON.parse(raw) as Partial<RoomMediaRef>;
       if (parsed && typeof parsed.providerId === "string") {
+        const registry = watchProviderById(parsed.providerId);
+        const url = typeof parsed.url === "string" ? parsed.url : null;
+        const capability = registry ?? unknownProviderCapability(parsed.providerName ?? "");
+        // A row written against a service the product no longer offers is
+        // reported as invalid, never quietly re-pointed at another one.
+        const validity: MediaRefValidity = !registry
+          ? "invalid"
+          : url
+            ? "valid"
+            : "needs-user-action";
+        const selectedAt = typeof parsed.selectedAt === "string" ? parsed.selectedAt : null;
         return {
           providerId: parsed.providerId,
           providerName:
             typeof parsed.providerName === "string" && parsed.providerName.length > 0
               ? parsed.providerName
-              : (watchProviderById(parsed.providerId)?.displayName ?? parsed.providerId),
+              : (registry?.displayName ?? parsed.providerId),
           kind: parsed.kind === "ott" || parsed.kind === "direct" ? parsed.kind : "external",
-          url: typeof parsed.url === "string" ? parsed.url : null,
+          url,
           titleId: typeof parsed.titleId === "string" ? parsed.titleId : null,
           title: typeof parsed.title === "string" && parsed.title.length > 0 ? parsed.title : null,
-          selectedAt: typeof parsed.selectedAt === "string" ? parsed.selectedAt : null,
+          selectedAt,
+          selectionMode: capability.selectionMode,
+          syncMode: capability.playbackControlMode,
+          selectedByParticipantId:
+            typeof parsed.selectedByParticipantId === "string"
+              ? parsed.selectedByParticipantId
+              : "",
+          selectedAtServerMs:
+            typeof parsed.selectedAtServerMs === "number" &&
+            Number.isFinite(parsed.selectedAtServerMs)
+              ? parsed.selectedAtServerMs
+              : selectedAt
+                ? Date.parse(selectedAt) || 0
+                : 0,
+          validity,
+          limitations: capability.limitations,
         };
       }
     } catch {
@@ -428,4 +563,25 @@ export function watchSelectionLabel(selection: WatchSelection): string | null {
     return source.titleId ? `${source.label} title ${source.titleId}` : source.label;
   }
   return source.label;
+}
+
+/**
+ * Where the room stands, derived from state every participant already has
+ * (Sprint H4). Host and guest run the same derivation over the same snapshot,
+ * so nobody sees a phase of their own.
+ */
+export function deriveRoomPhase(input: {
+  readonly mediaRef: RoomMediaRef | null;
+  readonly isCountingDown: boolean;
+  readonly playbackPhase: "playing" | "paused" | "idle" | null;
+  readonly roomClosed: boolean;
+  readonly roomEnded: boolean;
+}): RoomPhase {
+  if (input.roomClosed) return "closed";
+  if (input.roomEnded) return "ended";
+  if (input.isCountingDown) return "countdown";
+  if (input.playbackPhase === "playing") return "watching";
+  if (input.playbackPhase === "paused") return "paused";
+  if (!input.mediaRef || input.mediaRef.validity === "invalid") return "waiting-for-content";
+  return "content-selected";
 }
