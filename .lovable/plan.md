@@ -113,7 +113,9 @@ Naming conventions, domain ownership, engine ownership, public contract rules, e
 
 ## Milestone roadmap shape
 
-M0 foundation instrumentation and architecture freeze · M1 private watch room MVP · M2 sync and room trust · M3 voice/chat maturity · M4 provider/source expansion via the capability matrix · M5 retention, scheduling, favorites, recurring groups · M6 premium and community controls · M7 optional AI/Po enhancements. Each milestone lists work per engine, with already-shipped work called out as the completed baseline.
+**M0 — Architecture Conformance and Certification** (gate for all implementation: constitution frozen at v2.0.0, engine mapping conformance verified, certification profiles defined, performance baselines measured, matrix rows populated) · M1 private watch room MVP · M2 sync and room trust · M3 voice/chat maturity · M4 provider/source expansion via the capability matrix · M5 retention, scheduling, favorites, recurring groups · M6 premium and community controls · M7 optional AI/Po enhancements.
+
+Milestones do not hardcode test scenarios; each lists work per engine and references the applicable **certification profiles** and matrix rows. Already-shipped work is called out as the completed baseline.
 
 ## Out of scope
 
