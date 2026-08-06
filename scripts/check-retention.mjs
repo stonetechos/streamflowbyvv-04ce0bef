@@ -23,12 +23,28 @@
  *   R12 no historical M1 run is recreated
  *   R13 the retention path is not excluded by an active ignore rule
  *   R14 a retained run is discoverable from the repository review path
+ *
+ * M1.18 (DEST-1) destination coverage, same fixtures, same guarantees:
+ *   D1  exactly one authoritative evidence root is declared repository-wide
+ *   D2  every required evidence type resolves beneath that one root
+ *   D3  an unsafe or traversing RUN-ID is refused before any path is built
+ *   D4  manifest, index, summary and marker agree on the destination
+ *   D5  a RUN-ID lookup locates run metadata deterministically
+ *   D6  a certification-row lookup locates the run beneath the same root
+ *   D7  a source-revision lookup locates the run beneath the same root
+ *   D8  generated runner workspace output is never presented as retained evidence
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { EVIDENCE_ROOT, listRunIds, loadRequiredEvidence } from "./lib/evidence-io.mjs";
-import { destinationStatus } from "./lib/evidence-manifest.mjs";
+import { destinationStatus, RETAINED_SUBDIRS } from "./lib/evidence-manifest.mjs";
+import {
+  EVIDENCE_ROOT as AUTHORITATIVE_ROOT,
+  competingRoots,
+  runIdViolation,
+  runPaths,
+} from "./lib/evidence-destination.mjs";
 
 const failures = [];
 const staged = [];
@@ -190,6 +206,84 @@ try {
   const noRev = runEvidence(noRevId, { CERT_COMMIT_SHA: "latest" });
   check("R8 an inexact source revision refuses the seal", noRev.code !== 0, noRev.output);
 
+  // --- D1-D8: DEST-1 destination authority (M1.18) -------------------------
+  const competing = competingRoots();
+  check(
+    "D1 exactly one authoritative evidence root is declared repository-wide",
+    competing.length === 0,
+    competing.map((c) => `${c.file}: ${c.value}`).join(", "),
+  );
+  check(
+    "D1 the authoritative root is the retention destination root",
+    AUTHORITATIVE_ROOT === EVIDENCE_ROOT,
+  );
+
+  const paths = runPaths(okId);
+  check(
+    "D2 every required evidence path resolves beneath the one root",
+    [
+      paths.runDir,
+      paths.manifest,
+      paths.index,
+      paths.summary,
+      paths.completionMarker,
+      paths.records,
+      paths.metrics,
+      paths.reports,
+      paths.screenshots,
+      paths.logs,
+    ].every((p) => p.split("\\").join("/").startsWith(`${AUTHORITATIVE_ROOT}/`)),
+  );
+  check(
+    "D2 manifest, index, summary and marker exist at the resolved paths",
+    [paths.manifest, paths.index, paths.summary, paths.completionMarker].every((p) =>
+      existsSync(p),
+    ),
+  );
+
+  check(
+    "D3 traversing and unsafe RUN-IDs are rejected by the resolver",
+    ["../escape", "a/b", "..", "", "/abs"].every((id) => runIdViolation(id) !== null) &&
+      runIdViolation(okId) === null,
+  );
+  const traversal = runEvidence("../RUN-RETSELFTEST-ESCAPE");
+  check(
+    "D3 sealing refuses an unsafe RUN-ID and writes nothing outside the root",
+    traversal.code !== 0 && !existsSync(join(EVIDENCE_ROOT, "..", "RUN-RETSELFTEST-ESCAPE")),
+    traversal.output,
+  );
+
+  check(
+    "D4 manifest, summary and index agree on one destination",
+    manifest.retention?.destination === paths.reviewPath &&
+      summary.retention?.destination === paths.reviewPath &&
+      index.destination === paths.reviewPath,
+    `${manifest.retention?.destination} / ${summary.retention?.destination} / ${index.destination}`,
+  );
+
+  check(
+    "D5 a RUN-ID lookup locates run metadata deterministically",
+    readJsonFile(paths.manifest).runId === okId && readJsonFile(paths.summary).runId === okId,
+  );
+  const rowId = manifest.rows[0].evidenceId;
+  check(
+    "D6 a certification-row lookup locates the run beneath the same root",
+    existsSync(join(paths.runDir, `records/${rowId}.json`)) &&
+      manifest.rows.every((row) => row.record.startsWith("records/")),
+  );
+  check(
+    "D7 a source-revision lookup locates the run beneath the same root",
+    marker.sourceRevision === manifest.sourceRevision.sha &&
+      readJsonFile(paths.index).sourceRevision === manifest.sourceRevision.sha,
+  );
+  check(
+    "D8 generated runner workspace output is not presented as retained evidence",
+    manifest.artifacts.every((a) => RETAINED_SUBDIRS.some((sub) => a.path.startsWith(`${sub}/`))) &&
+      !manifest.artifacts.some(
+        (a) => a.path.startsWith("videos/") || a.path.startsWith("artifacts/"),
+      ),
+  );
+
   // --- R12: no historical M1 run is recreated ------------------------------
   check(
     "R12 no historical M1 run was created by this self-test",
@@ -212,4 +306,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("\nRetention self-test passed (RET-1 contract R1-R14).");
+console.log("\nRetention self-test passed (RET-1 contract R1-R14, DEST-1 destination D1-D8).");

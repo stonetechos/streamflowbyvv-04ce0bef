@@ -13,8 +13,10 @@ import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { classifyStageFailure } from "./lib/result-state.mjs";
+// M1.18 (DEST-1): the evidence root is resolved from the single authoritative
+// destination module, never re-declared as a literal.
+import { EVIDENCE_ROOT } from "./lib/evidence-destination.mjs";
 
-const EVIDENCE_ROOT = "tests/certification/evidence";
 const FIXTURES = "tests/certification/fixtures/gates";
 const failures = [];
 
