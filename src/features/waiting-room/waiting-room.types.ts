@@ -5,7 +5,7 @@
  * anything: derivation is mechanical, and every rule that matters already
  * lives in the Sprint 1.6 services (Build Rules §1).
  */
-import type { MembershipState, RoomRole, RoomStatus } from "@/domain";
+import type { MembershipState, RoomMediaRef, RoomRole, RoomStatus } from "@/domain";
 
 export type WaitingRoomStatus = "loading" | "ready" | "error";
 
@@ -51,6 +51,11 @@ export interface RoomSummaryView {
   readonly providerId: string | null;
   /** Serialized content reference the host chose, if any (Sprint 2.2/2.8). */
   readonly contentReference: string | null;
+  /**
+   * The room's shared watch selection (Sprint H3). Shared state, read the
+   * same way by the host, guests, late joiners, and reconnecting members.
+   */
+  readonly mediaRef: RoomMediaRef | null;
   /** Stored countdown length in seconds; clamped to the system envelope. */
   readonly countdownSeconds: number;
 }
