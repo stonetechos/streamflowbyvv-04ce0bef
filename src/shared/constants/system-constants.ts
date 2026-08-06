@@ -89,7 +89,6 @@ export const PRESENCE = Object.freeze({
   STALE_AFTER_MS: 6 * SECOND_MS,
 });
 
-
 /** Foundation §14.4 — Retention. ADR-012 invariant: projections < domain events. */
 export const RETENTION = Object.freeze({
   DOMAIN_EVENTS_MS: 730 * DAY_MS, // 24 months
