@@ -57,11 +57,14 @@ test.describe("M1 watch party", () => {
     if (participants && room) await disposeRoom(participants[0]!, room);
   });
 
-  test("CERT-WP-01 all participants reach countdown zero within spread", async ({ browserName }) => {
+  test("CERT-WP-01 all participants reach countdown zero within spread", async ({
+    browserName,
+  }) => {
     if (!participants || !room || sessions.length < 2) {
       recordM1Row("CERT-WP-01", {
         status: "unmeasured",
-        detail: "Two concurrent signed-in participants could not be placed in one lobby in this environment.",
+        detail:
+          "Two concurrent signed-in participants could not be placed in one lobby in this environment.",
         profileId: "PROF-07",
         browser: browserName,
         platform: "web-desktop",
@@ -70,7 +73,9 @@ test.describe("M1 watch party", () => {
       return;
     }
 
-    const probes = await Promise.all(sessions.map((session) => countdownTimestampProbe(session.page)));
+    const probes = await Promise.all(
+      sessions.map((session) => countdownTimestampProbe(session.page)),
+    );
     const observable = probes.every((probe) => probe.observable);
     if (!observable) {
       recordM1Row("CERT-WP-01", {
@@ -89,7 +94,9 @@ test.describe("M1 watch party", () => {
         read: () =>
           session.page.evaluate(
             () =>
-              document.querySelector("[data-countdown-zero-at]")?.getAttribute("data-countdown-zero-at") ?? null,
+              document
+                .querySelector("[data-countdown-zero-at]")
+                ?.getAttribute("data-countdown-zero-at") ?? null,
           ),
       })),
       (value) => value !== null,
@@ -124,7 +131,8 @@ test.describe("M1 watch party", () => {
     if (!participants || !room || sessions.length < 2) {
       recordM1Row("CERT-WP-02", {
         status: "unmeasured",
-        detail: "Two concurrent signed-in participants could not be placed in one lobby in this environment.",
+        detail:
+          "Two concurrent signed-in participants could not be placed in one lobby in this environment.",
         profileId: "PROF-07",
         browser: browserName,
         platform: "web-desktop",

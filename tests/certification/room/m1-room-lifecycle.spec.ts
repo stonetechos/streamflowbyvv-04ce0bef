@@ -105,7 +105,8 @@ test.describe("M1 room lifecycle", () => {
     if (!session) {
       recordM1Row("CERT-ROOM-01", {
         status: "unmeasured",
-        detail: "No transplantable session for the guest identity; the signed-in leg was not measured.",
+        detail:
+          "No transplantable session for the guest identity; the signed-in leg was not measured.",
         profileId: "PROF-01",
         browser: browserName,
         platform: "web-desktop",
@@ -163,8 +164,12 @@ test.describe("M1 room lifecycle", () => {
     const hostView = await readRoster(host!, room);
     const guestView = await readRoster(guest!, room);
     const agrees = (view: readonly { profileId: string; role: string; state: string }[]) =>
-      view.some((m) => m.profileId === host!.profileId && m.role === "host" && m.state === "joined") &&
-      view.some((m) => m.profileId === guest!.profileId && m.role === "guest" && m.state === "joined");
+      view.some(
+        (m) => m.profileId === host!.profileId && m.role === "host" && m.state === "joined",
+      ) &&
+      view.some(
+        (m) => m.profileId === guest!.profileId && m.role === "guest" && m.state === "joined",
+      );
     const symmetric = agrees(hostView) && agrees(guestView) && hostView.length === guestView.length;
 
     recordM1Row("CERT-ROOM-02", {
@@ -203,7 +208,8 @@ test.describe("M1 room lifecycle", () => {
     if (!session) {
       recordM1Row("CERT-ROOM-03", {
         status: "unmeasured",
-        detail: "No transplantable session for the overflow identity; refusal could not be observed in the product path.",
+        detail:
+          "No transplantable session for the overflow identity; refusal could not be observed in the product path.",
         profileId: "PROF-07",
         browser: browserName,
         platform: "web-desktop",
@@ -217,7 +223,9 @@ test.describe("M1 room lifecycle", () => {
       .waitForURL(new RegExp(`/rooms/${room.id}`), { timeout: 15_000 })
       .then(() => true)
       .catch(() => false);
-    const visibleText = enteredRoom ? "" : await session.page.evaluate(() => document.body.innerText);
+    const visibleText = enteredRoom
+      ? ""
+      : await session.page.evaluate(() => document.body.innerText);
     await session.context.close();
 
     const refusedWithMessage = !enteredRoom && visibleText.trim().length > 0;
@@ -258,7 +266,8 @@ test.describe("M1 room lifecycle", () => {
     if (!left) {
       recordM1Row("CERT-ROOM-04", {
         status: "unmeasured",
-        detail: "The guest membership could not be moved to `left`, so no departure preceded the rejoin.",
+        detail:
+          "The guest membership could not be moved to `left`, so no departure preceded the rejoin.",
         profileId: "PROF-04",
         browser: browserName,
         platform: "web-desktop",
@@ -271,7 +280,8 @@ test.describe("M1 room lifecycle", () => {
     if (!session) {
       recordM1Row("CERT-ROOM-04", {
         status: "unmeasured",
-        detail: "No transplantable session for the returning guest; the rejoin path was not exercised.",
+        detail:
+          "No transplantable session for the returning guest; the rejoin path was not exercised.",
         profileId: "PROF-04",
         browser: browserName,
         platform: "web-desktop",

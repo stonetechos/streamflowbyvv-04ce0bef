@@ -44,7 +44,10 @@ export async function measureConvergence<T>(
   const pollMs = options.pollMs ?? 100;
   const deadline = Date.now() + timeoutMs;
   const samples = new Map<string, ConvergenceSample<T>>(
-    observers.map((observer) => [observer.label, { label: observer.label, observedAt: null, value: null }]),
+    observers.map((observer) => [
+      observer.label,
+      { label: observer.label, observedAt: null, value: null },
+    ]),
   );
 
   while (Date.now() < deadline) {
@@ -138,8 +141,7 @@ export async function movingElements(page: Page): Promise<readonly string[]> {
         style.animationName !== "none" &&
         style.animationDuration !== "0s" &&
         style.animationPlayState === "running";
-      const transitioned =
-        style.transitionDuration !== "0s" && style.transitionProperty !== "none";
+      const transitioned = style.transitionDuration !== "0s" && style.transitionProperty !== "none";
       if (animated || transitioned) {
         moving.push(
           `${node.tagName.toLowerCase()}${node.className && typeof node.className === "string" ? `.${node.className.split(/\s+/)[0]}` : ""}:${style.animationName}/${style.animationDuration}/${style.transitionDuration}`,

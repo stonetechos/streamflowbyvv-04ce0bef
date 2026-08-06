@@ -170,7 +170,9 @@ export function recordM1Row(id: string, measurement: M1Measurement): void {
   const row = m1Row(id);
   const profileId = measurement.profileId ?? row.profiles[0]!;
   if (!row.profiles.includes(profileId)) {
-    throw new Error(`${id} is not defined against ${profileId} (allowed: ${row.profiles.join(", ")})`);
+    throw new Error(
+      `${id} is not defined against ${profileId} (allowed: ${row.profiles.join(", ")})`,
+    );
   }
   const blocking = isProfileBlocking(profileId);
   const status: EvidenceStatus = blocking ? "blocked" : measurement.status;

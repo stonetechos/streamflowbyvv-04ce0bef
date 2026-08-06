@@ -46,7 +46,9 @@ test.describe("M1 presence", () => {
     if (participants && room) await disposeRoom(participants[0]!, room);
   });
 
-  test("CERT-PRES-01 readiness state is identical for all participants", async ({ browserName }) => {
+  test("CERT-PRES-01 readiness state is identical for all participants", async ({
+    browserName,
+  }) => {
     if (!participants || !room) {
       recordM1Row("CERT-PRES-01", {
         status: "unmeasured",
@@ -63,7 +65,8 @@ test.describe("M1 presence", () => {
     if (!marked) {
       recordM1Row("CERT-PRES-01", {
         status: "fail",
-        detail: "A member could not record its own readiness; the readiness signal never entered the room.",
+        detail:
+          "A member could not record its own readiness; the readiness signal never entered the room.",
         profileId: "PROF-07",
         browser: browserName,
         platform: "web-desktop",

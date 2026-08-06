@@ -26,7 +26,8 @@ const BASE_URL = process.env["CERT_BASE_URL"] ?? "http://localhost:8080";
 
 /** Words the disclosure must carry to count as stating tier and consequence. */
 const TIER_WORDS = /\btier\s*c\b|coordinated manual|manual sync/i;
-const CONSEQUENCE_WORDS = /start (it )?(yourself|manually)|press play|on your own|not control|cannot control|manually/i;
+const CONSEQUENCE_WORDS =
+  /start (it )?(yourself|manually)|press play|on your own|not control|cannot control|manually/i;
 
 test.describe("M1 provider disclosure", () => {
   test.slow();
