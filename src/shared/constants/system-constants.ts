@@ -71,17 +71,22 @@ export const ROOM = Object.freeze({
 });
 
 /**
- * Presence heartbeat — Sprint 2.1 operational tuning.
+ * Presence heartbeat — Sprint 2.1 operational tuning; retuned by M1 WP5.
  *
  * Foundation §14.3 fixes the room inactivity window (30 minutes) but leaves
  * the heartbeat cadence to implementation. These two values are the only
  * place that cadence is expressed; they are operational, not normative, and
- * are candidates for ratification by a future ADR. `STALE_AFTER_MS` is three
+ * are candidates for ratification by a future ADR. `STALE_AFTER_MS` is two
  * missed beats — one lost beat must not blink a member offline.
+ *
+ * WP5 (CERT-PRES-02) measured absence detection at 60.2 s against the ≤ 10 s
+ * threshold in docs/blueprint/K-launch-certification.md. Detection latency is
+ * bounded by `STALE_AFTER_MS + HEARTBEAT_INTERVAL_MS` (peers re-observe on the
+ * beat), so 6 s + 3 s keeps the worst case at 9 s, inside the threshold.
  */
 export const PRESENCE = Object.freeze({
-  HEARTBEAT_INTERVAL_MS: 20 * SECOND_MS,
-  STALE_AFTER_MS: 60 * SECOND_MS,
+  HEARTBEAT_INTERVAL_MS: 3 * SECOND_MS,
+  STALE_AFTER_MS: 6 * SECOND_MS,
 });
 
 /** Foundation §14.4 — Retention. ADR-012 invariant: projections < domain events. */

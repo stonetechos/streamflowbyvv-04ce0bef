@@ -1,14 +1,24 @@
 /**
- * M1 presence certification — WP1 (spec homes for CERT-PRES-01 and CERT-PRES-02).
+ * M1 presence certification — WP5 (Presence accuracy).
+ *
+ * Rows: CERT-PRES-01 (readiness parity across participants) and CERT-PRES-02
+ * (a dropped member is marked absent within the ≤ 10 s threshold recorded in
+ * docs/blueprint/K-launch-certification.md).
  *
  * Readiness is member metadata (`waiting_room_ready`, see
  * src/domain/rooms/room-read-model.ts), not a column, so the measurement is
- * whether every peer converges on the same readiness view. Absence detection
- * is measured against the shipped heartbeat, with no threshold invented here:
- * the observed value is recorded, and the threshold remains the Constitution's.
+ * whether every peer converges on the same readiness view.
+ *
+ * Absence is not a column flip: `PresenceCoordinator.observe` derives it from
+ * heartbeat age against `PRESENCE.STALE_AFTER_MS` (src/domain/rooms/
+ * presence-coordinator.ts). The harness therefore observes absence exactly the
+ * way every client does — by applying the shipped constant to the shipped
+ * `room_presence` row — and records the elapsed time as a measurement, never
+ * an assertion.
  */
 import { test } from "@playwright/test";
 
+import { PRESENCE } from "../../../src/shared/constants/system-constants";
 import { backendConfigured } from "../fixtures/backend";
 import {
   createRoomWithCapacity,
@@ -24,6 +34,9 @@ import {
 import { measureConvergence } from "../helpers/instrumentation";
 import { recordM1Row } from "../helpers/m1-rows";
 
+/** K-launch-certification.md §CERT-PRES-02 — the threshold is the document's. */
+const ABSENCE_THRESHOLD_MS = 10_000;
+
 test.describe("M1 presence", () => {
   test.slow();
   test.describe.configure({ mode: "serial" });
@@ -33,13 +46,15 @@ test.describe("M1 presence", () => {
 
   test.beforeAll(async () => {
     if (!backendConfigured) return;
-    participants = await provisionParticipants(3, "pres");
+    // WP5 acceptance criteria: four connected participants.
+    participants = await provisionParticipants(4, "pres");
     if (!participants) return;
-    room = await createRoomWithCapacity(participants[0]!, 4, "M1 presence");
+    room = await createRoomWithCapacity(participants[0]!, 8, "M1 presence");
     if (!room) return;
     await seatHost(participants[0]!, room);
     await joinAsGuest(participants[1]!, room);
     await joinAsGuest(participants[2]!, room);
+    await joinAsGuest(participants[3]!, room);
   });
 
   test.afterAll(async () => {
@@ -52,7 +67,7 @@ test.describe("M1 presence", () => {
     if (!participants || !room) {
       recordM1Row("CERT-PRES-01", {
         status: "unmeasured",
-        detail: "A three-seat lobby could not be provisioned in this environment.",
+        detail: "A four-seat lobby could not be provisioned in this environment.",
         profileId: "PROF-07",
         browser: browserName,
         platform: "web-desktop",
@@ -60,8 +75,8 @@ test.describe("M1 presence", () => {
       test.skip();
       return;
     }
-    const [host, guestA, guestB] = participants;
-    const marked = await setReadiness(guestA!, room, true);
+    const guestA = participants[1]!;
+    const marked = await setReadiness(guestA, room, true);
     if (!marked) {
       recordM1Row("CERT-PRES-01", {
         status: "fail",
@@ -75,18 +90,18 @@ test.describe("M1 presence", () => {
     }
 
     const result = await measureConvergence(
-      [host!, guestA!, guestB!].map((viewer) => ({
+      participants.map((viewer) => ({
         label: viewer.label,
         read: () => readRoster(viewer, room!),
       })),
-      (roster) => roster.some((member) => member.profileId === guestA!.profileId && member.ready),
+      (roster) => roster.some((member) => member.profileId === guestA.profileId && member.ready),
       { timeoutMs: 15_000, pollMs: 250 },
     );
 
     recordM1Row("CERT-PRES-01", {
       status: result.converged ? "pass" : "fail",
       detail: result.converged
-        ? `All three participants read the same readiness for ${guestA!.profileId}; observation spread ${result.spreadMs} ms.`
+        ? `All four participants read the same readiness for ${guestA.profileId}; observation spread ${result.spreadMs} ms.`
         : `Readiness did not become identical for all participants within 15 s. Observations: ${JSON.stringify(result.samples.map((s) => ({ label: s.label, observedAt: s.observedAt })))}`,
       profileId: "PROF-07",
       browser: browserName,
@@ -108,6 +123,7 @@ test.describe("M1 presence", () => {
   });
 
   test("CERT-PRES-02 dropped member is marked absent within threshold", async ({ browserName }) => {
+    test.setTimeout(120_000);
     if (!participants || !room) {
       recordM1Row("CERT-PRES-02", {
         status: "unmeasured",
@@ -119,16 +135,17 @@ test.describe("M1 presence", () => {
       test.skip();
       return;
     }
-    const [host, , guestB] = participants;
+    const [host, guestA, guestB, dropped] = participants;
 
     // A heartbeat must exist before its absence can mean anything.
-    const beat = await guestB!.identity.client.from("room_presence").insert({
+    const beatAt = Date.now();
+    const beat = await dropped!.identity.client.from("room_presence").insert({
       room_id: room.id,
-      profile_id: guestB!.profileId,
+      profile_id: dropped!.profileId,
       status: "online",
-      connection_id: `cert-${Date.now()}`,
+      connection_id: `cert-${beatAt}`,
       device_kind: "web",
-      last_heartbeat_at: new Date().toISOString(),
+      last_heartbeat_at: new Date(beatAt).toISOString(),
     });
     if (beat.error) {
       recordM1Row("CERT-PRES-02", {
@@ -141,45 +158,58 @@ test.describe("M1 presence", () => {
       return;
     }
 
-    // The drop: the client simply stops beating. Nothing marks it absent on
-    // its behalf — that is precisely what the row is asking about.
-    const droppedAt = Date.now();
+    /**
+     * The drop: the client simply stops beating. Every peer derives absence
+     * the way `PresenceCoordinator.observe` does — heartbeat age against the
+     * shipped stale window — so this observer is the product rule, not a
+     * harness invention.
+     */
+    const observeAbsence = (viewer: CertParticipant) => async () => {
+      const { data } = await viewer.identity.client
+        .from("room_presence")
+        .select("status, last_heartbeat_at")
+        .eq("room_id", room!.id)
+        .eq("profile_id", dropped!.profileId);
+      const rows = data ?? [];
+      const now = Date.now();
+      return rows.map((row) => {
+        const fresh =
+          Date.parse(row["last_heartbeat_at"] as string) >= now - PRESENCE.STALE_AFTER_MS;
+        return { derivedOnline: fresh && row["status"] === "online" };
+      });
+    };
+
     const result = await measureConvergence(
-      [
-        {
-          label: host!.label,
-          read: async () => {
-            const { data } = await host!.identity.client
-              .from("room_presence")
-              .select("status, last_heartbeat_at")
-              .eq("room_id", room!.id)
-              .eq("profile_id", guestB!.profileId);
-            return data ?? [];
-          },
-        },
-      ],
-      (rows) => rows.every((row) => row["status"] !== "online"),
-      { timeoutMs: 30_000, pollMs: 500 },
+      [host!, guestA!, guestB!].map((viewer) => ({
+        label: viewer.label,
+        read: observeAbsence(viewer),
+      })),
+      (rows) => rows.length > 0 && rows.every((row) => !row.derivedOnline),
+      { timeoutMs: 90_000, pollMs: 250 },
     );
-    const elapsedMs = Date.now() - droppedAt;
+    const latestObservation = Math.max(
+      ...result.samples.map((sample) => sample.observedAt ?? Number.NEGATIVE_INFINITY),
+    );
+    const elapsedMs = result.converged ? latestObservation - beatAt : null;
+    const withinThreshold = elapsedMs !== null && elapsedMs <= ABSENCE_THRESHOLD_MS;
 
     recordM1Row("CERT-PRES-02", {
-      status: result.converged ? "pass" : "unmeasured",
+      status: result.converged ? (withinThreshold ? "pass" : "fail") : "unmeasured",
       detail: result.converged
-        ? `A silent member was observed as no longer online ${elapsedMs} ms after its last heartbeat.`
-        : `No server-side or peer-side transition marked the silent member absent within 30 s. Absence appears to be derived client-side from heartbeat age; certifying a threshold requires an observable absence transition, which this harness may not add (WP1 is test-only).`,
+        ? `All three remaining peers derived the silent member as absent ${elapsedMs} ms after its last heartbeat, using the shipped stale window of ${PRESENCE.STALE_AFTER_MS} ms. Threshold ${ABSENCE_THRESHOLD_MS} ms: ${withinThreshold ? "met" : "exceeded"}.`
+        : `No peer derived the silent member as absent within 90 s; the shipped stale window is ${PRESENCE.STALE_AFTER_MS} ms.`,
       profileId: "PROF-04",
       browser: browserName,
       platform: "web-desktop",
-      ...(result.converged
+      ...(elapsedMs !== null
         ? {
             metric: {
               metricId: "presence.absence_detection",
-              sampleCount: 1,
+              sampleCount: result.samples.length,
               p50: elapsedMs,
               p95: elapsedMs,
               p99: elapsedMs,
-              failures: 0,
+              failures: withinThreshold ? 0 : 1,
               unit: "ms" as const,
             },
           }
