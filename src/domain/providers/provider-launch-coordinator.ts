@@ -30,6 +30,8 @@
  * the platform accepted the request.
  */
 import { createServiceToken } from "@/domain/service-registry";
+import { resolveCapabilityTier } from "./provider-tier";
+
 import type { Clock } from "@/domain/events/event.types";
 
 import type { ContentReference } from "./content-reference";
@@ -83,11 +85,20 @@ export const PROVIDER_LAUNCH_COORDINATOR = createServiceToken<ProviderLaunchCoor
  * control is possible AND there is somewhere to send the member; a capability
  * with no destination is not a launch route.
  */
-function classify(option: ProviderSelectionOption, hasDestination: boolean): ProviderLaunchClass {
+function classify(
+  option: ProviderSelectionOption,
+  hasDestination: boolean,
+  platform: LaunchPlatform,
+): ProviderLaunchClass {
   if (!option.isSelectable || option.complianceAction === "block") return "unsupported";
   if (!hasDestination) return "unsupported";
+  // A catalog row may claim `play_pause: supported`, but a claim is not
+  // evidence (PROV-A1, ADR-014). A control surface is only announced as
+  // `supported` when the capability certification registry proves Tier A for
+  // the tuple; otherwise the honest class is coordinated manual sync.
   if (option.syncMode === "controlled" && option.selectionClass === "supported") {
-    return "supported";
+    const certified = resolveCapabilityTier(option.provider.key, { platform }).tier === "a";
+    return certified ? "supported" : "manual_sync";
   }
   if (option.selectionClass === "manual_sync") return "manual_sync";
   return "deep_link";
@@ -159,7 +170,7 @@ export function createProviderLaunchCoordinator(
 
     const blocked = option.complianceAction === "block" || !option.isSelectable;
     const hasDestination = primary !== null && !blocked;
-    const launchClass = classify(option, hasDestination);
+    const launchClass = classify(option, hasDestination, platform);
     const refusalReason = refusalFor(option, reference, hasDestination);
     const canLaunch = hasDestination && launcher.isAvailable() && refusalReason === null;
 
