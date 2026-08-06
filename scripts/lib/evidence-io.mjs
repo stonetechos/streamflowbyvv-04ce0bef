@@ -6,8 +6,14 @@
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { EVIDENCE_ROOT } from "./evidence-destination.mjs";
 
-export const EVIDENCE_ROOT = "tests/certification/evidence";
+/**
+ * The one authoritative destination is owned by scripts/lib/evidence-destination.mjs
+ * (M1.18 / DEST-1). Re-exported here so existing readers keep their import path;
+ * the value and retention semantics are unchanged.
+ */
+export { EVIDENCE_ROOT };
 export const RUN_SUBDIRS = [
   "records",
   "metrics",

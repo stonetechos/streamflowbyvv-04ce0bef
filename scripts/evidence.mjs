@@ -34,6 +34,7 @@ import {
   tally,
   writeFileEnsured,
 } from "./lib/evidence-io.mjs";
+import { runIdViolation } from "./lib/evidence-destination.mjs";
 import {
   MANIFEST_FILE,
   artifactViolations,
@@ -50,6 +51,15 @@ const runId = argRun ?? envRun ?? listRunIds().at(-1);
 
 if (!runId) {
   console.error("No evidence run found. Run `npm run cert` first.");
+  process.exit(1);
+}
+
+// M1.18 (DEST-1): fail closed on an unsafe or ambiguous RUN-ID before any
+// destination path is constructed. No evidence may be written outside the one
+// authoritative root.
+const runIdProblem = runIdViolation(runId);
+if (runIdProblem) {
+  console.error(`Refusing to resolve an evidence destination — ${runIdProblem}.`);
   process.exit(1);
 }
 
