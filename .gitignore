@@ -30,4 +30,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-tests/certification/evidence/
+# Certification evidence — M1.17 (RET-1).
+# Evidence is repository-retained: records, metrics, reports, screenshots, logs,
+# the manifest, index, summary and completion marker are version-controlled so a
+# run survives the process that produced it and remains locatable at release
+# review. Only bulk runner output stays ignored; the manifest records every
+# retained artifact and its digest.
+tests/certification/evidence/*/videos/
+tests/certification/evidence/*/artifacts/
+!tests/certification/evidence/RUN-M0R-001/artifacts/
