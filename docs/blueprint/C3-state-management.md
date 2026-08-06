@@ -4,14 +4,14 @@ Part of the StreamFlow v2.0 Architecture Constitution v2.0.0. Binding on all 13 
 
 ## C3.1 State classes
 
-| Class | Definition | Store | Authority | Survives |
-|---|---|---|---|---|
-| Persistent | Durable business truth | Database via repositories | Owning Domain Engine | Everything |
-| Realtime | Rapidly changing shared truth | Realtime transport + in-memory projection | Owning Domain Engine, one writer | Session only |
-| Session | Per-user, per-tab runtime state | Memory | Feature layer | Until reload |
-| Cached | A copy of persistent state held for speed | Query cache | Derived from persistent | Until invalidated |
-| Derived | Computed from other state, never stored | Memory | Nobody — recompute | Never |
-| Offline | Locally durable state pending sync | IndexedDB | Owning Domain Engine on reconciliation | Restart |
+| Class      | Definition                                | Store                                     | Authority                              | Survives          |
+| ---------- | ----------------------------------------- | ----------------------------------------- | -------------------------------------- | ----------------- |
+| Persistent | Durable business truth                    | Database via repositories                 | Owning Domain Engine                   | Everything        |
+| Realtime   | Rapidly changing shared truth             | Realtime transport + in-memory projection | Owning Domain Engine, one writer       | Session only      |
+| Session    | Per-user, per-tab runtime state           | Memory                                    | Feature layer                          | Until reload      |
+| Cached     | A copy of persistent state held for speed | Query cache                               | Derived from persistent                | Until invalidated |
+| Derived    | Computed from other state, never stored   | Memory                                    | Nobody — recompute                     | Never             |
+| Offline    | Locally durable state pending sync        | IndexedDB                                 | Owning Domain Engine on reconciliation | Restart           |
 
 ## C3.2 Universal rules
 
@@ -26,38 +26,38 @@ Part of the StreamFlow v2.0 Architecture Constitution v2.0.0. Binding on all 13 
 
 ## C3.3 Ownership map
 
-| State | Class | Owner |
-|---|---|---|
-| Room record, membership, capacity | Persistent | Room Engine |
-| Room lifecycle status | Persistent | Room Engine |
-| Domain event stream | Persistent (append-only) | Timeline Engine |
-| Countdown target instant | Persistent + realtime | Watch Party Engine |
-| Playback position and play state | Realtime | Sync Engine |
-| Measured drift | Derived | Sync Engine |
-| Clock offset | Session | Sync Engine |
-| Presence and readiness | Realtime | Presence Engine |
-| Voice participant state | Realtime | Voice Engine |
-| Voice device preferences | Persistent | Voice Engine |
-| Chat messages | Persistent + realtime | Chat Engine |
-| Provider session/connection status | Persistent | Provider Engine |
-| Capability tier resolution | Derived | Provider Engine |
-| Notifications and badges | Persistent + realtime | Notification Engine |
-| Friends, invites, blocks | Persistent | Community Engine |
-| Po session, plan, memory | Persistent | AI/Po Engine |
-| Analytics events | Persistent (append-only) | Analytics Engine |
-| Moderation actions | Persistent | Moderation Engine |
-| Pending invite destination | Offline | Room Engine |
-| Theme, locale, motion preference | Persistent + session | Experience Engine (presentation preferences only) |
+| State                              | Class                    | Owner                                             |
+| ---------------------------------- | ------------------------ | ------------------------------------------------- |
+| Room record, membership, capacity  | Persistent               | Room Engine                                       |
+| Room lifecycle status              | Persistent               | Room Engine                                       |
+| Domain event stream                | Persistent (append-only) | Timeline Engine                                   |
+| Countdown target instant           | Persistent + realtime    | Watch Party Engine                                |
+| Playback position and play state   | Realtime                 | Sync Engine                                       |
+| Measured drift                     | Derived                  | Sync Engine                                       |
+| Clock offset                       | Session                  | Sync Engine                                       |
+| Presence and readiness             | Realtime                 | Presence Engine                                   |
+| Voice participant state            | Realtime                 | Voice Engine                                      |
+| Voice device preferences           | Persistent               | Voice Engine                                      |
+| Chat messages                      | Persistent + realtime    | Chat Engine                                       |
+| Provider session/connection status | Persistent               | Provider Engine                                   |
+| Capability tier resolution         | Derived                  | Provider Engine                                   |
+| Notifications and badges           | Persistent + realtime    | Notification Engine                               |
+| Friends, invites, blocks           | Persistent               | Community Engine                                  |
+| Po session, plan, memory           | Persistent               | AI/Po Engine                                      |
+| Analytics events                   | Persistent (append-only) | Analytics Engine                                  |
+| Moderation actions                 | Persistent               | Moderation Engine                                 |
+| Pending invite destination         | Offline                  | Room Engine                                       |
+| Theme, locale, motion preference   | Persistent + session     | Experience Engine (presentation preferences only) |
 
 ## C3.4 Conflict resolution
 
-| Conflict | Rule |
-|---|---|
-| Two clients report different positions | Authoritative source wins: Tier A host adapter > server-recorded event > client estimate |
-| Concurrent lifecycle transitions | Server-side transition guard; first valid transition wins, loser receives a rejection the UI must surface |
-| Offline intent conflicts with server state | Server state wins; the intent is marked rejected and shown |
-| Realtime message older than local projection | Discard by monotonic sequence, never by wall clock |
-| Duplicate event sequence | Sequence allocation is server-side and collision-free |
+| Conflict                                     | Rule                                                                                                      |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Two clients report different positions       | Authoritative source wins: Tier A host adapter > server-recorded event > client estimate                  |
+| Concurrent lifecycle transitions             | Server-side transition guard; first valid transition wins, loser receives a rejection the UI must surface |
+| Offline intent conflicts with server state   | Server state wins; the intent is marked rejected and shown                                                |
+| Realtime message older than local projection | Discard by monotonic sequence, never by wall clock                                                        |
+| Duplicate event sequence                     | Sequence allocation is server-side and collision-free                                                     |
 
 ## C3.5 Reconnection protocol
 

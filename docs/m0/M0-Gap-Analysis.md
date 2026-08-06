@@ -8,12 +8,12 @@ Categories: **Critical** (blocks Build Mode) · **High** (blocks a launch gate) 
 
 ## Summary
 
-| Category | Count |
-|---|---|
-| Critical | 3 |
-| High | 5 |
-| Medium | 6 |
-| Low | 4 |
+| Category  | Count  |
+| --------- | ------ |
+| Critical  | 3      |
+| High      | 5      |
+| Medium    | 6      |
+| Low       | 4      |
 | **Total** | **18** |
 
 ---
@@ -91,26 +91,32 @@ Authentication, authorization, session, and the eight auth routes have no engine
 ## Medium
 
 ### GAP-009 — Stage progression authority sits in the presentation layer
-`src/features/waiting-room/waiting-room-state.ts` owns the five-stage reveal. [C2](../blueprint/C2-experience-engine.md) permits Experience to own reveal *motion* but not stage *authority*, which belongs to Watch Party.
+
+`src/features/waiting-room/waiting-room-state.ts` owns the five-stage reveal. [C2](../blueprint/C2-experience-engine.md) permits Experience to own reveal _motion_ but not stage _authority_, which belongs to Watch Party.
 **Impact** Stage correctness is not certifiable as a domain invariant (CERT-WP-02). **Milestone** M2. **Engine** Watch Party. **Depends on** none.
 
 ### GAP-010 — Realtime channel lifecycle is convention, not contract
+
 `realtime-channel-registry` prevents subscription races by discipline. Nothing enforces it; a new subscriber can bypass it.
 **Impact** Race regressions can silently reappear (this class of bug has already shipped once). **Milestone** M2. **Engine** Presence. DEBT-011.
 
 ### GAP-011 — Tier B is dead code
+
 `hasMediaSessionObservation` is never set true by any runtime in the tree, so the six Tier B candidate providers always resolve to Tier C. Safe, but CERT-SYNC-B-01/02 can never run.
 **Impact** Two certification rows are permanently unevidenceable until an Android shell exists. **Milestone** M4. **Engine** Provider. **Depends on** native shell (DEBT-013).
 
 ### GAP-012 — Drift tolerance is a code constant, not a certified threshold
+
 `playback-drift-policy.ts` embeds tolerance values. [C4.3](../blueprint/C4-performance-budget.md) requires drift thresholds to be certified and ratcheted by ADR only.
 **Impact** Tuning is invisible to certification. **Milestone** M2. **Engine** Sync. DEBT-008.
 
 ### GAP-013 — No moderation capability at the stated launch envelope
-Room safety rests entirely on Community block enforcement. Constitution declares Moderation contract-only, so this is *document-conformant* — but the launch envelope is 2–8 real people in voice.
+
+Room safety rests entirely on Community block enforcement. Constitution declares Moderation contract-only, so this is _document-conformant_ — but the launch envelope is 2–8 real people in voice.
 **Impact** Product risk, not conformance risk. **Milestone** M3. **Engine** Moderation. DEBT-007.
 
 ### GAP-014 — Offline intent queue is partial
+
 Not all writes are expressible as intents; poor-network writes can be lost without user-visible failure.
 **Impact** Silent data loss under the Packet Loss and Temporary Disconnect profiles. **Milestone** M2. **Engine** Room, Timeline. DEBT-009.
 
@@ -119,18 +125,22 @@ Not all writes are expressible as intents; poor-network writes can be lost witho
 ## Low
 
 ### GAP-015 — ADRs 001–014 lack the mandatory header
+
 [I.3](../blueprint/I-governance.md) requires Dependencies, Superseded ADRs, Affected Engines, Affected Milestones on every ADR. All 14 predate the rule.
 **Milestone** M0 documentation task. **Engine** Governance. DEBT-005.
 
 ### GAP-016 — Foundation Spec v1.0 is cited everywhere and absent from the repository
+
 Confirmed: no such file under `docs/`. Cited authority cannot be verified.
 **Milestone** M0. **Engine** Governance. DEBT-001.
 
 ### GAP-017 — Continuous accessibility verification absent
+
 No axe automation; WCAG 2.1 AA is verified per surface, by hand, at intervals. CERT-EXP-01 and CERT-EXP-02 are unevidenced.
 **Milestone** M1. **Engine** Experience. DEBT-010.
 
 ### GAP-018 — Debug endpoint is unguarded in deployed builds
+
 `src/routes/api/debug/config.ts` has no owning engine and no flag gate.
 **Milestone** M1. **Engine** Platform.
 

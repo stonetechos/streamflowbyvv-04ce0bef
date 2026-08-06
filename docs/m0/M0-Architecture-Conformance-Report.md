@@ -15,31 +15,31 @@ Scope: inspection only. No feature, schema, or UI change was made to produce thi
 
 Classification vocabulary:
 
-| Class | Meaning |
-|---|---|
-| **PASS** | Engine exists, owns its stated capability, no architectural deviation found |
-| **PARTIAL** | Engine exists and functions, but a Constitution-required module, boundary, or evidence artifact is missing |
-| **FAIL** | Engine exists but violates a Constitution rule in a way that misrepresents capability or authority |
-| **NOT IMPLEMENTED** | No module owns the capability |
+| Class               | Meaning                                                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **PASS**            | Engine exists, owns its stated capability, no architectural deviation found                                |
+| **PARTIAL**         | Engine exists and functions, but a Constitution-required module, boundary, or evidence artifact is missing |
+| **FAIL**            | Engine exists but violates a Constitution rule in a way that misrepresents capability or authority         |
+| **NOT IMPLEMENTED** | No module owns the capability                                                                              |
 
 ## 1. Summary table
 
-| # | Engine | Status | Risk |
-|---|---|---|---|
-| C.1 | Room | PARTIAL | Medium |
-| C.2 | Timeline | PARTIAL | Medium |
-| C.3 | Watch Party | PARTIAL | Medium |
-| C.4 | Sync | **FAIL** | **Critical** |
-| C.5 | Voice | PARTIAL | Low |
-| C.6 | Chat | NOT IMPLEMENTED (contract-only by design) | Low |
-| C.7 | Presence | PARTIAL | Medium |
-| C.8 | Provider | **FAIL** | **Critical** |
-| C.9 | Notification | PARTIAL | Low |
-| C.10 | Community | PARTIAL | Low |
-| C.11 | AI / Po | PARTIAL | Medium |
-| C.12 | Analytics | PARTIAL | High |
-| C.13 | Moderation | NOT IMPLEMENTED (contract-only by design) | Medium |
-| — | Experience subsystem | PARTIAL | Medium |
+| #    | Engine               | Status                                    | Risk         |
+| ---- | -------------------- | ----------------------------------------- | ------------ |
+| C.1  | Room                 | PARTIAL                                   | Medium       |
+| C.2  | Timeline             | PARTIAL                                   | Medium       |
+| C.3  | Watch Party          | PARTIAL                                   | Medium       |
+| C.4  | Sync                 | **FAIL**                                  | **Critical** |
+| C.5  | Voice                | PARTIAL                                   | Low          |
+| C.6  | Chat                 | NOT IMPLEMENTED (contract-only by design) | Low          |
+| C.7  | Presence             | PARTIAL                                   | Medium       |
+| C.8  | Provider             | **FAIL**                                  | **Critical** |
+| C.9  | Notification         | PARTIAL                                   | Low          |
+| C.10 | Community            | PARTIAL                                   | Low          |
+| C.11 | AI / Po              | PARTIAL                                   | Medium       |
+| C.12 | Analytics            | PARTIAL                                   | High         |
+| C.13 | Moderation           | NOT IMPLEMENTED (contract-only by design) | Medium       |
+| —    | Experience subsystem | PARTIAL                                   | Medium       |
 
 Two FAIL classifications, both traceable to a single root cause: **capability is asserted by provider name without a certification record**, which [B.4](../blueprint/B-capability-matrix.md) explicitly prohibits.
 
@@ -53,10 +53,12 @@ Repository contracts: `src/repository/rooms/` (5 files). Infrastructure: `src/in
 Server authority: `public.rooms`, `public.room_members`, `public.room_state` with RLS; `discover_room_by_code`, `allocate_profile_handle` DB functions.
 
 **Missing modules**
+
 - No room lifecycle conformance test harness; every CERT-ROOM row in [K.4](../blueprint/K-launch-certification.md) is unevidenced.
 - No explicit grace-window module for `Leave/Rejoin` and `Host Disconnect` certification profiles; behaviour exists but is not parameterised as a profile input.
 
 **Architectural deviations**
+
 - Room lifecycle naming in code (`waiting-room` feature folder, "stage" vocabulary) predates the Constitution's Room/Watch Party split. `src/features/waiting-room/` (43 files) mixes Room, Presence, Watch Party, Sync, and Provider concerns in one feature module. This is a **presentation-layer aggregation**, not a domain-layer violation — domain modules remain separated — but it obscures engine ownership.
 
 **Technical debt** DEBT-006 (mapping unverified — now resolved by [M0-Module-Mapping.md](./M0-Module-Mapping.md)), DEBT-009 (partial offline intent queue).
@@ -72,6 +74,7 @@ Server authority: `public.rooms`, `public.room_members`, `public.room_state` wit
 Event sequencing collision fix is present in the event store repository.
 
 **Missing modules**
+
 - No replay-correctness harness. CERT-RT-01 and CERT-RT-02 are unevidenced.
 - No compaction or archival path (DEBT-015).
 - No machine-validated event schema at emission boundary (shared with Analytics, DEBT-012).
@@ -88,11 +91,13 @@ Event sequencing collision fix is present in the event store repository.
 `src/domain/countdown/` (countdown-machine, countdown-plan, countdown-runtime), `src/features/watch-party/` (7 files: watch-party-screen, watch-party-hud, catch-up-sheet, reaction-burst, shared-elapsed-timer, watch-party-status, use-elapsed-time), stage progression in `src/features/waiting-room/waiting-room-state.ts`.
 
 **Missing modules**
+
 - Reactions are presentation-only (`reaction-burst.tsx`); there is no durable reaction event in the Timeline, so reaction delivery is not certifiable.
 - No instrumented countdown-spread measurement, which CERT-WP-01 requires.
 
 **Architectural deviations**
-- Stage progression state lives in a feature-layer module (`waiting-room-state.ts`) rather than a domain state machine. The countdown itself is correctly a domain machine; the surrounding five-stage reveal is not. This crosses the C2 boundary: the Experience subsystem may own reveal *motion*, but stage *authority* belongs to the Watch Party Engine.
+
+- Stage progression state lives in a feature-layer module (`waiting-room-state.ts`) rather than a domain state machine. The countdown itself is correctly a domain machine; the surrounding five-stage reveal is not. This crosses the C2 boundary: the Experience subsystem may own reveal _motion_, but stage _authority_ belongs to the Watch Party Engine.
 
 **Risk** Medium.
 
@@ -104,6 +109,7 @@ Event sequencing collision fix is present in the event store repository.
 `src/domain/sync/` (clock-sync-engine, clock-sync-service, drift-engine, room-sync-coordinator, server-time-source, sync.types), `src/domain/playback/` (playback-machine, playback-runtime, playback-sync-engine, playback-drift-policy), `src/infrastructure/time/http-server-time-source.ts`, server route `src/routes/api/public/time.ts`.
 
 **Why FAIL**
+
 1. **There is no Tier A control surface anywhere in the tree.** A full-tree search for `<video`, `iframe`, `YT.Player`, or any embedded-player construct outside `src/components/ui/` returns **zero** matches. The Constitution's Tier A capability rows — `CAP-EMBED-WEBDESK`, `CAP-LOCAL-WEBDESK`, `CAP-LOCAL-WEBMOB`, `CAP-DRIVE-WEBDESK` — have **no implementing adapter**. `embed-player-adapter`, `local-file-adapter`, and `drive-file-adapter` named in [B](../blueprint/B-capability-matrix.md) do not exist.
 2. `src/domain/providers/provider-tier.ts` nonetheless returns Tier `"a"` for the provider keys `youtube`, `local_file`, `local`, `google_drive` based on **name matching alone**, with no adapter, no platform discrimination, and no certification lookup. This is the exact construction prohibited by [B.4](../blueprint/B-capability-matrix.md) and is the code-level manifestation of DEBT-002.
 3. Consequently `playback-sync-engine.ts` and `drift-engine.ts` are exercised only against coordinated-manual (Tier C) rooms in production. Their host-authoritative tick logic is correct in isolation but has never driven a real player.
@@ -144,7 +150,7 @@ Constitution declares Chat contract-only ([C.6](../blueprint/C-engine-pack.md)).
 
 **Missing modules** No disconnect-detection threshold expressed as a certified value (CERT-PRES-02 requires ≤ 10 s; the code has no explicit named constant tied to that row).
 
-**Architectural deviations** Channel lifecycle correctness relies on registry *discipline* rather than an enforced contract — DEBT-011, confirmed.
+**Architectural deviations** Channel lifecycle correctness relies on registry _discipline_ rather than an enforced contract — DEBT-011, confirmed.
 
 **Risk** Medium — regression-prone.
 
@@ -157,8 +163,9 @@ Constitution declares Chat contract-only ([C.6](../blueprint/C-engine-pack.md)).
 Infrastructure: `browser-provider-launcher.ts`, `supabase-provider-catalog-repository.ts`, `supabase-provider-preference-repository.ts`. Presentation: `src/features/providers/` and `src/features/home/service-shelf.ts` (17 branded services).
 
 **Why FAIL**
+
 1. Tier assignment is provider-name-keyed (see C.4 above). No capability tuple (`source · adapter · platform · version`) exists anywhere in the code. `CAP-*` identifiers from [B](../blueprint/B-capability-matrix.md) appear in **no** source file.
-2. Tier B is gated behind a `hasMediaSessionObservation` runtime flag that no runtime currently sets — so Tier B is effectively dead code, which is *safe* but means CERT-SYNC-B-01/02 cannot be evidenced.
+2. Tier B is gated behind a `hasMediaSessionObservation` runtime flag that no runtime currently sets — so Tier B is effectively dead code, which is _safe_ but means CERT-SYNC-B-01/02 cannot be evidenced.
 3. The shelf lists 17 provider brands; the Constitution's capability matrix defines 11 capability rows. The mapping between the two sets is undocumented.
 
 **What is correct** Deep-link launch, honest manual-sync guidance, and provider-session disclosure are implemented and match ADR-014's ceiling. No control affordance is shown for OTT providers.
@@ -227,40 +234,40 @@ Contract-only per Constitution. Room safety currently rests on Community block e
 
 ## 3. Cross-cutting findings
 
-| ID | Finding | Severity |
-|---|---|---|
+| ID   | Finding                                                                                                                                                                                                                                                                                                                                         | Severity     |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | XC-1 | **Zero automated tests exist in the repository.** No `*.test.*`, no `*.spec.*`, no Playwright suite is committed. The only executable guard is `scripts/check-architecture.mjs`. Every one of the 34 CERT rows in [K.4](../blueprint/K-launch-certification.md) claiming "Full (Playwright)" or "Full" automation has **no** harness behind it. | **Critical** |
-| XC-2 | `bun run verify` = format + lint + arch. It does not run, and cannot run, any certification. The release gate defined in [K.7](../blueprint/K-launch-certification.md) is currently unenforceable. | **Critical** |
-| XC-3 | Foundation Spec v1.0 is cited across the documentation set and is absent from the repository (DEBT-001, confirmed: no such file under `docs/`). | High |
-| XC-4 | ADRs 001–014 lack the mandatory header from [I.3](../blueprint/I-governance.md) (dependencies, superseded, affected engines, affected milestones). Confirmed by inspection of all 14 files. DEBT-005. | Medium |
-| XC-5 | Certification profiles ([K.5](../blueprint/K-launch-certification.md)) exist only as prose. No harness configuration expresses Normal / High Latency / Packet Loss / Temporary Disconnect / Background-Foreground / Late Join / Leave-Rejoin / Host Disconnect / Member Disconnect. DEBT-004. | High |
-| XC-6 | `src/routes/api/debug/config.ts` is a debug surface reachable in a deployed build. Not a Constitution violation, but it should be flag-gated. | Low |
+| XC-2 | `bun run verify` = format + lint + arch. It does not run, and cannot run, any certification. The release gate defined in [K.7](../blueprint/K-launch-certification.md) is currently unenforceable.                                                                                                                                              | **Critical** |
+| XC-3 | Foundation Spec v1.0 is cited across the documentation set and is absent from the repository (DEBT-001, confirmed: no such file under `docs/`).                                                                                                                                                                                                 | High         |
+| XC-4 | ADRs 001–014 lack the mandatory header from [I.3](../blueprint/I-governance.md) (dependencies, superseded, affected engines, affected milestones). Confirmed by inspection of all 14 files. DEBT-005.                                                                                                                                           | Medium       |
+| XC-5 | Certification profiles ([K.5](../blueprint/K-launch-certification.md)) exist only as prose. No harness configuration expresses Normal / High Latency / Packet Loss / Temporary Disconnect / Background-Foreground / Late Join / Leave-Rejoin / Host Disconnect / Member Disconnect. DEBT-004.                                                   | High         |
+| XC-6 | `src/routes/api/debug/config.ts` is a debug surface reachable in a deployed build. Not a Constitution violation, but it should be flag-gated.                                                                                                                                                                                                   | Low          |
 
 ## 4. Additional validations required by the sprint brief
 
-| Validation | Result | Evidence |
-|---|---|---|
-| Room state remains server-authoritative | **CONFIRMED** | `public.room_state` created in migration `20260802204057`, RLS `room_state_select_members` (members read) and `room_state_update_controller` (host/co-host update only), `GRANT SELECT, UPDATE … TO authenticated`, version trigger `trg_room_state_version` on every update. No client path writes authoritative position outside these policies. |
-| WebRTC transports media and ephemeral signaling only | **CONFIRMED** | Zero occurrences of `publishData`, `DataPacket`, `dataChannel`, `RTCPeer` in `src/`. LiveKit usage is confined to `src/infrastructure/voice/livekit-voice-adapter.ts` and carries audio tracks only. |
-| No Tier A capability lacks evidence | **VIOLATED** | Four Tier A capability rows in [B](../blueprint/B-capability-matrix.md); zero implementing adapters; zero certification records; `provider-tier.ts` returns Tier A by name for 4 provider keys. See C.4/C.8 and GAP-001. |
-| Provider capabilities recorded exactly as implemented | **DONE** | [M0-Provider-Capability-Baseline.md](./M0-Provider-Capability-Baseline.md) |
-| No unsupported capability assumed | **DONE** | All Unknowns retained as Unknown throughout this document set. |
+| Validation                                            | Result        | Evidence                                                                                                                                                                                                                                                                                                                                           |
+| ----------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Room state remains server-authoritative               | **CONFIRMED** | `public.room_state` created in migration `20260802204057`, RLS `room_state_select_members` (members read) and `room_state_update_controller` (host/co-host update only), `GRANT SELECT, UPDATE … TO authenticated`, version trigger `trg_room_state_version` on every update. No client path writes authoritative position outside these policies. |
+| WebRTC transports media and ephemeral signaling only  | **CONFIRMED** | Zero occurrences of `publishData`, `DataPacket`, `dataChannel`, `RTCPeer` in `src/`. LiveKit usage is confined to `src/infrastructure/voice/livekit-voice-adapter.ts` and carries audio tracks only.                                                                                                                                               |
+| No Tier A capability lacks evidence                   | **VIOLATED**  | Four Tier A capability rows in [B](../blueprint/B-capability-matrix.md); zero implementing adapters; zero certification records; `provider-tier.ts` returns Tier A by name for 4 provider keys. See C.4/C.8 and GAP-001.                                                                                                                           |
+| Provider capabilities recorded exactly as implemented | **DONE**      | [M0-Provider-Capability-Baseline.md](./M0-Provider-Capability-Baseline.md)                                                                                                                                                                                                                                                                         |
+| No unsupported capability assumed                     | **DONE**      | All Unknowns retained as Unknown throughout this document set.                                                                                                                                                                                                                                                                                     |
 
 ## 5. Conformance scoring
 
 Weighted by Constitution prominence (engines 1.0 each, Experience 1.0, cross-cutting governance 3.0), scored PASS = 1.0, PARTIAL = 0.6, NOT IMPLEMENTED-by-design = 1.0, FAIL = 0.0, cross-cutting = 0.2 (arch guard only).
 
-| Bucket | Weight | Score |
-|---|---|---|
-| 11 PARTIAL engines/subsystems | 11.0 | 6.6 |
-| 2 contract-only, conformant | 2.0 | 2.0 |
-| 2 FAIL engines (Sync, Provider) | 2.0 | 0.0 |
-| Cross-cutting governance & certification | 3.0 | 0.6 |
-| **Total** | **18.0** | **9.2** |
+| Bucket                                   | Weight   | Score   |
+| ---------------------------------------- | -------- | ------- |
+| 11 PARTIAL engines/subsystems            | 11.0     | 6.6     |
+| 2 contract-only, conformant              | 2.0      | 2.0     |
+| 2 FAIL engines (Sync, Provider)          | 2.0      | 0.0     |
+| Cross-cutting governance & certification | 3.0      | 0.6     |
+| **Total**                                | **18.0** | **9.2** |
 
 **Overall Constitution Conformance: 51%.**
 
-The number is dominated by two facts: the capability-tier violation, and the complete absence of certification machinery. Architectural *layering* conformance, taken alone, would score far higher — `arch:check` passes and no vendor type escapes Infrastructure.
+The number is dominated by two facts: the capability-tier violation, and the complete absence of certification machinery. Architectural _layering_ conformance, taken alone, would score far higher — `arch:check` passes and no vendor type escapes Infrastructure.
 
 ## 6. Recommendation
 

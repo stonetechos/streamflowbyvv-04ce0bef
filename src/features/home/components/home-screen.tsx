@@ -48,8 +48,6 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
     if (claimRoomEndedNotice()) setEndedNotice(true);
   }, []);
 
-
-
   if (home.isLoading) {
     return (
       <div
@@ -92,7 +90,6 @@ export function HomeScreen({ home, displayName, profileId }: HomeScreenProps) {
       ) : null}
 
       <Rail index={0}>
-
         <HomeHero
           displayName={displayName}
           isFirstTime={snapshot.isFirstTime}

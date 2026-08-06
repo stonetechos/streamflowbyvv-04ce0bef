@@ -80,5 +80,7 @@ function release(client: SupabaseClient, name: string): void {
   entries.delete(name);
   void client
     .removeChannel(entry.channel)
-    .catch((error: unknown) => logger.warn("Realtime channel release failed", { module: MODULE, error }));
+    .catch((error: unknown) =>
+      logger.warn("Realtime channel release failed", { module: MODULE, error }),
+    );
 }

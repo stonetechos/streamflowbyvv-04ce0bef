@@ -61,7 +61,6 @@ export function toAuthErrorPresentation(error: unknown): {
   };
 }
 
-
 export interface UseAuthFormResult extends AuthFormState {
   /** Runs `action`, tracking pending state and capturing any failure. */
   submit: <T>(action: () => Promise<T>) => Promise<T | null>;

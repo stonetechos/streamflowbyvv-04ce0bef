@@ -19,11 +19,11 @@ Every "OTT sync" product that appears to solve this is doing one of: syncing onl
 
 ## F.3 What remains genuinely achievable
 
-| Achievable | Mechanism | Tier |
-|---|---|---|
-| Frame-aligned shared playback | Adapter with verified control over an embeddable or local source | A |
-| Position awareness without control | Observable media session | B |
-| Shared start, shared voice, shared reactions, catch-up guidance | Deep link + synchronized countdown + realtime + voice | C |
+| Achievable                                                      | Mechanism                                                        | Tier |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- | ---- |
+| Frame-aligned shared playback                                   | Adapter with verified control over an embeddable or local source | A    |
+| Position awareness without control                              | Observable media session                                         | B    |
+| Shared start, shared voice, shared reactions, catch-up guidance | Deep link + synchronized countdown + realtime + voice            | C    |
 
 ## F.4 Where the felt experience actually comes from
 

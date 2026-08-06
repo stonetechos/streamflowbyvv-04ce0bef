@@ -28,7 +28,10 @@ export function createSupabaseProfileRepository(connection: DataConnection): Pro
     ...(entityId ? { entityId } : {}),
   });
 
-  const allocateHandle = async (desired: string, forProfileId: EntityId | null): Promise<string> => {
+  const allocateHandle = async (
+    desired: string,
+    forProfileId: EntityId | null,
+  ): Promise<string> => {
     requireAvailable(connection, context("allocateHandle"));
     return runQuery<string>(
       connection.client().rpc("allocate_profile_handle", {
@@ -62,8 +65,6 @@ export function createSupabaseProfileRepository(connection: DataConnection): Pro
      * an advisory lock, and returns only the handle it allocated.
      */
     allocateHandle,
-
-
 
     /**
      * Allocation and update are two statements, so two people who onboard with

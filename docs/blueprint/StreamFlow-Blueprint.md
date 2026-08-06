@@ -21,7 +21,7 @@ From this version onward, **no architectural change may occur except through a n
 
 Everything the user sees discloses which tier they are in. StreamFlow never fakes synchronization.
 
-**How the system is organized.** Thirteen **Domain Engines** own business capabilities: Room, Timeline, Watch Party, Sync, Voice, Chat, Presence, Provider, Notification, Community, AI/Po, Analytics, Moderation. A fourteenth subsystem, the **Experience Engine**, is explicitly *not* a domain engine — it is a cross-cutting presentation-support layer owning motion, accessibility, onboarding, loading and empty states, delight, and visual consistency, and owning no business state or authority of any kind. Engines are an organizing model inside the Domain layer; the Presentation → Feature → Domain → Repository → Infrastructure layering from Foundation Spec v1.0 is unchanged, and no vendor type (Supabase, LiveKit) appears in any engine contract.
+**How the system is organized.** Thirteen **Domain Engines** own business capabilities: Room, Timeline, Watch Party, Sync, Voice, Chat, Presence, Provider, Notification, Community, AI/Po, Analytics, Moderation. A fourteenth subsystem, the **Experience Engine**, is explicitly _not_ a domain engine — it is a cross-cutting presentation-support layer owning motion, accessibility, onboarding, loading and empty states, delight, and visual consistency, and owning no business state or authority of any kind. Engines are an organizing model inside the Domain layer; the Presentation → Feature → Domain → Repository → Infrastructure layering from Foundation Spec v1.0 is unchanged, and no vendor type (Supabase, LiveKit) appears in any engine contract.
 
 **How quality is enforced.** `K-launch-certification.md` is the Definition of Done. Every capability has a matrix row with thirteen mandatory columns, and every row is exercised under named, reusable **certification profiles** (Normal Network, High Latency, Packet Loss, Temporary Disconnect, Background/Foreground, Late Join, Leave/Rejoin, Host Disconnect, Member Disconnect). Milestones reference profiles; they never hardcode scenarios. Performance metrics carry three values — Provisional Target, Measured Baseline, Certified Threshold — and only the Certified Threshold gates a release. Provisional targets are design intent and are never presented as production commitments.
 
@@ -33,24 +33,24 @@ Everything the user sees discloses which tier they are in. StreamFlow never fake
 
 ## Chapters
 
-| # | Document | Purpose |
-|---|---|---|
-| A | [Product Operating Brief](./A-product-operating-brief.md) | Thesis, users, sync tier model, room lifecycle, KPIs/SLOs, Launch Envelope |
-| B | [Capability Matrix](./B-capability-matrix.md) | Source × adapter × platform × version × tier, fallback and disclosure |
-| C | [Engine Architecture Pack](./C-engine-pack.md) | The 13 Domain Engines, one spec format |
-| C2 | [Experience Engine](./C2-experience-engine.md) | Cross-cutting presentation-support subsystem |
-| C3 | [State Management Principles](./C3-state-management.md) | Persistent, realtime, session, cached, derived, offline |
-| C4 | [Performance Budget](./C4-performance-budget.md) | Provisional Target / Measured Baseline / Certified Threshold |
-| C5 | [Product Principles](./C5-product-principles.md) | Immutable principles as architecture constraints |
-| D | [Milestone Delivery Roadmap](./D-milestone-roadmap.md) | M0–M7 |
-| E | [Scope Decisions](./E-scope-decisions.md) | Remove / defer / accept risk / non-negotiable |
-| F | [Reality Check](./F-reality-check.md) | Hearo-like viability under ADR-014 |
-| G | [Platform Foundation](./G-platform-foundation.md) | Shared Vedora Vision capabilities |
-| H | [Native Architecture](./H-native-architecture.md) | Core Domain vs platform adapters |
-| I | [Governance](./I-governance.md) | Engineering constitution and ADR lifecycle |
-| J | [Technical Debt Register](./J-technical-debt.md) | Immediate / near-term / long-term |
-| K | [Launch Certification](./K-launch-certification.md) | Definition of Done, matrix, profiles, gates |
-| ADR-015 | [Engine Decomposition](./ADR-015-engine-decomposition.md) | Makes the engine model binding |
+| #       | Document                                                  | Purpose                                                                    |
+| ------- | --------------------------------------------------------- | -------------------------------------------------------------------------- |
+| A       | [Product Operating Brief](./A-product-operating-brief.md) | Thesis, users, sync tier model, room lifecycle, KPIs/SLOs, Launch Envelope |
+| B       | [Capability Matrix](./B-capability-matrix.md)             | Source × adapter × platform × version × tier, fallback and disclosure      |
+| C       | [Engine Architecture Pack](./C-engine-pack.md)            | The 13 Domain Engines, one spec format                                     |
+| C2      | [Experience Engine](./C2-experience-engine.md)            | Cross-cutting presentation-support subsystem                               |
+| C3      | [State Management Principles](./C3-state-management.md)   | Persistent, realtime, session, cached, derived, offline                    |
+| C4      | [Performance Budget](./C4-performance-budget.md)          | Provisional Target / Measured Baseline / Certified Threshold               |
+| C5      | [Product Principles](./C5-product-principles.md)          | Immutable principles as architecture constraints                           |
+| D       | [Milestone Delivery Roadmap](./D-milestone-roadmap.md)    | M0–M7                                                                      |
+| E       | [Scope Decisions](./E-scope-decisions.md)                 | Remove / defer / accept risk / non-negotiable                              |
+| F       | [Reality Check](./F-reality-check.md)                     | Hearo-like viability under ADR-014                                         |
+| G       | [Platform Foundation](./G-platform-foundation.md)         | Shared Vedora Vision capabilities                                          |
+| H       | [Native Architecture](./H-native-architecture.md)         | Core Domain vs platform adapters                                           |
+| I       | [Governance](./I-governance.md)                           | Engineering constitution and ADR lifecycle                                 |
+| J       | [Technical Debt Register](./J-technical-debt.md)          | Immediate / near-term / long-term                                          |
+| K       | [Launch Certification](./K-launch-certification.md)       | Definition of Done, matrix, profiles, gates                                |
+| ADR-015 | [Engine Decomposition](./ADR-015-engine-decomposition.md) | Makes the engine model binding                                             |
 
 ## Reading order
 

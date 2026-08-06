@@ -169,7 +169,6 @@ export function createRoomReadModel(deps: RoomReadModelDependencies): RoomReadMo
       return updated;
     },
 
-
     isReady,
 
     async subscribeToRoom(roomId, listener) {

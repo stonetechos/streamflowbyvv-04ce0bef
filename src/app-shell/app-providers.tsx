@@ -40,10 +40,10 @@ export function AppProviders({
             <FeatureFlagProvider>
               <AuthProvider>
                 <NotificationProvider>
-                <PoProvider>
-                  {/* Milestone F.0: Po's decorative reactions to social moments. */}
-                  <PoReactionProvider>{children}</PoReactionProvider>
-                </PoProvider>
+                  <PoProvider>
+                    {/* Milestone F.0: Po's decorative reactions to social moments. */}
+                    <PoReactionProvider>{children}</PoReactionProvider>
+                  </PoProvider>
                 </NotificationProvider>
               </AuthProvider>
             </FeatureFlagProvider>

@@ -27,10 +27,11 @@ Where the shipped implementation (share intake, deep-link launch coordinator, co
 
 **6. Closest achievable architecture**
 Tiered by what each provider actually permits:
+
 - Tier A — true controlled sync (YouTube IFrame API, local files, Cast-controlled receivers where permitted)
 - Tier B — assisted sync (deep link to the exact title + shared clock + host-triggered pause/resume signals that participants act on, with drift correction cues)
 - Tier C — coordinated manual sync (current countdown behaviour)
-Plus what an Android native build genuinely adds (MediaSession *observation* on some apps, share/intent fidelity) versus what it does not add (control of DRM playback), and what iOS adds (essentially nothing beyond share sheet fidelity).
+  Plus what an Android native build genuinely adds (MediaSession _observation_ on some apps, share/intent fidelity) versus what it does not add (control of DRM playback), and what iOS adds (essentially nothing beyond share sheet fidelity).
 
 **7. Decision points requiring your answer**
 Whether to pursue OTT partnership conversations, whether to ship a native Android build for observation-only gains, and whether the product positioning changes from "sync" to "watch together".

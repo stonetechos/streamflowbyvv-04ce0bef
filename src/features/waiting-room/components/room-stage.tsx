@@ -88,7 +88,6 @@ export function RoomStage({
           </span>
         ) : null}
 
-
         {isVoiceConnected ? (
           <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-success/20 px-2.5 py-1 text-[11px] font-semibold text-success backdrop-blur">
             <span aria-hidden="true" className="size-1.5 rounded-full bg-success" />

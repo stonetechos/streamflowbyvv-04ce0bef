@@ -8,20 +8,20 @@ StreamFlow is the first product on the Vedora Vision platform. Several of its su
 
 ## G.2 Candidate shared capabilities
 
-| Capability | StreamFlow home today | Shared potential | Extraction bar |
-|---|---|---|---|
-| Identity and profiles | `src/infrastructure/identity`, `domain/profiles` | High | Second product needs accounts |
-| Social graph | `domain/social` | High | Second product needs friends/blocks |
-| Notification delivery | `domain/services/notification-service.ts` | High | Two products, two channel sets |
-| Feature flags | `domain/services/feature-flag-service.ts` | High | Cross-product flag targeting needed |
-| Localization | `domain/services/localization-service.ts` | High | Shared locale set beyond EN, HI-IN |
-| Analytics schema and pipeline | `domain/services/analytics-service.ts` | High | Cross-product KPI reporting |
-| Compliance service | `domain/services/compliance-service.ts` | High | Second product has provider risk |
-| Event bus and event store | `domain/events`, `infrastructure/events` | Medium | Second product needs event sourcing |
-| Realtime channel registry | `infrastructure/rooms` | Medium | Second product needs presence |
-| Design system and tokens | `src/styles.css`, Experience Engine | High | Shared brand system defined |
-| AI adapter layer | `infrastructure/ai` | Medium | Second product needs model-agnostic AI |
-| Voice transport adapter | `infrastructure/voice` | Low | StreamFlow-specific for now |
+| Capability                    | StreamFlow home today                            | Shared potential | Extraction bar                         |
+| ----------------------------- | ------------------------------------------------ | ---------------- | -------------------------------------- |
+| Identity and profiles         | `src/infrastructure/identity`, `domain/profiles` | High             | Second product needs accounts          |
+| Social graph                  | `domain/social`                                  | High             | Second product needs friends/blocks    |
+| Notification delivery         | `domain/services/notification-service.ts`        | High             | Two products, two channel sets         |
+| Feature flags                 | `domain/services/feature-flag-service.ts`        | High             | Cross-product flag targeting needed    |
+| Localization                  | `domain/services/localization-service.ts`        | High             | Shared locale set beyond EN, HI-IN     |
+| Analytics schema and pipeline | `domain/services/analytics-service.ts`           | High             | Cross-product KPI reporting            |
+| Compliance service            | `domain/services/compliance-service.ts`          | High             | Second product has provider risk       |
+| Event bus and event store     | `domain/events`, `infrastructure/events`         | Medium           | Second product needs event sourcing    |
+| Realtime channel registry     | `infrastructure/rooms`                           | Medium           | Second product needs presence          |
+| Design system and tokens      | `src/styles.css`, Experience Engine              | High             | Shared brand system defined            |
+| AI adapter layer              | `infrastructure/ai`                              | Medium           | Second product needs model-agnostic AI |
+| Voice transport adapter       | `infrastructure/voice`                           | Low              | StreamFlow-specific for now            |
 
 ## G.3 Extraction rules
 

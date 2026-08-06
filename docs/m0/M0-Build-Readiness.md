@@ -8,7 +8,7 @@ Question: **"Is the current implementation ready to begin milestone-based develo
 
 **No — not yet.** Two blocking conditions must be cleared first. Neither is a feature; both are small-to-medium and neither requires touching schema or UI.
 
-This is a *narrow* no. The architecture is sound. What is missing is the machinery the Constitution uses to hold the architecture accountable.
+This is a _narrow_ no. The architecture is sound. What is missing is the machinery the Constitution uses to hold the architecture accountable.
 
 ## Why not
 
@@ -40,20 +40,20 @@ Beginning M1 without this means every milestone would close on assertion rather 
 
 It is worth being precise about how much of the foundation holds, because the two blockers above should not be read as a verdict on the codebase.
 
-| Area | Status | Evidence |
-|---|---|---|
-| Layer separation | **Sound** | `bun run arch:check` passes: no vendor symbol escapes Infrastructure. 499 files, all mapped, zero unmapped. |
-| Server authority over room state | **Confirmed** | `public.room_state` with RLS: members read, host/co-host update only, version trigger on every write. No client bypass path found. |
-| WebRTC discipline | **Confirmed** | Zero occurrences of `publishData`, `DataPacket`, `dataChannel`, `RTCPeer`. LiveKit carries audio only. No room state, playback authority, or durable event crosses the peer transport. |
-| Compliance posture | **Sound** | No accessibility-service automation, no overlay automation, no screen capture, no Cast/AirPlay control, no scraping. ADR-014's ceiling is respected everywhere. |
-| Honest UI | **Sound** | No control affordance is offered for content StreamFlow cannot control. Catch-up guidance advises a human; it never issues a command. |
-| Vendor isolation | **Sound** | Supabase confined to `infrastructure/supabase/`, LiveKit to `infrastructure/voice/`, LLM vendors to `infrastructure/ai/`. Portability per [G](../blueprint/G-platform-foundation.md) is real, not aspirational. |
-| Domain engine coverage | **11 of 13 implemented**, 2 contract-only by design | See [M0-Architecture-Conformance-Report.md](./M0-Architecture-Conformance-Report.md) |
-| Experience subsystem boundary | **Confirmed** | No module under `design-system/`, `foundation/accessibility/`, or `foundation/theme/` touches business state. One exception noted (`waiting-room-state.ts`, DEBT-020). |
+| Area                             | Status                                              | Evidence                                                                                                                                                                                                        |
+| -------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layer separation                 | **Sound**                                           | `bun run arch:check` passes: no vendor symbol escapes Infrastructure. 499 files, all mapped, zero unmapped.                                                                                                     |
+| Server authority over room state | **Confirmed**                                       | `public.room_state` with RLS: members read, host/co-host update only, version trigger on every write. No client bypass path found.                                                                              |
+| WebRTC discipline                | **Confirmed**                                       | Zero occurrences of `publishData`, `DataPacket`, `dataChannel`, `RTCPeer`. LiveKit carries audio only. No room state, playback authority, or durable event crosses the peer transport.                          |
+| Compliance posture               | **Sound**                                           | No accessibility-service automation, no overlay automation, no screen capture, no Cast/AirPlay control, no scraping. ADR-014's ceiling is respected everywhere.                                                 |
+| Honest UI                        | **Sound**                                           | No control affordance is offered for content StreamFlow cannot control. Catch-up guidance advises a human; it never issues a command.                                                                           |
+| Vendor isolation                 | **Sound**                                           | Supabase confined to `infrastructure/supabase/`, LiveKit to `infrastructure/voice/`, LLM vendors to `infrastructure/ai/`. Portability per [G](../blueprint/G-platform-foundation.md) is real, not aspirational. |
+| Domain engine coverage           | **11 of 13 implemented**, 2 contract-only by design | See [M0-Architecture-Conformance-Report.md](./M0-Architecture-Conformance-Report.md)                                                                                                                            |
+| Experience subsystem boundary    | **Confirmed**                                       | No module under `design-system/`, `foundation/accessibility/`, or `foundation/theme/` touches business state. One exception noted (`waiting-room-state.ts`, DEBT-020).                                          |
 
 Overall Constitution conformance: **51%**. That figure is depressed almost entirely by the two blockers — the capability-tier violation and the absent certification machinery. Layering conformance alone, measured separately, is near-complete.
 
-## What is explicitly *not* a blocker
+## What is explicitly _not_ a blocker
 
 To keep the path short, the following were considered and rejected as gating:
 
@@ -68,11 +68,13 @@ To keep the path short, the following were considered and rejected as gating:
 Three steps, in order. None involves new product capability.
 
 **Step 1 — M0 completion (documentation + one demotion)**
+
 - Demote name-based Tier A in `provider-tier.ts` (DEBT-002)
 - Supersede the missing Foundation Spec by ADR (DEBT-001)
 - Backfill the [I.3](../blueprint/I-governance.md) header on ADRs 001–014 (DEBT-005)
 
 **Step 2 — Sprint 86 (the certification enablement sprint)**
+
 - Commit a certification harness (DEBT-018)
 - Express the nine K.5 profiles as runnable configurations (DEBT-004)
 - Produce the first five C4 measured baselines (DEBT-003)

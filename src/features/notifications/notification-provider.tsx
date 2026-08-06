@@ -9,7 +9,11 @@ import { createContext, useContext, type ReactNode } from "react";
 
 import { useAuth } from "@/features/auth";
 
-import { EMPTY_BADGES, useNotificationBadges, type NotificationBadges } from "./use-notification-badges";
+import {
+  EMPTY_BADGES,
+  useNotificationBadges,
+  type NotificationBadges,
+} from "./use-notification-badges";
 
 const FALLBACK: NotificationBadges = {
   ...EMPTY_BADGES,

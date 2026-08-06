@@ -58,7 +58,6 @@ export function AppLayout({ children, chrome = "full" }: AppLayoutProps) {
         </div>
       </footer>
 
-
       {showNav ? <BottomNav /> : null}
       {/* Milestone H1 — Po sits beside the app, never over it. */}
       {showNav ? <PoConsole /> : null}

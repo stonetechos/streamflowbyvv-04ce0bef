@@ -8,11 +8,11 @@ Authority: [C4-performance-budget.md](../blueprint/C4-performance-budget.md)
 
 [C4.1](../blueprint/C4-performance-budget.md) defines three values per metric. This document fills **only the middle column** — Measured Baseline — and may fill it with one of exactly three states:
 
-| State | Meaning |
-|---|---|
-| **Measured** | A number produced by an instrumented run, with date, build, platform, and named [K.5](../blueprint/K-launch-certification.md) profile |
-| **Not Yet Measured** | Instrumentation is possible today; the run has not been performed |
-| **Unknown** | Cannot be measured today — the capability, platform, or instrumentation point does not exist |
+| State                | Meaning                                                                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Measured**         | A number produced by an instrumented run, with date, build, platform, and named [K.5](../blueprint/K-launch-certification.md) profile |
+| **Not Yet Measured** | Instrumentation is possible today; the run has not been performed                                                                     |
+| **Unknown**          | Cannot be measured today — the capability, platform, or instrumentation point does not exist                                          |
 
 **No metric in this document is estimated, inferred, or fabricated.** C4.1 rule 5 states that a number without a named profile is meaningless; since [GAP-004](./M0-Gap-Analysis.md) establishes that no profile is expressible as a runnable configuration, **no measurement taken today could be valid even if performed**.
 
@@ -30,66 +30,66 @@ Producing a single ad-hoc number today would violate C4.1 rule 2 by creating the
 
 ## C4.2 Interaction and join metrics
 
-| Metric | Provisional Target (from C4) | Measured Baseline | State | Blocker |
-|---|---|---|---|---|
-| Invite-to-join latency | ≤ 2.5 s p75 | — | Not Yet Measured | GAP-003, GAP-004 |
-| Invite-to-join latency, cold sign-in | ≤ 12 s p75 | — | Not Yet Measured | GAP-003, GAP-004 |
-| Room create latency | ≤ 1.2 s p75 | — | Not Yet Measured | GAP-003, GAP-004 |
-| Ready propagation latency | ≤ 700 ms p95 | — | Not Yet Measured | GAP-003, GAP-004 |
-| Late-join context load | ≤ 2.0 s p75 | — | Not Yet Measured | GAP-003, GAP-004 (Late Join profile) |
+| Metric                               | Provisional Target (from C4) | Measured Baseline | State            | Blocker                              |
+| ------------------------------------ | ---------------------------- | ----------------- | ---------------- | ------------------------------------ |
+| Invite-to-join latency               | ≤ 2.5 s p75                  | —                 | Not Yet Measured | GAP-003, GAP-004                     |
+| Invite-to-join latency, cold sign-in | ≤ 12 s p75                   | —                 | Not Yet Measured | GAP-003, GAP-004                     |
+| Room create latency                  | ≤ 1.2 s p75                  | —                 | Not Yet Measured | GAP-003, GAP-004                     |
+| Ready propagation latency            | ≤ 700 ms p95                 | —                 | Not Yet Measured | GAP-003, GAP-004                     |
+| Late-join context load               | ≤ 2.0 s p75                  | —                 | Not Yet Measured | GAP-003, GAP-004 (Late Join profile) |
 
 All five are instrumentable today — the code paths exist and are exercised in production. These are the **highest-value first measurements** once a harness lands.
 
 ## C4.3 Synchronization metrics
 
-| Metric | Provisional Target | Measured Baseline | State | Note |
-|---|---|---|---|---|
-| Countdown spread | ≤ 250 ms p95 | — | Not Yet Measured | `countdown-machine.ts` has no emitted zero-instant timestamp to sample |
-| Clock offset accuracy | ≤ 120 ms p95 | — | Not Yet Measured | `clock-sync-engine.ts` computes an offset; nothing records it |
-| Tier A start alignment | ≤ 400 ms p95 | — | **Unknown** | No Tier A adapter exists ([GAP-001](./M0-Gap-Analysis.md)); there is no first playback frame to measure |
-| Tier A steady-state drift | ≤ 500 ms p95 | — | **Unknown** | As above |
-| Drift detection latency | ≤ 3 s | — | Not Yet Measured | `drift-engine.ts` operates on reported position; measurable in Tier C |
-| Catch-up convergence | ≤ 2 s | — | **Unknown** | Catch-up is advisory guidance to a human; convergence depends on user action and needs a defined measurement point |
+| Metric                    | Provisional Target | Measured Baseline | State            | Note                                                                                                               |
+| ------------------------- | ------------------ | ----------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Countdown spread          | ≤ 250 ms p95       | —                 | Not Yet Measured | `countdown-machine.ts` has no emitted zero-instant timestamp to sample                                             |
+| Clock offset accuracy     | ≤ 120 ms p95       | —                 | Not Yet Measured | `clock-sync-engine.ts` computes an offset; nothing records it                                                      |
+| Tier A start alignment    | ≤ 400 ms p95       | —                 | **Unknown**      | No Tier A adapter exists ([GAP-001](./M0-Gap-Analysis.md)); there is no first playback frame to measure            |
+| Tier A steady-state drift | ≤ 500 ms p95       | —                 | **Unknown**      | As above                                                                                                           |
+| Drift detection latency   | ≤ 3 s              | —                 | Not Yet Measured | `drift-engine.ts` operates on reported position; measurable in Tier C                                              |
+| Catch-up convergence      | ≤ 2 s              | —                 | **Unknown**      | Catch-up is advisory guidance to a human; convergence depends on user action and needs a defined measurement point |
 
 Two Unknowns here are the direct consequence of the Tier A gap. They cannot be resolved by measurement effort — only by building an adapter.
 
 ## C4.4 Voice metrics
 
-| Metric | Provisional Target | Measured Baseline | State | Note |
-|---|---|---|---|---|
-| Voice connection latency | ≤ 2.0 s p75 | — | Not Yet Measured | Instrumentable at `use-voice-session.ts` |
-| Voice mouth-to-ear | ≤ 300 ms p95 | — | **Unknown** | Requires an audio-loopback rig; none exists, and headless Chromium cannot produce a valid figure |
-| Voice reconnect | ≤ 5 s p75 | — | Not Yet Measured | Requires the Temporary Disconnect profile |
-| Voice denial handling | ≤ 500 ms | — | Not Yet Measured | Automatable with a denied-permission context |
+| Metric                   | Provisional Target | Measured Baseline | State            | Note                                                                                             |
+| ------------------------ | ------------------ | ----------------- | ---------------- | ------------------------------------------------------------------------------------------------ |
+| Voice connection latency | ≤ 2.0 s p75        | —                 | Not Yet Measured | Instrumentable at `use-voice-session.ts`                                                         |
+| Voice mouth-to-ear       | ≤ 300 ms p95       | —                 | **Unknown**      | Requires an audio-loopback rig; none exists, and headless Chromium cannot produce a valid figure |
+| Voice reconnect          | ≤ 5 s p75          | —                 | Not Yet Measured | Requires the Temporary Disconnect profile                                                        |
+| Voice denial handling    | ≤ 500 ms           | —                 | Not Yet Measured | Automatable with a denied-permission context                                                     |
 
 ## C4.5 Resilience metrics
 
-| Metric | Provisional Target | Measured Baseline | State | Note |
-|---|---|---|---|---|
-| Realtime reconnect recovery | ≤ 4 s p75 | — | Not Yet Measured | Needs Temporary Disconnect + Packet Loss profiles |
-| Foreground resume | ≤ 1.5 s p75 | — | Not Yet Measured | Needs Background/Foreground profile |
-| Rejoin restoration | ≤ 3 s p75 | — | Not Yet Measured | Grace window is not parameterised ([GAP-004](./M0-Gap-Analysis.md)) |
-| Host disconnect survival | 100% within grace | — | Not Yet Measured | Host-leave logic exists; grace value not named as a constant |
+| Metric                      | Provisional Target | Measured Baseline | State            | Note                                                                |
+| --------------------------- | ------------------ | ----------------- | ---------------- | ------------------------------------------------------------------- |
+| Realtime reconnect recovery | ≤ 4 s p75          | —                 | Not Yet Measured | Needs Temporary Disconnect + Packet Loss profiles                   |
+| Foreground resume           | ≤ 1.5 s p75        | —                 | Not Yet Measured | Needs Background/Foreground profile                                 |
+| Rejoin restoration          | ≤ 3 s p75          | —                 | Not Yet Measured | Grace window is not parameterised ([GAP-004](./M0-Gap-Analysis.md)) |
+| Host disconnect survival    | 100% within grace  | —                 | Not Yet Measured | Host-leave logic exists; grace value not named as a constant        |
 
 ## C4.6 Client resource metrics
 
-| Metric | Provisional Target | Measured Baseline | State | Note |
-|---|---|---|---|---|
-| Cold launch | ≤ 3.0 s p75 mid-tier | — | Not Yet Measured | No mid-tier reference device is defined anywhere in the documentation set |
-| Warm launch | ≤ 1.0 s p75 | — | Not Yet Measured | As above |
-| Memory, active room with voice | ≤ 350 MB | — | Not Yet Measured | Measurable via CDP once a harness exists |
-| CPU, active room with voice | ≤ 25% mid-tier | — | **Unknown** | Requires a defined reference device |
-| Battery impact | ≤ 12% / hour mid-tier | — | **Unknown** | Requires physical devices; no native shell shipped |
-| Network utilization, idle room | ≤ 15 kbps | — | Not Yet Measured | Measurable via CDP |
-| Network utilization, voice room | ≤ 60 kbps | — | Not Yet Measured | Measurable via CDP + LiveKit stats |
+| Metric                          | Provisional Target    | Measured Baseline | State            | Note                                                                      |
+| ------------------------------- | --------------------- | ----------------- | ---------------- | ------------------------------------------------------------------------- |
+| Cold launch                     | ≤ 3.0 s p75 mid-tier  | —                 | Not Yet Measured | No mid-tier reference device is defined anywhere in the documentation set |
+| Warm launch                     | ≤ 1.0 s p75           | —                 | Not Yet Measured | As above                                                                  |
+| Memory, active room with voice  | ≤ 350 MB              | —                 | Not Yet Measured | Measurable via CDP once a harness exists                                  |
+| CPU, active room with voice     | ≤ 25% mid-tier        | —                 | **Unknown**      | Requires a defined reference device                                       |
+| Battery impact                  | ≤ 12% / hour mid-tier | —                 | **Unknown**      | Requires physical devices; no native shell shipped                        |
+| Network utilization, idle room  | ≤ 15 kbps             | —                 | Not Yet Measured | Measurable via CDP                                                        |
+| Network utilization, voice room | ≤ 60 kbps             | —                 | Not Yet Measured | Measurable via CDP + LiveKit stats                                        |
 
 ## Tally
 
-| State | Metrics | Share of 28 |
-|---|---|---|
-| Measured | **0** | 0% |
-| Not Yet Measured | 22 | 79% |
-| Unknown | 6 | 21% |
+| State            | Metrics | Share of 28 |
+| ---------------- | ------- | ----------- |
+| Measured         | **0**   | 0%          |
+| Not Yet Measured | 22      | 79%         |
+| Unknown          | 6       | 21%         |
 
 ## Secondary observation: the reference device is undefined
 
