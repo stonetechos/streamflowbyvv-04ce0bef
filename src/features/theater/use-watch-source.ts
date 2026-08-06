@@ -1,17 +1,24 @@
 /**
- * Watch selection hook — Sprint H1, extended in H2.
+ * Watch selection hook — Sprint H1, extended in H2, rewritten in H3.
  *
- * Reads the room's chosen title and, for the host, saves a new one. The
- * Domain owns interpretation and permission; this hook owns pending state.
+ * The selection itself is shared room state: it arrives with the room
+ * snapshot, which every participant re-reads on every realtime notice. This
+ * hook therefore reads nothing of its own — it renders the shared reference,
+ * and lets the host write a new one. A freshly saved selection is shown
+ * immediately and then superseded by the snapshot, so host and guests
+ * converge on the same answer rather than on two private ones.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
+  EMPTY_WATCH_SELECTION,
   WATCH_SOURCE_SERVICE,
   isServiceBound,
+  mediaRefSelection,
   resolveService,
   watchSelectionLabel,
   watchSourceCapability,
+  type RoomMediaRef,
   type WatchProviderCapability,
   type WatchSelection,
   type WatchSource,
@@ -19,8 +26,6 @@ import {
 import { logger } from "@/foundation/logging";
 
 const MODULE = "theater-source";
-
-const EMPTY: WatchSelection = { source: null, title: null };
 
 export interface WatchSourceModel {
   readonly selection: WatchSelection;
@@ -31,66 +36,54 @@ export interface WatchSourceModel {
   readonly isSaving: boolean;
   readonly error: string | null;
   save(input: string, title?: string | null): void;
-  refresh(): void;
 }
 
 export interface UseWatchSourceInput {
   readonly roomId: string;
   readonly profileId: string | null;
   readonly isHost: boolean;
-  readonly enabled: boolean;
-  /** Bumped by the room's realtime notices so guests pick up a new choice. */
-  readonly revision: number;
+  /** The room's shared selection, straight from the room snapshot. */
+  readonly mediaRef: RoomMediaRef | null;
 }
 
 export function useWatchSource({
   roomId,
   profileId,
   isHost,
-  enabled,
-  revision,
+  mediaRef,
 }: UseWatchSourceInput): WatchSourceModel {
-  const service = useMemo(
-    () => (isServiceBound(WATCH_SOURCE_SERVICE) ? resolveService(WATCH_SOURCE_SERVICE) : null),
-    [],
-  );
-
-  const [selection, setSelection] = useState<WatchSelection>(EMPTY);
+  const shared = mediaRefSelection(mediaRef);
+  const [optimistic, setOptimistic] = useState<WatchSelection | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [localRevision, setLocalRevision] = useState(0);
 
+  // Once the room snapshot carries the saved choice, the local echo retires.
   useEffect(() => {
-    if (!service || !enabled) return;
-    let cancelled = false;
-    void service
-      .read(roomId)
-      .then((next) => {
-        if (!cancelled) setSelection(next);
-      })
-      .catch((cause: unknown) => {
-        logger.warn("source_read_failed", { module: MODULE, roomId, error: String(cause) });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [service, enabled, roomId, revision, localRevision]);
+    if (optimistic && mediaRef?.url && optimistic.source?.url === mediaRef.url) {
+      setOptimistic(null);
+    }
+  }, [mediaRef, optimistic]);
+
+  const selection = optimistic ?? shared ?? EMPTY_WATCH_SELECTION;
 
   const save = useCallback(
     (input: string, title?: string | null) => {
+      const service = isServiceBound(WATCH_SOURCE_SERVICE)
+        ? resolveService(WATCH_SOURCE_SERVICE)
+        : null;
       if (!service || !profileId || !isHost) return;
       setIsSaving(true);
       setError(null);
       void service
         .set(roomId, profileId, input, title ?? null)
-        .then((next) => setSelection(next))
+        .then((next) => setOptimistic(next))
         .catch((cause: unknown) => {
           logger.warn("source_save_failed", { module: MODULE, roomId, error: String(cause) });
           setError("invalid");
         })
         .finally(() => setIsSaving(false));
     },
-    [service, profileId, isHost, roomId],
+    [profileId, isHost, roomId],
   );
 
   return {
@@ -101,6 +94,5 @@ export function useWatchSource({
     isSaving,
     error,
     save,
-    refresh: () => setLocalRevision((value) => value + 1),
   };
 }
