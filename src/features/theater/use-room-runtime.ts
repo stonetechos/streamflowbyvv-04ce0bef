@@ -143,7 +143,9 @@ export function useRoomRuntime(input: UseRoomRuntimeInput): RoomRuntimeModel {
       .ensure(roomId, profileId)
       .then((state) => {
         if (!state) return;
-        accept(toPlaybackState(state, { isCountingDown, controlMode: capability.playbackControlMode }));
+        accept(
+          toPlaybackState(state, { isCountingDown, controlMode: capability.playbackControlMode }),
+        );
       })
       .catch((error: unknown) => {
         logger.warn("state_read_failed", { module: MODULE, roomId, error: String(error) });
@@ -192,7 +194,12 @@ export function useRoomRuntime(input: UseRoomRuntimeInput): RoomRuntimeModel {
       const local = readLocal.current();
 
       if (local === null) {
-        apply.current({ status: state.status, positionSeconds: target, correction: "hard", rate: 1 });
+        apply.current({
+          status: state.status,
+          positionSeconds: target,
+          correction: "hard",
+          rate: 1,
+        });
         setDriftMs(null);
         return;
       }
@@ -200,8 +207,7 @@ export function useRoomRuntime(input: UseRoomRuntimeInput): RoomRuntimeModel {
       const delta = (local - target) * 1000;
       const verdict = classifyDriftCorrection(delta, policy, {
         isBuffering: bufferingRef.current,
-        msSinceSeek:
-          lastSeekAtRef.current === null ? null : Date.now() - lastSeekAtRef.current,
+        msSinceSeek: lastSeekAtRef.current === null ? null : Date.now() - lastSeekAtRef.current,
       });
 
       setDriftMs(delta);
@@ -290,7 +296,8 @@ export function useRoomRuntime(input: UseRoomRuntimeInput): RoomRuntimeModel {
   // when the durable row has not moved.
   const shownPlayback = useMemo<PlaybackState>(() => {
     if (isCountingDown) return { ...playback, status: "countdown" };
-    if (!isAutomatic) return { ...playback, status: playback.status === "ended" ? "ended" : "manual-sync" };
+    if (!isAutomatic)
+      return { ...playback, status: playback.status === "ended" ? "ended" : "manual-sync" };
     return playback;
   }, [playback, isCountingDown, isAutomatic]);
 

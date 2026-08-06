@@ -22,14 +22,7 @@ import type { WatchState } from "./watch-sync-service";
 
 /** Authoritative playback status shared by every client in the room. */
 export type PlaybackStatusValue =
-  | "idle"
-  | "countdown"
-  | "playing"
-  | "paused"
-  | "seeking"
-  | "buffering"
-  | "ended"
-  | "manual-sync";
+  "idle" | "countdown" | "playing" | "paused" | "seeking" | "buffering" | "ended" | "manual-sync";
 
 /**
  * Server-authoritative playback state. `revision` is strictly increasing and
@@ -124,12 +117,7 @@ export function reduceState(current: PlaybackState | null, incoming: PlaybackSta
 // -------------------------------------------------------------- commands ----
 
 export type RoomCommandKind =
-  | "play"
-  | "pause"
-  | "seek"
-  | "restart"
-  | "start-countdown"
-  | "finish-countdown";
+  "play" | "pause" | "seek" | "restart" | "start-countdown" | "finish-countdown";
 
 export type RoomCommand =
   | { readonly kind: "play"; readonly positionSeconds: number }
@@ -160,8 +148,7 @@ export interface CommandContext {
 }
 
 export type CommandVerdict =
-  | { readonly allowed: true }
-  | { readonly allowed: false; readonly reason: CommandRejection };
+  { readonly allowed: true } | { readonly allowed: false; readonly reason: CommandRejection };
 
 const TRANSPORT_KINDS: readonly RoomCommandKind[] = ["play", "pause", "seek", "restart"];
 
@@ -271,13 +258,7 @@ export function syncStatusFor(
 // ----------------------------------------------------------- readiness ------
 
 export type ParticipantRuntimeState =
-  | "joined"
-  | "selecting"
-  | "ready"
-  | "watching"
-  | "reconnecting"
-  | "disconnected"
-  | "left";
+  "joined" | "selecting" | "ready" | "watching" | "reconnecting" | "disconnected" | "left";
 
 export interface ParticipantRuntime {
   readonly participantId: string;
@@ -419,11 +400,7 @@ export function isStaleEvent(event: RoomEvent, appliedRevision: number): boolean
  * A request is a message to humans; it never mutates playback state.
  */
 export type CoordinationKind =
-  | "pause-request"
-  | "resume-request"
-  | "resync-request"
-  | "provider-launched"
-  | "ready";
+  "pause-request" | "resume-request" | "resync-request" | "provider-launched" | "ready";
 
 export interface CoordinationRequest {
   readonly kind: CoordinationKind;

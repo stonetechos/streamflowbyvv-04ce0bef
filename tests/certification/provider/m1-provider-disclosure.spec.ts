@@ -150,7 +150,7 @@ test.describe("M1 provider disclosure", () => {
     recordM1Row("CERT-PROV-01", {
       status: pass ? "pass" : "fail",
       detail: pass
-        ? "With zero Tier A capabilities certified, a catalog row claiming `play_pause: supported` is disclosed on the pre-commit selection surface as `manual_sync`, the same class the WP7 launch surface derives for the identical tuple. The badge reads \"Manual sync\" and the hint states the consequence (StreamFlow cannot control this player) and the per-participant access expectation before the user commits."
+        ? 'With zero Tier A capabilities certified, a catalog row claiming `play_pause: supported` is disclosed on the pre-commit selection surface as `manual_sync`, the same class the WP7 launch surface derives for the identical tuple. The badge reads "Manual sync" and the hint states the consequence (StreamFlow cannot control this player) and the per-participant access expectation before the user commits.'
         : `Pre-commit disclosure is not honest: ${reasons.join("; ")}.`,
       browser: browserName,
       platform: "web-desktop",

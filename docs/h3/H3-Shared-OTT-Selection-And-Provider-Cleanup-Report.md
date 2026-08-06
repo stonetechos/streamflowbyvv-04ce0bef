@@ -32,15 +32,15 @@ removed; the embedded YouTube IFrame player is deleted.
 
 `RoomMediaRef` (`src/domain/watch/watch-source.ts`):
 
-| Field | Meaning |
-| --- | --- |
-| `providerId` | Stable service key (`netflix`, `prime`, `hotstar`, `disney`, `jiocinema`, `sonyliv`, `zee5`, `appletv`, `direct`) |
-| `providerName` | Display name, read from the capability model — never hand-written in a screen |
-| `kind` | `ott` \| `direct` \| `external` |
-| `url` | Public title/page URL, or the direct file URL |
-| `titleId` | The service's own public title id when the link carried one |
-| `title` | Host-typed title, optional |
-| `selectedAt` | ISO timestamp of the decision |
+| Field          | Meaning                                                                                                           |
+| -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `providerId`   | Stable service key (`netflix`, `prime`, `hotstar`, `disney`, `jiocinema`, `sonyliv`, `zee5`, `appletv`, `direct`) |
+| `providerName` | Display name, read from the capability model — never hand-written in a screen                                     |
+| `kind`         | `ott` \| `direct` \| `external`                                                                                   |
+| `url`          | Public title/page URL, or the direct file URL                                                                     |
+| `titleId`      | The service's own public title id when the link carried one                                                       |
+| `title`        | Host-typed title, optional                                                                                        |
+| `selectedAt`   | ISO timestamp of the decision                                                                                     |
 
 Persistence: written by `WatchSourceService.set` to the room aggregate metadata under `watch_media`
 (JSON), with the legacy `watch_source` / `watch_title` keys kept in step. `readRoomMediaRef` resolves
@@ -83,6 +83,7 @@ StreamFlow embeds and drives, through the browser's own `<video>` element
 ## 5. Files changed
 
 Domain
+
 - `src/domain/watch/watch-source.ts` — rewritten: multi-OTT registry, `ott`/`direct`/`external` source
   kinds, `RoomMediaRef` with serialization and legacy fallback, YouTube removed.
 - `src/domain/watch/watch-source-service.ts` — writes/clears the shared `watch_media` reference.
@@ -91,6 +92,7 @@ Domain
   `shared-content.ts` — YouTube entries removed.
 
 Presentation
+
 - `src/features/waiting-room/waiting-room.types.ts`, `waiting-room-state.ts` — `RoomSummaryView.mediaRef`.
 - `src/features/waiting-room/components/now-watching-card.tsx`, `provider-session-card.tsx` — render the
   shared reference first, share-intake reference as fallback.
@@ -106,12 +108,12 @@ Not changed: schema, migrations, CI workflows, certification evidence, registrie
 
 ## 6. Verification
 
-| Check | Result |
-| --- | --- |
-| `tsgo --noEmit` | Pass |
-| `npm run lint` | Pass for all H3-touched files (one pre-existing formatting error remains in `tests/certification/provider/m1-provider-disclosure.spec.ts`, untouched by this sprint) |
-| `node scripts/check-architecture.mjs` | Pass — no vendor leakage outside Infrastructure |
-| Dev server | Serves 200 |
-| YouTube references in `src/` | Only four explanatory code comments remain; zero registry, UI, copy, or runtime entries |
+| Check                                 | Result                                                                                                                                                               |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tsgo --noEmit`                       | Pass                                                                                                                                                                 |
+| `npm run lint`                        | Pass for all H3-touched files (one pre-existing formatting error remains in `tests/certification/provider/m1-provider-disclosure.spec.ts`, untouched by this sprint) |
+| `node scripts/check-architecture.mjs` | Pass — no vendor leakage outside Infrastructure                                                                                                                      |
+| Dev server                            | Serves 200                                                                                                                                                           |
+| YouTube references in `src/`          | Only four explanatory code comments remain; zero registry, UI, copy, or runtime entries                                                                              |
 
 Certification status is unchanged by this sprint: no row is claimed, measured, or re-sealed here.

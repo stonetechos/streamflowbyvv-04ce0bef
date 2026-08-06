@@ -13,24 +13,32 @@ Exports: `WATCH_PROVIDERS` (enabled and lobby-visible, in display order) and
 `WATCH_PROVIDER_DEFINITIONS` (everything the product knows, enabled or not).
 Every product-visible provider surface renders from this registry only:
 
-| Surface | File | Source |
-| --- | --- | --- |
-| Room provider bar | `src/features/theater/components/provider-bar.tsx` | `WATCH_PROVIDERS` |
-| Source picker | `src/features/theater/components/source-picker.tsx` | passed capability record |
-| Media card | `src/features/theater/components/media-card.tsx` | passed capability record + `RoomMediaRef` |
-| Watch stage | `src/features/theater/components/watch-stage.tsx` | passed capability record |
-| Coordination panel | `src/features/theater/components/coordination-panel.tsx` | passed capability record |
+| Surface            | File                                                     | Source                                    |
+| ------------------ | -------------------------------------------------------- | ----------------------------------------- |
+| Room provider bar  | `src/features/theater/components/provider-bar.tsx`       | `WATCH_PROVIDERS`                         |
+| Source picker      | `src/features/theater/components/source-picker.tsx`      | passed capability record                  |
+| Media card         | `src/features/theater/components/media-card.tsx`         | passed capability record + `RoomMediaRef` |
+| Watch stage        | `src/features/theater/components/watch-stage.tsx`        | passed capability record                  |
+| Coordination panel | `src/features/theater/components/coordination-panel.tsx` | passed capability record                  |
 
 The definition shape now carries the full H4 contract:
 
 ```ts
 type ProviderDefinition = {
-  providerId; displayName; enabled; visibleInLobby; supported;
+  providerId;
+  displayName;
+  enabled;
+  visibleInLobby;
+  supported;
   selectionMode: "browse" | "paste-link" | "direct-title" | "direct-link";
   playbackControlMode: "automatic" | "assisted" | "manual" | "launch-only" | "unavailable";
-  allowsEmbeddedPlayback; allowsFullscreenFromRoom; allowsZoomFromRoom;
-  requiresOwnSubscription; requiresProviderLogin;
-  supportedPlatforms: string[]; limitations: string[];
+  allowsEmbeddedPlayback;
+  allowsFullscreenFromRoom;
+  allowsZoomFromRoom;
+  requiresOwnSubscription;
+  requiresProviderLogin;
+  supportedPlatforms: string[];
+  limitations: string[];
 };
 ```
 
@@ -38,23 +46,23 @@ type ProviderDefinition = {
 
 All values verified programmatically against the registry (§10, row group A).
 
-| providerId | Display name | enabled | visibleInLobby | selectionMode | playbackControlMode | embed | fullscreen | zoom | subscription | provider login | platforms |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| netflix | Netflix | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| prime | Prime Video | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| hotstar | JioHotstar | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| disney | Disney+ | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| jiocinema | JioCinema | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| sonyliv | Sony LIV | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| zee5 | ZEE5 | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| appletv | Apple TV+ | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| hbo_max | HBO Max | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| hulu | Hulu | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| peacock | Peacock | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| paramount_plus | Paramount+ | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| crunchyroll | Crunchyroll | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| google_drive | Google Drive | yes | yes | browse | launch-only | no | no | no | yes | yes | web-desktop, web-mobile |
-| direct | Direct video link | yes | yes | direct-link | automatic | yes | yes | no | no | no | web-desktop, web-mobile |
+| providerId     | Display name      | enabled | visibleInLobby | selectionMode | playbackControlMode | embed | fullscreen | zoom | subscription | provider login | platforms               |
+| -------------- | ----------------- | ------- | -------------- | ------------- | ------------------- | ----- | ---------- | ---- | ------------ | -------------- | ----------------------- |
+| netflix        | Netflix           | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| prime          | Prime Video       | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| hotstar        | JioHotstar        | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| disney         | Disney+           | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| jiocinema      | JioCinema         | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| sonyliv        | Sony LIV          | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| zee5           | ZEE5              | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| appletv        | Apple TV+         | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| hbo_max        | HBO Max           | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| hulu           | Hulu              | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| peacock        | Peacock           | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| paramount_plus | Paramount+        | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| crunchyroll    | Crunchyroll       | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| google_drive   | Google Drive      | yes     | yes            | browse        | launch-only         | no    | no         | no   | yes          | yes            | web-desktop, web-mobile |
+| direct         | Direct video link | yes     | yes            | direct-link   | automatic           | yes   | yes        | no   | no           | no             | web-desktop, web-mobile |
 
 Deliberately absent, and why:
 
@@ -99,8 +107,17 @@ One flow, all providers.
 
 ```ts
 type RoomMediaRef = {
-  providerId; providerName; kind; url; titleId; title; selectedAt;
-  selectionMode; syncMode; selectedByParticipantId; selectedAtServerMs;
+  providerId;
+  providerName;
+  kind;
+  url;
+  titleId;
+  title;
+  selectedAt;
+  selectionMode;
+  syncMode;
+  selectedByParticipantId;
+  selectedAtServerMs;
   validity: "valid" | "pending" | "needs-user-action" | "invalid";
   limitations: string[];
 };
@@ -124,18 +141,18 @@ type RoomMediaRef = {
   seconds from that shared target, so every client counts the same 5→1.
 - `deriveRoomPhase` produces the shared phase from state everyone already has:
   `waiting-for-content | content-selected | countdown | watching | paused |
-  ended | closed`. Rendered as `data-sf-phase` on the theater screen and
+ended | closed`. Rendered as `data-sf-phase` on the theater screen and
   `data-sf-room-phase` on the media card.
 
 ## 6. Control behavior by capability
 
-| Mode | Providers | What the room renders |
-| --- | --- | --- |
-| automatic | direct | Real transport (`HostTransport`): host play/pause/seek broadcast, guests reconcile drift, late/reconnecting clients seek to the shared target |
-| assisted | none today | Reserved; nothing claims it |
-| manual | none today | Reserved; nothing claims it |
-| launch-only | all 14 OTT entries | `CoordinationPanel` only: "Open provider", re-sync nudge, countdown instruction. No play/pause/seek control is rendered |
-| unavailable | unknown links | Coordination copy only |
+| Mode        | Providers          | What the room renders                                                                                                                         |
+| ----------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| automatic   | direct             | Real transport (`HostTransport`): host play/pause/seek broadcast, guests reconcile drift, late/reconnecting clients seek to the shared target |
+| assisted    | none today         | Reserved; nothing claims it                                                                                                                   |
+| manual      | none today         | Reserved; nothing claims it                                                                                                                   |
+| launch-only | all 14 OTT entries | `CoordinationPanel` only: "Open provider", re-sync nudge, countdown instruction. No play/pause/seek control is rendered                       |
+| unavailable | unknown links      | Coordination copy only                                                                                                                        |
 
 No transport control is rendered for any provider StreamFlow does not drive.
 
@@ -159,7 +176,7 @@ No transport control is rendered for any provider StreamFlow does not drive.
   `data-sf-volume-scope="device"`, never broadcast, never stored in
   `RoomMediaRef`, and only shown when there is a player to apply it to.
 - **Fullscreen** — offered only when `allowsEmbeddedPlayback &&
-  allowsFullscreenFromRoom` (i.e. `direct`). Every OTT shows
+allowsFullscreenFromRoom` (i.e. `direct`). Every OTT shows
   "Use {provider}'s own fullscreen control." instead.
 - **Orientation** — landscape lock is attempted only after a successful
   fullscreen request and its failure is swallowed; the room is never blocked.
@@ -187,36 +204,36 @@ Group A — registry and shared-state contract. Executed as a product-developmen
 script over the real domain modules (`bun /tmp/h4check.ts`, 57 assertions,
 0 failures). This is product validation, not certification evidence.
 
-| # | Check | Result |
-| --- | --- | --- |
-| A1 | 15 enabled providers exposed, in display order | PASS |
-| A2 | No YouTube in the enabled registry | PASS |
-| A3 | All 14 OTT entries are launch-only, no embed/fullscreen/zoom, subscription + login required | PASS |
-| A4 | `direct` exposes no zoom | PASS |
-| A5–A8 | Every OTT browse URL parses back to its own providerId (14 providers) | PASS |
-| A9 | `toRoomMediaRef` stamps validity, syncMode, selector id, server ms, limitations (14 providers) | PASS |
-| A10 | JSON round-trip through room metadata preserves provider, title, validity (14 providers) | PASS |
-| A11 | Direct link parses as `direct` with `automatic` sync mode | PASS |
-| A12 | Netflix public title id extracted from a title URL | PASS |
-| A13 | Non-URL input yields no false provider attribution | PASS |
-| A14 | Stored YouTube reference resolves to `invalid` and phase `waiting-for-content` | PASS |
-| A15 | Phase derivation for empty/selected/countdown/watching/paused/ended | PASS |
+| #     | Check                                                                                          | Result |
+| ----- | ---------------------------------------------------------------------------------------------- | ------ |
+| A1    | 15 enabled providers exposed, in display order                                                 | PASS   |
+| A2    | No YouTube in the enabled registry                                                             | PASS   |
+| A3    | All 14 OTT entries are launch-only, no embed/fullscreen/zoom, subscription + login required    | PASS   |
+| A4    | `direct` exposes no zoom                                                                       | PASS   |
+| A5–A8 | Every OTT browse URL parses back to its own providerId (14 providers)                          | PASS   |
+| A9    | `toRoomMediaRef` stamps validity, syncMode, selector id, server ms, limitations (14 providers) | PASS   |
+| A10   | JSON round-trip through room metadata preserves provider, title, validity (14 providers)       | PASS   |
+| A11   | Direct link parses as `direct` with `automatic` sync mode                                      | PASS   |
+| A12   | Netflix public title id extracted from a title URL                                             | PASS   |
+| A13   | Non-URL input yields no false provider attribution                                             | PASS   |
+| A14   | Stored YouTube reference resolves to `invalid` and phase `waiting-for-content`                 | PASS   |
+| A15   | Phase derivation for empty/selected/countdown/watching/paused/ended                            | PASS   |
 
 Group B — UI and realtime paths, verified by code-path review against the
 snapshot contract (single-render inspection; no multi-client session was
 driven, because that would be a certification run).
 
-| # | Check | Result |
-| --- | --- | --- |
-| B1 | Host and guest render from the same `RoomSummaryView.mediaRef` | VERIFIED (single source in `waiting-room-state.ts`) |
-| B2 | Selection reaches guests through the existing realtime snapshot | VERIFIED (no host-private selection state remains) |
-| B3 | Late joiner and reconnecting member read the same snapshot | VERIFIED |
-| B4 | Countdown projected from the server-written target on every client | VERIFIED (frozen countdown runtime, unchanged) |
-| B5 | Launch-only providers render no transport control | VERIFIED |
-| B6 | Volume never leaves the device | VERIFIED |
-| B7 | Fullscreen offered only for the embedded player | VERIFIED |
-| B8 | Invalid selection surfaces "Fix selection" plus migration copy | VERIFIED |
-| B9 | Multi-client timing behaviour under real network | NOT EXECUTED — belongs to certification, deliberately out of H4 scope |
+| #   | Check                                                              | Result                                                                |
+| --- | ------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| B1  | Host and guest render from the same `RoomSummaryView.mediaRef`     | VERIFIED (single source in `waiting-room-state.ts`)                   |
+| B2  | Selection reaches guests through the existing realtime snapshot    | VERIFIED (no host-private selection state remains)                    |
+| B3  | Late joiner and reconnecting member read the same snapshot         | VERIFIED                                                              |
+| B4  | Countdown projected from the server-written target on every client | VERIFIED (frozen countdown runtime, unchanged)                        |
+| B5  | Launch-only providers render no transport control                  | VERIFIED                                                              |
+| B6  | Volume never leaves the device                                     | VERIFIED                                                              |
+| B7  | Fullscreen offered only for the embedded player                    | VERIFIED                                                              |
+| B8  | Invalid selection surfaces "Fix selection" plus migration copy     | VERIFIED                                                              |
+| B9  | Multi-client timing behaviour under real network                   | NOT EXECUTED — belongs to certification, deliberately out of H4 scope |
 
 Repository checks: `tsgo --noEmit` clean, `npm run arch:check` passed, lint
 clean for all files touched by this sprint.

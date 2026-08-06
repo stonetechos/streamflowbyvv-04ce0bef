@@ -75,7 +75,8 @@ export function createRuntimeTelemetry(roomId: string) {
           ? null
           : Math.round(samples.reduce((sum, value) => sum + value, 0) / samples.length),
       maxAbsDriftMs: samples.length === 0 ? null : Math.round(Math.max(...samples)),
-      correctionsPerMinute: corrections === 0 ? null : Number((corrections / elapsedMinutes).toFixed(2)),
+      correctionsPerMinute:
+        corrections === 0 ? null : Number((corrections / elapsedMinutes).toFixed(2)),
       selectionToStartMs: state.selectionToStartMs,
       reconnectCatchUpMs: state.reconnectCatchUpMs,
     };
