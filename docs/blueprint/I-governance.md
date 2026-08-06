@@ -118,3 +118,15 @@ Before any architectural change merges:
 - [ ] Performance impact assessed against [C4](./C4-performance-budget.md)
 - [ ] No product principle in [C5](./C5-product-principles.md) violated
 - [ ] Launch Envelope respected or explicitly extended by the same ADR
+
+## I.13 Constitutional limit (M0.5, binding)
+
+M0.5 is the **final infrastructure sprint**. From its completion onward:
+
+- No further infrastructure, governance documents, certification frameworks, dashboards, engineering
+  reports, ADR restructuring, architecture chapters, or developer tooling may be introduced — unless a
+  blocker is discovered during implementation or certification, in which case the change is scoped to
+  removing that blocker and nothing else.
+- StreamFlow enters **M1 Build Mode immediately** on successful M0.5 completion.
+- All future work prioritises user-facing product capability over engineering infrastructure.
+- The Constitution is **complete**. It changes only through a numbered ADR.

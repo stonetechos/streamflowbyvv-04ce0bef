@@ -1,0 +1,173 @@
+{
+  "$comment": "Engine registry — M0.5 WP7. Source of truth for docs/engines/*. Hand-maintained; generators never write to this file.",
+  "engines": [
+    {
+      "id": "ENG-ROOM",
+      "name": "Room Engine",
+      "owner": "Room & Lifecycle",
+      "subsystem": "domain",
+      "srcPaths": ["src/domain/rooms", "src/repository/rooms", "src/infrastructure/rooms"],
+      "certPrefixes": ["CERT-SA-", "CERT-AUTHZ-"],
+      "debtIds": ["DEBT-013"],
+      "risks": [
+        "Room capacity and lifecycle transitions are asserted by server authority rows only; UI-level lifecycle remains unmeasured."
+      ]
+    },
+    {
+      "id": "ENG-TIMELINE",
+      "name": "Timeline Engine",
+      "owner": "Room & Lifecycle",
+      "subsystem": "domain",
+      "srcPaths": ["src/domain/events"],
+      "certPrefixes": [],
+      "debtIds": [],
+      "risks": ["No certification row targets timeline ordering guarantees."]
+    },
+    {
+      "id": "ENG-WATCHPARTY",
+      "name": "Watch Party Engine",
+      "owner": "Watch Party",
+      "subsystem": "domain",
+      "srcPaths": ["src/domain/playback", "src/features/watch-party"],
+      "certPrefixes": [],
+      "debtIds": ["DEBT-002"],
+      "risks": ["ADR-014 caps this engine at coordinated manual sync for all Tier C providers."]
+    },
+    {
+      "id": "ENG-SYNC",
+      "name": "Sync Engine",
+      "owner": "Sync & Clock",
+      "subsystem": "domain",
+      "srcPaths": ["src/domain/sync", "src/domain/countdown"],
+      "certPrefixes": ["CERT-PERF-03", "CERT-PERF-04"],
+      "debtIds": ["DEBT-003"],
+      "risks": ["Clock offset resolution is capped at ~1000ms by HTTP Date granularity."]
+    },
+    {
+      "id": "ENG-VOICE",
+      "name": "Voice Engine",
+      "owner": "Realtime Media",
+      "subsystem": "domain",
+      "srcPaths": ["src/features/voice", "src/infrastructure/voice", "src/routes/api/voice"],
+      "certPrefixes": ["CERT-VOICE-"],
+      "debtIds": [],
+      "risks": [
+        "PROF-08 is unsupported: no LiveKit test project is provisioned, so every voice row is blocked."
+      ]
+    },
+    {
+      "id": "ENG-CHAT",
+      "name": "Chat Engine",
+      "owner": "Social",
+      "subsystem": "domain",
+      "srcPaths": [],
+      "certPrefixes": [],
+      "debtIds": [],
+      "risks": ["Not implemented. Scheduled post-M1."]
+    },
+    {
+      "id": "ENG-PRESENCE",
+      "name": "Presence Engine",
+      "owner": "Realtime",
+      "subsystem": "domain",
+      "srcPaths": [
+        "src/repository/rooms/presence-repository.types.ts",
+        "src/infrastructure/events"
+      ],
+      "certPrefixes": ["CERT-PERF-02"],
+      "debtIds": [],
+      "risks": [
+        "Ready propagation is measured at transport level only; UI render time is excluded."
+      ]
+    },
+    {
+      "id": "ENG-PROVIDER",
+      "name": "Provider Engine",
+      "owner": "Provider & Capability",
+      "subsystem": "domain",
+      "srcPaths": [
+        "src/domain/providers",
+        "src/repository/providers",
+        "src/infrastructure/providers"
+      ],
+      "certPrefixes": ["CERT-PROV-"],
+      "debtIds": ["DEBT-002"],
+      "risks": [
+        "Certification registry is empty: every provider resolves to Tier C. Zero Tier A, zero Tier B."
+      ]
+    },
+    {
+      "id": "ENG-NOTIFICATION",
+      "name": "Notification Engine",
+      "owner": "Engagement",
+      "subsystem": "domain",
+      "srcPaths": ["src/features/notifications", "src/lib/email-templates"],
+      "certPrefixes": [],
+      "debtIds": [],
+      "risks": [
+        "Email deliverability is verified manually against DNS records; no automated row exists."
+      ]
+    },
+    {
+      "id": "ENG-COMMUNITY",
+      "name": "Community Engine",
+      "owner": "Social",
+      "subsystem": "domain",
+      "srcPaths": ["src/domain/social", "src/features/social", "src/repository/social"],
+      "certPrefixes": [],
+      "debtIds": [],
+      "risks": ["Friend and invite flows have no certification coverage."]
+    },
+    {
+      "id": "ENG-AI",
+      "name": "AI / Po Engine",
+      "owner": "AI Systems",
+      "subsystem": "domain",
+      "srcPaths": ["src/features/po", "src/infrastructure/ai"],
+      "certPrefixes": [],
+      "debtIds": ["DEBT-008"],
+      "risks": [
+        "Po planning behaviour is unmeasured; ADR-001 clarification policy is unverified by test."
+      ]
+    },
+    {
+      "id": "ENG-ANALYTICS",
+      "name": "Analytics Engine",
+      "owner": "Data",
+      "subsystem": "domain",
+      "srcPaths": ["src/foundation/logging"],
+      "certPrefixes": [],
+      "debtIds": ["DEBT-012"],
+      "risks": ["Analytics events are not schema-validated at emission."]
+    },
+    {
+      "id": "ENG-MODERATION",
+      "name": "Moderation Engine",
+      "owner": "Trust & Safety",
+      "subsystem": "domain",
+      "srcPaths": [],
+      "certPrefixes": [],
+      "debtIds": [],
+      "risks": ["Not implemented. Scheduled post-M1."]
+    },
+    {
+      "id": "SUB-EXPERIENCE",
+      "name": "Experience Subsystem",
+      "owner": "Experience",
+      "subsystem": "experience",
+      "srcPaths": [
+        "src/design-system",
+        "src/foundation/accessibility",
+        "src/foundation/localization",
+        "src/foundation/theme",
+        "src/app-shell"
+      ],
+      "certPrefixes": ["CERT-A11Y-"],
+      "debtIds": [],
+      "risks": [
+        "Automated accessibility sweep covers unnamed controls only; a manual WCAG 2.1 AA audit is still required.",
+        "Cross-cutting presentation only — holds no business state or authority."
+      ]
+    }
+  ]
+}

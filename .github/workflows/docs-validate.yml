@@ -1,0 +1,25 @@
+name: Documentation Validation
+on: [push, pull_request]
+jobs:
+  docs:
+    name: Registries, dashboards and ADR consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: ADR validation
+        run: node scripts/check-adrs.mjs
+      - name: Debt register validation
+        run: node scripts/report-debt.mjs
+      - name: Regenerate dashboards
+        run: bun run release-check
+      - name: Fail if generated documentation is stale
+        run: |
+          if [ -n "$(git status --porcelain docs/)" ]; then
+            echo "Generated documentation is out of date. Run 'npm run release-check' and commit the result."
+            git --no-pager diff --stat docs/
+            exit 1
+          fi

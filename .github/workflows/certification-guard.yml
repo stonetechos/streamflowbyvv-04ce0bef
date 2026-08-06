@@ -1,0 +1,16 @@
+name: Certification Guard
+on: [push, pull_request]
+jobs:
+  certification-guard:
+    name: Evidence schema + tier governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Certification guard
+        run: node scripts/check-certification.mjs
+      - name: Technical debt register validation
+        run: node scripts/report-debt.mjs

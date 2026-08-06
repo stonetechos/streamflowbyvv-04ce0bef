@@ -1,0 +1,16 @@
+name: Architecture Guard
+on: [push, pull_request]
+jobs:
+  architecture:
+    name: Layer isolation + ADR validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Architecture guard
+        run: node scripts/check-architecture.mjs
+      - name: ADR validation
+        run: node scripts/check-adrs.mjs
