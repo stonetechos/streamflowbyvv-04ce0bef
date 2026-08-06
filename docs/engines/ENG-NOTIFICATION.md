@@ -6,10 +6,10 @@
 
 ## Module coverage
 
-| Path                         | Present |
-| ---------------------------- | ------- |
-| `src/features/notifications` | yes     |
-| `src/lib/email-templates`    | yes     |
+| Path | Present |
+| --- | --- |
+| `src/features/notifications` | yes |
+| `src/lib/email-templates` | yes |
 
 ## Certification
 

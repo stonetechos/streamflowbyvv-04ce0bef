@@ -6,10 +6,10 @@
 
 ## Module coverage
 
-| Path                       | Present |
-| -------------------------- | ------- |
-| `src/domain/playback`      | yes     |
-| `src/features/watch-party` | yes     |
+| Path | Present |
+| --- | --- |
+| `src/domain/playback` | yes |
+| `src/features/watch-party` | yes |
 
 ## Certification
 

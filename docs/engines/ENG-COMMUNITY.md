@@ -6,11 +6,11 @@
 
 ## Module coverage
 
-| Path                    | Present |
-| ----------------------- | ------- |
-| `src/domain/social`     | yes     |
-| `src/features/social`   | yes     |
-| `src/repository/social` | yes     |
+| Path | Present |
+| --- | --- |
+| `src/domain/social` | yes |
+| `src/features/social` | yes |
+| `src/repository/social` | yes |
 
 ## Certification
 

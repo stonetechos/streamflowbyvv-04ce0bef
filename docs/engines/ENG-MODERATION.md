@@ -6,8 +6,8 @@
 
 ## Module coverage
 
-| Path                | Present |
-| ------------------- | ------- |
+| Path | Present |
+| --- | --- |
 | _no modules mapped_ | Unknown |
 
 ## Certification

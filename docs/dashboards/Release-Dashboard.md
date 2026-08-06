@@ -6,13 +6,13 @@ Run `RUN-M0R-001` · commit `ca4cb39` · environment `local-dev`.
 
 ## Status
 
-| Subsystem      | Indicator | Detail                                                                              |
-| -------------- | --------- | ----------------------------------------------------------------------------------- |
-| Architecture   | **Green** | Vendor isolation, ADR validation and layer guard all pass in `npm run verify`.      |
-| Certification  | **Amber** | 22 pass · 0 fail · 1 unmeasured · 2 blocked of 25 rows.                             |
-| Performance    | **Amber** | 6/7 metrics have a Measured Baseline; 0 have a Certified Threshold.                 |
-| Capability     | **Amber** | Zero Tier A, zero Tier B capabilities. Every provider resolves to Tier C (ADR-014). |
-| Technical debt | **Amber** | 9 open · 0 Critical · 1 blocking.                                                   |
+| Subsystem | Indicator | Detail |
+| --- | --- | --- |
+| Architecture | **Green** | Vendor isolation, ADR validation and layer guard all pass in `npm run verify`. |
+| Certification | **Amber** | 22 pass · 0 fail · 1 unmeasured · 2 blocked of 25 rows. |
+| Performance | **Amber** | 6/7 metrics have a Measured Baseline; 0 have a Certified Threshold. |
+| Capability | **Amber** | Zero Tier A, zero Tier B capabilities. Every provider resolves to Tier C (ADR-014). |
+| Technical debt | **Amber** | 9 open · 0 Critical · 1 blocking. |
 
 ## Open blockers
 
