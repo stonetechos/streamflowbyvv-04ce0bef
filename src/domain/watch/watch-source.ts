@@ -459,18 +459,42 @@ export function readRoomMediaRef(metadata: Readonly<Record<string, unknown>>): R
     try {
       const parsed = JSON.parse(raw) as Partial<RoomMediaRef>;
       if (parsed && typeof parsed.providerId === "string") {
+        const registry = watchProviderById(parsed.providerId);
+        const url = typeof parsed.url === "string" ? parsed.url : null;
+        const capability = registry ?? unknownProviderCapability(parsed.providerName ?? "");
+        // A row written against a service the product no longer offers is
+        // reported as invalid, never quietly re-pointed at another one.
+        const validity: MediaRefValidity = !registry
+          ? "invalid"
+          : url
+            ? "valid"
+            : "needs-user-action";
+        const selectedAt = typeof parsed.selectedAt === "string" ? parsed.selectedAt : null;
         return {
           providerId: parsed.providerId,
           providerName:
             typeof parsed.providerName === "string" && parsed.providerName.length > 0
               ? parsed.providerName
-              : (watchProviderById(parsed.providerId)?.displayName ?? parsed.providerId),
+              : (registry?.displayName ?? parsed.providerId),
           kind: parsed.kind === "ott" || parsed.kind === "direct" ? parsed.kind : "external",
-          url: typeof parsed.url === "string" ? parsed.url : null,
+          url,
           titleId: typeof parsed.titleId === "string" ? parsed.titleId : null,
           title: typeof parsed.title === "string" && parsed.title.length > 0 ? parsed.title : null,
-          selectedAt: typeof parsed.selectedAt === "string" ? parsed.selectedAt : null,
+          selectedAt,
+          selectionMode: capability.selectionMode,
+          syncMode: capability.playbackControlMode,
+          selectedByParticipantId:
+            typeof parsed.selectedByParticipantId === "string"
+              ? parsed.selectedByParticipantId
+              : "",
+          selectedAtServerMs:
+            typeof parsed.selectedAtServerMs === "number" && Number.isFinite(parsed.selectedAtServerMs)
+              ? parsed.selectedAtServerMs
+              : (selectedAt ? Date.parse(selectedAt) || 0 : 0),
+          validity,
+          limitations: capability.limitations,
         };
+
       }
     } catch {
       // A malformed bag is treated as "nothing chosen", never as a crash.
