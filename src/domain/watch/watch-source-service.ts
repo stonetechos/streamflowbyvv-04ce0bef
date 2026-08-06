@@ -92,7 +92,6 @@ export function createWatchSourceService(deps: WatchSourceDependencies): WatchSo
         Date.parse(selectedAt),
       );
 
-
       const metadata: Record<string, unknown> = {
         ...room.metadata,
         [WATCH_MEDIA_METADATA_KEY]: JSON.stringify(ref),

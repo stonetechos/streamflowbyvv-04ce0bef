@@ -286,9 +286,7 @@ export function Theater({ roomId }: TheaterProps) {
             phase={phase}
             validity={mediaRef?.validity ?? null}
             canStart={
-              source.source !== null &&
-              mediaRef?.validity !== "invalid" &&
-              countdown.isAvailable
+              source.source !== null && mediaRef?.validity !== "invalid" && countdown.isAvailable
             }
             isStarting={countdown.pending === "start"}
             onStart={countdown.start}

@@ -134,7 +134,6 @@ const DIRECT: ProviderDefinition = Object.freeze({
   titleSegments: Object.freeze([]),
 });
 
-
 const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
   ottProvider("netflix", "Netflix", /(^|\.)netflix\.com$/i, "https://www.netflix.com/browse", [
     "title",
@@ -428,7 +427,6 @@ function mediaRefValidity(
   return "valid";
 }
 
-
 /** Rebuilds a playable/openable source from the shared reference. */
 export function mediaRefToSource(ref: RoomMediaRef | null): WatchSource | null {
   if (!ref) return null;
@@ -488,13 +486,15 @@ export function readRoomMediaRef(metadata: Readonly<Record<string, unknown>>): R
               ? parsed.selectedByParticipantId
               : "",
           selectedAtServerMs:
-            typeof parsed.selectedAtServerMs === "number" && Number.isFinite(parsed.selectedAtServerMs)
+            typeof parsed.selectedAtServerMs === "number" &&
+            Number.isFinite(parsed.selectedAtServerMs)
               ? parsed.selectedAtServerMs
-              : (selectedAt ? Date.parse(selectedAt) || 0 : 0),
+              : selectedAt
+                ? Date.parse(selectedAt) || 0
+                : 0,
           validity,
           limitations: capability.limitations,
         };
-
       }
     } catch {
       // A malformed bag is treated as "nothing chosen", never as a crash.
