@@ -8,7 +8,11 @@
 import { test, expect } from "@playwright/test";
 import { writeEvidence } from "../helpers/evidence";
 
-const ROUTES = ["/", "/auth"];
+/**
+ * WP10 — every publicly reachable launch surface. Authenticated surfaces are
+ * swept by `experience/m1-experience.spec.ts`, which holds a real session.
+ */
+const ROUTES = ["/", "/auth", "/auth/sign-in", "/auth/sign-up", "/auth/forgot-password"];
 
 test.describe("Accessibility sweep (PROF-09)", () => {
   for (const route of ROUTES) {
