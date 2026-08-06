@@ -1,0 +1,5 @@
+{
+  "runId": "FIXTURE-EMPTY",
+  "sealed": false,
+  "note": "Fixture: a run directory that contains no records. Must never seal successfully."
+}

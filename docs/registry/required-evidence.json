@@ -1,0 +1,30 @@
+{
+  "$comment": "Authoritative mandatory evidence set for a certification run (M0.6 / GATE-01). A run that does not contain a record for every entry below can never be sealed as successful. `match: prefix` covers rows whose evidenceId carries a browser or route suffix.",
+  "version": "1.0.0",
+  "required": [
+    { "id": "CERT-A11Y-", "match": "prefix", "minimum": 1, "owner": "Experience" },
+    { "id": "CERT-AUTHZ-01", "match": "exact", "owner": "Room" },
+    { "id": "CERT-AUTHZ-02", "match": "exact", "owner": "Room" },
+    { "id": "CERT-AUTHZ-03", "match": "exact", "owner": "Room" },
+    { "id": "CERT-AUTHZ-04", "match": "exact", "owner": "Room" },
+    { "id": "CERT-AUTHZ-05", "match": "exact", "owner": "Room" },
+    { "id": "CERT-AUTHZ-06", "match": "exact", "owner": "Room" },
+    { "id": "CERT-AUTHZ-07", "match": "exact", "owner": "Room" },
+    { "id": "CERT-PERF-01", "match": "exact", "owner": "Sync" },
+    { "id": "CERT-PERF-02", "match": "exact", "owner": "Sync" },
+    { "id": "CERT-PERF-03", "match": "exact", "owner": "Presence" },
+    { "id": "CERT-PERF-04", "match": "exact", "owner": "Room" },
+    { "id": "CERT-PERF-05", "match": "exact", "owner": "Room" },
+    { "id": "CERT-PROV-A1-name-based", "match": "exact", "owner": "Provider" },
+    { "id": "CERT-PROV-A1-registry", "match": "exact", "owner": "Provider" },
+    { "id": "CERT-RES-01", "match": "prefix", "minimum": 1, "owner": "Sync" },
+    { "id": "CERT-RES-02", "match": "prefix", "minimum": 1, "owner": "Sync" },
+    { "id": "CERT-SA-01", "match": "exact", "owner": "Room" },
+    { "id": "CERT-SA-02", "match": "exact", "owner": "Room" },
+    { "id": "CERT-SA-03", "match": "exact", "owner": "Room" },
+    { "id": "CERT-SA-04", "match": "exact", "owner": "Room" },
+    { "id": "CERT-SA-05", "match": "exact", "owner": "Room" },
+    { "id": "CERT-VOICE-01", "match": "exact", "owner": "Voice" },
+    { "id": "CERT-VOICE-02", "match": "exact", "owner": "Voice" }
+  ]
+}

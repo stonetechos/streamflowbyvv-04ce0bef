@@ -12,5 +12,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - name: Certification guard
         run: node scripts/check-certification.mjs
+      - name: Certification gate self-test
+        run: node scripts/check-gates.mjs
       - name: Technical debt register validation
         run: node scripts/report-debt.mjs

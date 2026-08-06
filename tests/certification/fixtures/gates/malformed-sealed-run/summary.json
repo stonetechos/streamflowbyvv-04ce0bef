@@ -1,0 +1,14 @@
+{
+  "runId": "FIXTURE-MALFORMED",
+  "sealed": true,
+  "runState": "PASSED",
+  "complete": true,
+  "counts": {
+    "pass": 1,
+    "fail": 0,
+    "unmeasured": 0,
+    "blocked": 0,
+    "total": 1
+  },
+  "note": "Fixture: a sealed run holding a schema-invalid record."
+}
