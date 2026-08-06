@@ -70,7 +70,7 @@ export function Theater({ roomId }: TheaterProps) {
     profileId,
     isHost,
     enabled: enabled && videoId !== null,
-    clockOffsetMs: room.clockSync.snapshot?.offsetMs ?? 0,
+    clockOffsetMs: room.clockSync.snapshot?.offset?.offsetMs ?? 0,
     readLocalPositionMs: () => player.positionMs(),
     applyRemote: ({ phase, positionMs, hardSeek }) => {
       if (!player.isReady) return;
