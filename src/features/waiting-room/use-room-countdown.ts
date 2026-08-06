@@ -210,14 +210,15 @@ export function useRoomCountdown({
     // server-written `targetAt` every peer reads.
     const msToTarget = coordinator.project(runtime).remainingMs;
     const zeroTimer =
-      msToTarget > 0 ? window.setTimeout(tick, msToTarget + COUNTDOWN_RUNTIME.ZERO_SETTLE_MS) : null;
+      msToTarget > 0
+        ? window.setTimeout(tick, msToTarget + COUNTDOWN_RUNTIME.ZERO_SETTLE_MS)
+        : null;
 
     return () => {
       window.clearInterval(timer);
       if (zeroTimer !== null) window.clearTimeout(zeroTimer);
     };
   }, [actorProfileId, available, coordinator, isHost, load, roomId, runtime]);
-
 
   // Announcements: state changes always, then the final seconds once each.
   useEffect(() => {

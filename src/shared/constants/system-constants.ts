@@ -47,7 +47,6 @@ export const COUNTDOWN_RUNTIME = Object.freeze({
   ZERO_SETTLE_MS: 10,
 });
 
-
 /**
  * Account constants — Milestone E.
  *
