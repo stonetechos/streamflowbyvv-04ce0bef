@@ -54,18 +54,30 @@ export function HostTransport({
           <ActionButton tone="ghost" size="sm" onClick={onRestart} disabled={!canControl}>
             {t("theater.transport.restart")}
           </ActionButton>
-          <ActionButton tone="ghost" size="sm" onClick={() => onSeekBy(-10_000)} disabled={!canControl}>
+          <ActionButton
+            tone="ghost"
+            size="sm"
+            onClick={() => onSeekBy(-10_000)}
+            disabled={!canControl}
+          >
             {t("theater.transport.back")}
           </ActionButton>
           <ActionButton tone="primary" size="sm" onClick={onTogglePlay} disabled={!canControl}>
             {isPlaying ? t("theater.transport.pause") : t("theater.transport.play")}
           </ActionButton>
-          <ActionButton tone="ghost" size="sm" onClick={() => onSeekBy(10_000)} disabled={!canControl}>
+          <ActionButton
+            tone="ghost"
+            size="sm"
+            onClick={() => onSeekBy(10_000)}
+            disabled={!canControl}
+          >
             {t("theater.transport.forward")}
           </ActionButton>
         </div>
       ) : (
-        <p className="shrink-0 text-sm text-muted-foreground">{t("theater.transport.host_leads")}</p>
+        <p className="shrink-0 text-sm text-muted-foreground">
+          {t("theater.transport.host_leads")}
+        </p>
       )}
     </div>
   );

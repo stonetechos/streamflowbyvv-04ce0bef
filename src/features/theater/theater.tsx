@@ -1,16 +1,18 @@
 /**
- * Theater screen — Sprint H1.
+ * Theater screen — Sprint H1, rebuilt for the H2 hybrid watch party.
  *
- * Where the watch party actually happens: the shared stage, who is here, the
- * host's transport, a measured sync verdict, and chat. The room's membership
- * and presence come from the existing lobby model; this surface adds only the
- * watching.
+ * The room is the product: who is here, what we picked, when we press play,
+ * and what the provider actually lets us do about it. Everything the screen
+ * claims comes from the capability model, so a launch-only service is never
+ * dressed up as a controlled one (ADR-014).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
+import { NETFLIX_BROWSE_URL, watchProviderById, type WatchProviderCapability } from "@/domain";
 import {
   useMemberNames,
+  useRoomCountdown,
   useWaitingRoom,
   memberLabel,
   type MemberView,
@@ -18,7 +20,10 @@ import {
 import { useTranslation } from "@/foundation/localization";
 
 import { ChatPanel } from "./components/chat-panel";
+import { CoordinationPanel } from "./components/coordination-panel";
 import { HostTransport } from "./components/host-transport";
+import { MediaCard } from "./components/media-card";
+import { ProviderBar } from "./components/provider-bar";
 import { SourcePicker } from "./components/source-picker";
 import { SyncBadge } from "./components/sync-badge";
 import { WatchStage } from "./components/watch-stage";
@@ -33,6 +38,10 @@ export interface TheaterProps {
 
 /** Rate nudge used while a guest is inside the soft drift band. */
 const NUDGE_RATE = 1.05;
+
+interface OrientationLock {
+  lock?(orientation: string): Promise<void>;
+}
 
 export function Theater({ roomId }: TheaterProps) {
   const { t } = useTranslation();
@@ -51,18 +60,24 @@ export function Theater({ roomId }: TheaterProps) {
     revision: room.members.length,
   });
 
+  const [providerId, setProviderId] = useState<string | null>(null);
+  const activeProviderId = providerId ?? source.source?.providerId ?? null;
+  const activeProvider: WatchProviderCapability | null = useMemo(
+    () => (activeProviderId ? watchProviderById(activeProviderId) : null),
+    [activeProviderId],
+  );
+
   const videoId = source.source?.kind === "youtube" ? source.source.videoId : null;
-  const localPhase = useRef<string | null>(null);
   const [localPositionMs, setLocalPositionMs] = useState<number | null>(null);
   const [durationMs, setDurationMs] = useState<number | null>(null);
+  const [volume, setVolume] = useState(80);
+  const [copied, setCopied] = useState(false);
   const suppressUntil = useRef(0);
+  const stageRef = useRef<HTMLDivElement | null>(null);
 
   const player = useYouTubePlayer({
     videoId,
-    onPhase: (phase, positionMs) => {
-      localPhase.current = phase;
-      setLocalPositionMs(positionMs);
-    },
+    onPhase: (_phase, positionMs) => setLocalPositionMs(positionMs),
   });
 
   const sync = useWatchSync({
@@ -93,6 +108,14 @@ export function Theater({ roomId }: TheaterProps) {
     },
   });
 
+  const countdown = useRoomCountdown({
+    roomId,
+    actorProfileId: profileId,
+    isHost,
+    durationSeconds: room.room?.countdownSeconds ?? 5,
+    enabled: enabled && room.status === "ready",
+  });
+
   const chat = useRoomChat({ roomId, profileId, enabled });
 
   // Keep the transport clock and duration fresh for the host's own readout.
@@ -105,6 +128,11 @@ export function Theater({ roomId }: TheaterProps) {
     return () => window.clearInterval(timer);
   }, [player]);
 
+  // Volume is a device comfort setting; it is applied locally and never sent.
+  useEffect(() => {
+    if (player.isReady) player.setVolume(volume);
+  }, [player, volume]);
+
   // A guest that arrives mid-film lands where the room already is.
   useEffect(() => {
     if (isHost || !player.isReady || !sync.state) return;
@@ -115,6 +143,8 @@ export function Theater({ roomId }: TheaterProps) {
   }, [player.isReady, videoId]);
 
   const isPlaying = sync.state?.phase === "playing";
+  const capability = source.capability;
+  const isEmbedded = capability.allowsEmbeddedPlayback && videoId !== null;
 
   const togglePlay = useCallback(() => {
     const position = player.positionMs() ?? sync.targetPositionMs() ?? 0;
@@ -130,15 +160,50 @@ export function Theater({ roomId }: TheaterProps) {
     [isPlaying, player, sync],
   );
 
-  const nameFor = useCallback(
-    (id: string) => names.get(id) ?? memberLabel(id),
-    [names],
+  const requestFullscreen = useCallback(() => {
+    const element = stageRef.current;
+    if (!element) return;
+    void element.requestFullscreen?.().then(
+      () => {
+        // Landscape is an intent, not a guarantee: desktops and iOS refuse it.
+        const orientation = screen.orientation as unknown as OrientationLock | undefined;
+        void orientation?.lock?.("landscape").catch(() => undefined);
+      },
+      () => undefined,
+    );
+  }, []);
+
+  const copyInvite = useCallback(() => {
+    if (!room.room) return;
+    const link = `${window.location.origin}/join/${encodeURIComponent(room.room.code)}`;
+    void navigator.clipboard?.writeText(link).then(
+      () => {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2_000);
+      },
+      () => undefined,
+    );
+  }, [room.room]);
+
+  const selectProvider = useCallback(
+    (provider: WatchProviderCapability) => {
+      setProviderId(provider.providerId);
+      if (provider.providerId === "netflix" && !source.source) {
+        window.open(NETFLIX_BROWSE_URL, "_blank", "noopener,noreferrer");
+      }
+    },
+    [source.source],
   );
+
+  const nameFor = useCallback((id: string) => names.get(id) ?? memberLabel(id), [names]);
 
   const presentMembers: readonly MemberView[] = useMemo(
     () => room.members.filter((member) => member.state === "joined"),
     [room.members],
   );
+
+  const countdownSeconds =
+    countdown.state === "counting_down" ? Math.max(0, countdown.remainingSeconds) : null;
 
   if (!room.room) {
     return (
@@ -157,11 +222,20 @@ export function Theater({ roomId }: TheaterProps) {
           <h1 className="truncate text-xl font-semibold sm:text-2xl">{room.room.name}</h1>
           <p className="truncate text-sm text-muted-foreground">
             {t("theater.header.people", { count: presentMembers.length })}
+            {source.source ? ` · ${capability.displayName}` : ""}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <SyncBadge verdict={sync.verdict} driftMs={sync.driftMs} isLive={sync.isLive} />
-          <ActionButton tone="ghost" size="sm" onClick={room.leave} loading={room.pending === "leave"}>
+          <ActionButton tone="secondary" size="sm" onClick={copyInvite} data-sf-copy-invite>
+            {copied ? t("invite.share.copied") : t("room.invite.copy_link")}
+          </ActionButton>
+          <ActionButton
+            tone="ghost"
+            size="sm"
+            onClick={room.leave}
+            loading={room.pending === "leave"}
+          >
             {t("theater.action.leave")}
           </ActionButton>
         </div>
@@ -171,24 +245,54 @@ export function Theater({ roomId }: TheaterProps) {
         <div className="flex min-w-0 flex-col gap-4">
           <WatchStage
             source={source.source}
-            capability={source.capability}
+            capability={capability}
             containerRef={player.containerRef}
+            stageRef={stageRef}
             hasFailed={player.hasFailed}
             isReady={player.isReady}
           />
 
-          <Surface tone="card" padding="md" className="flex flex-col gap-3">
-            <HostTransport
+          <MediaCard
+            source={source.source}
+            label={source.label}
+            capability={capability}
+            isHost={isHost}
+            participantCount={presentMembers.length}
+            countdownSeconds={countdownSeconds}
+            canStart={source.source !== null && countdown.isAvailable}
+            isStarting={countdown.pending === "start"}
+            onStart={countdown.start}
+            onCancel={countdown.cancel}
+            onFullscreen={
+              isEmbedded && capability.allowsFullscreenFromRoom ? requestFullscreen : null
+            }
+            volume={volume}
+            onVolumeChange={setVolume}
+            showVolume={isEmbedded}
+          />
+
+          {isEmbedded ? (
+            <Surface tone="card" padding="md" className="flex flex-col gap-3">
+              <HostTransport
+                isHost={isHost}
+                isPlaying={isPlaying}
+                canControl={player.isReady && sync.isAvailable}
+                positionMs={localPositionMs}
+                durationMs={durationMs}
+                onTogglePlay={togglePlay}
+                onSeekBy={seekBy}
+                onRestart={() => sync.seek(0, isPlaying)}
+              />
+            </Surface>
+          ) : (
+            <CoordinationPanel
+              capability={capability}
+              source={source.source}
               isHost={isHost}
-              isPlaying={isPlaying}
-              canControl={player.isReady && sync.isAvailable}
-              positionMs={localPositionMs}
-              durationMs={durationMs}
-              onTogglePlay={togglePlay}
-              onSeekBy={seekBy}
-              onRestart={() => sync.seek(0, isPlaying)}
+              isCounting={countdownSeconds !== null}
+              onNudge={countdown.restart}
             />
-          </Surface>
+          )}
 
           <ul className="flex flex-wrap gap-3">
             {presentMembers.map((member) => (
@@ -203,12 +307,23 @@ export function Theater({ roomId }: TheaterProps) {
           </ul>
 
           {isHost ? (
-            <SourcePicker
-              current={source.source?.kind === "youtube" ? source.source.url : (source.source?.url ?? "")}
-              isSaving={source.isSaving}
-              error={source.error ? t("theater.source.error") : null}
-              onSubmit={source.save}
-            />
+            <div className="flex flex-col gap-3">
+              <ProviderBar
+                activeProviderId={activeProviderId}
+                isHost={isHost}
+                onSelect={selectProvider}
+              />
+              {activeProvider ? (
+                <SourcePicker
+                  provider={activeProvider}
+                  currentUrl={source.source?.url ?? ""}
+                  currentTitle={source.selection.title ?? ""}
+                  isSaving={source.isSaving}
+                  error={source.error ? t("theater.source.error") : null}
+                  onSubmit={(url, title) => source.save(url, title)}
+                />
+              ) : null}
+            </div>
           ) : null}
         </div>
 
