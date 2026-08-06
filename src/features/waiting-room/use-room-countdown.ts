@@ -49,8 +49,18 @@ export interface RoomCountdownModel {
   readonly durationSeconds: number;
   readonly pending: CountdownPendingAction;
   readonly error: WaitingRoomError | null;
+  /**
+   * WP6 (CERT-WP-01) — the instant *this* client observed the shared target
+   * pass, as an ISO-8601 string, or null when this client has not reached zero
+   * for the current countdown. It is an observation, never an authority: it is
+   * derived from the same server-written target every peer reads, and nothing
+   * in the lobby branches on it. Presentation surfaces it so the countdown
+   * spread across participants can be measured from outside the app.
+   */
+  readonly reachedZeroAt: string | null;
   /** False when no countdown store is bound; controls render disabled. */
   readonly isAvailable: boolean;
+
   start(): void;
   cancel(): void;
   restart(): void;
@@ -93,10 +103,13 @@ export function useRoomCountdown({
   const [projection, setProjection] = useState<CountdownProjection | null>(null);
   const [pending, setPending] = useState<CountdownPendingAction>(null);
   const [error, setError] = useState<WaitingRoomError | null>(null);
+  // WP6 — one observation per countdown revision, so a restart re-arms it.
+  const [reachedZeroAt, setReachedZeroAt] = useState<string | null>(null);
 
   const mounted = useRef(true);
   const lastAnnouncedSecond = useRef<number | null>(null);
   const lastAnnouncedState = useRef<CountdownRuntimeState | null>(null);
+  const zeroRevision = useRef<number | null>(null);
   const settling = useRef(false);
 
   const available = coordinator !== null && coordinator.isAvailable() && enabled;
@@ -143,6 +156,13 @@ export function useRoomCountdown({
       setProjection(next);
       coordinator.emitTick(roomId, next);
 
+      // WP6 (CERT-WP-01) — mark the local instant the shared target passed.
+      // Every client derives this from the same server-written `targetAt`.
+      if (next.hasReachedTarget && zeroRevision.current !== runtime.revision) {
+        zeroRevision.current = runtime.revision;
+        setReachedZeroAt(new Date().toISOString());
+      }
+
       if (!isHost || !actorProfileId || settling.current) return;
 
       if (next.hasReachedTarget) {
@@ -181,8 +201,23 @@ export function useRoomCountdown({
 
     tick();
     const timer = window.setInterval(tick, COUNTDOWN_RUNTIME.TICK_INTERVAL_MS);
-    return () => window.clearInterval(timer);
+
+    // WP6 (CERT-WP-01) — the ticker's 250 ms grid is a display cadence, and it
+    // was landing zero up to ~1.4 s apart across clients because each client's
+    // grid has its own phase. The shared instant is known in advance, so every
+    // client also arms one timer for exactly that instant. This changes when a
+    // client notices zero, not who decides it: the target is still the single
+    // server-written `targetAt` every peer reads.
+    const msToTarget = coordinator.project(runtime).remainingMs;
+    const zeroTimer =
+      msToTarget > 0 ? window.setTimeout(tick, msToTarget + COUNTDOWN_RUNTIME.ZERO_SETTLE_MS) : null;
+
+    return () => {
+      window.clearInterval(timer);
+      if (zeroTimer !== null) window.clearTimeout(zeroTimer);
+    };
   }, [actorProfileId, available, coordinator, isHost, load, roomId, runtime]);
+
 
   // Announcements: state changes always, then the final seconds once each.
   useEffect(() => {
@@ -280,6 +315,8 @@ export function useRoomCountdown({
     durationSeconds: runtime?.durationSeconds ?? durationSeconds,
     pending,
     error,
+    reachedZeroAt,
+
     isAvailable: available,
     start,
     cancel,
