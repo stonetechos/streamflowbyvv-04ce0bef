@@ -208,7 +208,6 @@ const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
   DIRECT,
 ]);
 
-
 /** Providers offered in the room's provider bar, in display order. */
 export const WATCH_PROVIDERS: readonly WatchProviderCapability[] = Object.freeze(
   DEFINITIONS.filter((entry) => entry.capability.enabled && entry.capability.visibleInLobby).map(
