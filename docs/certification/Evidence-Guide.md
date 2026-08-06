@@ -33,12 +33,12 @@ repository. Deleting evidence is a manual, deliberate act.
 
 ## Status vocabulary
 
-| Status       | Meaning                                                        |
-| ------------ | -------------------------------------------------------------- |
-| `pass`       | The row executed and satisfied its threshold                   |
-| `fail`       | The row executed and did not satisfy its threshold             |
-| `unmeasured` | The row did not execute — the default state                    |
-| `blocked`    | The row's profile is unsupported in this environment           |
+| Status       | Meaning                                              |
+| ------------ | ---------------------------------------------------- |
+| `pass`       | The row executed and satisfied its threshold         |
+| `fail`       | The row executed and did not satisfy its threshold   |
+| `unmeasured` | The row did not execute — the default state          |
+| `blocked`    | The row's profile is unsupported in this environment |
 
 `blocked` and `unmeasured` never roll up as a pass, in any dashboard or report. Where a value is
 absent, generated documents print **Unknown**. Nothing is interpolated or estimated.

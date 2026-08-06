@@ -1,14 +1,47 @@
 {
   "$comment": "Milestone registry — M0.5 WP5/WP10. Gate = the evidence prefixes that must be PASS for the milestone's Definition of Done.",
   "milestones": [
-    { "id": "M0", "name": "Architecture Conformance & Certification", "status": "complete", "gates": ["CERT-PROV-A1", "CERT-SA-", "CERT-AUTHZ-"] },
-    { "id": "M0.5", "name": "Developer Infrastructure", "status": "in-progress", "gates": ["CERT-PERF-"] },
-    { "id": "M1", "name": "Room & Watch Party Build", "status": "not-started", "gates": ["CERT-SA-", "CERT-PERF-01", "CERT-PERF-02"] },
-    { "id": "M2", "name": "Sync & Clock Certification", "status": "not-started", "gates": ["CERT-PERF-03", "CERT-PERF-04"] },
+    {
+      "id": "M0",
+      "name": "Architecture Conformance & Certification",
+      "status": "complete",
+      "gates": ["CERT-PROV-A1", "CERT-SA-", "CERT-AUTHZ-"]
+    },
+    {
+      "id": "M0.5",
+      "name": "Developer Infrastructure",
+      "status": "in-progress",
+      "gates": ["CERT-PERF-"]
+    },
+    {
+      "id": "M1",
+      "name": "Room & Watch Party Build",
+      "status": "not-started",
+      "gates": ["CERT-SA-", "CERT-PERF-01", "CERT-PERF-02"]
+    },
+    {
+      "id": "M2",
+      "name": "Sync & Clock Certification",
+      "status": "not-started",
+      "gates": ["CERT-PERF-03", "CERT-PERF-04"]
+    },
     { "id": "M3", "name": "Voice & Presence", "status": "not-started", "gates": ["CERT-VOICE-"] },
     { "id": "M4", "name": "Resilience & Scale", "status": "not-started", "gates": ["CERT-RES-"] },
     { "id": "M5", "name": "Community & Chat", "status": "not-started", "gates": [] },
     { "id": "M6", "name": "AI / Po", "status": "not-started", "gates": [] },
-    { "id": "M7", "name": "Launch Certification", "status": "not-started", "gates": ["CERT-A11Y-", "CERT-PROV-", "CERT-PERF-", "CERT-SA-", "CERT-AUTHZ-", "CERT-RES-", "CERT-VOICE-"] }
+    {
+      "id": "M7",
+      "name": "Launch Certification",
+      "status": "not-started",
+      "gates": [
+        "CERT-A11Y-",
+        "CERT-PROV-",
+        "CERT-PERF-",
+        "CERT-SA-",
+        "CERT-AUTHZ-",
+        "CERT-RES-",
+        "CERT-VOICE-"
+      ]
+    }
   ]
 }

@@ -31,14 +31,25 @@ process.env["CERT_RUN_ID"] = RUN_ID;
 process.env["CERT_COMMIT"] = COMMIT;
 process.env["CERT_RUN_STARTED_AT"] = STARTED_AT;
 
-const SKIP_PLAYWRIGHT = process.argv.includes("--no-browser") || process.env["CERT_SKIP_PLAYWRIGHT"] === "1";
+const SKIP_PLAYWRIGHT =
+  process.argv.includes("--no-browser") || process.env["CERT_SKIP_PLAYWRIGHT"] === "1";
 
 const stages = [
   { id: "format", label: "Format check", command: "npx", args: ["prettier", "--check", "."] },
   { id: "lint", label: "Lint", command: "npx", args: ["eslint", ".", "--max-warnings", "25"] },
-  { id: "architecture", label: "Architecture guard", command: "node", args: ["scripts/check-architecture.mjs"] },
+  {
+    id: "architecture",
+    label: "Architecture guard",
+    command: "node",
+    args: ["scripts/check-architecture.mjs"],
+  },
   { id: "adrs", label: "ADR validation", command: "node", args: ["scripts/check-adrs.mjs"] },
-  { id: "cert-guard", label: "Certification guard", command: "node", args: ["scripts/check-certification.mjs"] },
+  {
+    id: "cert-guard",
+    label: "Certification guard",
+    command: "node",
+    args: ["scripts/check-certification.mjs"],
+  },
   {
     id: "playwright",
     label: "Playwright certification matrix",
@@ -48,12 +59,37 @@ const stages = [
     skipReason: "Browser stage skipped (--no-browser).",
   },
   { id: "evidence", label: "Evidence collection", command: "node", args: ["scripts/evidence.mjs"] },
-  { id: "performance", label: "Performance baselines", command: "node", args: ["scripts/report-performance.mjs"] },
-  { id: "coverage", label: "Coverage report", command: "node", args: ["scripts/report-coverage.mjs"] },
+  {
+    id: "performance",
+    label: "Performance baselines",
+    command: "node",
+    args: ["scripts/report-performance.mjs"],
+  },
+  {
+    id: "coverage",
+    label: "Coverage report",
+    command: "node",
+    args: ["scripts/report-coverage.mjs"],
+  },
   { id: "engines", label: "Engine health", command: "node", args: ["scripts/report-engines.mjs"] },
-  { id: "debt", label: "Technical debt dashboard", command: "node", args: ["scripts/report-debt.mjs"] },
-  { id: "milestone", label: "Milestone coverage", command: "node", args: ["scripts/milestone.mjs"] },
-  { id: "release", label: "Release recommendation", command: "node", args: ["scripts/report-release.mjs"] },
+  {
+    id: "debt",
+    label: "Technical debt dashboard",
+    command: "node",
+    args: ["scripts/report-debt.mjs"],
+  },
+  {
+    id: "milestone",
+    label: "Milestone coverage",
+    command: "node",
+    args: ["scripts/milestone.mjs"],
+  },
+  {
+    id: "release",
+    label: "Release recommendation",
+    command: "node",
+    args: ["scripts/report-release.mjs"],
+  },
 ];
 
 ensureRunLayout(RUN_ID);
@@ -64,11 +100,23 @@ console.log(`Certification pipeline — run ${RUN_ID} @ ${COMMIT}\n`);
 
 for (const stage of stages) {
   if (halted) {
-    results.push({ id: stage.id, label: stage.label, status: "skipped", exitCode: null, detail: "Earlier stage failed." });
+    results.push({
+      id: stage.id,
+      label: stage.label,
+      status: "skipped",
+      exitCode: null,
+      detail: "Earlier stage failed.",
+    });
     continue;
   }
   if (stage.skip) {
-    results.push({ id: stage.id, label: stage.label, status: "skipped", exitCode: null, detail: stage.skipReason });
+    results.push({
+      id: stage.id,
+      label: stage.label,
+      status: "skipped",
+      exitCode: null,
+      detail: stage.skipReason,
+    });
     console.log(`- ${stage.label}: skipped (${stage.skipReason})`);
     continue;
   }
@@ -99,7 +147,10 @@ const summary = {
   stages: results,
 };
 
-writeFileEnsured(join(EVIDENCE_ROOT, RUN_ID, "reports", "pipeline.json"), JSON.stringify(summary, null, 2));
+writeFileEnsured(
+  join(EVIDENCE_ROOT, RUN_ID, "reports", "pipeline.json"),
+  JSON.stringify(summary, null, 2),
+);
 
 const table = results
   .map((stage) => `| ${stage.label} | ${stage.status} | ${stage.exitCode ?? "-"} |`)
@@ -109,5 +160,7 @@ writeFileEnsured(
   `# Certification Pipeline — ${RUN_ID}\n\nCommit \`${COMMIT}\`, started ${STARTED_AT}.\n\n| Stage | Status | Exit |\n| --- | --- | --- |\n${table}\n\nPipeline complete: ${!halted}\n`,
 );
 
-console.log(`\nPipeline ${halted ? "FAILED" : "completed"}. Evidence: ${join(EVIDENCE_ROOT, RUN_ID)}`);
+console.log(
+  `\nPipeline ${halted ? "FAILED" : "completed"}. Evidence: ${join(EVIDENCE_ROOT, RUN_ID)}`,
+);
 process.exit(halted ? 1 : 0);

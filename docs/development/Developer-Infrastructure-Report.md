@@ -5,7 +5,7 @@ infrastructure that makes every future milestone automatically produce certifica
 
 ## Engineering commands
 
-| Command                 | Does                                                                            |
+| Command                 | Does                                                                             |
 | ----------------------- | -------------------------------------------------------------------------------- |
 | `npm run verify`        | format · lint · typecheck · architecture guard · certification guard · ADR guard |
 | `npm run certify`       | the full certification pipeline (see the Certification Pipeline Guide)           |
@@ -18,28 +18,28 @@ All outputs are deterministic: same commit + same evidence produces byte-identic
 
 ## Components
 
-| Component                        | File                                    |
-| -------------------------------- | ----------------------------------------- |
-| Shared evidence/registry I/O     | `scripts/lib/evidence-io.mjs`           |
-| Certification pipeline runner    | `scripts/certify.mjs`                   |
-| Evidence collector               | `scripts/evidence.mjs`                  |
-| ADR validation guard             | `scripts/check-adrs.mjs`                |
-| Performance dashboard            | `scripts/report-performance.mjs`        |
-| Coverage report                  | `scripts/report-coverage.mjs`           |
-| Engine health reports            | `scripts/report-engines.mjs`            |
-| Technical debt dashboard + guard | `scripts/report-debt.mjs`               |
-| Release dashboard                | `scripts/report-release.mjs`            |
-| Milestone coverage               | `scripts/milestone.mjs`                 |
+| Component                        | File                             |
+| -------------------------------- | -------------------------------- |
+| Shared evidence/registry I/O     | `scripts/lib/evidence-io.mjs`    |
+| Certification pipeline runner    | `scripts/certify.mjs`            |
+| Evidence collector               | `scripts/evidence.mjs`           |
+| ADR validation guard             | `scripts/check-adrs.mjs`         |
+| Performance dashboard            | `scripts/report-performance.mjs` |
+| Coverage report                  | `scripts/report-coverage.mjs`    |
+| Engine health reports            | `scripts/report-engines.mjs`     |
+| Technical debt dashboard + guard | `scripts/report-debt.mjs`        |
+| Release dashboard                | `scripts/report-release.mjs`     |
+| Milestone coverage               | `scripts/milestone.mjs`          |
 
 Every script is plain Node ESM with zero runtime dependencies, so the project stays portable and the
 tooling runs identically in CI, on a laptop, and outside Lovable.
 
 ## Registries (hand-maintained, machine-read)
 
-| Registry                        | Owns                                                             |
-| ------------------------------- | ------------------------------------------------------------------ |
-| `docs/registry/engines.json`    | 13 engines + Experience Subsystem: owner, modules, rows, risks    |
-| `docs/registry/metrics.json`    | Three-value performance budget per C4                             |
+| Registry                        | Owns                                                                |
+| ------------------------------- | ------------------------------------------------------------------- |
+| `docs/registry/engines.json`    | 13 engines + Experience Subsystem: owner, modules, rows, risks      |
+| `docs/registry/metrics.json`    | Three-value performance budget per C4                               |
 | `docs/registry/milestones.json` | Milestone gates (which evidence rows constitute Definition of Done) |
 | `docs/debt/debt-register.json`  | Technical debt with owner, milestone, ADR, engine, certification    |
 

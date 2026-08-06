@@ -35,13 +35,13 @@ is still evidence.
 
 ## Options
 
-| Flag / variable                | Effect                                                            |
-| ------------------------------ | ----------------------------------------------------------------- |
-| `--no-browser`                 | Skip the Playwright stage; downstream reports use existing evidence |
-| `CERT_RUN_ID`                  | Pin the run id (CI uses the build id)                             |
-| `CERT_ENVIRONMENT`, `CERT_REGION` | Attribution recorded on every row                              |
-| `CERT_CHROMIUM_PATH`           | Explicit browser binary                                           |
-| `CERT_FORCE_RUN=1`             | Permit rewriting a sealed run                                     |
+| Flag / variable                   | Effect                                                              |
+| --------------------------------- | ------------------------------------------------------------------- |
+| `--no-browser`                    | Skip the Playwright stage; downstream reports use existing evidence |
+| `CERT_RUN_ID`                     | Pin the run id (CI uses the build id)                               |
+| `CERT_ENVIRONMENT`, `CERT_REGION` | Attribution recorded on every row                                   |
+| `CERT_CHROMIUM_PATH`              | Explicit browser binary                                             |
+| `CERT_FORCE_RUN=1`                | Permit rewriting a sealed run                                       |
 
 ## Determinism
 

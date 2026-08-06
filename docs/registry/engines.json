@@ -9,7 +9,9 @@
       "srcPaths": ["src/domain/rooms", "src/repository/rooms", "src/infrastructure/rooms"],
       "certPrefixes": ["CERT-SA-", "CERT-AUTHZ-"],
       "debtIds": ["DEBT-013"],
-      "risks": ["Room capacity and lifecycle transitions are asserted by server authority rows only; UI-level lifecycle remains unmeasured."]
+      "risks": [
+        "Room capacity and lifecycle transitions are asserted by server authority rows only; UI-level lifecycle remains unmeasured."
+      ]
     },
     {
       "id": "ENG-TIMELINE",
@@ -49,7 +51,9 @@
       "srcPaths": ["src/features/voice", "src/infrastructure/voice", "src/routes/api/voice"],
       "certPrefixes": ["CERT-VOICE-"],
       "debtIds": [],
-      "risks": ["PROF-08 is unsupported: no LiveKit test project is provisioned, so every voice row is blocked."]
+      "risks": [
+        "PROF-08 is unsupported: no LiveKit test project is provisioned, so every voice row is blocked."
+      ]
     },
     {
       "id": "ENG-CHAT",
@@ -66,20 +70,31 @@
       "name": "Presence Engine",
       "owner": "Realtime",
       "subsystem": "domain",
-      "srcPaths": ["src/repository/rooms/presence-repository.types.ts", "src/infrastructure/events"],
+      "srcPaths": [
+        "src/repository/rooms/presence-repository.types.ts",
+        "src/infrastructure/events"
+      ],
       "certPrefixes": ["CERT-PERF-02"],
       "debtIds": [],
-      "risks": ["Ready propagation is measured at transport level only; UI render time is excluded."]
+      "risks": [
+        "Ready propagation is measured at transport level only; UI render time is excluded."
+      ]
     },
     {
       "id": "ENG-PROVIDER",
       "name": "Provider Engine",
       "owner": "Provider & Capability",
       "subsystem": "domain",
-      "srcPaths": ["src/domain/providers", "src/repository/providers", "src/infrastructure/providers"],
+      "srcPaths": [
+        "src/domain/providers",
+        "src/repository/providers",
+        "src/infrastructure/providers"
+      ],
       "certPrefixes": ["CERT-PROV-"],
       "debtIds": ["DEBT-002"],
-      "risks": ["Certification registry is empty: every provider resolves to Tier C. Zero Tier A, zero Tier B."]
+      "risks": [
+        "Certification registry is empty: every provider resolves to Tier C. Zero Tier A, zero Tier B."
+      ]
     },
     {
       "id": "ENG-NOTIFICATION",
@@ -89,7 +104,9 @@
       "srcPaths": ["src/features/notifications", "src/lib/email-templates"],
       "certPrefixes": [],
       "debtIds": [],
-      "risks": ["Email deliverability is verified manually against DNS records; no automated row exists."]
+      "risks": [
+        "Email deliverability is verified manually against DNS records; no automated row exists."
+      ]
     },
     {
       "id": "ENG-COMMUNITY",
@@ -109,7 +126,9 @@
       "srcPaths": ["src/features/po", "src/infrastructure/ai"],
       "certPrefixes": [],
       "debtIds": ["DEBT-008"],
-      "risks": ["Po planning behaviour is unmeasured; ADR-001 clarification policy is unverified by test."]
+      "risks": [
+        "Po planning behaviour is unmeasured; ADR-001 clarification policy is unverified by test."
+      ]
     },
     {
       "id": "ENG-ANALYTICS",
@@ -136,10 +155,19 @@
       "name": "Experience Subsystem",
       "owner": "Experience",
       "subsystem": "experience",
-      "srcPaths": ["src/design-system", "src/foundation/accessibility", "src/foundation/localization", "src/foundation/theme", "src/app-shell"],
+      "srcPaths": [
+        "src/design-system",
+        "src/foundation/accessibility",
+        "src/foundation/localization",
+        "src/foundation/theme",
+        "src/app-shell"
+      ],
       "certPrefixes": ["CERT-A11Y-"],
       "debtIds": [],
-      "risks": ["Automated accessibility sweep covers unnamed controls only; a manual WCAG 2.1 AA audit is still required.", "Cross-cutting presentation only — holds no business state or authority."]
+      "risks": [
+        "Automated accessibility sweep covers unnamed controls only; a manual WCAG 2.1 AA audit is still required.",
+        "Cross-cutting presentation only — holds no business state or authority."
+      ]
     }
   ]
 }

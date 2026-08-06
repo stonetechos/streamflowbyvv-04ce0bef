@@ -43,7 +43,8 @@ for (const file of files) {
     );
   }
   const status = statusMatch?.[1] ?? "Unknown";
-  const supersededBy = source.match(/(?:\*\*Superseded by:\*\*|^Superseded by:)\s*(ADR-\d{3})/m)?.[1] ?? null;
+  const supersededBy =
+    source.match(/(?:\*\*Superseded by:\*\*|^Superseded by:)\s*(ADR-\d{3})/m)?.[1] ?? null;
   if (status === "Superseded" && !supersededBy) {
     violations.push(`${file}: status is Superseded but no "Superseded by: ADR-nnn" is declared.`);
   }
@@ -93,4 +94,6 @@ if (violations.length > 0) {
   process.exit(1);
 }
 
-console.log(`ADR validation passed: ${adrs.size} decision records, references resolve, no contradictions.`);
+console.log(
+  `ADR validation passed: ${adrs.size} decision records, references resolve, no contradictions.`,
+);

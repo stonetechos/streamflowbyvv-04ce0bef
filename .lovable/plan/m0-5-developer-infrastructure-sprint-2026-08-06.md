@@ -71,14 +71,14 @@ Immutability: `scripts/evidence.mjs` refuses to write into an existing completed
 
 Add to `package.json`, all deterministic:
 
-| Command | Does |
-| --- | --- |
-| `npm run verify` | format, lint, typecheck, arch guard, cert guard, ADR guard |
-| `npm run certify` | full WP2 pipeline |
-| `npm run evidence` | collect/validate/index evidence for a run |
+| Command                 | Does                                                        |
+| ----------------------- | ----------------------------------------------------------- |
+| `npm run verify`        | format, lint, typecheck, arch guard, cert guard, ADR guard  |
+| `npm run certify`       | full WP2 pipeline                                           |
+| `npm run evidence`      | collect/validate/index evidence for a run                   |
 | `npm run release-check` | regenerate dashboards, print Green/Amber/Red recommendation |
-| `npm run architecture` | architecture + ADR + module mapping validation |
-| `npm run milestone` | milestone coverage vs the Constitution roadmap |
+| `npm run architecture`  | architecture + ADR + module mapping validation              |
+| `npm run milestone`     | milestone coverage vs the Constitution roadmap              |
 
 ## Documentation deliverables
 

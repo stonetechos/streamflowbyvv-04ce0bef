@@ -9,11 +9,11 @@ import { readdirSync } from "node:fs";
 import { generatedHeader, loadDebt, loadRegistry, writeFileEnsured } from "./lib/evidence-io.mjs";
 
 /** Every ADR id that resolves to a committed decision record. */
-const KNOWN_ADRS = new Set([
-  ...readdirSync("docs/adr"),
-  ...readdirSync("docs/blueprint"),
-].flatMap((name) => (name.match(/ADR-\d{3}/) ?? [])));
-
+const KNOWN_ADRS = new Set(
+  [...readdirSync("docs/adr"), ...readdirSync("docs/blueprint")].flatMap(
+    (name) => name.match(/ADR-\d{3}/) ?? [],
+  ),
+);
 
 const items = loadDebt();
 const { engines } = loadRegistry("engines");
@@ -29,18 +29,20 @@ for (const item of items) {
   if (!/^DEBT-\d{3}$/.test(item.id ?? "")) violations.push(`${where}: invalid id format.`);
   if (seen.has(item.id)) violations.push(`${where}: duplicate id.`);
   seen.add(item.id);
-  if (!SEVERITY.includes(item.severity)) violations.push(`${where}: severity must be one of ${SEVERITY.join("/")}.`);
+  if (!SEVERITY.includes(item.severity))
+    violations.push(`${where}: severity must be one of ${SEVERITY.join("/")}.`);
   if (!item.owner) violations.push(`${where}: missing owner.`);
-  if (!milestoneIds.has(item.milestone)) violations.push(`${where}: milestone "${item.milestone}" is not in the milestone registry.`);
+  if (!milestoneIds.has(item.milestone))
+    violations.push(`${where}: milestone "${item.milestone}" is not in the milestone registry.`);
   if (!item.impact) violations.push(`${where}: missing impact.`);
   if (!item.effort) violations.push(`${where}: missing estimated effort.`);
   if (typeof item.blocking !== "boolean") violations.push(`${where}: blocking must be a boolean.`);
-  if (!engineIds.has(item.engine)) violations.push(`${where}: engine "${item.engine}" is not in the engine registry.`);
+  if (!engineIds.has(item.engine))
+    violations.push(`${where}: engine "${item.engine}" is not in the engine registry.`);
   if (item.adr && !KNOWN_ADRS.has(item.adr)) {
     violations.push(`${where}: linked ${item.adr} does not resolve to a decision record.`);
   }
 }
-
 
 if (violations.length > 0) {
   console.error("Technical debt register validation failed:\n");

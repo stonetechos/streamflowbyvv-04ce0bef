@@ -13,11 +13,11 @@ npm run release-check
 
 The rules are mechanical and stated here so nobody negotiates them at release time.
 
-| Indicator | Condition                                                                        |
-| --------- | --------------------------------------------------------------------------------- |
-| **Red**   | Any failing certification row, or any open Critical technical debt                |
+| Indicator | Condition                                                                           |
+| --------- | ----------------------------------------------------------------------------------- |
+| **Red**   | Any failing certification row, or any open Critical technical debt                  |
 | **Amber** | Any blocked/unmeasured row, or any open blocking debt, or a partial measurement set |
-| **Green** | Everything measured, everything passing, no blocking debt                         |
+| **Green** | Everything measured, everything passing, no blocking debt                           |
 
 A Red in any subsystem forces a Red release recommendation. Amber releases require the listed
 blockers to be accepted in writing by the owning engineer.

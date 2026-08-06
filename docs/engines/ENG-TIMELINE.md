@@ -6,9 +6,9 @@
 
 ## Module coverage
 
-| Path | Present |
-| --- | --- |
-| `src/domain/events` | yes |
+| Path                | Present |
+| ------------------- | ------- |
+| `src/domain/events` | yes     |
 
 ## Certification
 

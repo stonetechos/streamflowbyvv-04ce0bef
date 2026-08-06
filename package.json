@@ -26,7 +26,6 @@
     "cert:provider": "playwright test tests/certification/provider --project=web-chromium",
     "cert:room": "playwright test tests/certification/room --project=web-chromium",
     "cert:baselines": "playwright test tests/certification/realtime --project=web-chromium"
-
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

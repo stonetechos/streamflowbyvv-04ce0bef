@@ -6,10 +6,10 @@
 
 ## Module coverage
 
-| Path | Present |
-| --- | --- |
-| `src/features/po` | yes |
-| `src/infrastructure/ai` | yes |
+| Path                    | Present |
+| ----------------------- | ------- |
+| `src/features/po`       | yes     |
+| `src/infrastructure/ai` | yes     |
 
 ## Certification
 
@@ -17,9 +17,9 @@ No certification row targets this engine. Coverage is **Unknown**, not pass.
 
 ## Technical debt
 
-| Id | Severity | Milestone | Blocking | Item |
-| --- | --- | --- | --- | --- |
-| DEBT-008 | Medium | M6 | no | Po planning behaviour has no certification coverage |
+| Id       | Severity | Milestone | Blocking | Item                                                |
+| -------- | -------- | --------- | -------- | --------------------------------------------------- |
+| DEBT-008 | Medium   | M6        | no       | Po planning behaviour has no certification coverage |
 
 ## Known risks
 

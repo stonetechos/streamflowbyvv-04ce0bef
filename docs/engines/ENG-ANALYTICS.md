@@ -6,9 +6,9 @@
 
 ## Module coverage
 
-| Path | Present |
-| --- | --- |
-| `src/foundation/logging` | yes |
+| Path                     | Present |
+| ------------------------ | ------- |
+| `src/foundation/logging` | yes     |
 
 ## Certification
 
@@ -16,9 +16,9 @@ No certification row targets this engine. Coverage is **Unknown**, not pass.
 
 ## Technical debt
 
-| Id | Severity | Milestone | Blocking | Item |
-| --- | --- | --- | --- | --- |
-| DEBT-012 | High | M1 | no | Analytics events are not schema-validated at emission |
+| Id       | Severity | Milestone | Blocking | Item                                                  |
+| -------- | -------- | --------- | -------- | ----------------------------------------------------- |
+| DEBT-012 | High     | M1        | no       | Analytics events are not schema-validated at emission |
 
 ## Known risks
 

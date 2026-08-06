@@ -8,21 +8,21 @@ A metric with no measurement in this run reads **Unknown**. A Certified Threshol
 
 ## Three-value budget
 
-| Metric | Percentile | Provisional target | Measured baseline | Certified threshold | Samples | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| Invite latency (invite → join) | p95 | 2000 ms | 1993 ms | Unknown | 5 | pass |
-| Ready propagation | p95 | 250 ms | 18 ms | Unknown | 10 | pass |
-| Countdown spread | p95 | 200 ms | 19 ms | Unknown | 10 | pass |
-| Reconnect recovery | p95 | 3000 ms | 150 ms | Unknown | 5 | pass |
-| Clock offset | p95 | 1000 ms | 824 ms | Unknown | 10 | pass |
-| Room lifecycle recovery after outage | p95 | 5000 ms | 310 ms | Unknown | 1 | pass |
-| Voice join latency | p95 | 1500 ms | Unknown | Unknown | Unknown | blocked |
+| Metric                               | Percentile | Provisional target | Measured baseline | Certified threshold | Samples | Status  |
+| ------------------------------------ | ---------- | ------------------ | ----------------- | ------------------- | ------- | ------- |
+| Invite latency (invite → join)       | p95        | 2000 ms            | 1993 ms           | Unknown             | 5       | pass    |
+| Ready propagation                    | p95        | 250 ms             | 18 ms             | Unknown             | 10      | pass    |
+| Countdown spread                     | p95        | 200 ms             | 19 ms             | Unknown             | 10      | pass    |
+| Reconnect recovery                   | p95        | 3000 ms            | 150 ms            | Unknown             | 5       | pass    |
+| Clock offset                         | p95        | 1000 ms            | 824 ms            | Unknown             | 10      | pass    |
+| Room lifecycle recovery after outage | p95        | 5000 ms            | 310 ms            | Unknown             | 1       | pass    |
+| Voice join latency                   | p95        | 1500 ms            | Unknown           | Unknown             | Unknown | blocked |
 
 ## Historical comparison
 
-| Run | invite_to_join | ready_propagation | countdown_spread | reconnect_recovery | clock_offset | outage_recovery | voice_join |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `RUN-M0R-001` | 1993 ms | 18 ms | 19 ms | 150 ms | 824 ms | 310 ms | Unknown |
+| Run           | invite_to_join | ready_propagation | countdown_spread | reconnect_recovery | clock_offset | outage_recovery | voice_join |
+| ------------- | -------------- | ----------------- | ---------------- | ------------------ | ------------ | --------------- | ---------- |
+| `RUN-M0R-001` | 1993 ms        | 18 ms             | 19 ms            | 150 ms             | 824 ms       | 310 ms          | Unknown    |
 
 ## Measurement notes
 

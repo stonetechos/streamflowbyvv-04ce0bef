@@ -1,12 +1,68 @@
 {
   "$comment": "Performance metric registry — M0.5 WP4. Three-value budget per C4: provisional target, measured baseline (from evidence, never written here), certified threshold.",
   "metrics": [
-    { "metricId": "invite_to_join", "label": "Invite latency (invite → join)", "evidenceId": "CERT-PERF-01", "engine": "ENG-ROOM", "provisionalTargetMs": 2000, "certifiedThresholdMs": null, "percentile": "p95" },
-    { "metricId": "ready_propagation", "label": "Ready propagation", "evidenceId": "CERT-PERF-02", "engine": "ENG-PRESENCE", "provisionalTargetMs": 250, "certifiedThresholdMs": null, "percentile": "p95" },
-    { "metricId": "countdown_spread", "label": "Countdown spread", "evidenceId": "CERT-PERF-03", "engine": "ENG-SYNC", "provisionalTargetMs": 200, "certifiedThresholdMs": null, "percentile": "p95" },
-    { "metricId": "reconnect_recovery", "label": "Reconnect recovery", "evidenceId": "CERT-PERF-05", "engine": "ENG-ROOM", "provisionalTargetMs": 3000, "certifiedThresholdMs": null, "percentile": "p95" },
-    { "metricId": "clock_offset", "label": "Clock offset", "evidenceId": "CERT-PERF-04", "engine": "ENG-SYNC", "provisionalTargetMs": 1000, "certifiedThresholdMs": null, "percentile": "p95" },
-    { "metricId": "outage_recovery", "label": "Room lifecycle recovery after outage", "evidenceId": "CERT-RES-01-chromium", "engine": "ENG-ROOM", "provisionalTargetMs": 5000, "certifiedThresholdMs": null, "percentile": "p95" },
-    { "metricId": "voice_join", "label": "Voice join latency", "evidenceId": "CERT-VOICE-01", "engine": "ENG-VOICE", "provisionalTargetMs": 1500, "certifiedThresholdMs": null, "percentile": "p95" }
+    {
+      "metricId": "invite_to_join",
+      "label": "Invite latency (invite → join)",
+      "evidenceId": "CERT-PERF-01",
+      "engine": "ENG-ROOM",
+      "provisionalTargetMs": 2000,
+      "certifiedThresholdMs": null,
+      "percentile": "p95"
+    },
+    {
+      "metricId": "ready_propagation",
+      "label": "Ready propagation",
+      "evidenceId": "CERT-PERF-02",
+      "engine": "ENG-PRESENCE",
+      "provisionalTargetMs": 250,
+      "certifiedThresholdMs": null,
+      "percentile": "p95"
+    },
+    {
+      "metricId": "countdown_spread",
+      "label": "Countdown spread",
+      "evidenceId": "CERT-PERF-03",
+      "engine": "ENG-SYNC",
+      "provisionalTargetMs": 200,
+      "certifiedThresholdMs": null,
+      "percentile": "p95"
+    },
+    {
+      "metricId": "reconnect_recovery",
+      "label": "Reconnect recovery",
+      "evidenceId": "CERT-PERF-05",
+      "engine": "ENG-ROOM",
+      "provisionalTargetMs": 3000,
+      "certifiedThresholdMs": null,
+      "percentile": "p95"
+    },
+    {
+      "metricId": "clock_offset",
+      "label": "Clock offset",
+      "evidenceId": "CERT-PERF-04",
+      "engine": "ENG-SYNC",
+      "provisionalTargetMs": 1000,
+      "certifiedThresholdMs": null,
+      "percentile": "p95"
+    },
+    {
+      "metricId": "outage_recovery",
+      "label": "Room lifecycle recovery after outage",
+      "evidenceId": "CERT-RES-01-chromium",
+      "engine": "ENG-ROOM",
+      "provisionalTargetMs": 5000,
+      "certifiedThresholdMs": null,
+      "percentile": "p95"
+    },
+    {
+      "metricId": "voice_join",
+      "label": "Voice join latency",
+      "evidenceId": "CERT-VOICE-01",
+      "engine": "ENG-VOICE",
+      "provisionalTargetMs": 1500,
+      "certifiedThresholdMs": null,
+      "percentile": "p95"
+    }
   ]
 }

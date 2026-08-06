@@ -76,7 +76,9 @@ for (const [key, bucket] of [...groups].sort()) {
 // Playwright coverage
 const specDirs = existsSync("tests/certification")
   ? readdirSync("tests/certification", { withFileTypes: true })
-      .filter((e) => e.isDirectory() && !["helpers", "fixtures", "profiles", "evidence"].includes(e.name))
+      .filter(
+        (e) => e.isDirectory() && !["helpers", "fixtures", "profiles", "evidence"].includes(e.name),
+      )
       .map((e) => e.name)
   : [];
 md += `\n## Playwright coverage\n\n| Suite | Specs | Status |\n| --- | --- | --- |\n`;

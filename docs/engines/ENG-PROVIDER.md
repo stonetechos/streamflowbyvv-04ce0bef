@@ -6,18 +6,18 @@
 
 ## Module coverage
 
-| Path | Present |
-| --- | --- |
-| `src/domain/providers` | yes |
-| `src/repository/providers` | yes |
-| `src/infrastructure/providers` | yes |
+| Path                           | Present |
+| ------------------------------ | ------- |
+| `src/domain/providers`         | yes     |
+| `src/repository/providers`     | yes     |
+| `src/infrastructure/providers` | yes     |
 
 ## Certification
 
-| Row | Profile | Status | Detail |
-| --- | --- | --- | --- |
-| `CERT-PROV-A1-name-based` | PROF-01 | pass | 6 provider keys resolve to Tier C without a certification tuple. |
-| `CERT-PROV-A1-registry` | PROF-01 | pass | Registry holds 0 certified capabilities; all evidence-gated. |
+| Row                       | Profile | Status | Detail                                                           |
+| ------------------------- | ------- | ------ | ---------------------------------------------------------------- |
+| `CERT-PROV-A1-name-based` | PROF-01 | pass   | 6 provider keys resolve to Tier C without a certification tuple. |
+| `CERT-PROV-A1-registry`   | PROF-01 | pass   | Registry holds 0 certified capabilities; all evidence-gated.     |
 
 ## Technical debt
 

@@ -51,7 +51,8 @@ for (const engine of engines) {
 
   md += `\n## Module coverage\n\n| Path | Present |\n| --- | --- |\n`;
   if (engine.srcPaths.length === 0) md += `| _no modules mapped_ | Unknown |\n`;
-  for (const path of engine.srcPaths) md += `| \`${path}\` | ${existsSync(path) ? "yes" : "missing"} |\n`;
+  for (const path of engine.srcPaths)
+    md += `| \`${path}\` | ${existsSync(path) ? "yes" : "missing"} |\n`;
 
   md += `\n## Certification\n\n`;
   if (rows.length === 0) {

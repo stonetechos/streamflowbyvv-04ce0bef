@@ -3,15 +3,15 @@
 Seven independent GitHub Actions workflows. Each fails on its own so a red build names the exact
 failed subsystem — there is no single monolithic job to decode.
 
-| Workflow                             | Job                            | Fails when                                                             |
-| ------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `.github/workflows/format.yml`       | Prettier format check          | Any file is unformatted                                                |
-| `.github/workflows/lint.yml`         | ESLint                         | Any error, or more than 25 warnings                                    |
-| `.github/workflows/typecheck.yml`    | TypeScript                     | `tsc --noEmit` reports an error                                        |
-| `.github/workflows/architecture.yml` | Layer isolation + ADR          | Vendor leakage above Infrastructure, or an ADR contradiction           |
+| Workflow                                    | Job                       | Fails when                                                                                            |
+| ------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `.github/workflows/format.yml`              | Prettier format check     | Any file is unformatted                                                                               |
+| `.github/workflows/lint.yml`                | ESLint                    | Any error, or more than 25 warnings                                                                   |
+| `.github/workflows/typecheck.yml`           | TypeScript                | `tsc --noEmit` reports an error                                                                       |
+| `.github/workflows/architecture.yml`        | Layer isolation + ADR     | Vendor leakage above Infrastructure, or an ADR contradiction                                          |
 | `.github/workflows/certification-guard.yml` | Evidence schema + tiering | A required evidence field is missing, name-based tiering reappears, or the debt register is malformed |
-| `.github/workflows/playwright.yml`   | Certification matrix           | Any certification row fails                                            |
-| `.github/workflows/docs-validate.yml`| Generated documentation        | Dashboards are stale relative to the evidence on disk                  |
+| `.github/workflows/playwright.yml`          | Certification matrix      | Any certification row fails                                                                           |
+| `.github/workflows/docs-validate.yml`       | Generated documentation   | Dashboards are stale relative to the evidence on disk                                                 |
 
 ## Evidence in CI
 

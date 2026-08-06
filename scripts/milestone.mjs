@@ -5,7 +5,13 @@
  * Compares each Constitution milestone's gate rows against the newest evidence
  * run. A gate with no evidence is Unknown, never satisfied.
  */
-import { generatedHeader, latestRun, loadRegistry, recordsById, writeFileEnsured } from "./lib/evidence-io.mjs";
+import {
+  generatedHeader,
+  latestRun,
+  loadRegistry,
+  recordsById,
+  writeFileEnsured,
+} from "./lib/evidence-io.mjs";
 
 const { milestones } = loadRegistry("milestones");
 const run = latestRun();
@@ -35,7 +41,9 @@ for (const milestone of milestones) {
             : pass === rows.length
               ? "Satisfied"
               : "Partial";
-  lines.push(`| ${milestone.id} | ${milestone.name} | ${milestone.status} | ${rows.length} | ${pass} | ${gate} |`);
+  lines.push(
+    `| ${milestone.id} | ${milestone.name} | ${milestone.status} | ${rows.length} | ${pass} | ${gate} |`,
+  );
   console.log(`${milestone.id.padEnd(5)} ${milestone.status.padEnd(12)} gate: ${gate}`);
 }
 

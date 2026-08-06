@@ -65,7 +65,9 @@ subsystems.push({
 
 const blockers = [
   ...blocking.map((d) => `${d.id} — ${d.title} (${d.owner}, ${d.milestone})`),
-  ...all.filter((r) => r.status === "fail").map((r) => `${r.evidenceId} — certification row failing`),
+  ...all
+    .filter((r) => r.status === "fail")
+    .map((r) => `${r.evidenceId} — certification row failing`),
 ];
 
 const lights = subsystems.map((s) => s.light);

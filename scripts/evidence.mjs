@@ -50,7 +50,9 @@ const missing = records.filter(
   (r) => !r.evidenceId || !r.status || !r.runId || !r.commit || !r.environmentProfile,
 );
 if (missing.length > 0) {
-  console.error(`Evidence validation failed: ${missing.length} record(s) missing mandatory fields.`);
+  console.error(
+    `Evidence validation failed: ${missing.length} record(s) missing mandatory fields.`,
+  );
   for (const record of missing) console.error(`  - ${record.evidenceId ?? "<no id>"}`);
   process.exit(1);
 }
@@ -69,10 +71,7 @@ const summary = {
 };
 
 writeFileEnsured(summaryPath, JSON.stringify(summary, null, 2));
-writeFileEnsured(
-  join(EVIDENCE_ROOT, runId, "index.json"),
-  JSON.stringify(records, null, 2),
-);
+writeFileEnsured(join(EVIDENCE_ROOT, runId, "index.json"), JSON.stringify(records, null, 2));
 
 console.log(`Evidence collected for ${runId}`);
 console.log(
