@@ -28,6 +28,17 @@ export interface WatchChatService {
   validate(body: string): ChatRejection | null;
   history(roomId: EntityId, limit?: number): Promise<readonly RoomMessage[]>;
   send(roomId: EntityId, profileId: EntityId, body: string): Promise<RoomMessage>;
+  /**
+   * Sprint H5 — a durable, room-scoped coordination event. It travels the same
+   * channel as chat because it is addressed to people, not to players: the
+   * body is the human-readable line, the metadata is what the room parses.
+   */
+  sendEvent(
+    roomId: EntityId,
+    profileId: EntityId,
+    body: string,
+    metadata: Readonly<Record<string, unknown>>,
+  ): Promise<RoomMessage>;
   subscribe(roomId: EntityId, listener: (message: RoomMessage) => void): Promise<() => void>;
 }
 
@@ -66,6 +77,13 @@ export function createWatchChatService(deps: WatchChatDependencies): WatchChatSe
         throw new Error("SF-CHAT-INVALID");
       }
       return chat.send({ roomId, profileId, body: trimmed });
+    },
+
+    async sendEvent(roomId, profileId, body, metadata) {
+      if (!chat) throw new Error("SF-SYS-PERSISTENCE-UNAVAILABLE");
+      const trimmed = body.trim().slice(0, CHAT_MESSAGE_MAX_LENGTH);
+      if (trimmed.length === 0) throw new Error("SF-CHAT-INVALID");
+      return chat.send({ roomId, profileId, body: trimmed, metadata });
     },
 
     async subscribe(roomId, listener) {
