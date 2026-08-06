@@ -1,64 +1,93 @@
 /**
- * Provider capability tiers — Watch Party Engine v2.0, ADR-014.
+ * Capability tier resolution — Watch Party Engine v2.0, ADR-014, PROV-A1.
  *
- * ADR-014 established the feasibility ceiling: StreamFlow cannot start, pause,
- * or seek a premium OTT player, and will never try. What it CAN do differs by
- * provider, and this module is the single place that says which is which.
+ * PROV-A1 (M0 Remediation Sprint) removed name-based tiering. A provider's
+ * name grants nothing. A capability reaches Tier A or Tier B only when a
+ * valid certification record exists for its full tuple
+ * (`source · adapter · platform · version · region`) in
+ * `capability-certification.ts`. The registry is currently empty, so every
+ * capability resolves to Tier C — the honest default: deep link, countdown,
+ * voice, and everyone presses play on their own.
  *
- *  - Tier A — a real, sanctioned control surface exists (an embeddable player
- *    the member is already entitled to, or a file the member owns).
- *  - Tier B — a deep link plus *observation only* on platforms that expose the
- *    system media session. Observation is never control: StreamFlow may learn
- *    that the host paused; it may not pause anyone.
- *  - Tier C — deep link, countdown, and voice. Everyone presses play on their
- *    own. This is the honest default and covers every premium OTT service.
+ *  - Tier A — certified control surface (sanctioned embeddable player or a
+ *    file the member owns). Requires evidence.
+ *  - Tier B — certified *observation only* (system media session). Observation
+ *    is never control. Requires evidence.
+ *  - Tier C — coordinated manual sync. No certification required.
  *
- * Nothing here grants a capability; it only classifies one. No caller may
- * upgrade a provider by passing a flag — Tier B requires a host runtime that
- * genuinely exposes media-session observation.
+ * Nothing here grants a capability; it only reports one that certification
+ * already proved. No caller may upgrade a tier by passing a flag.
  */
+
+import {
+  CAPABILITY_CERTIFICATIONS,
+  findCapabilityCertification,
+  type CapabilityCertification,
+  type CapabilityTuple,
+} from "./capability-certification";
 
 export const PROVIDER_TIERS = ["a", "b", "c"] as const;
 export type ProviderTier = (typeof PROVIDER_TIERS)[number];
 
-/** Providers with a genuine, permitted control surface. */
-const TIER_A_KEYS: ReadonlySet<string> = new Set([
-  "youtube",
-  "local_file",
-  "local",
-  "google_drive",
-]);
-
-/**
- * Providers where an observation shell could report the host's own play/pause
- * if — and only if — the runtime exposes the system media session.
- */
-const TIER_B_CANDIDATE_KEYS: ReadonlySet<string> = new Set([
-  "netflix",
-  "prime_video",
-  "disney_plus",
-  "jiohotstar",
-  "sonyliv",
-  "zee5",
-]);
-
 export interface ProviderTierContext {
-  /**
-   * True only on a runtime that really exposes media-session observation
-   * (an Android shell today). Absent or false keeps a candidate at Tier C.
-   */
-  readonly hasMediaSessionObservation?: boolean;
+  /** Adapter identifier that will actually drive the surface, if any. */
+  readonly adapter?: string;
+  /** Runtime platform identifier, e.g. `web-chromium`, `android-shell`. */
+  readonly platform?: string;
+  /** Adapter/platform version presented at runtime. */
+  readonly version?: string;
+  /** Region the member is resolving in. */
+  readonly region?: string;
+  /** Registry override; tests inject fixtures, production uses the default. */
+  readonly registry?: readonly CapabilityCertification[];
 }
 
+export interface CapabilityTierResolution {
+  readonly tier: ProviderTier;
+  /** Why the tier is what it is — surfaced in telemetry, never in marketing. */
+  readonly reason:
+    | "certified"
+    | "no_capability_tuple"
+    | "no_certification_record"
+    | "no_source";
+  readonly certificationId: string | null;
+}
+
+/**
+ * Full resolution with a reason code. Prefer this in telemetry, analytics, and
+ * room disclosure paths so an uncertified capability is auditable.
+ */
+export function resolveCapabilityTier(
+  source: string | null | undefined,
+  context: ProviderTierContext = {},
+): CapabilityTierResolution {
+  const key = source?.trim().toLowerCase();
+  if (!key) return { tier: "c", reason: "no_source", certificationId: null };
+
+  const tuple: Partial<CapabilityTuple> = {
+    source: key,
+    adapter: context.adapter,
+    platform: context.platform,
+    version: context.version,
+    region: context.region ?? "*",
+  };
+
+  if (!tuple.adapter || !tuple.platform || !tuple.version) {
+    return { tier: "c", reason: "no_capability_tuple", certificationId: null };
+  }
+
+  const record = findCapabilityCertification(tuple, context.registry ?? CAPABILITY_CERTIFICATIONS);
+  if (!record) return { tier: "c", reason: "no_certification_record", certificationId: null };
+
+  return { tier: record.claimedTier, reason: "certified", certificationId: record.certificationId };
+}
+
+/** Backwards-compatible accessor. Returns the certified tier, or `c`. */
 export function providerTier(
-  providerKey: string | null | undefined,
+  source: string | null | undefined,
   context: ProviderTierContext = {},
 ): ProviderTier {
-  if (!providerKey) return "c";
-  const key = providerKey.trim().toLowerCase();
-  if (TIER_A_KEYS.has(key)) return "a";
-  if (context.hasMediaSessionObservation === true && TIER_B_CANDIDATE_KEYS.has(key)) return "b";
-  return "c";
+  return resolveCapabilityTier(source, context).tier;
 }
 
 export function providerTierLabelKey(tier: ProviderTier): string {
