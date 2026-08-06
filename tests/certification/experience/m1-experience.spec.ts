@@ -26,8 +26,28 @@ import { recordM1Row } from "../helpers/m1-rows";
 
 const BASE_URL = process.env["CERT_BASE_URL"] ?? "http://localhost:8080";
 
-/** The public launch surfaces; the room surface is appended when reachable. */
-const PUBLIC_SURFACES = ["/", "/auth", "/home"] as const;
+/**
+ * WP10 — every launch surface in the frozen Launch Envelope, split by the
+ * session each one needs. `/home` moves to the authenticated list: visiting it
+ * signed out only measures the auth gate, not the surface itself.
+ */
+const PUBLIC_SURFACES = [
+  "/",
+  "/auth",
+  "/auth/sign-in",
+  "/auth/sign-up",
+  "/auth/forgot-password",
+] as const;
+
+const AUTHENTICATED_SURFACES = [
+  "/home",
+  "/people",
+  "/invites",
+  "/share",
+  "/account",
+  "/settings",
+  "/onboarding",
+] as const;
 
 test.describe("M1 experience", () => {
   test.slow();
@@ -80,14 +100,24 @@ test.describe("M1 experience", () => {
     }
     await context.close();
 
+    const uncovered: string[] = [];
     if (participants && room) {
       const session = await signedInContext(browser, participants[0]!, BASE_URL);
       if (session) {
+        for (const surface of AUTHENTICATED_SURFACES) {
+          await session.page.goto(`${BASE_URL}${surface}`, { waitUntil: "domcontentloaded" });
+          await session.page.waitForTimeout(900);
+          await audit(surface, session.page);
+        }
         await session.page.goto(`${BASE_URL}/rooms/${room.id}`, { waitUntil: "domcontentloaded" });
         await session.page.waitForTimeout(1200);
         await audit("/rooms/:roomId", session.page);
         await session.context.close();
+      } else {
+        uncovered.push(...AUTHENTICATED_SURFACES, "/rooms/:roomId");
       }
+    } else {
+      uncovered.push(...AUTHENTICATED_SURFACES, "/rooms/:roomId");
     }
 
     // A clean automated sweep is a necessary condition, never a sufficient one:
@@ -96,7 +126,7 @@ test.describe("M1 experience", () => {
       status: findings.length === 0 ? "unmeasured" : "fail",
       detail:
         findings.length === 0
-          ? `The automatable subset (WCAG 4.1.2, 3.1.1, 2.4.2) is clean across ${visited.join(", ")}. WCAG 2.1 AA also requires contrast, focus order and screen-reader review under PROF-09 (manual); this row cannot pass on automation alone.`
+          ? `The automatable subset (WCAG 4.1.2, 3.1.1, 2.4.2) is clean across ${visited.length} launch surfaces: ${visited.join(", ")}.${uncovered.length > 0 ? ` Not reachable in this environment: ${uncovered.join(", ")}.` : ""} Blocker to a pass: WCAG 2.1 AA also requires contrast, focus order and screen-reader review under PROF-09, which is a manual audit (docs/blueprint/K-launch-certification.md); automation alone cannot promote this row.`
           : `Automated accessibility findings on launch surfaces: ${findings.join("; ")}.`,
 
       profileId: "PROF-09",
@@ -123,25 +153,39 @@ test.describe("M1 experience", () => {
     }
     await context.close();
 
+    const unreached: string[] = [];
     if (participants && room) {
       const session = await signedInContext(browser, participants[0]!, BASE_URL, {
         reducedMotion: "reduce",
       });
       if (session) {
+        for (const surface of AUTHENTICATED_SURFACES) {
+          await session.page.goto(`${BASE_URL}${surface}`, { waitUntil: "domcontentloaded" });
+          await session.page.waitForTimeout(900);
+          visited.push(surface);
+          const moving = await movingElements(session.page);
+          if (moving.length > 0) offenders.push(`${surface}: ${moving.join(" | ")}`);
+        }
         await session.page.goto(`${BASE_URL}/rooms/${room.id}`, { waitUntil: "domcontentloaded" });
         await session.page.waitForTimeout(1500);
         visited.push("/rooms/:roomId");
         const moving = await movingElements(session.page);
         if (moving.length > 0) offenders.push(`/rooms/:roomId: ${moving.join(" | ")}`);
         await session.context.close();
+      } else {
+        unreached.push(...AUTHENTICATED_SURFACES, "/rooms/:roomId");
       }
+    } else {
+      unreached.push(...AUTHENTICATED_SURFACES, "/rooms/:roomId");
     }
 
     recordM1Row("CERT-EXP-02", {
-      status: offenders.length === 0 ? "pass" : "fail",
+      status: offenders.length === 0 ? (unreached.length === 0 ? "pass" : "unmeasured") : "fail",
       detail:
         offenders.length === 0
-          ? `With prefers-reduced-motion: reduce, no element on ${visited.join(", ")} retained a running animation or a non-zero transition.`
+          ? unreached.length === 0
+            ? `With prefers-reduced-motion: reduce, no element on any of the ${visited.length} launch surfaces (${visited.join(", ")}) retained a perceptible animation or transition.`
+            : `With prefers-reduced-motion: reduce, ${visited.join(", ")} were clean, but ${unreached.join(", ")} could not be reached in this environment, so full-surface conformance is unmeasured rather than passed.`
           : `Motion continued despite the OS preference: ${offenders.join(" || ")}`,
       profileId: "PROF-09",
       browser: browserName,
