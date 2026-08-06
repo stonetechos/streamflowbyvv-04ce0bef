@@ -84,18 +84,32 @@ Chat and Moderation have no existing implementation and are marked contract-only
    - Success criteria: invitees land in the intended room; users understand provider capabilities; playback or coordinated start begins correctly; voice connects when enabled; temporary disconnects do not destroy the room; leave and rejoin preserves context.
    - Anything outside the envelope requires a new ADR and its own milestone.
 
-On completion the set is frozen and published as **StreamFlow v2.0 Architecture Constitution**, amendable only by numbered ADR. Implementation waits for explicit approval to enter Build Mode.
+On completion the set is frozen and published as **StreamFlow v2.0 Architecture Constitution v2.0.0**. From that point no architectural change may occur except through a numbered ADR, and implementation begins only after the **M0 Architecture Conformance and Certification** milestone completes successfully.
+
+## Sync tiers are capability-based, never provider-based
+
+The Capability Matrix, Sync Engine, and Provider Engine all use the same definition:
+
+- **Tier A** — verified controllable playback for a specific combination of **source + adapter + platform + version**. A provider name never qualifies on its own. The same provider may be Tier A on one platform and Tier B or Tier C on another. Every Tier A claim must have a matching certification record in `K-launch-certification.md`; without that record the combination is not Tier A.
+- **Tier B** — observation/assisted only, where a real media session is observable but not controllable.
+- **Tier C** — deep link + countdown + voice + coordinated manual playback.
+
+All provider-name shorthand ("YouTube is Tier A") is removed from every chapter and replaced with matrix rows keyed by source/adapter/platform/version.
 
 ## Ground rules the blueprint enforces
 
-- ADR-014 binding: no OTT playback control. No accessibility-service hacks, overlay automation, screen-capture automation, or illegal play/pause/seek. Sync Engine documents Tier A (true sync: YouTube, local, Drive), Tier B (observation-only where a real media session exists), Tier C (deep link + countdown + voice) and never promises more.
+- ADR-014 binding: no OTT playback control. No accessibility-service hacks, overlay automation, screen-capture automation, or illegal play/pause/seek. The Sync Engine documents only the three capability-based tiers above and never promises more.
 - Engines are a Domain-layer organizing model, not a new technical layer. Presentation → Feature → Domain → Repository → Infrastructure holds.
 - No Supabase or LiveKit types in engine contracts.
 - Foundation Spec v1.0, MVP Spec v1.0, Database Spec v1.0 stay frozen; extension happens through ADR-015. Every contradiction with an earlier spec is flagged explicitly in-line rather than silently overridden — including the still-missing Foundation Spec file that other docs cite.
 
 ## Governance section contents
 
-Naming conventions, ADR policy, domain ownership, engine ownership, public contract rules, event versioning policy, backward compatibility policy, deprecation policy, feature flag policy, documentation standards.
+Naming conventions, domain ownership, engine ownership, public contract rules, event versioning policy, backward compatibility policy, deprecation policy, feature flag policy, documentation standards, plus a formal **ADR lifecycle**:
+
+- States: **Draft → Accepted → Superseded → Deprecated**, with the transition rules and who may make each transition.
+- Every ADR records: Dependencies · Superseded ADRs · Affected Engines · Affected Milestones.
+- Constitution versioning: v2.0.0 frozen; amendments arrive only as numbered ADRs, each bumping the constitution's minor/patch version and listing its affected chapters.
 
 ## Milestone roadmap shape
 
