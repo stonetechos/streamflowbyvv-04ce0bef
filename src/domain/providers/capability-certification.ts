@@ -96,8 +96,10 @@ export function isCertificationValid(record: CapabilityCertification): boolean {
  * Returns `null` when any dimension is missing or unmatched — the caller must
  * then treat the capability as Tier C.
  */
+export type CapabilityTupleQuery = { [K in keyof CapabilityTuple]?: string | undefined };
+
 export function findCapabilityCertification(
-  request: Partial<CapabilityTuple>,
+  request: CapabilityTupleQuery,
   registry: readonly CapabilityCertification[] = CAPABILITY_CERTIFICATIONS,
 ): CapabilityCertification | null {
   if (!request.source || !request.adapter || !request.platform || !request.version) return null;
