@@ -16,6 +16,13 @@ import { RUN_ID, EVIDENCE_ROOT } from "./tests/certification/helpers/run-context
 const BASE_URL = process.env["CERT_BASE_URL"] ?? "http://localhost:8080";
 const REUSE_SERVER = !process.env["CI"];
 
+/**
+ * Some CI images ship a Chromium build whose system libraries are missing.
+ * A browser that cannot launch is not evidence, so the harness accepts an
+ * explicit executable override and records which binary produced each row.
+ */
+const CHROMIUM_PATH = process.env["CERT_CHROMIUM_PATH"];
+
 export default defineConfig({
   testDir: "./tests/certification",
   testMatch: /.*\.spec\.ts$/,
@@ -43,7 +50,12 @@ export default defineConfig({
       name: "web-chromium",
       // Full Chromium, not the headless shell: the shell lacks system libs in
       // some CI images, and a browser that cannot launch is not evidence.
-      use: { ...devices["Desktop Chrome"], channel: "chromium" },
+      use: {
+        ...devices["Desktop Chrome"],
+        ...(CHROMIUM_PATH
+          ? { launchOptions: { executablePath: CHROMIUM_PATH } }
+          : { channel: "chromium" }),
+      },
     },
     { name: "web-firefox", use: { ...devices["Desktop Firefox"] } },
     { name: "web-webkit", use: { ...devices["Desktop Safari"] } },

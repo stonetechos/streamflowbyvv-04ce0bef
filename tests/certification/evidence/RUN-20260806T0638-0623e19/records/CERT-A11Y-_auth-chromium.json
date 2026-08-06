@@ -1,0 +1,13 @@
+{
+  "evidenceId": "CERT-A11Y-_auth-chromium",
+  "profileId": "PROF-09",
+  "browser": "chromium",
+  "platform": "linux",
+  "status": "fail",
+  "detail": "Unnamed controls: <input id=\"_R_6t5eaq_\" class=\"min-h-12 w-full rounded-xl border bg-background px-4 text-base sm:text-sm placeholder:text",
+  "runId": "RUN-20260806T0638-0623e19",
+  "commit": "0623e19",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:38:16.527Z"
+}

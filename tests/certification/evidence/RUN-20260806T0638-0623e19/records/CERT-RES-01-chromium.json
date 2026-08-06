@@ -1,0 +1,22 @@
+{
+  "evidenceId": "CERT-RES-01-chromium",
+  "profileId": "PROF-04",
+  "browser": "chromium",
+  "platform": "linux",
+  "status": "pass",
+  "metric": {
+    "metricId": "outage_recovery",
+    "sampleCount": 1,
+    "p50": 205,
+    "p95": 205,
+    "p99": null,
+    "failures": 0,
+    "unit": "ms"
+  },
+  "detail": "5s client-side outage, then reload. Measures public shell recovery only; authenticated room reconciliation remains UNMEASURED.",
+  "runId": "RUN-20260806T0638-0623e19",
+  "commit": "0623e19",
+  "environmentProfile": "local-dev",
+  "region": "unknown",
+  "measuredAt": "2026-08-06T06:38:25.760Z"
+}
