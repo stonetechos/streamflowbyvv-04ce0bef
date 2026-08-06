@@ -32,8 +32,23 @@ docs/blueprint/
   H-native-architecture.md       Core Domain vs Web/Android/iOS/TV/Desktop adapters
   I-governance.md                the engineering constitution
   J-technical-debt.md            immediate / near-term / long-term register
+  K-launch-certification.md      the Definition of Done: certification philosophy,
+                                 types, ownership by engine, launch certification
+                                 matrix, gates, release gate, cross-references
   ADR-015-engine-decomposition.md  makes the engine model binding
 ```
+
+## K — Launch Certification (final approved addition)
+
+`docs/blueprint/K-launch-certification.md` is the authoritative launch-readiness document and the Definition of Done for every milestone.
+
+- **Philosophy** — certification is a release gate, not a QA activity; nothing is complete until it passes measurable acceptance criteria.
+- **Types** — functional, integration, realtime, performance, accessibility, regression, reliability, manual exploratory, production readiness.
+- **Ownership** — assigned per engine: Room, Timeline, Watch Party, Sync, Voice, Presence, Provider, Notification, Community, AI/Po, Analytics, Moderation, Experience.
+- **Launch Certification Matrix** — a first-class spec with one row per capability (invite resolution, room join, lobby readiness, ready propagation, countdown synchronization, Tier A playback ordering, drift recovery, buffer handling, voice join, voice denial fallback, reconnect, leave/rejoin, notification delivery, provider disclosure, degraded-mode handling), each carrying capability, platform, required result, measurement, pass threshold, owner, status, automation support, manual validation, and failure classification.
+- **Gates** — Alpha, Beta, Release Candidate, Production; every milestone declares the level it requires.
+- **Release gate** — a milestone completes only when certification passes, performance budgets pass, product principles hold, the Launch Envelope is respected, and no ADR contradiction exists.
+- **Cross-references** — Product Operating Brief, Capability Matrix, Engine Pack, Performance Budget, Product Principles, Milestone Roadmap, Launch Envelope, Reality Check, Governance, Technical Debt, ADR-014, ADR-015.
 
 ## Engine spec format (applied identically to all 14)
 
