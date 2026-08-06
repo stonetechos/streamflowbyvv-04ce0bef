@@ -131,17 +131,38 @@ export async function countdownTimestampProbe(page: Page): Promise<{
       };
 }
 
-/** Elements whose computed animation or transition is still running. */
+/**
+ * Elements still carrying perceptible motion.
+ *
+ * The threshold matters: the reduced-motion rule in src/styles.css collapses
+ * durations to 0.01ms rather than removing them, which is the accepted way to
+ * honour the preference without breaking transition-end handlers. A duration
+ * under 50 ms is imperceptible and is not motion; anything longer is.
+ */
+const PERCEPTIBLE_MOTION_MS = 50;
+
 export async function movingElements(page: Page): Promise<readonly string[]> {
-  return page.evaluate(() => {
+  return page.evaluate((thresholdMs: number) => {
+    const longest = (value: string): number =>
+      Math.max(
+        0,
+        ...value.split(",").map((part) => {
+          const trimmed = part.trim();
+          if (trimmed.endsWith("ms")) return Number.parseFloat(trimmed);
+          if (trimmed.endsWith("s")) return Number.parseFloat(trimmed) * 1000;
+          return 0;
+        }),
+      );
+
     const moving: string[] = [];
     for (const node of Array.from(document.querySelectorAll("*")).slice(0, 4000)) {
       const style = getComputedStyle(node);
       const animated =
         style.animationName !== "none" &&
-        style.animationDuration !== "0s" &&
-        style.animationPlayState === "running";
-      const transitioned = style.transitionDuration !== "0s" && style.transitionProperty !== "none";
+        style.animationPlayState === "running" &&
+        longest(style.animationDuration) >= thresholdMs;
+      const transitioned =
+        style.transitionProperty !== "none" && longest(style.transitionDuration) >= thresholdMs;
       if (animated || transitioned) {
         moving.push(
           `${node.tagName.toLowerCase()}${node.className && typeof node.className === "string" ? `.${node.className.split(/\s+/)[0]}` : ""}:${style.animationName}/${style.animationDuration}/${style.transitionDuration}`,
@@ -149,8 +170,22 @@ export async function movingElements(page: Page): Promise<readonly string[]> {
       }
     }
     return moving.slice(0, 12);
-  });
+  }, PERCEPTIBLE_MOTION_MS);
 }
+
+export interface DocumentSemantics {
+  readonly lang: string;
+  readonly title: string;
+}
+
+/** WCAG 3.1.1 (Language of Page) and 2.4.2 (Page Titled) — both automatable. */
+export async function documentSemantics(page: Page): Promise<DocumentSemantics> {
+  return page.evaluate(() => ({
+    lang: document.documentElement.getAttribute("lang") ?? "",
+    title: document.title,
+  }));
+}
+
 
 /** Interactive controls with no accessible name — the automated WCAG subset. */
 export async function unnamedControls(page: Page): Promise<readonly string[]> {
