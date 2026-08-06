@@ -32,3 +32,12 @@ export {
   type RoomDiscoveryRepository,
 } from "./room-discovery.types";
 export { ROOM_PRESENCE_REPOSITORY, type RoomPresenceRepository } from "./presence-repository.types";
+export {
+  ROOM_CHAT_REPOSITORY,
+  ROOM_STATE_WATCHER,
+  type RoomChatRepository,
+  type RoomMessage,
+  type RoomMessageDraft,
+  type RoomMessageUnsubscribe,
+  type RoomStateWatcher,
+} from "./watch-repository.types";
