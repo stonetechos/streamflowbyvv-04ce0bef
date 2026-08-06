@@ -25,12 +25,28 @@ test.describe("Accessibility sweep (PROF-09)", () => {
           .filter((node) => {
             const el = node as HTMLElement;
             if (el.offsetParent === null && el.getAttribute("aria-hidden") === "true") return false;
-            const name =
-              el.getAttribute("aria-label") ??
-              el.getAttribute("title") ??
-              (el as HTMLInputElement).placeholder ??
-              el.textContent ??
-              "";
+            const labelledBy = el.getAttribute("aria-labelledby");
+            const labelledByText = labelledBy
+              ? labelledBy
+                  .split(/\s+/)
+                  .map((id) => document.getElementById(id)?.textContent ?? "")
+                  .join(" ")
+              : "";
+            const associatedLabel = el.id
+              ? (document.querySelector(`label[for="${CSS.escape(el.id)}"]`)?.textContent ?? "")
+              : "";
+            const wrappingLabel = el.closest("label")?.textContent ?? "";
+            const name = [
+              el.getAttribute("aria-label"),
+              labelledByText,
+              associatedLabel,
+              wrappingLabel,
+              el.getAttribute("title"),
+              (el as HTMLInputElement).placeholder,
+              el.textContent,
+            ]
+              .filter(Boolean)
+              .join(" ");
             return name.trim().length === 0;
           })
           .map((node) => (node as HTMLElement).outerHTML.slice(0, 120));
