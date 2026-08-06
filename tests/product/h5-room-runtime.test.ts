@@ -132,7 +132,7 @@ describe("authoritative revisions", () => {
       type: "playback.play",
       participantId: "host-1",
       serverTimeMs: NOW,
-      revision: 3,
+      roomRevision: 3,
       payload: {},
     });
     expect(isStaleEvent(event, 5)).toBe(true);
