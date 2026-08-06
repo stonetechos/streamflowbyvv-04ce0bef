@@ -34,7 +34,8 @@ const EVENT_KEY: Record<CoordinationKind, string> = {
   "pause-request": "room.event.pause_request",
   "resume-request": "room.event.resume_request",
   "resync-request": "room.event.resync_request",
-  "ready-ack": "room.event.ready_ack",
+  "provider-launched": "room.event.provider_launched",
+  ready: "room.event.ready_ack",
 };
 
 export function ManualCoordination({
