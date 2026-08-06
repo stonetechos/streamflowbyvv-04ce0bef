@@ -13,7 +13,12 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "arch:check": "node scripts/check-architecture.mjs",
-    "verify": "bun run format:check && bun run lint --max-warnings 20 && bun run arch:check"
+    "verify": "bun run format:check && bun run lint --max-warnings 20 && bun run arch:check && bun run cert:check",
+    "cert:check": "node scripts/check-certification.mjs",
+    "cert": "playwright test",
+    "cert:provider": "playwright test tests/certification/provider --project=web-chromium",
+    "cert:room": "playwright test tests/certification/room --project=web-chromium",
+    "cert:baselines": "playwright test tests/certification/realtime --project=web-chromium"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
