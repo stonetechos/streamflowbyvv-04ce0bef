@@ -263,7 +263,9 @@ export function Theater({ roomId }: TheaterProps) {
             isStarting={countdown.pending === "start"}
             onStart={countdown.start}
             onCancel={countdown.cancel}
-            onFullscreen={isEmbedded && capability.allowsFullscreenFromRoom ? requestFullscreen : null}
+            onFullscreen={
+              isEmbedded && capability.allowsFullscreenFromRoom ? requestFullscreen : null
+            }
             volume={volume}
             onVolumeChange={setVolume}
             showVolume={isEmbedded}

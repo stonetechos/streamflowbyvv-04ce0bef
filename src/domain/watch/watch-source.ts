@@ -25,11 +25,7 @@ export type ProviderSelectionMode = "browse" | "paste-link" | "direct-title";
  * - `unavailable`— nothing is supported for this service.
  */
 export type PlaybackControlMode =
-  | "automatic"
-  | "assisted"
-  | "manual"
-  | "launch-only"
-  | "unavailable";
+  "automatic" | "assisted" | "manual" | "launch-only" | "unavailable";
 
 export interface WatchProviderCapability {
   readonly providerId: string;
@@ -301,9 +297,7 @@ export function readWatchSource(metadata: Readonly<Record<string, unknown>>): Wa
   return parseWatchSource(stored);
 }
 
-export function readWatchSelection(
-  metadata: Readonly<Record<string, unknown>>,
-): WatchSelection {
+export function readWatchSelection(metadata: Readonly<Record<string, unknown>>): WatchSelection {
   const title = metadata[WATCH_TITLE_METADATA_KEY];
   return {
     source: readWatchSource(metadata),

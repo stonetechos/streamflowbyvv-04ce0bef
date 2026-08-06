@@ -72,7 +72,12 @@ export function SourcePicker({
   };
 
   return (
-    <Surface tone="card" padding="md" className="flex flex-col gap-3" data-sf-source-picker={provider.providerId}>
+    <Surface
+      tone="card"
+      padding="md"
+      className="flex flex-col gap-3"
+      data-sf-source-picker={provider.providerId}
+    >
       <div className="flex flex-col gap-1">
         <p className="text-sm font-semibold">
           {t("theater.source.heading", { provider: provider.displayName })}
@@ -104,7 +109,7 @@ export function SourcePicker({
           description={
             isNetflix ? t("theater.netflix.paste_description") : t("theater.source.description")
           }
-          placeholder={PLACEHOLDER[provider.providerId] ?? PLACEHOLDER['youtube']}
+          placeholder={PLACEHOLDER[provider.providerId] ?? PLACEHOLDER["youtube"]}
           value={value}
           error={error}
           onChange={(event) => setValue(event.target.value)}
