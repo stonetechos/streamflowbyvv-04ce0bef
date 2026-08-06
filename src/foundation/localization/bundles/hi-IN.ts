@@ -16,6 +16,7 @@ export const hiINBundle: LocaleBundle = {
     "common.action.retry": "फिर से कोशिश करें",
     "common.action.go_home": "होम पर जाएँ",
     "common.action.dismiss": "बंद करें",
+    "common.action.close": "बंद करें",
     "common.state.loading": "लोड हो रहा है",
 
     "settings.language.label": "भाषा",
