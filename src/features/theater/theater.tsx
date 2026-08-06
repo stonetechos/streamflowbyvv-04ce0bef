@@ -171,6 +171,7 @@ export function Theater({ roomId }: TheaterProps) {
   const isPlaying = runtime.playback.status === "playing";
   const capability = source.capability;
   const isEmbedded = capability.allowsEmbeddedPlayback && directUrl !== null;
+  const capabilityProviderId = capability.providerId;
 
   const togglePlay = useCallback(() => {
     const seconds = (player.positionMs() ?? 0) / 1000 || runtime.positionSeconds();
@@ -238,17 +239,78 @@ export function Theater({ roomId }: TheaterProps) {
 
   const countdownSeconds = countdownRemaining;
 
+  // Presence and a person's own tap are the only readiness inputs: the room
+  // never infers that somebody is watching.
+  const participants = useMemo<readonly ParticipantRuntime[]>(
+    () =>
+      room.members
+        .filter((member) => member.state !== "left")
+        .map((member) => ({
+          participantId: member.profileId,
+          displayName: nameFor(member.profileId),
+          isHost: member.isHost,
+          state:
+            member.presence === "offline"
+              ? ("disconnected" as const)
+              : member.presence === "stale"
+                ? ("reconnecting" as const)
+                : member.isViewer && selfReady
+                  ? ("ready" as const)
+                  : member.isReady
+                    ? ("ready" as const)
+                    : ("joined" as const),
+        })),
+    [room.members, nameFor, selfReady],
+  );
+
+  const readiness = useMemo(
+    () => summarizeReadiness(participants, DEFAULT_READINESS_THRESHOLD),
+    [participants],
+  );
+
+  const roomEvents = useMemo(
+    () =>
+      chat.events.map((event) => ({
+        id: event.id,
+        kind: event.kind,
+        who: nameFor(event.profileId),
+        createdAt: event.createdAt,
+      })),
+    [chat.events, nameFor],
+  );
+
+  const requestCoordination = useCallback(
+    (kind: CoordinationKind) => {
+      chat.sendCoordination(kind, t(`room.manual.sent.${kind}`));
+    },
+    [chat, t],
+  );
+
+  const toggleReady = useCallback(() => {
+    setSelfReady((current) => {
+      if (!current) chat.sendCoordination("ready", t("room.manual.sent.ready"));
+      return !current;
+    });
+  }, [chat, t]);
+
+  const openProvider = useCallback(() => {
+    const url = source.source?.url ?? providerBrowseUrl(capabilityProviderId);
+    if (!url) return;
+    chat.sendCoordination("provider-launched", t("room.manual.sent.provider-launched"));
+    window.open(url, "_blank", "noopener,noreferrer");
+  }, [source.source, capabilityProviderId, chat, t]);
+
   // One derivation, one snapshot: the host and every guest read the same phase.
   const mediaRef = room.room?.mediaRef ?? null;
   const phase = deriveRoomPhase({
     mediaRef,
     isCountingDown: countdownSeconds !== null,
     playbackPhase:
-      sync.state?.phase === "playing"
+      runtime.playback.status === "playing"
         ? "playing"
-        : sync.state?.phase === "paused"
+        : runtime.playback.status === "paused"
           ? "paused"
-          : sync.state
+          : runtime.playback.revision >= 0
             ? "idle"
             : null,
     roomClosed: room.room?.status === "abandoned",
@@ -276,7 +338,11 @@ export function Theater({ roomId }: TheaterProps) {
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <SyncBadge verdict={sync.verdict} driftMs={sync.driftMs} isLive={sync.isLive} />
+          <SyncBadge
+            verdict={runtime.syncStatus}
+            driftMs={runtime.isAutomatic ? runtime.driftMs : null}
+            isLive={runtime.isLive}
+          />
           <ActionButton tone="secondary" size="sm" onClick={copyInvite} data-sf-copy-invite>
             {copied ? t("invite.share.copied") : t("room.invite.copy_link")}
           </ActionButton>
@@ -330,35 +396,40 @@ export function Theater({ roomId }: TheaterProps) {
               <HostTransport
                 isHost={isHost}
                 isPlaying={isPlaying}
-                canControl={player.isReady && sync.isAvailable}
+                canControl={player.isReady && runtime.isAvailable}
                 positionMs={localPositionMs}
                 durationMs={durationMs}
                 onTogglePlay={togglePlay}
                 onSeekBy={seekBy}
-                onRestart={() => sync.seek(0, isPlaying)}
+                onRestart={() => runtime.send({ kind: "restart" })}
               />
             </Surface>
           ) : (
-            <CoordinationPanel
+            <ManualCoordination
               capability={capability}
               source={source.source}
               isHost={isHost}
-              isCounting={countdownSeconds !== null}
-              onNudge={countdown.restart}
+              isReady={selfReady}
+              canAct={enabled && chat.isAvailable}
+              events={roomEvents}
+              onOpenProvider={openProvider}
+              onToggleReady={toggleReady}
+              onRequest={requestCoordination}
+              onLeave={room.leave}
             />
           )}
 
-          <ul className="flex flex-wrap gap-3">
-            {presentMembers.map((member) => (
-              <li key={member.id} className="flex items-center gap-2">
-                <Avatar name={nameFor(member.profileId)} size="sm" />
-                <span className="text-sm">
-                  {nameFor(member.profileId)}
-                  {member.isHost ? ` · ${t("theater.header.host")}` : ""}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <RoomDrawer
+            chat={<ChatPanel chat={chat} nameFor={nameFor} canSend={chat.isAvailable && enabled} />}
+            people={
+              <ParticipantRail
+                participants={participants}
+                readiness={readiness}
+                showReadiness={!runtime.isAutomatic}
+              />
+            }
+            unreadHint={chat.lines.length}
+          />
 
           {isHost ? (
             <div className="flex flex-col gap-3">
@@ -381,8 +452,15 @@ export function Theater({ roomId }: TheaterProps) {
           ) : null}
         </div>
 
-        <aside className="min-h-[24rem] lg:h-[calc(100vh-12rem)]">
-          <ChatPanel chat={chat} nameFor={nameFor} canSend={chat.isAvailable && enabled} />
+        <aside className="hidden min-h-[24rem] flex-col gap-4 lg:flex lg:h-[calc(100vh-12rem)]">
+          <ParticipantRail
+            participants={participants}
+            readiness={readiness}
+            showReadiness={!runtime.isAutomatic}
+          />
+          <div className="min-h-0 flex-1">
+            <ChatPanel chat={chat} nameFor={nameFor} canSend={chat.isAvailable && enabled} />
+          </div>
         </aside>
       </div>
     </main>
