@@ -11,7 +11,12 @@
  */
 import { Badge } from "@/components/ui/badge";
 import { Surface } from "@/design-system/components";
-import { mediaRefSelection, parseContentReference, readSeriesTitle, watchSelectionLabel } from "@/domain";
+import {
+  mediaRefSelection,
+  parseContentReference,
+  readSeriesTitle,
+  watchSelectionLabel,
+} from "@/domain";
 import { ContentPoster } from "@/features/shared/content-poster";
 import { useTranslation } from "@/foundation/localization";
 
@@ -75,7 +80,9 @@ export function NowWatchingCard({
 
           <div className="flex flex-wrap items-center gap-2">
             {episodeLabel ? <Badge variant="outline">{episodeLabel}</Badge> : null}
-            <Badge variant="outline">{sharedProvider ?? providerName ?? t("room.provider.none")}</Badge>
+            <Badge variant="outline">
+              {sharedProvider ?? providerName ?? t("room.provider.none")}
+            </Badge>
             <Badge variant={isLive ? "default" : "secondary"}>
               {t(`room.status.${room.status}`)}
             </Badge>

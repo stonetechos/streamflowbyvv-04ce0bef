@@ -27,11 +27,7 @@ export type ProviderSelectionMode = "browse" | "paste-link" | "direct-title";
  * - `unavailable`— nothing is supported for this service.
  */
 export type PlaybackControlMode =
-  | "automatic"
-  | "assisted"
-  | "manual"
-  | "launch-only"
-  | "unavailable";
+  "automatic" | "assisted" | "manual" | "launch-only" | "unavailable";
 
 export interface WatchProviderCapability {
   readonly providerId: string;
@@ -139,13 +135,11 @@ const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
     "https://www.hotstar.com",
     ["movies", "shows"],
   ),
-  ottProvider(
-    "disney",
-    "Disney+",
-    /(^|\.)disneyplus\.com$/i,
-    "https://www.disneyplus.com",
-    ["movies", "series", "video"],
-  ),
+  ottProvider("disney", "Disney+", /(^|\.)disneyplus\.com$/i, "https://www.disneyplus.com", [
+    "movies",
+    "series",
+    "video",
+  ]),
   ottProvider("jiocinema", "JioCinema", /(^|\.)jiocinema\.com$/i, "https://www.jiocinema.com", [
     "movies",
     "tv-shows",

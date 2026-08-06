@@ -478,7 +478,8 @@ export const enBundle: LocaleBundle = {
     "theater.stage.empty": "The host hasn't chosen anything to watch yet.",
     "theater.stage.external_title": "StreamFlow can't play {provider} for you",
     "theater.stage.open_provider": "Open {provider} in a new tab",
-    "theater.stage.blocked": "This video can't be played inside StreamFlow. The host can pick another one.",
+    "theater.stage.blocked":
+      "This video can't be played inside StreamFlow. The host can pick another one.",
     "theater.transport.play": "Play",
     "theater.transport.pause": "Pause",
     "theater.transport.back": "Back 10s",
@@ -506,10 +507,12 @@ export const enBundle: LocaleBundle = {
     "theater.capability.launch_only": "Launch only",
     "theater.capability.unavailable": "Coordination only",
     "theater.provider.open": "Open {provider}",
-    "theater.provider.instruction": "Pick the title on {provider}, then come back and paste its link here. StreamFlow never signs in for you and never plays {provider} inside the room.",
+    "theater.provider.instruction":
+      "Pick the title on {provider}, then come back and paste its link here. StreamFlow never signs in for you and never plays {provider} inside the room.",
     "theater.provider.returned": "Back from the service? Paste the title link below.",
     "theater.provider.paste_label": "Title link",
-    "theater.provider.paste_description": "Everyone opens it on their own account when the countdown ends.",
+    "theater.provider.paste_description":
+      "Everyone opens it on their own account when the countdown ends.",
     "theater.source.heading": "Set the room's title",
     "theater.source.title_label": "Title name",
     "theater.source.title_placeholder": "What everyone will see",
@@ -524,11 +527,13 @@ export const enBundle: LocaleBundle = {
     "theater.fullscreen.provider_native": "Use {provider}'s own fullscreen control.",
     "theater.volume.label": "Volume (this device)",
     "theater.coordinate.title": "Coordinating {provider}",
-    "theater.coordinate.idle": "StreamFlow can't press play on this service. Start the countdown and everyone presses play together.",
+    "theater.coordinate.idle":
+      "StreamFlow can't press play on this service. Start the countdown and everyone presses play together.",
     "theater.coordinate.counting": "Get ready — press play when the countdown reaches zero.",
     "theater.coordinate.resync": "Re-sync the room",
     "theater.source.label": "What are we watching?",
-    "theater.source.description": "Paste a directly reachable video link to play it together, or any other link to coordinate around it.",
+    "theater.source.description":
+      "Paste a directly reachable video link to play it together, or any other link to coordinate around it.",
     "theater.source.save": "Set for the room",
     "theater.source.unrecognized": "That link isn't something StreamFlow recognises yet.",
     "theater.source.playable": "{provider} plays inside StreamFlow, in sync.",

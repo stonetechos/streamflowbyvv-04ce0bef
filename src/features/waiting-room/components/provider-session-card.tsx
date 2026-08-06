@@ -10,7 +10,12 @@
  */
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mediaRefSelection, parseContentReference, selectProviderControl, watchSelectionLabel } from "@/domain";
+import {
+  mediaRefSelection,
+  parseContentReference,
+  selectProviderControl,
+  watchSelectionLabel,
+} from "@/domain";
 import { useTranslation } from "@/foundation/localization";
 
 import type { RoomSummaryView } from "../waiting-room.types";
@@ -64,7 +69,9 @@ export function ProviderSessionCard({
             <dt className="text-xs uppercase tracking-wide text-muted-foreground">
               {t("room.provider.service")}
             </dt>
-            <dd className="mt-1 text-base">{sharedProvider ?? providerName ?? t("room.provider.none")}</dd>
+            <dd className="mt-1 text-base">
+              {sharedProvider ?? providerName ?? t("room.provider.none")}
+            </dd>
           </div>
           <div>
             <dt className="text-xs uppercase tracking-wide text-muted-foreground">

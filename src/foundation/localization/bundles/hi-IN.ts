@@ -508,14 +508,17 @@ export const hiINBundle: LocaleBundle = {
     "theater.capability.launch_only": "केवल खोलना",
     "theater.capability.unavailable": "केवल समन्वय",
     "theater.provider.open": "{provider} खोलें",
-    "theater.provider.instruction": "{provider} पर टाइटल चुनें, फिर लौटकर उसका लिंक यहाँ चिपकाएँ। StreamFlow आपके लिए साइन-इन नहीं करता और {provider} को रूम के अंदर नहीं चलाता।",
+    "theater.provider.instruction":
+      "{provider} पर टाइटल चुनें, फिर लौटकर उसका लिंक यहाँ चिपकाएँ। StreamFlow आपके लिए साइन-इन नहीं करता और {provider} को रूम के अंदर नहीं चलाता।",
     "theater.provider.returned": "सेवा से लौट आए? नीचे टाइटल लिंक चिपकाएँ।",
     "theater.provider.paste_label": "टाइटल लिंक",
-    "theater.provider.paste_description": "काउंटडाउन खत्म होने पर हर कोई इसे अपने अकाउंट पर खोलता है।",
+    "theater.provider.paste_description":
+      "काउंटडाउन खत्म होने पर हर कोई इसे अपने अकाउंट पर खोलता है।",
     "theater.source.heading": "रूम का टाइटल सेट करें",
     "theater.source.title_label": "टाइटल का नाम",
     "theater.source.title_placeholder": "जो सबको दिखेगा",
-    "theater.source.title_description": "मीडिया कार्ड पर दिखता है ताकि रूम को पता हो क्या खोलना है।",
+    "theater.source.title_description":
+      "मीडिया कार्ड पर दिखता है ताकि रूम को पता हो क्या खोलना है।",
     "theater.source.subscription": "हर किसी के पास अपना {provider} सब्सक्रिप्शन होना चाहिए।",
     "theater.media.none": "अभी कुछ नहीं चुना",
     "theater.media.none_hint": "शुरू करने के लिए होस्ट सेवा और टाइटल चुनता है।",
@@ -526,11 +529,13 @@ export const hiINBundle: LocaleBundle = {
     "theater.fullscreen.provider_native": "{provider} का अपना फ़ुलस्क्रीन बटन इस्तेमाल करें।",
     "theater.volume.label": "आवाज़ (इस डिवाइस पर)",
     "theater.coordinate.title": "{provider} का समन्वय",
-    "theater.coordinate.idle": "StreamFlow इस सेवा पर प्ले नहीं दबा सकता। काउंटडाउन शुरू करें और सब साथ में प्ले दबाएँ।",
+    "theater.coordinate.idle":
+      "StreamFlow इस सेवा पर प्ले नहीं दबा सकता। काउंटडाउन शुरू करें और सब साथ में प्ले दबाएँ।",
     "theater.coordinate.counting": "तैयार रहें — शून्य पर प्ले दबाएँ।",
     "theater.coordinate.resync": "रूम को फिर सिंक करें",
     "theater.source.label": "हम क्या देख रहे हैं?",
-    "theater.source.description": "साथ चलाने के लिए सीधा वीडियो लिंक चिपकाएँ, या समन्वय के लिए कोई और लिंक।",
+    "theater.source.description":
+      "साथ चलाने के लिए सीधा वीडियो लिंक चिपकाएँ, या समन्वय के लिए कोई और लिंक।",
     "theater.source.save": "रूम के लिए सेट करें",
     "theater.source.unrecognized": "StreamFlow अभी इस लिंक को नहीं पहचानता।",
     "theater.source.playable": "{provider} StreamFlow के अंदर सिंक में चलता है।",
