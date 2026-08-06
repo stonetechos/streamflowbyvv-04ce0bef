@@ -5,8 +5,15 @@
  * Generated from docs/debt/debt-register.json. Also acts as a guard: a
  * malformed or unlinked entry fails the run.
  */
-import { existsSync } from "node:fs";
+import { readdirSync } from "node:fs";
 import { generatedHeader, loadDebt, loadRegistry, writeFileEnsured } from "./lib/evidence-io.mjs";
+
+/** Every ADR id that resolves to a committed decision record. */
+const KNOWN_ADRS = new Set([
+  ...readdirSync("docs/adr"),
+  ...readdirSync("docs/blueprint"),
+].flatMap((name) => (name.match(/ADR-\d{3}/) ?? [])));
+
 
 const items = loadDebt();
 const { engines } = loadRegistry("engines");
