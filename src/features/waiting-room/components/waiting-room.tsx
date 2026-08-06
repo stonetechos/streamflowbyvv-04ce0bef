@@ -5,7 +5,7 @@
  * empty states in one place so no child has to know about them.
  */
 import { useEffect, useMemo } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import { ErrorState, LoadingState } from "@/app-shell";
 import type { SyncHealth } from "@/domain";
@@ -336,6 +336,21 @@ export function WaitingRoom({ roomId }: { roomId: string }) {
           hostLabel={hostLabel}
           isVoiceConnected={voice.isConnected}
         />
+
+        {/* Sprint H1: the lobby's way into the shared watch surface. */}
+        {model.viewer.isMember ? (
+          <div className="text-center">
+            <Link
+              to="/theater/$roomId"
+              params={{ roomId: room.id }}
+              className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground shadow-e1 hover:bg-primary/90"
+              data-sf-open-theater="true"
+            >
+              {t("theater.action.open")}
+            </Link>
+          </div>
+        ) : null}
+
 
         {/* One stage, one instruction. */}
         <div className="space-y-6 text-center">

@@ -82,6 +82,13 @@ export {
   type RoomAdmissionLookup,
   type RoomDiscovery,
   type RoomDiscoveryRepository,
+  ROOM_CHAT_REPOSITORY,
+  ROOM_STATE_WATCHER,
+  type RoomChatRepository,
+  type RoomMessage,
+  type RoomMessageDraft,
+  type RoomMessageUnsubscribe,
+  type RoomStateWatcher,
 } from "./rooms";
 export {
   PROVIDER_CATALOG_REPOSITORY,

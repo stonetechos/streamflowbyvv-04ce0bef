@@ -28,3 +28,4 @@ export * from "./rooms";
 export * from "./services";
 export * from "./social";
 export * from "./shared/domain-enums";
+export * from "./watch";

@@ -9,6 +9,7 @@
  */
 import { registerAuthServices } from "@/domain/auth";
 import { registerDomainServices } from "@/domain/services";
+import { registerWatchServices } from "@/domain/watch";
 import { registerEventInfrastructure } from "@/infrastructure/events";
 import { registerIdentityAdapter } from "@/infrastructure/identity";
 import { registerProfileAdapter } from "@/infrastructure/profiles";
@@ -46,6 +47,8 @@ export function composeApplication(): void {
   // Sprint 1.6: orchestration services and the internal event bus. Bound here so
   // nothing above Domain constructs a business service for itself.
   registerDomainServices();
+  // Sprint H1: room chat and host-authoritative watch sync.
+  registerWatchServices();
   // Sprint 1.9: event persistence, projections, analytics sink, and the
   // outbound realtime publisher. After the bus exists, before first publish.
   const eventsBound = registerEventInfrastructure();
