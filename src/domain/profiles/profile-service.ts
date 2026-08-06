@@ -185,7 +185,6 @@ export function createProfileService(deps: ProfileServiceDependencies): ProfileS
         onboardingCompletedAt: new Date().toISOString(),
       });
 
-
       await users.updateProfile(
         {
           profileId,

@@ -121,7 +121,6 @@
      always opens against the same midnight field. */
   --boot-backdrop: oklch(0.13 0.02 260);
 
-
   /* Base spacing step; all Tailwind spacing utilities derive from it. */
   --spacing: 0.25rem;
   --space-inset-xs: 0.5rem;
@@ -987,7 +986,6 @@
   }
 }
 
-
 .sf-boot {
   position: fixed;
   inset: 0;
@@ -1037,7 +1035,6 @@
   }
 }
 
-
 /* Watch Party Engine v2.0 — reaction bursts. */
 @keyframes sf-reaction-rise {
   0% {
@@ -1065,7 +1062,6 @@
   }
 }
 
-
 /* ---------------------------------------------------------------------------
  * Sprint 85 — brand tiles.
  *
@@ -1077,23 +1073,57 @@
   --sf-brand: oklch(0.42 0.02 260);
   --sf-brand-ink: oklch(0.99 0 0);
 }
-[data-sf-brand="netflix"] { --sf-brand: #b1060f; }
-[data-sf-brand="prime_video"] { --sf-brand: #00a8e1; }
-[data-sf-brand="disney_hotstar"] { --sf-brand: #113ccf; }
-[data-sf-brand="jiohotstar"] { --sf-brand: #1f2a63; }
-[data-sf-brand="sonyliv"] { --sf-brand: #0a2a5e; }
-[data-sf-brand="apple_tv_plus"] { --sf-brand: #1c1c1e; }
-[data-sf-brand="youtube"] { --sf-brand: #c4302b; }
-[data-sf-brand="crunchyroll"] { --sf-brand: #d95b0b; }
-[data-sf-brand="hbo_max"] { --sf-brand: #3b1a8f; }
-[data-sf-brand="hulu"] { --sf-brand: #0b7d4b; }
-[data-sf-brand="zee5"] { --sf-brand: #6d28c9; }
-[data-sf-brand="peacock"] { --sf-brand: #1f2937; }
-[data-sf-brand="paramount_plus"] { --sf-brand: #0057b8; }
-[data-sf-brand="tubi"] { --sf-brand: #6b21c9; }
-[data-sf-brand="pluto_tv"] { --sf-brand: #16204d; }
-[data-sf-brand="google_drive"] { --sf-brand: #1a6b3c; }
-[data-sf-brand="local_file"] { --sf-brand: oklch(0.38 0.03 250); }
+[data-sf-brand="netflix"] {
+  --sf-brand: #b1060f;
+}
+[data-sf-brand="prime_video"] {
+  --sf-brand: #00a8e1;
+}
+[data-sf-brand="disney_hotstar"] {
+  --sf-brand: #113ccf;
+}
+[data-sf-brand="jiohotstar"] {
+  --sf-brand: #1f2a63;
+}
+[data-sf-brand="sonyliv"] {
+  --sf-brand: #0a2a5e;
+}
+[data-sf-brand="apple_tv_plus"] {
+  --sf-brand: #1c1c1e;
+}
+[data-sf-brand="youtube"] {
+  --sf-brand: #c4302b;
+}
+[data-sf-brand="crunchyroll"] {
+  --sf-brand: #d95b0b;
+}
+[data-sf-brand="hbo_max"] {
+  --sf-brand: #3b1a8f;
+}
+[data-sf-brand="hulu"] {
+  --sf-brand: #0b7d4b;
+}
+[data-sf-brand="zee5"] {
+  --sf-brand: #6d28c9;
+}
+[data-sf-brand="peacock"] {
+  --sf-brand: #1f2937;
+}
+[data-sf-brand="paramount_plus"] {
+  --sf-brand: #0057b8;
+}
+[data-sf-brand="tubi"] {
+  --sf-brand: #6b21c9;
+}
+[data-sf-brand="pluto_tv"] {
+  --sf-brand: #16204d;
+}
+[data-sf-brand="google_drive"] {
+  --sf-brand: #1a6b3c;
+}
+[data-sf-brand="local_file"] {
+  --sf-brand: oklch(0.38 0.03 250);
+}
 
 .sf-brand-tile {
   background-image: linear-gradient(

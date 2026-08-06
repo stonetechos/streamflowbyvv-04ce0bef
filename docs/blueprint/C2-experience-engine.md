@@ -10,16 +10,16 @@ The **Experience Engine is a cross-cutting presentation-support subsystem.** It 
 
 ## C2.2 What it owns
 
-| Area | Scope |
-|---|---|
-| Motion | Timing curves, durations, choreography, reduced-motion behaviour |
-| Animation | Transitions, reveals, reaction bursts, countdown motion, boot animation |
-| Accessibility | Focus order, roles and labels, contrast, target sizes, screen-reader semantics, keyboard paths, WCAG 2.1 AA conformance |
-| Onboarding | First-run guidance, progressive disclosure, contextual coaching |
-| Loading | Skeletons, optimistic affordances, latency masking, timeout presentation |
-| Empty states | Zero-data surfaces and their single next action |
-| Delight | Haptics, sound cues, micro-interactions, celebratory moments |
-| Visual consistency | Design tokens, brand tiles, spacing rhythm, typography scale, elevation, theming |
+| Area               | Scope                                                                                                                   |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Motion             | Timing curves, durations, choreography, reduced-motion behaviour                                                        |
+| Animation          | Transitions, reveals, reaction bursts, countdown motion, boot animation                                                 |
+| Accessibility      | Focus order, roles and labels, contrast, target sizes, screen-reader semantics, keyboard paths, WCAG 2.1 AA conformance |
+| Onboarding         | First-run guidance, progressive disclosure, contextual coaching                                                         |
+| Loading            | Skeletons, optimistic affordances, latency masking, timeout presentation                                                |
+| Empty states       | Zero-data surfaces and their single next action                                                                         |
+| Delight            | Haptics, sound cues, micro-interactions, celebratory moments                                                            |
+| Visual consistency | Design tokens, brand tiles, spacing rhythm, typography scale, elevation, theming                                        |
 
 ## C2.3 What it explicitly does not own
 
@@ -32,7 +32,7 @@ The Experience Engine owns **no**:
 - permissions or authorization decisions
 - domain decisions of any kind
 
-It never decides *whether* something may happen, *when* a room advances, *who* may act, or *what* the truth is. It decides only how truth already produced by a Domain Engine is presented and felt.
+It never decides _whether_ something may happen, _when_ a room advances, _who_ may act, or _what_ the truth is. It decides only how truth already produced by a Domain Engine is presented and felt.
 
 Prohibited patterns:
 
@@ -46,13 +46,17 @@ Prohibited patterns:
 The Experience Engine exposes presentation primitives only. Illustrative, vendor-neutral shapes:
 
 ```ts
-interface MotionProfile { readonly duration: number; readonly easing: string; readonly reducedMotion: boolean }
+interface MotionProfile {
+  readonly duration: number;
+  readonly easing: string;
+  readonly reducedMotion: boolean;
+}
 interface ExperienceSurface {
-  motion(intent: MotionIntent): MotionProfile
-  haptic(intent: HapticIntent): void
-  announce(message: LocalizedMessage, politeness: 'polite' | 'assertive'): void
-  loadingState(kind: LoadingKind): LoadingPresentation
-  emptyState(kind: EmptyKind): EmptyPresentation
+  motion(intent: MotionIntent): MotionProfile;
+  haptic(intent: HapticIntent): void;
+  announce(message: LocalizedMessage, politeness: "polite" | "assertive"): void;
+  loadingState(kind: LoadingKind): LoadingPresentation;
+  emptyState(kind: EmptyKind): EmptyPresentation;
 }
 ```
 
@@ -60,17 +64,17 @@ All inputs are intents and already-localized messages. No domain entities cross 
 
 ## C2.5 Existing implementation mapping
 
-| Concern | Current modules |
-|---|---|
-| Tokens, brand tiles, theming | `src/styles.css`, brand token set, `sf-brand-tile` |
-| Boot and logo motion | `src/features/shared/boot-screen.tsx` |
-| Reactions and bursts | `src/features/watch-party/components/reaction-burst.tsx` |
-| Countdown presentation | `src/features/waiting-room` countdown surfaces |
-| Voice dock presentation | `src/features/voice/components/voice-dock.tsx` |
-| Navigation chrome and safe areas | `src/features/navigation` |
-| Localization surface | `src/domain/services/localization-service.ts` (consumed, not owned) |
+| Concern                          | Current modules                                                     |
+| -------------------------------- | ------------------------------------------------------------------- |
+| Tokens, brand tiles, theming     | `src/styles.css`, brand token set, `sf-brand-tile`                  |
+| Boot and logo motion             | `src/features/shared/boot-screen.tsx`                               |
+| Reactions and bursts             | `src/features/watch-party/components/reaction-burst.tsx`            |
+| Countdown presentation           | `src/features/waiting-room` countdown surfaces                      |
+| Voice dock presentation          | `src/features/voice/components/voice-dock.tsx`                      |
+| Navigation chrome and safe areas | `src/features/navigation`                                           |
+| Localization surface             | `src/domain/services/localization-service.ts` (consumed, not owned) |
 
-Localization strings are owned by the Localization capability; the Experience Engine consumes them and owns their *presentation*.
+Localization strings are owned by the Localization capability; the Experience Engine consumes them and owns their _presentation_.
 
 ## C2.6 Degraded-mode responsibilities
 

@@ -20,17 +20,17 @@ Part of the StreamFlow v2.0 Architecture Constitution v2.0.0.
 
 Work by engine:
 
-| Engine | M0 work |
-|---|---|
-| All | Verify the module mapping in [C](./C-engine-pack.md); no shipped module orphaned |
-| All | Verify no dependency cycles and no vendor types in contracts (`arch:check`) |
-| All | Confirm owned state classes match [C3](./C3-state-management.md) |
+| Engine         | M0 work                                                                                                                                               |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| All            | Verify the module mapping in [C](./C-engine-pack.md); no shipped module orphaned                                                                      |
+| All            | Verify no dependency cycles and no vendor types in contracts (`arch:check`)                                                                           |
+| All            | Confirm owned state classes match [C3](./C3-state-management.md)                                                                                      |
 | Sync, Provider | Re-express every tier claim as a `source · adapter · platform · version` row in [B](./B-capability-matrix.md); demote any Tier A row lacking a record |
-| All | Populate columns 5–13 of every certification row in [K](./K-launch-certification.md) |
-| All | Implement the nine certification profiles as reusable harness configurations |
-| All | Measure a real baseline for every metric in [C4](./C4-performance-budget.md) and set Certified Thresholds |
-| Experience | Full WCAG 2.1 AA audit of shipped surfaces |
-| Governance | Freeze the constitution at v2.0.0; backfill ADR headers per [I.3](./I-governance.md#i3-mandatory-adr-header) |
+| All            | Populate columns 5–13 of every certification row in [K](./K-launch-certification.md)                                                                  |
+| All            | Implement the nine certification profiles as reusable harness configurations                                                                          |
+| All            | Measure a real baseline for every metric in [C4](./C4-performance-budget.md) and set Certified Thresholds                                             |
+| Experience     | Full WCAG 2.1 AA audit of shipped surfaces                                                                                                            |
+| Governance     | Freeze the constitution at v2.0.0; backfill ADR headers per [I.3](./I-governance.md#i3-mandatory-adr-header)                                          |
 
 **Exit criteria.** Conformance clean · profiles runnable · every metric has a Measured Baseline · every Blocking row has a Certified Threshold · every Tier A row has a passing record or has been demoted · constitution frozen.
 
@@ -40,15 +40,15 @@ Work by engine:
 
 **Gate:** Beta. **Envelope:** 2–8 people, web desktop, Tier C default with certified Tier A rows where available.
 
-| Engine | Work |
-|---|---|
-| Room | Harden invite resolution across sign-in, install, and cold start |
-| Presence | Readiness accuracy and absence detection under adverse profiles |
-| Watch Party | Stage progression and countdown scheduling |
-| Sync | Clock offset, countdown spread, Tier C coordination correctness |
-| Provider | Disclosure on every surface; one-step fallback |
-| Voice | Join-by-default when enabled; denial fallback |
-| Experience | Onboarding, empty and loading states, reduced motion |
+| Engine      | Work                                                             |
+| ----------- | ---------------------------------------------------------------- |
+| Room        | Harden invite resolution across sign-in, install, and cold start |
+| Presence    | Readiness accuracy and absence detection under adverse profiles  |
+| Watch Party | Stage progression and countdown scheduling                       |
+| Sync        | Clock offset, countdown spread, Tier C coordination correctness  |
+| Provider    | Disclosure on every surface; one-step fallback                   |
+| Voice       | Join-by-default when enabled; denial fallback                    |
+| Experience  | Onboarding, empty and loading states, reduced motion             |
 
 **Profiles:** Normal, High Latency, Temporary Disconnect, Late Join, Leave/Rejoin.
 **Rows:** CERT-ROOM-01..04, CERT-PRES-01..02, CERT-WP-01..02, CERT-SYNC-C-01..02, CERT-VOICE-01..02, CERT-PROV-01..02, CERT-EXP-01..02.
@@ -59,12 +59,12 @@ Work by engine:
 
 **Gate:** Release Candidate for Tier A capabilities on web desktop.
 
-| Engine | Work |
-|---|---|
-| Sync | Tier A control path, drift detection, buffer handling, catch-up convergence |
-| Timeline | Replay correctness and sequence integrity under concurrency |
-| Room | Host disconnect authority handling and rejoin grace |
-| Watch Party | Catch-up flow |
+| Engine      | Work                                                                        |
+| ----------- | --------------------------------------------------------------------------- |
+| Sync        | Tier A control path, drift detection, buffer handling, catch-up convergence |
+| Timeline    | Replay correctness and sequence integrity under concurrency                 |
+| Room        | Host disconnect authority handling and rejoin grace                         |
+| Watch Party | Catch-up flow                                                               |
 
 **Profiles:** all nine.
 **Rows:** CERT-SYNC-A-01..02, CERT-SYNC-04..05, CERT-RT-01..02, CERT-WP-03, CERT-ROOM-04.
@@ -75,12 +75,12 @@ Work by engine:
 
 **Gate:** Release Candidate for Voice; Beta for Chat.
 
-| Engine | Work |
-|---|---|
-| Voice | Reconnect, device switching, spatial presentation inputs |
-| Chat | Activate the contract-only engine; delivery, ordering, retention |
-| Moderation | Activate report and enforcement contracts backing Chat |
-| Experience | Voice and chat surfaces, accessibility |
+| Engine     | Work                                                             |
+| ---------- | ---------------------------------------------------------------- |
+| Voice      | Reconnect, device switching, spatial presentation inputs         |
+| Chat       | Activate the contract-only engine; delivery, ordering, retention |
+| Moderation | Activate report and enforcement contracts backing Chat           |
+| Experience | Voice and chat surfaces, accessibility                           |
 
 **Rows:** CERT-VOICE-03, new CERT-CHAT-* and CERT-MOD-* rows added with this milestone.
 

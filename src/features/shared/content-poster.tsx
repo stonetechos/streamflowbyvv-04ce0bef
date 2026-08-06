@@ -58,7 +58,6 @@ export function ContentPoster({ artworkUrl, brandKey, name, className, alt }: Co
           />
         </span>
       )}
-
     </div>
   );
 }

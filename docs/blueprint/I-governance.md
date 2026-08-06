@@ -18,12 +18,12 @@ Precedence, highest first:
 
 Every ADR occupies exactly one state:
 
-| State | Meaning | Entry condition | Exit |
-|---|---|---|---|
-| **Draft** | Proposed, under review, not binding | Authored and numbered | Accepted or withdrawn |
-| **Accepted** | Binding on implementation and certification | Review complete and approved | Superseded or Deprecated |
-| **Superseded** | Replaced by a later ADR that covers the same decision | A later ADR names it in *Supersedes* | Terminal |
-| **Deprecated** | No longer applicable; not replaced | The decision's subject no longer exists | Terminal |
+| State          | Meaning                                               | Entry condition                         | Exit                     |
+| -------------- | ----------------------------------------------------- | --------------------------------------- | ------------------------ |
+| **Draft**      | Proposed, under review, not binding                   | Authored and numbered                   | Accepted or withdrawn    |
+| **Accepted**   | Binding on implementation and certification           | Review complete and approved            | Superseded or Deprecated |
+| **Superseded** | Replaced by a later ADR that covers the same decision | A later ADR names it in _Supersedes_    | Terminal                 |
+| **Deprecated** | No longer applicable; not replaced                    | The decision's subject no longer exists | Terminal                 |
 
 Transition rules:
 
@@ -60,15 +60,15 @@ Each version bump is authored by the ADR that causes it and lists the amended ch
 
 ## I.5 Naming conventions
 
-| Artifact | Convention |
-|---|---|
-| Database identifiers | `snake_case`, plural tables |
-| Human-readable codes | `PREFIX-000001` (ROM-, USR-, INV-) |
-| Domain events | `engine.past_tense_fact` |
-| Capability IDs | `CAP-<SOURCE>-<PLATFORM>` |
-| Certification rows | `CERT-<ENGINE>-<NN>` |
-| ADRs | `ADR-<NNN>-<kebab-title>.md` |
-| Modules | kebab-case files, one concern per file |
+| Artifact             | Convention                             |
+| -------------------- | -------------------------------------- |
+| Database identifiers | `snake_case`, plural tables            |
+| Human-readable codes | `PREFIX-000001` (ROM-, USR-, INV-)     |
+| Domain events        | `engine.past_tense_fact`               |
+| Capability IDs       | `CAP-<SOURCE>-<PLATFORM>`              |
+| Certification rows   | `CERT-<ENGINE>-<NN>`                   |
+| ADRs                 | `ADR-<NNN>-<kebab-title>.md`           |
+| Modules              | kebab-case files, one concern per file |
 
 ## I.6 Ownership
 

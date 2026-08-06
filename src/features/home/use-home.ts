@@ -86,7 +86,6 @@ export function useHome(viewerProfileId: string | null): HomeModel {
     [],
   );
 
-
   useEffect(() => {
     if (!home || !viewerProfileId) {
       setSnapshot(EMPTY_SNAPSHOT);
@@ -179,7 +178,6 @@ export function useHome(viewerProfileId: string | null): HomeModel {
     },
     [intent, rooms, run, setup, viewerProfileId],
   );
-
 
   const joinByCode = useCallback(
     async (code: string) => {

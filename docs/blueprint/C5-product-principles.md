@@ -13,9 +13,10 @@ These principles are immutable. They are not aspirations; each one is an archite
 Binds: Sync Engine, Watch Party Engine, Provider Engine, Experience Engine.
 
 Implications:
+
 - Tier B and Tier C rooms never render a shared scrubber or a shared play state as if it were authoritative.
 - A position readout with no observation behind it is a defect, not a placeholder.
-- Countdown is honest: it synchronizes an *instruction*, not playback.
+- Countdown is honest: it synchronizes an _instruction_, not playback.
 
 Certification: every Tier B/C room certification asserts the absence of authoritative-looking playback affordances.
 
@@ -28,6 +29,7 @@ Certification: every Tier B/C room certification asserts the absence of authorit
 Binds: Provider Engine, Experience Engine, Room Engine.
 
 Implications:
+
 - Disclosure text lives with the capability row in [B](./B-capability-matrix.md), not in component code.
 - Removing disclosure to reduce visual noise is prohibited.
 
@@ -52,6 +54,7 @@ Implications: presence and voice state remain visible in every room state, inclu
 Binds: Room Engine, Timeline Engine, Presence Engine.
 
 Implications:
+
 - A failed voice connection, a failed provider launch, or a failed adapter never ends a room.
 - Host disconnect degrades to a recoverable state, never to destruction, within the grace window.
 
@@ -116,13 +119,13 @@ Certification: `arch:check` conformance is a blocking M0 gate.
 ## Principle-to-engine binding table
 
 | Principle | Room | Timeline | Watch Party | Sync | Voice | Chat | Presence | Provider | Notification | Community | AI/Po | Analytics | Moderation | Experience |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| P1 | | ● | ● | ● | | | | ● | | | | | | ● |
-| P2 | ● | | ● | | | | | ● | | | ● | | | ● |
-| P3 | | | ● | | ● | ● | ● | | | | | | | ● |
-| P4 | ● | ● | ● | ● | | | ● | | | | | | | |
-| P5 | ● | | | | | | | | ● | ● | | | | ● |
-| P6 | | | | | ● | | ● | | | | | | | ● |
-| P7 | ● | ● | ● | ● | ● | ● | ● | ● | ● | | ● | | | ● |
-| P8 | | | | ● | | | | ● | | ● | ● | ● | ● | |
-| P9 | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● |
+| --------- | ---- | -------- | ----------- | ---- | ----- | ---- | -------- | -------- | ------------ | --------- | ----- | --------- | ---------- | ---------- |
+| P1        |      | ●        | ●           | ●    |       |      |          | ●        |              |           |       |           |            | ●          |
+| P2        | ●    |          | ●           |      |       |      |          | ●        |              |           | ●     |           |            | ●          |
+| P3        |      |          | ●           |      | ●     | ●    | ●        |          |              |           |       |           |            | ●          |
+| P4        | ●    | ●        | ●           | ●    |       |      | ●        |          |              |           |       |           |            |            |
+| P5        | ●    |          |             |      |       |      |          |          | ●            | ●         |       |           |            | ●          |
+| P6        |      |          |             |      | ●     |      | ●        |          |              |           |       |           |            | ●          |
+| P7        | ●    | ●        | ●           | ●    | ●     | ●    | ●        | ●        | ●            |           | ●     |           |            | ●          |
+| P8        |      |          |             | ●    |       |      |          | ●        |              | ●         | ●     | ●         | ●          |            |
+| P9        | ●    | ●        | ●           | ●    | ●     | ●    | ●        | ●        | ●            | ●         | ●     | ●         | ●          | ●          |

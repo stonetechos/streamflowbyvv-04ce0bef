@@ -8,45 +8,45 @@ Resolves DEBT-006.
 
 ## Legend
 
-| Bucket | Definition |
-|---|---|
-| **Engine** | Owns a business capability from [C-engine-pack.md](../blueprint/C-engine-pack.md). Includes its domain modules, repository contracts, and the presentation modules that exist solely to express it. |
-| **Experience** | Cross-cutting presentation support per [C2](../blueprint/C2-experience-engine.md). Owns no business state. |
-| **Infrastructure** | Vendor-facing adapters and transports. The only layer permitted to know Supabase, LiveKit, or an LLM vendor. |
-| **Shared Platform** | Framework bootstrap, config, cross-engine primitives, generated code. |
-| **Unknown / Orphaned** | No clear owner. |
+| Bucket                 | Definition                                                                                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Engine**             | Owns a business capability from [C-engine-pack.md](../blueprint/C-engine-pack.md). Includes its domain modules, repository contracts, and the presentation modules that exist solely to express it. |
+| **Experience**         | Cross-cutting presentation support per [C2](../blueprint/C2-experience-engine.md). Owns no business state.                                                                                          |
+| **Infrastructure**     | Vendor-facing adapters and transports. The only layer permitted to know Supabase, LiveKit, or an LLM vendor.                                                                                        |
+| **Shared Platform**    | Framework bootstrap, config, cross-engine primitives, generated code.                                                                                                                               |
+| **Unknown / Orphaned** | No clear owner.                                                                                                                                                                                     |
 
 ## 1. Totals
 
-| Bucket | Files | Share |
-|---|---|---|
-| Domain Engines | 246 | 49.3% |
-| Experience Subsystem | 68 | 13.6% |
-| Infrastructure | 89 | 17.8% |
-| Shared Platform | 94 | 18.8% |
-| Unknown / Orphaned | 2 | 0.4% |
-| **Total** | **499** | **100%** |
+| Bucket               | Files   | Share    |
+| -------------------- | ------- | -------- |
+| Domain Engines       | 246     | 49.3%    |
+| Experience Subsystem | 68      | 13.6%    |
+| Infrastructure       | 89      | 17.8%    |
+| Shared Platform      | 94      | 18.8%    |
+| Unknown / Orphaned   | 2       | 0.4%     |
+| **Total**            | **499** | **100%** |
 
 ## 2. Domain Engines (246)
 
 ### Room Engine — 61
 
-| Path | Files | Layer |
-|---|---|---|
-| `src/domain/rooms/*` | 11 | Domain |
-| `src/repository/rooms/*` | 5 | Repository contract |
-| `src/infrastructure/supabase/rooms/*` | 11 | Infrastructure (attributed to Room for ownership) |
-| `src/infrastructure/rooms/index.ts` | 1 | Infrastructure |
-| `src/features/waiting-room/*` (room-scoped: `use-room-setup`, `use-waiting-room`, `waiting-room.types`, `room-realtime-hub`, `use-member-names`) | 5 | Presentation |
-| `src/features/waiting-room/components/*` (room-scoped: `room-details`, `room-info-card`, `room-setup-card`, `room-summary-card`, `member-card`, `member-list`, `member-strip`, `membership-actions`, `waiting-room-layout`, `waiting-room`, `invite-summary`, `invite-friends`) | 12 | Presentation |
-| `src/features/invitations/*` | 5 | Presentation |
-| `src/features/share/*` | 4 | Presentation (share-to-room intake) |
-| `src/features/home/*` | 3 | Presentation (`use-home`, `service-shelf.ts`, `index`) |
-| `src/features/home/components/*` | 12 | Presentation |
-| `src/domain/services/room-service.ts`, `invitation-service.ts` | 2 | Domain service |
-| `src/routes/join.$code.tsx`, `_authenticated.home.tsx`, `_authenticated.rooms.$roomId.tsx`, `_authenticated.invites.tsx`, `_authenticated.share.tsx` | 5 | Route |
+| Path                                                                                                                                                                                                                                                                            | Files | Layer                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------ |
+| `src/domain/rooms/*`                                                                                                                                                                                                                                                            | 11    | Domain                                                 |
+| `src/repository/rooms/*`                                                                                                                                                                                                                                                        | 5     | Repository contract                                    |
+| `src/infrastructure/supabase/rooms/*`                                                                                                                                                                                                                                           | 11    | Infrastructure (attributed to Room for ownership)      |
+| `src/infrastructure/rooms/index.ts`                                                                                                                                                                                                                                             | 1     | Infrastructure                                         |
+| `src/features/waiting-room/*` (room-scoped: `use-room-setup`, `use-waiting-room`, `waiting-room.types`, `room-realtime-hub`, `use-member-names`)                                                                                                                                | 5     | Presentation                                           |
+| `src/features/waiting-room/components/*` (room-scoped: `room-details`, `room-info-card`, `room-setup-card`, `room-summary-card`, `member-card`, `member-list`, `member-strip`, `membership-actions`, `waiting-room-layout`, `waiting-room`, `invite-summary`, `invite-friends`) | 12    | Presentation                                           |
+| `src/features/invitations/*`                                                                                                                                                                                                                                                    | 5     | Presentation                                           |
+| `src/features/share/*`                                                                                                                                                                                                                                                          | 4     | Presentation (share-to-room intake)                    |
+| `src/features/home/*`                                                                                                                                                                                                                                                           | 3     | Presentation (`use-home`, `service-shelf.ts`, `index`) |
+| `src/features/home/components/*`                                                                                                                                                                                                                                                | 12    | Presentation                                           |
+| `src/domain/services/room-service.ts`, `invitation-service.ts`                                                                                                                                                                                                                  | 2     | Domain service                                         |
+| `src/routes/join.$code.tsx`, `_authenticated.home.tsx`, `_authenticated.rooms.$roomId.tsx`, `_authenticated.invites.tsx`, `_authenticated.share.tsx`                                                                                                                            | 5     | Route                                                  |
 
-*Note: `src/features/waiting-room/` is a mixed-engine folder. Files are attributed here by the capability they express, not by folder.*
+_Note: `src/features/waiting-room/` is a mixed-engine folder. Files are attributed here by the capability they express, not by folder._
 
 ### Timeline Engine — 26
 
@@ -58,7 +58,7 @@ Resolves DEBT-006.
 
 ### Sync Engine — 21
 
-`src/domain/sync/*` (7) · `src/domain/playback/*` (7) · `src/domain/services/sync-service.ts`, `playback-service.ts` (2) · `src/features/waiting-room/use-playback-sync.ts`, `use-room-clock-sync.ts`, `use-room-playback.ts`, `use-room-sync.ts` (4) · `src/features/waiting-room/components/sync-health-card.tsx`, `room-sync-card.tsx`, `playback-readiness-panel.tsx` — *3 counted here, `manual-play-reminder.tsx` and `ready-confirmation-card.tsx` counted under Presence/Room*
+`src/domain/sync/*` (7) · `src/domain/playback/*` (7) · `src/domain/services/sync-service.ts`, `playback-service.ts` (2) · `src/features/waiting-room/use-playback-sync.ts`, `use-room-clock-sync.ts`, `use-room-playback.ts`, `use-room-sync.ts` (4) · `src/features/waiting-room/components/sync-health-card.tsx`, `room-sync-card.tsx`, `playback-readiness-panel.tsx` — _3 counted here, `manual-play-reminder.tsx` and `ready-confirmation-card.tsx` counted under Presence/Room_
 `src/infrastructure/time/*` (2) and `src/routes/api/public/time.ts` (1) are counted under Infrastructure.
 
 ### Voice Engine — 25
@@ -105,63 +105,63 @@ The Constitution defines no Auth engine. These are recorded as **Shared Platform
 
 ## 3. Experience Subsystem (68)
 
-| Path | Files |
-|---|---|
-| `src/components/ui/*` | 46 |
-| `src/design-system/components/*` | 7 |
-| `src/design-system/tokens.ts` | 1 |
-| `src/foundation/accessibility/*` | 4 |
-| `src/foundation/theme/*` | 2 |
-| `src/app-shell/*` (boot-screen, loading-state, error-state, app-layout, index) | 5 |
-| `src/features/navigation/*` + components | 4 |
-| `src/features/home/components/home-skeleton.tsx`, `home-placeholders.tsx` | 2 (also listed under Room presentation; owned here) |
-| `src/styles.css` | 1 |
-| `src/hooks/use-mobile.tsx` | 1 |
+| Path                                                                           | Files                                               |
+| ------------------------------------------------------------------------------ | --------------------------------------------------- |
+| `src/components/ui/*`                                                          | 46                                                  |
+| `src/design-system/components/*`                                               | 7                                                   |
+| `src/design-system/tokens.ts`                                                  | 1                                                   |
+| `src/foundation/accessibility/*`                                               | 4                                                   |
+| `src/foundation/theme/*`                                                       | 2                                                   |
+| `src/app-shell/*` (boot-screen, loading-state, error-state, app-layout, index) | 5                                                   |
+| `src/features/navigation/*` + components                                       | 4                                                   |
+| `src/features/home/components/home-skeleton.tsx`, `home-placeholders.tsx`      | 2 (also listed under Room presentation; owned here) |
+| `src/styles.css`                                                               | 1                                                   |
+| `src/hooks/use-mobile.tsx`                                                     | 1                                                   |
 
 **Verified**: none of these read or write room, playback, permission, or synchronization state. Conforms to [C2](../blueprint/C2-experience-engine.md).
 
 ## 4. Infrastructure (89)
 
-| Path | Files | Vendor |
-|---|---|---|
-| `src/infrastructure/supabase/**` | 55 | Supabase |
-| `src/infrastructure/voice/*` | 8 | LiveKit |
-| `src/infrastructure/ai/*` | 5 | LLM/STT/TTS vendors |
-| `src/infrastructure/events/*` | 8 | Transport/serialisation |
-| `src/infrastructure/http/*` | 7 | HTTP client, retry, interceptors |
-| `src/infrastructure/time/*` | 2 | Server time |
-| `src/infrastructure/storage/*` | 4 | Local persistence |
-| `src/infrastructure/providers/*` | 2 | Browser launcher |
-| `src/infrastructure/persistence/`, `identity/`, `profiles/`, `rooms/`, `social/`, `index.ts` | 6 | Barrels |
-| `src/integrations/supabase/*` | 5 | Generated client (do not edit) |
+| Path                                                                                         | Files | Vendor                           |
+| -------------------------------------------------------------------------------------------- | ----- | -------------------------------- |
+| `src/infrastructure/supabase/**`                                                             | 55    | Supabase                         |
+| `src/infrastructure/voice/*`                                                                 | 8     | LiveKit                          |
+| `src/infrastructure/ai/*`                                                                    | 5     | LLM/STT/TTS vendors              |
+| `src/infrastructure/events/*`                                                                | 8     | Transport/serialisation          |
+| `src/infrastructure/http/*`                                                                  | 7     | HTTP client, retry, interceptors |
+| `src/infrastructure/time/*`                                                                  | 2     | Server time                      |
+| `src/infrastructure/storage/*`                                                               | 4     | Local persistence                |
+| `src/infrastructure/providers/*`                                                             | 2     | Browser launcher                 |
+| `src/infrastructure/persistence/`, `identity/`, `profiles/`, `rooms/`, `social/`, `index.ts` | 6     | Barrels                          |
+| `src/integrations/supabase/*`                                                                | 5     | Generated client (do not edit)   |
 
 `bun run arch:check` confirms no vendor symbol escapes this bucket.
 
 ## 5. Shared Platform (94)
 
-| Path | Files | Purpose |
-|---|---|---|
-| Auth & Identity (see §2 note) | 41 | Session, authorization, auth routes |
-| `src/config/*` | 4 | Env and app config |
-| `src/foundation/feature-flags/*` | 5 | Flag evaluation |
-| `src/foundation/localization/*` + bundles | 7 | en, hi-IN |
-| `src/foundation/logging/*` | 5 | Dev/production logger, error reporter |
-| `src/foundation/preferences/*` | 2 | Local preferences |
-| `src/shared/constants/*` | 4 | Breakpoints, error taxonomy, locales, system constants |
-| `src/repository/*` (root: index, mapping, persistence.types, repository-error, repository-registry, repository.types) | 6 | Repository kernel |
-| `src/domain/index.ts`, `service-registry.ts`, `shared/domain-enums.ts`, `services/domain-services.ts`, `services/service-context.ts`, `services/index.ts`, `services/feature-flag-service.ts`, `services/localization-service.ts`, `services/user-service.ts` | 9 | Domain kernel & cross-engine services |
-| `src/lib/utils.ts`, `error-capture.ts`, `error-page.ts`, `lovable-error-reporting.ts` | 4 | Platform utilities |
-| `src/router.tsx`, `src/server.ts`, `src/start.ts`, `src/routeTree.gen.ts` (generated) | 4 | Framework bootstrap |
-| `src/routes/__root.tsx`, `_authenticated.tsx`, `index.tsx`, `_authenticated.account.tsx`, `_authenticated.settings.tsx`, `_authenticated.onboarding.tsx`, `routes/README.md` | 7 | Shell routes & docs |
-| `src/app-shell/app-providers.tsx`, `composition-root.ts` | 2 | Composition root |
-| `src/features/shared/*` (copy-text, refusal-message, room-ended-notice) | 3 | Cross-feature copy |
-| `src/assets/streamflow-logo.jpg` | 1 | Brand asset |
+| Path                                                                                                                                                                                                                                                          | Files | Purpose                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------ |
+| Auth & Identity (see §2 note)                                                                                                                                                                                                                                 | 41    | Session, authorization, auth routes                    |
+| `src/config/*`                                                                                                                                                                                                                                                | 4     | Env and app config                                     |
+| `src/foundation/feature-flags/*`                                                                                                                                                                                                                              | 5     | Flag evaluation                                        |
+| `src/foundation/localization/*` + bundles                                                                                                                                                                                                                     | 7     | en, hi-IN                                              |
+| `src/foundation/logging/*`                                                                                                                                                                                                                                    | 5     | Dev/production logger, error reporter                  |
+| `src/foundation/preferences/*`                                                                                                                                                                                                                                | 2     | Local preferences                                      |
+| `src/shared/constants/*`                                                                                                                                                                                                                                      | 4     | Breakpoints, error taxonomy, locales, system constants |
+| `src/repository/*` (root: index, mapping, persistence.types, repository-error, repository-registry, repository.types)                                                                                                                                         | 6     | Repository kernel                                      |
+| `src/domain/index.ts`, `service-registry.ts`, `shared/domain-enums.ts`, `services/domain-services.ts`, `services/service-context.ts`, `services/index.ts`, `services/feature-flag-service.ts`, `services/localization-service.ts`, `services/user-service.ts` | 9     | Domain kernel & cross-engine services                  |
+| `src/lib/utils.ts`, `error-capture.ts`, `error-page.ts`, `lovable-error-reporting.ts`                                                                                                                                                                         | 4     | Platform utilities                                     |
+| `src/router.tsx`, `src/server.ts`, `src/start.ts`, `src/routeTree.gen.ts` (generated)                                                                                                                                                                         | 4     | Framework bootstrap                                    |
+| `src/routes/__root.tsx`, `_authenticated.tsx`, `index.tsx`, `_authenticated.account.tsx`, `_authenticated.settings.tsx`, `_authenticated.onboarding.tsx`, `routes/README.md`                                                                                  | 7     | Shell routes & docs                                    |
+| `src/app-shell/app-providers.tsx`, `composition-root.ts`                                                                                                                                                                                                      | 2     | Composition root                                       |
+| `src/features/shared/*` (copy-text, refusal-message, room-ended-notice)                                                                                                                                                                                       | 3     | Cross-feature copy                                     |
+| `src/assets/streamflow-logo.jpg`                                                                                                                                                                                                                              | 1     | Brand asset                                            |
 
 ## 6. Unknown / Orphaned (2)
 
-| File | Why unresolved | Recommendation |
-|---|---|---|
-| `src/routes/api/debug/config.ts` | A debug configuration endpoint with no engine owner. Reachable in deployed builds. | Assign to Shared Platform and gate behind a feature flag in M1. Do not remove during M0. |
+| File                                       | Why unresolved                                                                                                                                                                         | Recommendation                                                                                    |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `src/routes/api/debug/config.ts`           | A debug configuration endpoint with no engine owner. Reachable in deployed builds.                                                                                                     | Assign to Shared Platform and gate behind a feature flag in M1. Do not remove during M0.          |
 | `src/domain/providers/provider-control.ts` | Declares a control surface for which **no adapter exists** (see Conformance Report §C.4). It is neither a live Provider Engine module nor dead code — it is an unimplemented contract. | Resolve as part of GAP-001: either bind it to a real adapter or mark it explicitly contract-only. |
 
 ## 7. Mapping findings

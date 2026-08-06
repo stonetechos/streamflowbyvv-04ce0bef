@@ -490,7 +490,8 @@ export const hiINBundle: LocaleBundle = {
     "watch_party.hud.show": "कंट्रोल दिखाएँ",
     "watch_party.hud.leave": "छोड़ें",
     "watch_party.catch_up.title": "क्या हम अब भी साथ हैं?",
-    "watch_party.catch_up.description": "अपने प्लेयर में दिख रहा समय यहाँ लिखें। हम बताएँगे किस ओर बढ़ना है।",
+    "watch_party.catch_up.description":
+      "अपने प्लेयर में दिख रहा समय यहाँ लिखें। हम बताएँगे किस ओर बढ़ना है।",
     "watch_party.catch_up.field": "आपके प्लेयर का समय",
     "watch_party.catch_up.compare": "तुलना करें",
     "watch_party.catch_up.in_sync": "आप रूम के साथ सिंक में हैं।",
@@ -498,7 +499,8 @@ export const hiINBundle: LocaleBundle = {
     "watch_party.catch_up.ahead": "आप {seconds} सेकंड आगे हैं।",
     "watch_party.catch_up.advice_behind": "अपने प्लेयर में लगभग {seconds} सेकंड आगे बढ़ें।",
     "watch_party.catch_up.advice_ahead": "अपने प्लेयर में लगभग {seconds} सेकंड पीछे जाएँ।",
-    "watch_party.catch_up.footnote": "StreamFlow कभी आपका प्लेयर खुद नहीं चलाता — आपकी स्क्रीन आपके नियंत्रण में रहती है।",
+    "watch_party.catch_up.footnote":
+      "StreamFlow कभी आपका प्लेयर खुद नहीं चलाता — आपकी स्क्रीन आपके नियंत्रण में रहती है।",
     "room.provider.episode_value": "S{season} · E{episode}",
     "room.provider.host": "होस्ट",
     "room.provider.host_unknown": "अज्ञात",
@@ -630,7 +632,8 @@ export const hiINBundle: LocaleBundle = {
       "\u0935\u0939\u0940\u0902 \u0938\u0947 \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902?",
     "home.po.friends":
       "\u0906\u092a\u0915\u0947 {count} \u0932\u094b\u0917 \u092f\u0939\u093e\u0901 \u0939\u0948\u0902\u0964",
-    "home.notice.room_ended": "\u092f\u0939 \u0935\u0949\u091a \u092a\u093e\u0930\u094d\u091f\u0940 \u0938\u092e\u093e\u092a\u094d\u0924 \u0939\u094b \u0917\u0908 \u0939\u0948\u0964",
+    "home.notice.room_ended":
+      "\u092f\u0939 \u0935\u0949\u091a \u092a\u093e\u0930\u094d\u091f\u0940 \u0938\u092e\u093e\u092a\u094d\u0924 \u0939\u094b \u0917\u0908 \u0939\u0948\u0964",
     "home.po.idle":
       "\u090f\u0915 \u0938\u0947\u0935\u093e \u091a\u0941\u0928\u093f\u090f, \u092e\u0948\u0902 \u0930\u0942\u092e \u0924\u0948\u092f\u093e\u0930 \u0915\u0930\u0924\u093e \u0939\u0942\u0901\u0964",
     "home.greeting": "नमस्ते, {name}",

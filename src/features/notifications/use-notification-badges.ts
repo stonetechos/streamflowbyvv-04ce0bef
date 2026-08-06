@@ -13,12 +13,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import {
-  HOME_READ_MODEL,
-  SOCIAL_READ_MODEL,
-  isServiceBound,
-  resolveService,
-} from "@/domain";
+import { HOME_READ_MODEL, SOCIAL_READ_MODEL, isServiceBound, resolveService } from "@/domain";
 import { logger } from "@/foundation/logging";
 
 const MODULE = "notifications";

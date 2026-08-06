@@ -4,18 +4,18 @@ Part of the StreamFlow v2.0 Architecture Constitution v2.0.0.
 
 ## A.1 Thesis
 
-People do not miss watching content. They miss watching it *with someone*. StreamFlow's job is to remove the coordination cost of watching together across distance: getting everyone into the same place, starting at the same moment, hearing each other, and recovering gracefully when one person's network drops.
+People do not miss watching content. They miss watching it _with someone_. StreamFlow's job is to remove the coordination cost of watching together across distance: getting everyone into the same place, starting at the same moment, hearing each other, and recovering gracefully when one person's network drops.
 
 StreamFlow is a **coordination and presence product** that happens to sit next to video. It is not a video platform. It stores no media, proxies no streams, and holds no provider credentials.
 
 ## A.2 Users
 
-| Type | Description | Primary need |
-|---|---|---|
-| Host | Creates the room, chooses the source, drives the start | Get everyone in and started with minimal fuss |
-| Member | Accepts an invite and joins | Understand instantly what to do next |
-| Returning group | 2–8 people who watch together repeatedly | Reduce setup to near zero |
-| Guest | Opens an invite link without an account | Preview enough to decide to join (ADR-010) |
+| Type            | Description                                            | Primary need                                  |
+| --------------- | ------------------------------------------------------ | --------------------------------------------- |
+| Host            | Creates the room, chooses the source, drives the start | Get everyone in and started with minimal fuss |
+| Member          | Accepts an invite and joins                            | Understand instantly what to do next          |
+| Returning group | 2–8 people who watch together repeatedly               | Reduce setup to near zero                     |
+| Guest           | Opens an invite link without an account                | Preview enough to decide to join (ADR-010)    |
 
 ## A.3 Sync tier model — capability-based, never provider-based
 
@@ -88,14 +88,14 @@ Never present a degraded room as a healthy one.
 
 **Product KPIs**
 
-| KPI | Definition |
-|---|---|
-| Invite conversion | Invite links opened that result in a room join |
-| Time to together | Room create → all invited members present |
-| Start success | Rooms reaching `active` with all members started |
-| Voice attach rate | Active rooms with ≥2 connected voice participants |
-| Rejoin survival | Disconnects followed by successful rejoin within grace |
-| Repeat group rate | Groups with ≥3 sessions in 30 days |
+| KPI               | Definition                                             |
+| ----------------- | ------------------------------------------------------ |
+| Invite conversion | Invite links opened that result in a room join         |
+| Time to together  | Room create → all invited members present              |
+| Start success     | Rooms reaching `active` with all members started       |
+| Voice attach rate | Active rooms with ≥2 connected voice participants      |
+| Rejoin survival   | Disconnects followed by successful rejoin within grace |
+| Repeat group rate | Groups with ≥3 sessions in 30 days                     |
 
 **Service SLOs** — targets live in [C4 — Performance Budget](./C4-performance-budget.md) as Provisional Target / Measured Baseline / Certified Threshold. Nothing in this document is a production commitment until it has a Certified Threshold and a passing certification record.
 
@@ -104,9 +104,11 @@ Never present a degraded room as a healthy one.
 The Launch Envelope is the formal boundary of v2.0. Anything outside it requires a new numbered ADR **and** its own milestone.
 
 ### Audience
+
 Private groups of 2–8 people watching remotely. Maximum room size is 8; minimum viable room is 2.
 
 ### Platforms
+
 1. Web desktop — first.
 2. Android — second.
 3. iOS — only after Room and Voice certification pass on Android and web.
@@ -114,11 +116,13 @@ Private groups of 2–8 people watching remotely. Maximum room size is 8; minimu
 5. Desktop app — deferred beyond v2.0.
 
 ### Content modes
+
 - Tier A — controlled/authorized sources with a certification record.
 - Tier B — observation/assisted where a real media session exists.
 - Tier C — deep link + countdown + voice + coordinated manual playback.
 
 ### Exclusions
+
 - No premium OTT playback automation.
 - No screen-capture-based synchronization.
 - No accessibility-service automation or overlay automation.
@@ -127,6 +131,7 @@ Private groups of 2–8 people watching remotely. Maximum room size is 8; minimu
 - No large-room video conferencing.
 
 ### Success criteria
+
 - Invitees land in the intended room, including across sign-in.
 - Users understand the capability tier before they commit.
 - Playback or coordinated start begins correctly for every participant.
@@ -135,4 +140,5 @@ Private groups of 2–8 people watching remotely. Maximum room size is 8; minimu
 - Leave and rejoin preserves room context and position awareness.
 
 ### Envelope enforcement
+
 Every milestone in [D](./D-milestone-roadmap.md) declares its position inside the envelope. The release gate in [K](./K-launch-certification.md) fails any milestone that ships behaviour outside it.

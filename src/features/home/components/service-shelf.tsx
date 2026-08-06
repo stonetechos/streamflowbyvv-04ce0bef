@@ -42,7 +42,6 @@ import type { HomeModel } from "../use-home";
  * here. The tile only declares which brand it is.
  */
 
-
 export interface ServiceShelfProps {
   readonly home: HomeModel;
   readonly profileId: string | null;
@@ -157,14 +156,16 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
 
                 <span className="flex items-center gap-1.5 px-0.5">
                   {isConnected ? (
-                    <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-success" />
+                    <span
+                      aria-hidden="true"
+                      className="size-1.5 shrink-0 rounded-full bg-success"
+                    />
                   ) : null}
                   <span className="truncate text-xs font-medium text-muted-foreground">
                     {card.name}
                   </span>
                 </span>
               </button>
-
             </li>
           );
         })}

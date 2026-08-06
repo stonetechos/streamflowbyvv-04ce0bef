@@ -302,8 +302,6 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
     }
   };
 
-
-
   /** Admits a profile, enforcing capacity and re-using a prior membership row. */
   const admit = async (
     room: Room,
@@ -515,7 +513,6 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
       }
 
       return admit(room, profileId, role, operation, intent);
-
     },
 
     async leaveRoom({ roomId, profileId, leftReason = "voluntary" }, intent) {
@@ -678,7 +675,6 @@ export function createRoomFlowService(deps: RoomFlowDependencies): RoomFlowServi
           await releasePriorSeat(facts.viewerOtherRoomId, profileId, intent);
         }
       }
-
 
       const member = await admit(room, profileId, "guest", operation, intent);
 

@@ -156,7 +156,6 @@ export function SignInForm({ redirectTo = "/home" }: { redirectTo?: string }) {
         </div>
       ) : null}
 
-
       <ActionButton type="submit" size="lg" block loading={form.pending}>
         {t(method === "password" ? "auth.action.sign_in" : "auth.action.send_magic_link")}
       </ActionButton>

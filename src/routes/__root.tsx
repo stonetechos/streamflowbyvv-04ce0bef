@@ -105,7 +105,6 @@ function RootComponent() {
     document.documentElement.dataset["sfHydrated"] = "true";
   }, []);
 
-
   return (
     <AppProviders queryClient={queryClient}>
       <BootScreen />

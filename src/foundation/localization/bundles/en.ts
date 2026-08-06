@@ -470,7 +470,8 @@ export const enBundle: LocaleBundle = {
     "provider.tier.c.label": "Together, manually",
     "provider.tier.a.summary": "Everyone's player follows the room automatically.",
     "provider.tier.b.summary": "StreamFlow can tell when you drift and help you catch up.",
-    "provider.tier.c.summary": "Press play together on the countdown — this service keeps its own remote.",
+    "provider.tier.c.summary":
+      "Press play together on the countdown — this service keeps its own remote.",
     "room.stage.voice_connected": "Voice on",
     "room.invite.qr_caption": "Scan to join this room",
     "room.invite.qr_alt": "QR code to join {room}",
@@ -487,7 +488,8 @@ export const enBundle: LocaleBundle = {
     "watch_party.hud.show": "Show controls",
     "watch_party.hud.leave": "Leave",
     "watch_party.catch_up.title": "Are we still together?",
-    "watch_party.catch_up.description": "Check the time showing in your player and type it here. We'll tell you which way to nudge.",
+    "watch_party.catch_up.description":
+      "Check the time showing in your player and type it here. We'll tell you which way to nudge.",
     "watch_party.catch_up.field": "Time on your player",
     "watch_party.catch_up.compare": "Compare",
     "watch_party.catch_up.in_sync": "You're in sync with the room.",
@@ -495,7 +497,8 @@ export const enBundle: LocaleBundle = {
     "watch_party.catch_up.ahead": "You're {seconds}s ahead.",
     "watch_party.catch_up.advice_behind": "Skip forward about {seconds} seconds in your player.",
     "watch_party.catch_up.advice_ahead": "Rewind about {seconds} seconds in your player.",
-    "watch_party.catch_up.footnote": "StreamFlow never moves your player for you — you stay in control of your own screen.",
+    "watch_party.catch_up.footnote":
+      "StreamFlow never moves your player for you — you stay in control of your own screen.",
     "room.provider.episode_value": "S{season} · E{episode}",
     "room.provider.host": "Host",
     "room.provider.host_unknown": "Unknown",

@@ -81,7 +81,19 @@ function SettingsIcon() {
 
 export const NAV_DESTINATIONS: readonly NavDestination[] = Object.freeze([
   { id: "home", to: "/home", labelKey: "nav.home", icon: <HomeIcon />, exact: true },
-  { id: "people", to: "/people", labelKey: "nav.people", icon: <PeopleIcon />, badge: "friendRequests" },
-  { id: "invites", to: "/invites", labelKey: "nav.invites", icon: <InviteIcon />, badge: "roomInvites" },
+  {
+    id: "people",
+    to: "/people",
+    labelKey: "nav.people",
+    icon: <PeopleIcon />,
+    badge: "friendRequests",
+  },
+  {
+    id: "invites",
+    to: "/invites",
+    labelKey: "nav.invites",
+    icon: <InviteIcon />,
+    badge: "roomInvites",
+  },
   { id: "settings", to: "/settings", labelKey: "nav.settings", icon: <SettingsIcon /> },
 ]);

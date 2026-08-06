@@ -133,10 +133,12 @@ export function SignUpForm() {
       {form.errorKey ? (
         <div role="alert" className="rounded-xl border border-destructive/40 bg-destructive/10 p-3">
           {/* Sprint 85 — the person sees the sentence; the code stays for support. */}
-          <p className="text-sm font-medium text-destructive" data-sf-error-code={form.errorCode ?? undefined}>
+          <p
+            className="text-sm font-medium text-destructive"
+            data-sf-error-code={form.errorCode ?? undefined}
+          >
             {t(form.errorKey)}
           </p>
-
         </div>
       ) : null}
 

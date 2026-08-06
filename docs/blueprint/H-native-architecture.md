@@ -25,16 +25,16 @@ The Core Domain never branches on platform. Platform difference is expressed as 
 
 Every platform must implement the same adapter contracts:
 
-| Adapter | Responsibility | Web | Android | iOS |
-|---|---|---|---|---|
-| Deep link | Open a provider destination and report the outcome | URL navigation | Intent | Universal link / scheme |
-| Share intake | Receive shared content into a room | Web Share Target | Share intent | Share extension |
-| Notification | Deliver and badge | In-app + Web Push | System channel | APNs |
-| Storage | Durable local state for offline intents | IndexedDB | Native store | Native store |
-| Media session | Observe or control a media surface | Media element / embed | Native session | Native session |
-| Permissions | Microphone, notification | Browser prompt | Runtime permission | System prompt |
-| Haptics | Delight cues | Vibration API where available | Native | Native |
-| App lifecycle | Background/foreground transitions | Page visibility | Activity lifecycle | Scene lifecycle |
+| Adapter       | Responsibility                                     | Web                           | Android            | iOS                     |
+| ------------- | -------------------------------------------------- | ----------------------------- | ------------------ | ----------------------- |
+| Deep link     | Open a provider destination and report the outcome | URL navigation                | Intent             | Universal link / scheme |
+| Share intake  | Receive shared content into a room                 | Web Share Target              | Share intent       | Share extension         |
+| Notification  | Deliver and badge                                  | In-app + Web Push             | System channel     | APNs                    |
+| Storage       | Durable local state for offline intents            | IndexedDB                     | Native store       | Native store            |
+| Media session | Observe or control a media surface                 | Media element / embed         | Native session     | Native session          |
+| Permissions   | Microphone, notification                           | Browser prompt                | Runtime permission | System prompt           |
+| Haptics       | Delight cues                                       | Vibration API where available | Native             | Native                  |
+| App lifecycle | Background/foreground transitions                  | Page visibility               | Activity lifecycle | Scene lifecycle         |
 
 An adapter that cannot implement a contract reports `unsupported`. The Provider and Sync Engines then resolve a lower tier. They never guess.
 

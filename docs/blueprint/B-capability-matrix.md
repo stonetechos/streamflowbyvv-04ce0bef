@@ -12,43 +12,43 @@ Tier definitions are normative in [A.3](./A-product-operating-brief.md#a3-sync-t
 - **Tier B** — observable, not controllable.
 - **Tier C** — deep link + countdown + voice + coordinated manual playback.
 
-**Tier A gate.** A row may only be published as Tier A when column *Certification Record* names a row in K that is passing and not expired. A Tier A row without a certification record is a documentation defect and the runtime must treat the capability as Tier C.
+**Tier A gate.** A row may only be published as Tier A when column _Certification Record_ names a row in K that is passing and not expired. A Tier A row without a certification record is a documentation defect and the runtime must treat the capability as Tier C.
 
 ## B.2 Column definitions
 
-| Column | Meaning |
-|---|---|
-| Capability ID | Stable identifier, `CAP-<source>-<platform>` |
-| Source | Content origin category |
-| Adapter | StreamFlow adapter module responsible |
-| Platform | web-desktop, web-mobile, android, ios, tv, desktop |
-| Min version | Minimum verified adapter + runtime version |
-| Tier | A / B / C for this tuple only |
-| Certification Record | Row ID in K, or `—` |
-| Host/member limits | Any deviation from the 2–8 envelope |
-| Fallback | Tier the runtime degrades to on failure |
-| Launch status | launch / post-launch / investigating / excluded |
-| Disclosure text key | Localization key for the user-facing capability statement |
+| Column               | Meaning                                                   |
+| -------------------- | --------------------------------------------------------- |
+| Capability ID        | Stable identifier, `CAP-<source>-<platform>`              |
+| Source               | Content origin category                                   |
+| Adapter              | StreamFlow adapter module responsible                     |
+| Platform             | web-desktop, web-mobile, android, ios, tv, desktop        |
+| Min version          | Minimum verified adapter + runtime version                |
+| Tier                 | A / B / C for this tuple only                             |
+| Certification Record | Row ID in K, or `—`                                       |
+| Host/member limits   | Any deviation from the 2–8 envelope                       |
+| Fallback             | Tier the runtime degrades to on failure                   |
+| Launch status        | launch / post-launch / investigating / excluded           |
+| Disclosure text key  | Localization key for the user-facing capability statement |
 
 ## B.3 Capability rows
 
-| Capability ID | Source | Adapter | Platform | Min version | Tier | Certification Record | Limits | Fallback | Launch status | Disclosure key |
-|---|---|---|---|---|---|---|---|---|---|---|
-| CAP-EMBED-WEBDESK | Embeddable public player surface | `embed-player-adapter` | web-desktop | 1.0 | A | CERT-SYNC-A-01 | 2–8 | C | launch | `capability.embed.controlled` |
-| CAP-EMBED-WEBMOB | Embeddable public player surface | `embed-player-adapter` | web-mobile | 1.0 | B | CERT-SYNC-B-01 | 2–8 | C | launch | `capability.embed.assisted` |
-| CAP-EMBED-ANDROID | Embeddable public player surface | `embed-player-adapter` | android | 1.0 | B | CERT-SYNC-B-02 | 2–8 | C | post-launch | `capability.embed.assisted` |
-| CAP-EMBED-IOS | Embeddable public player surface | `embed-player-adapter` | ios | — | C | — | 2–8 | C | investigating | `capability.embed.manual` |
-| CAP-LOCAL-WEBDESK | User-supplied local file | `local-file-adapter` | web-desktop | 1.0 | A | CERT-SYNC-A-02 | 2–8 | C | launch | `capability.local.controlled` |
-| CAP-LOCAL-WEBMOB | User-supplied local file | `local-file-adapter` | web-mobile | 1.0 | A | CERT-SYNC-A-03 | 2–8 | C | post-launch | `capability.local.controlled` |
-| CAP-LOCAL-ANDROID | User-supplied local file | `local-file-adapter` | android | — | C | — | 2–8 | C | post-launch | `capability.local.manual` |
-| CAP-DRIVE-WEBDESK | User's own cloud-drive file | `drive-file-adapter` | web-desktop | 1.0 | A | CERT-SYNC-A-04 | 2–8 | C | post-launch | `capability.drive.controlled` |
-| CAP-OTT-WEBDESK | Premium OTT provider app/site | `deep-link-adapter` | web-desktop | 1.0 | C | CERT-SYNC-C-01 | 2–8 | C | launch | `capability.ott.manual` |
-| CAP-OTT-WEBMOB | Premium OTT provider app/site | `deep-link-adapter` | web-mobile | 1.0 | C | CERT-SYNC-C-02 | 2–8 | C | launch | `capability.ott.manual` |
-| CAP-OTT-ANDROID | Premium OTT provider app | `deep-link-adapter` | android | 1.0 | C | CERT-SYNC-C-03 | 2–8 | C | post-launch | `capability.ott.manual` |
-| CAP-OTT-IOS | Premium OTT provider app | `deep-link-adapter` | ios | 1.0 | C | CERT-SYNC-C-04 | 2–8 | C | post-launch | `capability.ott.manual` |
-| CAP-LIVE-ANY | Live broadcast / linear event | `deep-link-adapter` | all | 1.0 | C | CERT-SYNC-C-05 | 2–8 | C | post-launch | `capability.live.manual` |
-| CAP-CAPTURE-ANY | Screen capture of any source | — | all | — | — | — | — | — | excluded | — |
-| CAP-A11Y-ANDROID | Accessibility-service automation | — | android | — | — | — | — | — | excluded | — |
+| Capability ID     | Source                           | Adapter                | Platform    | Min version | Tier | Certification Record | Limits | Fallback | Launch status | Disclosure key                |
+| ----------------- | -------------------------------- | ---------------------- | ----------- | ----------- | ---- | -------------------- | ------ | -------- | ------------- | ----------------------------- |
+| CAP-EMBED-WEBDESK | Embeddable public player surface | `embed-player-adapter` | web-desktop | 1.0         | A    | CERT-SYNC-A-01       | 2–8    | C        | launch        | `capability.embed.controlled` |
+| CAP-EMBED-WEBMOB  | Embeddable public player surface | `embed-player-adapter` | web-mobile  | 1.0         | B    | CERT-SYNC-B-01       | 2–8    | C        | launch        | `capability.embed.assisted`   |
+| CAP-EMBED-ANDROID | Embeddable public player surface | `embed-player-adapter` | android     | 1.0         | B    | CERT-SYNC-B-02       | 2–8    | C        | post-launch   | `capability.embed.assisted`   |
+| CAP-EMBED-IOS     | Embeddable public player surface | `embed-player-adapter` | ios         | —           | C    | —                    | 2–8    | C        | investigating | `capability.embed.manual`     |
+| CAP-LOCAL-WEBDESK | User-supplied local file         | `local-file-adapter`   | web-desktop | 1.0         | A    | CERT-SYNC-A-02       | 2–8    | C        | launch        | `capability.local.controlled` |
+| CAP-LOCAL-WEBMOB  | User-supplied local file         | `local-file-adapter`   | web-mobile  | 1.0         | A    | CERT-SYNC-A-03       | 2–8    | C        | post-launch   | `capability.local.controlled` |
+| CAP-LOCAL-ANDROID | User-supplied local file         | `local-file-adapter`   | android     | —           | C    | —                    | 2–8    | C        | post-launch   | `capability.local.manual`     |
+| CAP-DRIVE-WEBDESK | User's own cloud-drive file      | `drive-file-adapter`   | web-desktop | 1.0         | A    | CERT-SYNC-A-04       | 2–8    | C        | post-launch   | `capability.drive.controlled` |
+| CAP-OTT-WEBDESK   | Premium OTT provider app/site    | `deep-link-adapter`    | web-desktop | 1.0         | C    | CERT-SYNC-C-01       | 2–8    | C        | launch        | `capability.ott.manual`       |
+| CAP-OTT-WEBMOB    | Premium OTT provider app/site    | `deep-link-adapter`    | web-mobile  | 1.0         | C    | CERT-SYNC-C-02       | 2–8    | C        | launch        | `capability.ott.manual`       |
+| CAP-OTT-ANDROID   | Premium OTT provider app         | `deep-link-adapter`    | android     | 1.0         | C    | CERT-SYNC-C-03       | 2–8    | C        | post-launch   | `capability.ott.manual`       |
+| CAP-OTT-IOS       | Premium OTT provider app         | `deep-link-adapter`    | ios         | 1.0         | C    | CERT-SYNC-C-04       | 2–8    | C        | post-launch   | `capability.ott.manual`       |
+| CAP-LIVE-ANY      | Live broadcast / linear event    | `deep-link-adapter`    | all         | 1.0         | C    | CERT-SYNC-C-05       | 2–8    | C        | post-launch   | `capability.live.manual`      |
+| CAP-CAPTURE-ANY   | Screen capture of any source     | —                      | all         | —           | —    | —                    | —      | —        | excluded      | —                             |
+| CAP-A11Y-ANDROID  | Accessibility-service automation | —                      | android     | —           | —    | —                    | —      | —        | excluded      | —                             |
 
 `excluded` rows are recorded deliberately so future proposals are answered by the document rather than re-litigated. Both exclusions are mandated by ADR-014 and Product Principle P8.
 
@@ -60,12 +60,12 @@ Statements of the form "Provider X is Tier A" are removed from every chapter of 
 
 ## B.5 Fallback behaviour
 
-| From | Trigger | To | User-visible behaviour |
-|---|---|---|---|
-| A | Control call fails or adapter unresponsive beyond threshold | B | Banner: control lost, position still tracked |
-| A | Observation also lost | C | Banner: manual mode, catch-up guidance offered |
-| B | Observation lost | C | Banner: manual mode, catch-up guidance offered |
-| C | Deep link unresolvable | C (degraded) | Copyable link plus manual instructions |
+| From | Trigger                                                     | To           | User-visible behaviour                         |
+| ---- | ----------------------------------------------------------- | ------------ | ---------------------------------------------- |
+| A    | Control call fails or adapter unresponsive beyond threshold | B            | Banner: control lost, position still tracked   |
+| A    | Observation also lost                                       | C            | Banner: manual mode, catch-up guidance offered |
+| B    | Observation lost                                            | C            | Banner: manual mode, catch-up guidance offered |
+| C    | Deep link unresolvable                                      | C (degraded) | Copyable link plus manual instructions         |
 
 Fallback is always one step at a time, always announced (P7), and always reversible when the capability recovers.
 
