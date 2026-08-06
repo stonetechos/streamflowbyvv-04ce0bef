@@ -15,7 +15,7 @@
  */
 
 /** How the host tells the room what to watch. */
-export type ProviderSelectionMode = "browse" | "paste-link" | "direct-title";
+export type ProviderSelectionMode = "browse" | "paste-link" | "direct-title" | "direct-link";
 
 /**
  * How far playback coordination can honestly go.
@@ -29,9 +29,20 @@ export type ProviderSelectionMode = "browse" | "paste-link" | "direct-title";
 export type PlaybackControlMode =
   "automatic" | "assisted" | "manual" | "launch-only" | "unavailable";
 
+/**
+ * The single definitive description of a service (Sprint H4).
+ *
+ * Every product-visible claim — tab, chip, instruction, control, limitation —
+ * is rendered from this record and from nothing else.
+ */
 export interface WatchProviderCapability {
   readonly providerId: string;
   readonly displayName: string;
+  /** Whether the service exists in the product at all. */
+  readonly enabled: boolean;
+  /** Whether it may appear as a selectable tab in a room or lobby. */
+  readonly visibleInLobby: boolean;
+  /** Retained H2 name for `enabled`; kept so older call sites keep reading. */
   readonly supported: boolean;
   readonly selectionMode: ProviderSelectionMode;
   readonly playbackControlMode: PlaybackControlMode;
@@ -39,6 +50,7 @@ export interface WatchProviderCapability {
   readonly allowsFullscreenFromRoom: boolean;
   readonly allowsZoomFromRoom: boolean;
   readonly requiresOwnSubscription: boolean;
+  readonly requiresProviderLogin: boolean;
   readonly supportedPlatforms: readonly string[];
   readonly limitations: readonly string[];
 }
@@ -78,6 +90,8 @@ function ottProvider(
     capability: Object.freeze({
       providerId,
       displayName,
+      enabled: true,
+      visibleInLobby: true,
       supported: true,
       selectionMode: "browse" as const,
       playbackControlMode: "launch-only" as const,
@@ -85,6 +99,7 @@ function ottProvider(
       allowsFullscreenFromRoom: false,
       allowsZoomFromRoom: false,
       requiresOwnSubscription: true,
+      requiresProviderLogin: true,
       supportedPlatforms: WEB_PLATFORMS,
       limitations: ottLimitations(displayName),
     }),
@@ -98,13 +113,16 @@ const DIRECT: ProviderDefinition = Object.freeze({
   capability: Object.freeze({
     providerId: "direct",
     displayName: "Direct video link",
+    enabled: true,
+    visibleInLobby: true,
     supported: true,
-    selectionMode: "paste-link" as const,
+    selectionMode: "direct-link" as const,
     playbackControlMode: "automatic" as const,
     allowsEmbeddedPlayback: true,
     allowsFullscreenFromRoom: true,
     allowsZoomFromRoom: false,
     requiresOwnSubscription: false,
+    requiresProviderLogin: false,
     supportedPlatforms: WEB_PLATFORMS,
     limitations: Object.freeze([
       "The file has to be openly reachable — no protected or paywalled stream.",
@@ -115,6 +133,7 @@ const DIRECT: ProviderDefinition = Object.freeze({
   browseUrl: null,
   titleSegments: Object.freeze([]),
 });
+
 
 const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
   ottProvider("netflix", "Netflix", /(^|\.)netflix\.com$/i, "https://www.netflix.com/browse", [
