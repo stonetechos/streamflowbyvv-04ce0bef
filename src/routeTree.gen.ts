@@ -30,6 +30,7 @@ import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
 import { Route as JoinCodeRouteImport } from './routes/join.$code'
 import { Route as AuthenticatedPeopleProfileIdRouteImport } from './routes/_authenticated.people.$profileId'
 import { Route as AuthenticatedRoomsRoomIdRouteImport } from './routes/_authenticated.rooms.$roomId'
+import { Route as AuthenticatedTheaterRoomIdRouteImport } from './routes/_authenticated.theater.$roomId'
 import { Route as ApiDebugConfigRouteImport } from './routes/api/debug/config'
 import { Route as ApiPublicTimeRouteImport } from './routes/api/public/time'
 import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice/token'
@@ -142,6 +143,12 @@ const AuthenticatedRoomsRoomIdRoute =
     path: '/rooms/$roomId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedTheaterRoomIdRoute =
+  AuthenticatedTheaterRoomIdRouteImport.update({
+    id: '/theater/$roomId',
+    path: '/theater/$roomId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const ApiDebugConfigRoute = ApiDebugConfigRouteImport.update({
   id: '/api/debug/config',
   path: '/api/debug/config',
@@ -189,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/auth/': typeof AuthIndexRoute
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/theater/$roomId': typeof AuthenticatedTheaterRoomIdRoute
   '/api/debug/config': typeof ApiDebugConfigRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
@@ -215,6 +223,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/theater/$roomId': typeof AuthenticatedTheaterRoomIdRoute
   '/api/debug/config': typeof ApiDebugConfigRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
@@ -244,6 +253,7 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/_authenticated/people/$profileId': typeof AuthenticatedPeopleProfileIdRoute
   '/_authenticated/rooms/$roomId': typeof AuthenticatedRoomsRoomIdRoute
+  '/_authenticated/theater/$roomId': typeof AuthenticatedTheaterRoomIdRoute
   '/api/debug/config': typeof ApiDebugConfigRoute
   '/api/public/time': typeof ApiPublicTimeRoute
   '/api/voice/token': typeof ApiVoiceTokenRoute
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/people/$profileId'
     | '/rooms/$roomId'
+    | '/theater/$roomId'
     | '/api/debug/config'
     | '/api/public/time'
     | '/api/voice/token'
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/people/$profileId'
     | '/rooms/$roomId'
+    | '/theater/$roomId'
     | '/api/debug/config'
     | '/api/public/time'
     | '/api/voice/token'
@@ -327,6 +339,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/_authenticated/people/$profileId'
     | '/_authenticated/rooms/$roomId'
+    | '/_authenticated/theater/$roomId'
     | '/api/debug/config'
     | '/api/public/time'
     | '/api/voice/token'
@@ -495,6 +508,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRoomsRoomIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/theater/$roomId': {
+      id: '/_authenticated/theater/$roomId'
+      path: '/theater/$roomId'
+      fullPath: '/theater/$roomId'
+      preLoaderRoute: typeof AuthenticatedTheaterRoomIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api/debug/config': {
       id: '/api/debug/config'
       path: '/api/debug/config'
@@ -553,6 +573,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedShareRoute: typeof AuthenticatedShareRoute
   AuthenticatedRoomsRoomIdRoute: typeof AuthenticatedRoomsRoomIdRoute
+  AuthenticatedTheaterRoomIdRoute: typeof AuthenticatedTheaterRoomIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -564,6 +585,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedShareRoute: AuthenticatedShareRoute,
   AuthenticatedRoomsRoomIdRoute: AuthenticatedRoomsRoomIdRoute,
+  AuthenticatedTheaterRoomIdRoute: AuthenticatedTheaterRoomIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -608,13 +630,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
