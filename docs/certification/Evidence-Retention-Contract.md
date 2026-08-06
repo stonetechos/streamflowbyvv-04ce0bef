@@ -57,3 +57,52 @@ reported as having no manifest. They are never rewritten or retro-claimed.
 `npm run retention:check` (`scripts/check-retention.mjs`) proves R1–R14 of this contract
 against throwaway `RUN-RETSELFTEST-*` fixtures that are deleted automatically. It executes
 no certification, seals no real run and promotes no row.
+
+## Authoritative destination (M1.18 — DEST-1)
+
+Exactly one evidence destination exists. It is owned by
+`scripts/lib/evidence-destination.mjs`; no other module, config or workflow may declare
+an evidence root. The value is unchanged from RET-1.
+
+| Item                    | Path                                                                       |
+| ----------------------- | -------------------------------------------------------------------------- |
+| Authoritative root      | `tests/certification/evidence/`                                            |
+| Per-run path            | `tests/certification/evidence/<RUN-ID>/`                                   |
+| RUN-ID path             | the run directory itself; `<RUN-ID>` must be one safe path segment         |
+| Work-package lookup     | `<run>/manifest.json` → `workPackage` (also in `summary.json`, `completed.json`) |
+| Certification-row map   | `<run>/manifest.json` → `rows[]` → `records/<EVIDENCE-ID>.json`            |
+| Manifest                | `<run>/manifest.json`                                                      |
+| Index                   | `<run>/index.json`                                                         |
+| Summary                 | `<run>/summary.json`                                                       |
+| Completion marker       | `<run>/completed.json`                                                     |
+| Reports                 | `<run>/reports/`                                                           |
+| Metrics                 | `<run>/metrics/`                                                           |
+| Logs / screenshots      | `<run>/logs/`, `<run>/screenshots/`                                        |
+| Raw runner workspace    | `<run>/artifacts/`, `<run>/videos/`, `<run>/html/`, `<run>/report.json`    |
+| Legacy path handling    | `RUN-M0R-001` (pre-manifest) stays at the same root, untouched, no manifest |
+| CI relationship         | CI writes to the same root; the uploaded artifact is a derived copy only    |
+
+The raw runner workspace is a **generated temporary workspace** beneath the authoritative
+root. It is never authoritative: `videos/` and `artifacts/` stay ignored, and the manifest
+lists only `records/`, `metrics/`, `reports/`, `screenshots/`, `logs/`.
+
+### Destination rules
+
+- A RUN-ID must match `^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$`. Separators, traversal
+  sequences and absolute paths are refused before any path is constructed; sealing exits
+  non-zero and writes nothing.
+- A destination matched by an active ignore rule fails closed (RET-1, unchanged).
+- Any evidence root declared anywhere in `scripts/`, `tests/certification/`,
+  `playwright.config.ts` or `.github/workflows/` other than the authoritative root fails
+  `npm run retention:check` (D1).
+
+### Release-review lookup
+
+Given a RUN-ID: open `tests/certification/evidence/<RUN-ID>/manifest.json`; it carries the
+source revision, work package, engines, row→record map and artifact digests, and
+`completed.json` proves the run sealed. Given a certification row, work package or source
+revision: scan `tests/certification/evidence/*/manifest.json` for the matching
+`rows[].evidenceId`, `workPackage` or `sourceRevision.sha` — there is only one root to
+scan, so the lookup is deterministic.
+
+`npm run retention:check` proves D1–D8 alongside R1–R14.
