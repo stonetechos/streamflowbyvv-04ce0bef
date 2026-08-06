@@ -159,7 +159,6 @@ test.describe("M1 watch party", () => {
         return;
       }
 
-
       const result = await measureConvergence(
         sessions.map((session, index) => ({
           label: `client-${index}`,
