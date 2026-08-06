@@ -1838,6 +1838,48 @@ export type Database = {
           },
         ]
       }
+      room_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          metadata: Json
+          profile_id: string
+          room_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          profile_id: string
+          room_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          profile_id?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_messages_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "room_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       room_presence: {
         Row: {
           clock_offset_ms: number | null
