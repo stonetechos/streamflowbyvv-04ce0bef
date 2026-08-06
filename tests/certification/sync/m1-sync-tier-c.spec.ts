@@ -84,7 +84,10 @@ test.describe("M1 Tier C sync", () => {
     await page.waitForSelector('[data-sf-screen="waiting-room"]', { timeout: 30_000 });
 
     // The host picks a provider the way a real host does: through the lobby
-    // radiogroup, not by writing the room row behind the UI.
+    // radiogroup, not by writing the room row behind the UI. Setup lives behind
+    // the "Room details" disclosure since the UX simplification pass.
+    const details = page.getByRole("button", { name: "Room details" });
+    if ((await details.count()) > 0) await details.first().click();
     const choices = page.locator('[role="radiogroup"] [role="radio"]:not([disabled])');
     try {
       await choices.first().waitFor({ state: "visible", timeout: 20_000 });
