@@ -137,7 +137,7 @@ test.describe("M1 room lifecycle", () => {
   test("CERT-ROOM-02 member appears to all peers with correct identity and role", async ({
     browserName,
   }) => {
-    if (!participants || !room) {
+    if (!participants) {
       recordM1Row("CERT-ROOM-02", {
         status: "unmeasured",
         detail: environmentReason(),
@@ -148,8 +148,27 @@ test.describe("M1 room lifecycle", () => {
       test.skip();
       return;
     }
-    const [host, guest] = participants;
-    const outcome = await joinAsGuest(guest!, room);
+    const host = participants[0]!;
+    const guest = participants[2]!;
+    // WP2 harness wiring: CERT-ROOM-01 drives the product join flow, which
+    // already seats participants[1] in the shared lobby. Measuring roster
+    // symmetry on that same lobby measured a duplicate-membership refusal, not
+    // peer visibility. This row therefore seats a previously unseated identity
+    // in its own lobby. No product behaviour and no row semantic changes.
+    const rosterRoom = await createRoomWithCapacity(host, 2, "M1 roster symmetry");
+    if (!rosterRoom) {
+      recordM1Row("CERT-ROOM-02", {
+        status: "unmeasured",
+        detail: environmentReason(),
+        profileId: "PROF-07",
+        browser: browserName,
+        platform: "web-desktop",
+      });
+      test.skip();
+      return;
+    }
+    await seatHost(host, rosterRoom);
+    const outcome = await joinAsGuest(guest, rosterRoom);
     if (!outcome.accepted) {
       recordM1Row("CERT-ROOM-02", {
         status: "fail",
@@ -158,29 +177,31 @@ test.describe("M1 room lifecycle", () => {
         browser: browserName,
         platform: "web-desktop",
       });
+      await disposeRoom(host, rosterRoom);
       return;
     }
 
-    const hostView = await readRoster(host!, room);
-    const guestView = await readRoster(guest!, room);
+    const hostView = await readRoster(host, rosterRoom);
+    const guestView = await readRoster(guest, rosterRoom);
     const agrees = (view: readonly { profileId: string; role: string; state: string }[]) =>
       view.some(
-        (m) => m.profileId === host!.profileId && m.role === "host" && m.state === "joined",
+        (m) => m.profileId === host.profileId && m.role === "host" && m.state === "joined",
       ) &&
       view.some(
-        (m) => m.profileId === guest!.profileId && m.role === "guest" && m.state === "joined",
+        (m) => m.profileId === guest.profileId && m.role === "guest" && m.state === "joined",
       );
     const symmetric = agrees(hostView) && agrees(guestView) && hostView.length === guestView.length;
 
     recordM1Row("CERT-ROOM-02", {
       status: symmetric ? "pass" : "fail",
       detail: symmetric
-        ? `Both peers read the same two-member roster with identities and roles intact (host=${host!.profileId}, guest=${guest!.profileId}).`
+        ? `Both peers read the same two-member roster with identities and roles intact (host=${host.profileId}, guest=${guest.profileId}).`
         : `Peer rosters disagree. Host saw ${JSON.stringify(hostView)}; guest saw ${JSON.stringify(guestView)}.`,
       profileId: "PROF-07",
       browser: browserName,
       platform: "web-desktop",
     });
+    await disposeRoom(host, rosterRoom);
     expect(symmetric).toBe(true);
   });
 
