@@ -1,61 +1,67 @@
-# StreamFlow v2.0 — Master Architecture & Engineering Blueprint
+# StreamFlow v2.0 — Blueprint (restructured, implementation-facing)
 
-Documentation only. No production code, no schema changes, no UI changes. Everything already built (auth, profiles, friends, lobby, waiting room, invites, QR, countdown, voice, Po, notifications, presence, room lifecycle, provider launcher, design language, branding, realtime, ADRs) is preserved and re-organized into engines — not redesigned.
+Documentation only. No production code, no schema changes, no UI changes. Everything shipped (auth, profiles, friends, lobby, waiting room, invites, QR, countdown, voice, Po, notifications, presence, room lifecycle, provider launcher, design language, branding, realtime, ADRs) is preserved and re-organized — not redesigned.
 
-## What gets produced
+## Structure
 
-A new `docs/blueprint/` set, written as one constitution split into readable parts so each future sprint can cite a section. `StreamFlow-v2.0-Blueprint.md` is the authoritative index; the rest are its chapters.
+Four practical layers plus governance material, written into `docs/blueprint/`. `StreamFlow-Blueprint.md` is the authoritative index; the rest are its chapters.
 
 ```text
 docs/blueprint/
-  StreamFlow-v2.0-Blueprint.md      index, vision, philosophy, principles, pillars
-  01-domain-architecture.md          bounded contexts, domain model, layering rules
-  02-engine-architecture.md          the 13 engines, one section each
-  03-event-architecture.md           full domain event catalog v2 (extends v1.0)
-  04-realtime-architecture.md        WebSocket vs WebRTC ownership, channels, backpressure
-  05-provider-capability-matrix.md   capability-driven provider engine (binds ADR-014)
-  06-watch-party-lifecycle.md        the 14-stage lifecycle, states, guards, events
-  07-community-layer.md              friends, groups, clubs, communities, scheduled/recurring
-  08-ai-layer-po.md                  Po as watch companion (extends ADR-001)
-  09-platform-adapters.md            core engine vs Web/Android/iOS/Android TV/Apple TV
-  10-observability.md                metrics, tracing, logging, crash, quality KPIs
-  11-scalability.md                  1K -> 10M staged plan with cost/bottleneck per tier
-  12-security-privacy.md             threat model, RLS posture, data classes, retention
-  13-monetization.md                 tiers, entitlements, where billing sits in the model
-  14-roadmap.md                      multi-year product roadmap
-  15-sprint-roadmap.md               all future sprints reorganized BY ENGINE
-  ADR-015-engine-decomposition.md    the ADR that makes this binding
+  StreamFlow-Blueprint.md        index + Executive Summary (max 2 pages)
+  A-product-operating-brief.md   thesis, users, launch scope, source types,
+                                 sync tier model, room lifecycle summary,
+                                 degraded-mode philosophy, KPIs and SLOs
+  B-capability-matrix.md         source category x platform x sync tier x
+                                 host/member limits x fallback x launch status
+                                 x user-facing disclosure text
+  C-engine-pack.md               the 13 engines, identical spec format
+  D-milestone-roadmap.md         M0-M7, milestone first then engine
+  E-scope-decisions.md           remove from v1 / defer / risky-but-acceptable /
+                                 non-negotiable for launch
+  F-reality-check.md             Hearo-like viability under ADR-014
+  G-platform-foundation.md       future shared Vedora Vision capabilities
+  H-native-architecture.md       Core Domain vs Web/Android/iOS/TV/Desktop adapters
+  I-governance.md                the engineering constitution
+  J-technical-debt.md            immediate / near-term / long-term register
+  ADR-015-engine-decomposition.md  makes the engine model binding
 ```
 
-## Engine specification format
+## Engine spec format (applied identically to all 13)
 
-Every one of the 13 engines (Room, Timeline, Watch Party, Sync, Voice, Chat, Presence, Provider, Notification, Community, AI/Po, Analytics, Moderation) gets an identical section:
+Room, Timeline, Watch Party, Sync, Voice, Chat, Presence, Provider, Notification, Community, AI/Po, Analytics, Moderation.
 
-- Responsibilities and explicit non-responsibilities
-- Ownership: which bounded context and which existing `src/domain/*` modules map into it
-- Public API surface (contract signatures, vendor-free)
-- Events published and consumed
-- Dependencies (engines only, one-directional)
+- Responsibilities
+- Non-responsibilities
+- Current mapping to existing modules (file-level table, so nothing shipped is orphaned)
+- Public contracts (vendor-neutral signatures)
+- Published events
+- Consumed events
+- Dependencies (engine-to-engine, one directional)
 - Lifecycle: init, bind, active, degrade, teardown
-- Scalability characteristics and hot paths
-- Failure handling and degraded-mode behavior
+- Failure modes
+- Degraded-mode behavior
+- Scalability hot paths
 
-Each engine section includes a **Current mapping** table pointing at existing files so no built feature is orphaned. Chat and Moderation are new engines with no existing implementation and will be marked as contract-only.
+Chat and Moderation have no existing implementation and are marked contract-only.
 
-## Constraints the blueprint enforces
+## Ground rules the blueprint enforces
 
-- ADR-014 remains binding: no OTT playback control. The Sync Engine specifies Tier A (true sync: YouTube, local), Tier B (assisted/observed), Tier C (coordinated manual) and never proposes accessibility services, overlay automation, screen capture, or Cast for play/pause/seek.
-- Existing layering holds: Presentation → Feature → Domain → Repository → Infrastructure. Engines are a Domain-layer organizing concept, not a new layer.
-- Vendor neutrality: no Supabase/LiveKit types in engine contracts.
-- Foundation Spec v1.0, MVP Spec v1.0, Database Spec v1.0 stay frozen; the blueprint extends them via ADR-015 and flags any contradiction rather than silently overriding.
-- The still-missing Foundation Spec citation issue is recorded again in the index, not resolved here.
+- ADR-014 binding: no OTT playback control. No accessibility-service hacks, overlay automation, screen-capture automation, or illegal play/pause/seek. Sync Engine documents Tier A (true sync: YouTube, local, Drive), Tier B (observation-only where a real media session exists), Tier C (deep link + countdown + voice) and never promises more.
+- Engines are a Domain-layer organizing model, not a new technical layer. Presentation → Feature → Domain → Repository → Infrastructure holds.
+- No Supabase or LiveKit types in engine contracts.
+- Foundation Spec v1.0, MVP Spec v1.0, Database Spec v1.0 stay frozen; extension happens through ADR-015. Every contradiction with an earlier spec is flagged explicitly in-line rather than silently overridden — including the still-missing Foundation Spec file that other docs cite.
 
-## Sprint roadmap reorganization
+## Governance section contents
 
-Section 15 re-cuts all remaining work by engine rather than feature: each engine gets a numbered sprint track (e.g. `SYNC-1`, `CHAT-1`, `MOD-1`) with dependencies between tracks, so parallel work is explicit. Already-shipped work is listed as the completed baseline of each track.
+Naming conventions, ADR policy, domain ownership, engine ownership, public contract rules, event versioning policy, backward compatibility policy, deprecation policy, feature flag policy, documentation standards.
+
+## Milestone roadmap shape
+
+M0 foundation instrumentation and architecture freeze · M1 private watch room MVP · M2 sync and room trust · M3 voice/chat maturity · M4 provider/source expansion via the capability matrix · M5 retention, scheduling, favorites, recurring groups · M6 premium and community controls · M7 optional AI/Po enhancements. Each milestone lists work per engine, with already-shipped work called out as the completed baseline.
 
 ## Out of scope
 
 - No code, migrations, or config changes.
-- No redesign of shipped features; only re-classification.
-- No new provider integrations proposed beyond the capability matrix.
+- No redesign of shipped features; classification only.
+- No new provider integrations beyond what the capability matrix documents.
