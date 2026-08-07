@@ -312,26 +312,48 @@ export function Theater({ roomId }: TheaterProps) {
 
   // Presence and a person's own tap are the only readiness inputs: the room
   // never infers that somebody is watching.
+  const voiceProfileIds = useMemo(
+    () => new Set(voice.members.filter((member) => member.isConnected).map((m) => m.profileId)),
+    [voice.members],
+  );
+
+  const isWatchPhase = runtime.playback.status === "playing";
+
   const participants = useMemo<readonly ParticipantRuntime[]>(
     () =>
       room.members
-        .filter((member) => member.state !== "left")
-        .map((member) => ({
-          participantId: member.profileId,
-          displayName: nameFor(member.profileId),
-          isHost: member.isHost,
-          state:
-            member.presence === "unknown"
-              ? ("disconnected" as const)
-              : member.presence === "away"
-                ? ("reconnecting" as const)
-                : member.isViewer && selfReady
-                  ? ("ready" as const)
-                  : member.isReady
-                    ? ("ready" as const)
-                    : ("joined" as const),
-        })),
-    [room.members, nameFor, selfReady],
+        .filter((member) => member.state !== "left" && member.state !== "removed")
+        .map((member) => {
+          const presence = classifyPresence({
+            membership: member.state,
+            liveness: member.presence,
+            // Only the one plane we actually observe counts as watching.
+            isWatching: isWatchPhase && member.presence === "online" && isEmbedded,
+            hasSelfDeclaredReady: member.isViewer ? selfReady : member.isReady,
+            voice: voiceProfileIds.has(member.profileId)
+              ? member.isMutedByHost || (member.isViewer && voice.isMuted)
+                ? "muted"
+                : "connected"
+              : "off",
+          });
+          const state: ParticipantRuntime["state"] =
+            presence === "watching"
+              ? "watching"
+              : presence === "reconnecting"
+                ? "reconnecting"
+                : presence === "disconnected"
+                  ? "disconnected"
+                  : presence === "ready"
+                    ? "ready"
+                    : "joined";
+          return {
+            participantId: member.profileId,
+            displayName: nameFor(member.profileId),
+            isHost: member.isHost,
+            state,
+          };
+        }),
+    [room.members, nameFor, selfReady, voiceProfileIds, voice.isMuted, isWatchPhase, isEmbedded],
   );
 
   const readiness = useMemo(
