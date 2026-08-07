@@ -235,10 +235,23 @@ export function OnboardingWizard({
 
           {step === "start" ? (
             <div className="flex flex-col gap-2">
-              <ActionButton className="min-h-11" onClick={() => void finish("/home")}>
+              <ActionButton
+                className="min-h-11"
+                onClick={() => {
+                  analytics.track("create_room_clicked");
+                  void finish("/home");
+                }}
+              >
                 {t("onboarding.start.create")}
               </ActionButton>
-              <ActionButton tone="secondary" className="min-h-11" onClick={() => void finish("/join")}>
+              <ActionButton
+                tone="secondary"
+                className="min-h-11"
+                onClick={() => {
+                  analytics.track("join_room_clicked");
+                  void finish("/home");
+                }}
+              >
                 {t("onboarding.start.join")}
               </ActionButton>
             </div>
