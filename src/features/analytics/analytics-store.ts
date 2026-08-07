@@ -11,9 +11,18 @@
  * the domain layer enforces the key filter; this module never widens it.
  */
 import {
+  assignCohort,
   buildFeedback,
+  buildResearchResponse,
+  buildSessionSummary,
+  computeReliability,
+  createActivationTracker,
   createBetaAnalytics,
+  matchesCohort,
   summarizeFeedback,
+  summarizeResearch,
+  withActivationStatus,
+  withFeedbackStatus,
   type AnalyticsContext,
   type AnalyticsEventName,
   type BetaAnalyticsSnapshot,
@@ -21,7 +30,17 @@ import {
   type FeedbackCategory,
   type FeedbackEntry,
   type FeedbackOutcome,
+  type ActivationFacts,
+  type ActivationSummary,
+  type CohortAssignment,
+  type CohortFacts,
+  type CohortFilter,
+  type InviteSource,
+  type ReliabilityMetrics,
+  type ResearchResponse,
   type RoomRoleLabel,
+  type RoomTimeline,
+  type SessionSummary,
 } from "@/domain";
 import { logger } from "@/foundation/logging";
 
@@ -31,7 +50,10 @@ const MODULE = "beta-analytics";
 export const APP_VERSION = "1.0.0-rc.1";
 
 const recorder = createBetaAnalytics();
+const activation = createActivationTracker();
 let feedback: FeedbackEntry[] = [];
+let research: ResearchResponse[] = [];
+let events: { readonly facts: CohortFacts; readonly name: string }[] = [];
 const listeners = new Set<() => void>();
 
 function randomId(): string {
@@ -41,6 +63,18 @@ function randomId(): string {
 }
 
 const sessionId = randomId();
+
+/**
+ * One cohort record per tab. It is created eagerly so every event carries a
+ * cohort dimension, and it starts outside the beta: admission is granted by
+ * `grantBetaAccess`, never assumed.
+ */
+let cohort: CohortAssignment = assignCohort({
+  betaFlag: false,
+  cohortId: randomId(),
+  platform: "unknown",
+  appVersion: APP_VERSION,
+});
 
 function deviceCategory(): DeviceCategory {
   if (typeof window === "undefined") return "unknown";
@@ -59,6 +93,43 @@ function platform(): string {
   if (/mac os/i.test(ua)) return "macos";
   if (/windows/i.test(ua)) return "windows";
   return "web";
+}
+
+export function readCohort(): CohortAssignment {
+  return cohort;
+}
+
+/** Called once admission has been decided elsewhere; never decides it here. */
+export function grantBetaAccess(input: {
+  readonly inviteSource: InviteSource;
+  readonly internal: boolean;
+}): CohortAssignment {
+  cohort = assignCohort({
+    betaFlag: true,
+    cohortId: cohort.cohortId,
+    inviteSource: input.inviteSource,
+    platform: platform(),
+    appVersion: APP_VERSION,
+    firstSessionAt: cohort.firstSessionAt,
+    internal: input.internal,
+  });
+  notify();
+  return cohort;
+}
+
+/** A fresh anonymous cohort id. Used by internal testers and by opt-out. */
+export function resetBetaCohort(): CohortAssignment {
+  cohort = assignCohort({
+    betaFlag: cohort.betaFlag,
+    cohortId: randomId(),
+    inviteSource: cohort.inviteSource,
+    platform: platform(),
+    appVersion: APP_VERSION,
+    internal: cohort.internal,
+  });
+  activation.reset();
+  notify();
+  return cohort;
 }
 
 export interface TrackOptions {
@@ -98,6 +169,21 @@ export function trackEvent(
     options.roomKey ?? null,
   );
   if (event === null) return;
+  // Cohort dimensions are kept beside the event name only, so the dashboard
+  // can slice counts without ever needing the event's own payload.
+  events = [
+    ...events,
+    {
+      name,
+      facts: {
+        platform: context.platform,
+        appVersion: context.appVersion,
+        providerId: context.providerId,
+        syncMode: context.syncMode,
+        inviteSource: cohort.inviteSource,
+      },
+    },
+  ].slice(-500);
   logger.debug("product_event", {
     module: MODULE,
     event: name,
@@ -115,15 +201,121 @@ export function recordFeedback(input: {
 }): FeedbackEntry {
   const entry = buildFeedback(input);
   feedback = [entry, ...feedback].slice(0, 50);
+  cohort = withFeedbackStatus(cohort, "answered");
   notify();
   return entry;
+}
+
+export function dismissFeedback(): void {
+  cohort = withFeedbackStatus(cohort, "dismissed");
+  notify();
+}
+
+/* ------------------------------------------------------------- activation */
+
+/**
+ * Reports the room's current facts. Returns true exactly once, on the
+ * transition into activation, which is when the primary beta event fires.
+ * A solo host room, a started-but-unfinished countdown, or a room without a
+ * media selection never reaches this point — the domain tracker decides.
+ */
+export function observeActivation(
+  roomKey: string,
+  facts: ActivationFacts,
+  options: TrackOptions = {},
+): boolean {
+  const becameActive = activation.observe(roomKey, facts);
+  cohort = withActivationStatus(cohort, becameActive ? "activated" : "in_progress");
+  if (becameActive) {
+    trackEvent(
+      "room_reached_watching_with_host_and_guest",
+      { participants: facts.guestCount + 1 },
+      { ...options, roomKey },
+    );
+  } else {
+    notify();
+  }
+  return becameActive;
+}
+
+export function markRoomMoment(roomKey: string, moment: keyof RoomTimeline): void {
+  activation.mark(roomKey, moment);
+  notify();
+}
+
+export function noteRoomFact(
+  roomKey: string,
+  fact: Parameters<ReturnType<typeof createActivationTracker>["note"]>[1],
+): void {
+  activation.note(roomKey, fact);
+  notify();
+}
+
+export function readSessionSummary(
+  roomKey: string,
+  input: {
+    readonly providerId: string | null;
+    readonly chatAvailable: boolean;
+    readonly voiceAvailable: boolean;
+    readonly reconnects: number;
+  },
+): SessionSummary {
+  const room = activation.rooms().find((entry) => entry.roomKey === roomKey);
+  return buildSessionSummary({
+    timeline: room?.timeline ?? {
+      createdAt: null,
+      firstGuestAt: null,
+      mediaSelectedAt: null,
+      watchingAt: null,
+      endedAt: null,
+    },
+    participantCount: room?.participants ?? 0,
+    providerId: input.providerId,
+    reachedWatching: room?.activated ?? false,
+    chatAvailable: input.chatAvailable,
+    voiceAvailable: input.voiceAvailable,
+    reconnects: input.reconnects,
+  });
+}
+
+/* ------------------------------------------------ monetization research */
+
+/** Records a research answer. There is no billing path behind this call. */
+export function recordResearch(input: {
+  readonly concept: string;
+  readonly value?: string | null;
+  readonly pay?: string | null;
+}): ResearchResponse | null {
+  const response = buildResearchResponse(input);
+  if (response === null) return null;
+  research = [response, ...research].slice(0, 200);
+  notify();
+  return response;
 }
 
 export interface BetaStoreSnapshot extends BetaAnalyticsSnapshot {
   readonly feedback: readonly FeedbackEntry[];
   readonly feedbackSummary: ReturnType<typeof summarizeFeedback>;
+  readonly research: readonly ResearchResponse[];
+  readonly researchSummary: ReturnType<typeof summarizeResearch>;
+  readonly reliability: ReliabilityMetrics;
+  readonly activation: ActivationSummary;
+  readonly rooms: ReturnType<typeof activation.rooms>;
+  readonly cohort: CohortAssignment;
   readonly sessionId: string;
   readonly appVersion: string;
+}
+
+/** Counts events matching a cohort filter, for dashboard slicing. */
+export function countByCohort(name: string, filter: CohortFilter): number {
+  return events.filter((entry) => entry.name === name && matchesCohort(entry.facts, filter)).length;
+}
+
+/** The distinct values seen for a dimension, so the filter offers real options. */
+export function cohortValues(dimension: keyof CohortFacts): readonly string[] {
+  const seen = new Set<string>();
+  for (const entry of events) seen.add(String(entry.facts[dimension] ?? "unknown"));
+  return [...seen].sort();
 }
 
 let cached: BetaStoreSnapshot | null = null;
@@ -135,6 +327,12 @@ export function readSnapshot(): BetaStoreSnapshot {
     ...base,
     feedback,
     feedbackSummary: summarizeFeedback(feedback),
+    research,
+    researchSummary: summarizeResearch(research),
+    reliability: computeReliability(base.counts),
+    activation: activation.summary(),
+    rooms: activation.rooms(),
+    cohort,
     sessionId,
     appVersion: APP_VERSION,
   };
@@ -148,7 +346,10 @@ export function subscribe(listener: () => void): () => void {
 
 export function resetAnalytics(): void {
   recorder.reset();
+  activation.reset();
   feedback = [];
+  research = [];
+  events = [];
   cached = null;
   notify();
 }
