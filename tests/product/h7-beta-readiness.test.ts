@@ -158,9 +158,7 @@ describe("analytics", () => {
 
   test("once-per-session events deduplicate, per-room events do not collide", () => {
     expect(dedupeKey("landing_viewed", null)).toBe(dedupeKey("landing_viewed", "room-b"));
-    expect(dedupeKey("first_guest_joined", "room-a")).not.toBe(
-      dedupeKey("first_guest_joined", "room-b"),
-    );
+    expect(dedupeKey("room_created", "room-a")).not.toBe(dedupeKey("room_created", "room-b"));
   });
 
   test("a recorder refuses a duplicate and keeps the first", () => {
