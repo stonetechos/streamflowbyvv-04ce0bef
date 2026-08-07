@@ -23,7 +23,7 @@ import {
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
-import { recordFeedback, useAnalytics, useTrackOnce } from "@/features/analytics";
+import { recordFeedback, useAnalytics } from "@/features/analytics";
 import { useVoiceSession, useVoiceDevices } from "@/features/voice";
 import { useMicrophonePermission } from "@/features/voice/use-microphone-permission";
 import {
