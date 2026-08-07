@@ -19,7 +19,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
-import { recordAppSelection, trackEvent } from "@/features/analytics";
+import { recordAppSelection, sinceAppOpen, trackEvent } from "@/features/analytics";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -99,7 +99,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
       );
       const position = cards.findIndex((entry) => entry.key === card.key);
       const pinned = arrangement.isPinned(card.key);
-      recordAppSelection({ providerKey: card.key, pinned, position });
+      recordAppSelection({ fromFavorite: pinned, elapsedMs: sinceAppOpen() });
       if (pinned || position < arrangement.pinnedCount) {
         trackEvent("favorites_used_for_selection", { provider: card.key });
       }
