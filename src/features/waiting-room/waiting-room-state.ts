@@ -14,6 +14,7 @@ import {
   type RoomMember,
   type WaitingRoomSnapshot,
 } from "@/domain";
+import { readGovernance } from "@/domain";
 import { AppError } from "@/shared/constants/error-taxonomy";
 
 import type {
@@ -128,6 +129,7 @@ export function toRoomSummary(snapshot: WaitingRoomSnapshot): RoomSummaryView {
     contentReference: snapshot.room.contentReference,
     mediaRef: readRoomMediaRef(snapshot.room.metadata),
     countdownSeconds: readCountdownSeconds(snapshot.room.metadata),
+    governance: readGovernance(snapshot.room.metadata),
   };
 }
 

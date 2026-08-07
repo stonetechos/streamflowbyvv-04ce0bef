@@ -5,7 +5,13 @@
  * anything: derivation is mechanical, and every rule that matters already
  * lives in the Sprint 1.6 services (Build Rules §1).
  */
-import type { MembershipState, RoomMediaRef, RoomRole, RoomStatus } from "@/domain";
+import type {
+  MembershipState,
+  RoomGovernanceSettings,
+  RoomMediaRef,
+  RoomRole,
+  RoomStatus,
+} from "@/domain";
 
 export type WaitingRoomStatus = "loading" | "ready" | "error";
 
@@ -60,6 +66,8 @@ export interface RoomSummaryView {
   readonly mediaRef: RoomMediaRef | null;
   /** Stored countdown length in seconds; clamped to the system envelope. */
   readonly countdownSeconds: number;
+  /** Privacy and moderation settings, shared by every member (Sprint H6). */
+  readonly governance: RoomGovernanceSettings;
 }
 
 export interface ViewerView {
