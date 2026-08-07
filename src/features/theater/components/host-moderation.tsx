@@ -103,7 +103,7 @@ export function HostModeration({
                   className="min-h-11"
                   onClick={() => setConfirming(null)}
                 >
-                  {t("common.action.cancel")}
+                  {t("common.action.dismiss")}
                 </ActionButton>
               </div>
             </div>
