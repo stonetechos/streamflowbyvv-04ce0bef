@@ -20,6 +20,8 @@ import {
   createBetaAnalytics,
   matchesCohort,
   summarizeFeedback,
+  summarizeJoinSpeed,
+  summarizePersonalization,
   summarizeResearch,
   withActivationStatus,
   withFeedbackStatus,
@@ -36,6 +38,11 @@ import {
   type CohortFacts,
   type CohortFilter,
   type InviteSource,
+  type JoinAttemptFact,
+  type JoinSpeedMetrics,
+  type PersonalizationFact,
+  type PersonalizationMetrics,
+  type SelectionFact,
   type ReliabilityMetrics,
   type ResearchResponse,
   type RoomRoleLabel,
@@ -54,6 +61,10 @@ const activation = createActivationTracker();
 let feedback: FeedbackEntry[] = [];
 let research: ResearchResponse[] = [];
 let events: { readonly facts: CohortFacts; readonly name: string }[] = [];
+let joinAttempts: JoinAttemptFact[] = [];
+let personalization: PersonalizationFact[] = [];
+let selections: SelectionFact[] = [];
+let customized = false;
 const listeners = new Set<() => void>();
 
 function randomId(): string {
@@ -293,6 +304,41 @@ export function recordResearch(input: {
   return response;
 }
 
+/* ------------------------------------------------------------ H9 facts */
+
+/**
+ * The moment this tab became usable. Join speed is measured from here, so the
+ * dashboard can say "app open to joined" without ever timing a person.
+ */
+const openedAt = Date.now();
+
+/** Milliseconds since the app opened; never a wall-clock time in an event. */
+export function sinceAppOpen(): number {
+  return Date.now() - openedAt;
+}
+
+export function recordJoinAttempt(fact: JoinAttemptFact): void {
+  joinAttempts = [...joinAttempts, fact].slice(-200);
+  notify();
+}
+
+export function recordPersonalization(fact: PersonalizationFact): void {
+  personalization = [...personalization, fact].slice(-200);
+  notify();
+}
+
+export function recordAppSelection(fact: SelectionFact): void {
+  selections = [...selections, fact].slice(-200);
+  notify();
+}
+
+/** Set by the home shelf so the dashboard knows this tab arranged anything. */
+export function noteCustomized(value: boolean): void {
+  if (customized === value) return;
+  customized = value;
+  notify();
+}
+
 export interface BetaStoreSnapshot extends BetaAnalyticsSnapshot {
   readonly feedback: readonly FeedbackEntry[];
   readonly feedbackSummary: ReturnType<typeof summarizeFeedback>;
@@ -304,6 +350,8 @@ export interface BetaStoreSnapshot extends BetaAnalyticsSnapshot {
   readonly cohort: CohortAssignment;
   readonly sessionId: string;
   readonly appVersion: string;
+  readonly joinSpeed: JoinSpeedMetrics;
+  readonly personalization: PersonalizationMetrics;
 }
 
 /** Counts events matching a cohort filter, for dashboard slicing. */
@@ -335,6 +383,8 @@ export function readSnapshot(): BetaStoreSnapshot {
     cohort,
     sessionId,
     appVersion: APP_VERSION,
+    joinSpeed: summarizeJoinSpeed(joinAttempts),
+    personalization: summarizePersonalization(personalization, selections, { customized }),
   };
   return cached;
 }
@@ -350,6 +400,10 @@ export function resetAnalytics(): void {
   feedback = [];
   research = [];
   events = [];
+  joinAttempts = [];
+  personalization = [];
+  selections = [];
+  customized = false;
   cached = null;
   notify();
 }

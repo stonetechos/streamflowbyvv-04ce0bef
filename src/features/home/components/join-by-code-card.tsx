@@ -1,46 +1,45 @@
 /**
- * Join by code — Milestone H2 (product experience).
+ * Join by room code — Sprint H9.
  *
- * A secondary way in, kept below the shelf. Shape validation stays in
- * presentation; whether the code exists and whether this person may join is
- * still `RoomFlowService`'s decision.
+ * The fastest way into a room from an app that is already open: read the six
+ * characters off the host's screen, type them, and be in the lobby. The card
+ * validates shape only; every question about whether this person may enter is
+ * answered below, and whatever comes back is said in plain language.
  */
 import { useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, type FormEvent } from "react";
 
+import { ActionButton, Surface } from "@/design-system/components";
 import { trackEvent } from "@/features/analytics";
-import { ActionButton, Surface, TextField } from "@/design-system/components";
-import { normalizeRoomCode, validateRoomCode } from "@/features/auth";
-import { refusalMessageKey } from "@/features/shared/refusal-message";
-
 import { useTranslation } from "@/foundation/localization";
 
+import { useRoomKeyJoin } from "../use-room-key-join";
 import type { HomeModel } from "../use-home";
+import { RoomKeyField } from "./room-key-field";
 
 export function JoinByCodeCard({ home }: { home: HomeModel }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [code, setCode] = useState("");
-  const [codeError, setCodeError] = useState<string | null>(null);
+  const join = useRoomKeyJoin(home);
+
+  useEffect(() => {
+    trackEvent("join_by_code_opened", {});
+  }, []);
 
   async function onJoin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const key = validateRoomCode(code);
-    setCodeError(key ? t(key) : null);
-    if (key) return;
-
-    const roomId = await home.joinByCode(normalizeRoomCode(code));
-    if (roomId) {
-      trackEvent("guest_joined", {}, { role: "guest", roomKey: roomId });
-      setCode("");
-      void navigate({ to: "/rooms/$roomId", params: { roomId } });
-    } else {
-      // Sprint J.1.5 — show the reason the domain gave. Presentation must not
-      // assume "not found"; the code may be valid and the refusal something
-      // else entirely (ended, full, already in another room).
-      setCodeError(t(refusalMessageKey(home.error, "home.join.not_found")));
-    }
+    const roomId = await join.submit();
+    if (roomId) void navigate({ to: "/rooms/$roomId", params: { roomId } });
   }
+
+  const tone =
+    join.state === "validating"
+      ? "busy"
+      : join.state === "success"
+        ? "valid"
+        : join.messageKey
+          ? "invalid"
+          : "neutral";
 
   return (
     <Surface padding="md" as="section" aria-labelledby="join-room-heading">
@@ -52,27 +51,34 @@ export function JoinByCodeCard({ home }: { home: HomeModel }) {
           >
             {t("home.join.title")}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("home.join.description")}</p>
+          <p id="join-room-help" className="mt-1 text-sm text-muted-foreground">
+            {t("home.join.description")}
+          </p>
         </div>
 
-        <form className="flex w-full items-end gap-3 sm:w-auto" onSubmit={onJoin}>
-          <TextField
+        <form className="flex w-full flex-col gap-3 sm:w-auto sm:items-end" onSubmit={onJoin}>
+          <RoomKeyField
             label={t("home.join.code_label")}
-            placeholder="ROM-000123"
-            value={code}
-            error={codeError}
-            autoCapitalize="characters"
-            autoComplete="off"
-            spellCheck={false}
-            className="font-mono tracking-[0.14em]"
-            onChange={(event) => {
-              setCode(event.target.value.toUpperCase());
-              if (codeError) setCodeError(null);
-            }}
+            describedBy="join-room-help"
+            value={join.value}
+            tone={tone}
+            disabled={join.state === "validating"}
+            onChange={join.setValue}
+            onPasted={join.notePaste}
           />
-          <ActionButton type="submit" tone="secondary" loading={home.pending === "join"}>
-            {t("home.join.action")}
-          </ActionButton>
+          <div className="flex items-center gap-3">
+            <p role="status" aria-live="polite" className="min-h-5 text-xs text-muted-foreground">
+              {join.messageKey ? t(join.messageKey) : ""}
+            </p>
+            <ActionButton
+              type="submit"
+              tone="secondary"
+              loading={join.isBusy}
+              disabled={!join.canSubmit}
+            >
+              {t("home.join.action")}
+            </ActionButton>
+          </div>
         </form>
       </div>
     </Surface>

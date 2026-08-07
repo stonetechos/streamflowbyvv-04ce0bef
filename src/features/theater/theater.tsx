@@ -51,6 +51,7 @@ import { SessionSummaryCard } from "./components/session-summary-card";
 import { ChatPanel } from "./components/chat-panel";
 import { FailureNotice } from "./components/failure-notice";
 import { InvitePanel } from "./components/invite-panel";
+import { RoomKeyCard } from "./components/room-key-card";
 import { ConnectionBanner } from "./components/connection-banner";
 import { HostModeration } from "./components/host-moderation";
 import { VoiceRoomPanel } from "./components/voice-room-panel";
@@ -811,6 +812,8 @@ export function Theater({ roomId }: TheaterProps) {
               countdownSeconds === null && countdown.isAvailable ? countdown.start : null
             }
           />
+
+          <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
 
           <InvitePanel
             link={inviteLink}

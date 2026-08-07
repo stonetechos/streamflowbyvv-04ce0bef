@@ -110,3 +110,22 @@ export {
   type ReadySnapshot,
   type ViewerReadyState,
 } from "./ready-coordinator";
+// Sprint H9 — the short, spoken-aloud form of the room's persisted code.
+export {
+  ROOM_KEY_ALPHABET,
+  ROOM_KEY_GROUP,
+  ROOM_KEY_JOIN_STATES,
+  ROOM_KEY_LENGTH,
+  decodeRoomKey,
+  encodeRoomKey,
+  formatRoomKey,
+  isBlockedJoinState,
+  isLegacyRoomCode,
+  normalizeRoomKeyInput,
+  redactRoomKey,
+  resolveJoinCode,
+  roomKeyStateFromRefusal,
+  roomKeyStateMessageKey,
+  validateRoomKeyShape,
+  type RoomKeyJoinState,
+} from "./room-key";

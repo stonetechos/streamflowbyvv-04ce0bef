@@ -262,10 +262,10 @@ export function BetaDashboard() {
             <dl className="mt-3 grid gap-3 sm:grid-cols-3">
               {(["yes", "partly", "no"] as const).map((outcome) => (
                 <Surface key={outcome} tone="card" padding="md">
-                  <dt className="text-xs text-muted-foreground">
-                    {t(`beta.feedback.${outcome}`)}
-                  </dt>
-                  <dd className="font-mono text-lg">{snapshot.feedbackSummary.byOutcome[outcome]}</dd>
+                  <dt className="text-xs text-muted-foreground">{t(`beta.feedback.${outcome}`)}</dt>
+                  <dd className="font-mono text-lg">
+                    {snapshot.feedbackSummary.byOutcome[outcome]}
+                  </dd>
                 </Surface>
               ))}
             </dl>
@@ -292,7 +292,10 @@ export function BetaDashboard() {
                 {snapshot.feedback
                   .filter((entry) => entry.comment !== null)
                   .map((entry) => (
-                    <li key={entry.at} className="rounded-xl border border-border px-3 py-2 text-sm">
+                    <li
+                      key={entry.at}
+                      className="rounded-xl border border-border px-3 py-2 text-sm"
+                    >
                       {entry.comment}
                     </li>
                   ))}
@@ -319,8 +322,8 @@ export function BetaDashboard() {
               >
                 <span>{t(`research.concept.${entry.concept}`)}</span>
                 <span className="font-mono text-xs text-muted-foreground">
-                  n={entry.responses} · {t("beta.research.valuable")} {percent(entry.valuableRate)} ·{" "}
-                  {t("beta.research.pay")} {percent(entry.payYesRate)}
+                  n={entry.responses} · {t("beta.research.valuable")} {percent(entry.valuableRate)}{" "}
+                  · {t("beta.research.pay")} {percent(entry.payYesRate)}
                 </span>
               </li>
             ))}
@@ -339,7 +342,10 @@ export function BetaDashboard() {
         ) : (
           <ol className="mt-3 space-y-2">
             {queue.map((entry) => (
-              <li key={entry.cohortId} className="rounded-xl border border-border px-3 py-2 text-sm">
+              <li
+                key={entry.cohortId}
+                className="rounded-xl border border-border px-3 py-2 text-sm"
+              >
                 <span className="font-mono text-xs">{entry.cohortId}</span>
                 <span className="ml-2 text-muted-foreground">
                   {entry.signals.map((signal) => t(`beta.signal.${signal}`)).join(" · ")}
@@ -358,6 +364,78 @@ export function BetaDashboard() {
             ))}
           </ol>
         </details>
+      </section>
+
+      <section className="mt-8" aria-labelledby="beta-join-speed">
+        <h2 id="beta-join-speed" className="text-sm font-semibold">
+          {t("beta.section.join_speed")}
+        </h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Stat
+            label={t("beta.join.attempts")}
+            value={String(snapshot.joinSpeed.codeAttempts)}
+            hint={t("beta.join.attempts_hint")}
+          />
+          <Stat
+            label={t("beta.join.success_rate")}
+            value={percent(snapshot.joinSpeed.codeSuccessRate)}
+          />
+          <Stat
+            label={t("beta.join.code_share")}
+            value={percent(snapshot.joinSpeed.codeShare)}
+            hint={t("beta.join.code_share_hint")}
+          />
+          <Stat
+            label={t("beta.join.median")}
+            value={duration(snapshot.joinSpeed.medianTimeToCodeJoinMs)}
+          />
+        </div>
+      </section>
+
+      <section className="mt-8" aria-labelledby="beta-personalization">
+        <h2 id="beta-personalization" className="text-sm font-semibold">
+          {t("beta.section.personalization")}
+        </h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Stat
+            label={t("beta.personalization.rate")}
+            value={percent(snapshot.personalization.customizationRate)}
+          />
+          <Stat
+            label={t("beta.personalization.favorite_rate")}
+            value={percent(snapshot.personalization.favoriteSelectionRate)}
+          />
+          <Stat
+            label={t("beta.personalization.reorders")}
+            value={String(snapshot.personalization.reorders)}
+            hint={t("beta.personalization.resets", {
+              count: snapshot.personalization.resets,
+            })}
+          />
+          <Stat
+            label={t("beta.personalization.favorite_speed")}
+            value={duration(snapshot.personalization.medianSelectionMsFromFavorite)}
+            hint={t("beta.personalization.other_speed", {
+              value: duration(snapshot.personalization.medianSelectionMsOther),
+            })}
+          />
+        </div>
+        {snapshot.personalization.mostPinned.length > 0 ? (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {t("beta.personalization.most_pinned")}:{" "}
+            {snapshot.personalization.mostPinned
+              .map((entry) => `${entry.key} (${entry.count})`)
+              .join(" · ")}
+          </p>
+        ) : null}
+        {snapshot.personalization.mostHidden.length > 0 ? (
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t("beta.personalization.most_hidden")}:{" "}
+            {snapshot.personalization.mostHidden
+              .map((entry) => `${entry.key} (${entry.count})`)
+              .join(" · ")}
+          </p>
+        ) : null}
       </section>
 
       <section className="mt-8" aria-labelledby="beta-events">
@@ -380,15 +458,7 @@ export function BetaDashboard() {
   );
 }
 
-function Stat({
-  label,
-  value,
-  hint,
-}: {
-  label: string;
-  value: string;
-  hint?: string | null;
-}) {
+function Stat({ label, value, hint }: { label: string; value: string; hint?: string | null }) {
   return (
     <Surface tone="card" padding="md" className="flex flex-col gap-1">
       <p className="text-xs text-muted-foreground">{label}</p>

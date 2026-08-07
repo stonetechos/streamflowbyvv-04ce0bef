@@ -19,7 +19,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
-import { trackEvent } from "@/features/analytics";
+import { recordAppSelection, sinceAppOpen, trackEvent } from "@/features/analytics";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,6 +30,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SectionHeader } from "@/design-system/components";
+import { useHomepageLayout } from "../use-homepage-layout";
 import { useProviderCatalog, useProviderSessions } from "@/features/providers";
 import { useTranslation } from "@/foundation/localization";
 import { cn } from "@/lib/utils";
@@ -55,22 +56,29 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
   const [choosingKey, setChoosingKey] = useState<string | null>(null);
   const [pendingConnect, setPendingConnect] = useState<ServiceCardView | null>(null);
 
-  const cards = useMemo(
+  const allCards = useMemo(
     () => buildServiceShelf(catalog.status === "ready" ? catalog.options : [], t),
     [catalog.options, catalog.status, t],
   );
 
+  // Sprint H9 — the arrangement is this person's, and it changes what is on
+  // the shelf and in what order. It never changes what a provider can do.
+  const arrangement = useHomepageLayout(allCards, profileId);
+  const cards = arrangement.visible;
+  const hiddenCards = arrangement.hidden;
+  const editing = arrangement.isEditing;
+
   // One independent session per service, derived in Domain.
   const sources = useMemo(
     () =>
-      cards.map((card) => ({
+      allCards.map((card) => ({
         key: card.key,
         providerId: card.providerId,
         name: card.name,
         isSelectable: card.isChoosable,
         supportsDeepLink: card.supportsDeepLink,
       })),
-    [cards],
+    [allCards],
   );
   const providerSessions = useProviderSessions(profileId, sources);
 
@@ -89,12 +97,18 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
         {},
         { role: "host", providerId: card.providerId, roomKey: roomId },
       );
+      const position = cards.findIndex((entry) => entry.key === card.key);
+      const pinned = arrangement.isPinned(card.key);
+      recordAppSelection({ fromFavorite: pinned, elapsedMs: sinceAppOpen() });
+      if (pinned || position < arrangement.pinnedCount) {
+        trackEvent("favorites_used_for_selection", { provider: card.key });
+      }
       void navigate({ to: "/rooms/$roomId", params: { roomId } });
     }
   }
 
   function onChoose(card: ServiceCardView) {
-    if (!card.isChoosable || choosingKey) return;
+    if (editing || !card.isChoosable || choosingKey) return;
     const session = providerSessions.session(card.key);
     // First time with this service: explain the sign-in, then continue.
     if (session?.status !== "connected") {
@@ -111,12 +125,37 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
       data-sf-shelf={catalog.status}
       data-sf-shelf-count={cards.length}
     >
-      <SectionHeader title={t("home.services.title")} />
+      <div className="flex items-end justify-between gap-3">
+        <SectionHeader title={t("home.services.title")} />
+        <div className="flex items-center gap-1">
+          {editing && arrangement.isCustomized ? (
+            <button
+              type="button"
+              onClick={() => arrangement.reset()}
+              className="min-h-9 rounded-lg px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {t("home.services.arrange.reset")}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            aria-pressed={editing}
+            onClick={() => arrangement.setEditing(!editing)}
+            className="min-h-9 rounded-lg px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {editing ? t("home.services.arrange.done") : t("home.services.arrange.action")}
+          </button>
+        </div>
+      </div>
+
+      {editing ? (
+        <p className="text-xs text-muted-foreground">{t("home.services.arrange.hint")}</p>
+      ) : null}
 
       <ul
         className={cn(
           "-mx-4 flex snap-x snap-mandatory scroll-pl-4 gap-3 overflow-x-auto px-4 pb-3",
-          "sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6",
+          "sm:mx-0 sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6",
         )}
       >
         {cards.map((card, index) => {
@@ -126,7 +165,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
           return (
             <li
               key={card.key}
-              className="sf-rail-enter w-36 shrink-0 snap-start sm:w-auto"
+              className="sf-rail-enter flex w-36 shrink-0 flex-col snap-start sm:w-auto"
               style={{ ["--sf-rail-index" as string]: Math.min(index, 8) }}
             >
               <button
@@ -174,10 +213,76 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                   </span>
                 </span>
               </button>
+
+              {editing ? (
+                <div className="mt-2 flex items-center justify-between gap-1">
+                  <div className="flex items-center gap-1">
+                    <ArrangeButton
+                      label={t("home.services.arrange.move_earlier", { service: card.name })}
+                      disabled={index === 0}
+                      onClick={() => arrangement.shift(card.key, -1)}
+                    >
+                      ←
+                    </ArrangeButton>
+                    <ArrangeButton
+                      label={t("home.services.arrange.move_later", { service: card.name })}
+                      disabled={index === cards.length - 1}
+                      onClick={() => arrangement.shift(card.key, 1)}
+                    >
+                      →
+                    </ArrangeButton>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <ArrangeButton
+                      label={
+                        arrangement.isPinned(card.key)
+                          ? t("home.services.arrange.unpin", { service: card.name })
+                          : t("home.services.arrange.pin", { service: card.name })
+                      }
+                      pressed={arrangement.isPinned(card.key)}
+                      onClick={() =>
+                        arrangement.isPinned(card.key)
+                          ? arrangement.unpin(card.key)
+                          : arrangement.pin(card.key)
+                      }
+                    >
+                      ★
+                    </ArrangeButton>
+                    <ArrangeButton
+                      label={t("home.services.arrange.hide", { service: card.name })}
+                      onClick={() => arrangement.hide(card.key)}
+                    >
+                      ×
+                    </ArrangeButton>
+                  </div>
+                </div>
+              ) : null}
             </li>
           );
         })}
       </ul>
+
+      {editing && hiddenCards.length > 0 ? (
+        <div className="space-y-2 rounded-2xl border border-border bg-muted/40 p-3">
+          <p className="text-xs font-medium text-muted-foreground">
+            {t("home.services.arrange.hidden_title")}
+          </p>
+          <ul className="flex flex-wrap gap-2">
+            {hiddenCards.map((card) => (
+              <li key={card.key}>
+                <button
+                  type="button"
+                  onClick={() => arrangement.unhide(card.key)}
+                  className="min-h-9 rounded-full border border-border px-3 text-xs font-medium transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {t("home.services.arrange.unhide", { service: card.name })}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-muted-foreground">{t("home.services.arrange.hidden_note")}</p>
+        </div>
+      ) : null}
 
       <Dialog
         open={pendingConnect !== null}
@@ -214,5 +319,38 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
         </DialogContent>
       </Dialog>
     </section>
+  );
+}
+
+/** A small square control used only while the shelf is being arranged. */
+function ArrangeButton({
+  label,
+  onClick,
+  disabled = false,
+  pressed,
+  children,
+}: {
+  readonly label: string;
+  readonly onClick: () => void;
+  readonly disabled?: boolean;
+  readonly pressed?: boolean;
+  readonly children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      aria-pressed={pressed}
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        "flex size-8 items-center justify-center rounded-lg border border-border text-xs",
+        "transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        pressed && "border-primary text-primary",
+        disabled && "cursor-not-allowed opacity-40",
+      )}
+    >
+      <span aria-hidden="true">{children}</span>
+    </button>
   );
 }
