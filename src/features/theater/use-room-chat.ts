@@ -27,6 +27,8 @@ export interface ChatLine {
   readonly createdAt: string;
   readonly isViewer: boolean;
   readonly isPending: boolean;
+  /** Delivery as observed: a line is only `sent` once storage confirmed it. */
+  readonly status: "sending" | "sent" | "failed";
 }
 
 /**
@@ -50,6 +52,10 @@ export interface RoomChatModel {
   readonly maxLength: number;
   readonly error: "empty" | "too_long" | "failed" | null;
   send(body: string): void;
+  /** Re-sends a line that failed; the original entry keeps its place. */
+  retry(lineId: string): void;
+  /** Drops a failed line without sending it. */
+  discard(lineId: string): void;
   /** Broadcasts a coordination request; returns false when unavailable. */
   sendCoordination(kind: CoordinationKind, body: string): boolean;
 }
@@ -68,6 +74,7 @@ function toLine(message: RoomMessage, viewerProfileId: string | null): ChatLine 
     createdAt: message.createdAt,
     isViewer: message.profileId === viewerProfileId,
     isPending: false,
+    status: "sent",
   };
 }
 
@@ -167,6 +174,33 @@ export function useRoomChat({ roomId, profileId, enabled }: UseRoomChatInput): R
     };
   }, [service, enabled, roomId]);
 
+  const deliver = useCallback(
+    (line: ChatLine) => {
+      if (!service || !profileId) return;
+      setLines((current) =>
+        current.map((entry) => (entry.id === line.id ? { ...entry, status: "sending" } : entry)),
+      );
+      void service
+        .send(roomId, profileId, line.body)
+        .then((saved) => {
+          setLines((current) => {
+            const without = current.filter((entry) => entry.id !== line.id);
+            return merge(without, toLine(saved, profileId));
+          });
+        })
+        .catch((cause: unknown) => {
+          logger.warn("send_failed", { module: MODULE, roomId, error: String(cause) });
+          setLines((current) =>
+            current.map((entry) =>
+              entry.id === line.id ? { ...entry, status: "failed", isPending: false } : entry,
+            ),
+          );
+          setError("failed");
+        });
+    },
+    [service, profileId, roomId],
+  );
+
   const send = useCallback(
     (body: string) => {
       if (!service || !profileId) return;
@@ -177,33 +211,36 @@ export function useRoomChat({ roomId, profileId, enabled }: UseRoomChatInput): R
       }
       setError(null);
 
-      const optimisticId = `pending:${Date.now()}:${Math.random().toString(36).slice(2)}`;
       const optimistic: ChatLine = {
-        id: optimisticId,
+        id: `pending:${Date.now()}:${Math.random().toString(36).slice(2)}`,
         profileId,
         body: body.trim(),
         createdAt: new Date().toISOString(),
         isViewer: true,
         isPending: true,
+        status: "sending",
       };
       setLines((current) => [...current, optimistic]);
-
-      void service
-        .send(roomId, profileId, body)
-        .then((saved) => {
-          setLines((current) => {
-            const without = current.filter((line) => line.id !== optimisticId);
-            return merge(without, toLine(saved, profileId));
-          });
-        })
-        .catch((cause: unknown) => {
-          logger.warn("send_failed", { module: MODULE, roomId, error: String(cause) });
-          setLines((current) => current.filter((line) => line.id !== optimisticId));
-          setError("failed");
-        });
+      deliver(optimistic);
     },
-    [service, profileId, roomId],
+    [service, profileId, deliver],
   );
+
+  const retry = useCallback(
+    (lineId: string) => {
+      setError(null);
+      setLines((current) => {
+        const target = current.find((entry) => entry.id === lineId);
+        if (target) deliver({ ...target, isPending: true });
+        return current;
+      });
+    },
+    [deliver],
+  );
+
+  const discard = useCallback((lineId: string) => {
+    setLines((current) => current.filter((entry) => entry.id !== lineId));
+  }, []);
 
   const sendCoordination = useCallback(
     (kind: CoordinationKind, body: string) => {
@@ -225,6 +262,8 @@ export function useRoomChat({ roomId, profileId, enabled }: UseRoomChatInput): R
     maxLength: CHAT_MESSAGE_MAX_LENGTH,
     error,
     send,
+    retry,
+    discard,
     sendCoordination,
   };
 }
