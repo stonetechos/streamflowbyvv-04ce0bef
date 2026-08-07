@@ -31,6 +31,8 @@ export interface MemberView {
   readonly isHost: boolean;
   readonly isReady: boolean;
   readonly isViewer: boolean;
+  /** Host-applied voice mute, as stored on the membership row (Sprint H6). */
+  readonly isMutedByHost: boolean;
   readonly presence: MemberPresenceView;
   /** ISO-8601 of the last heartbeat; null while presence is untracked. */
   readonly lastSeenAt: string | null;
@@ -66,6 +68,10 @@ export interface ViewerView {
   readonly isMember: boolean;
   readonly isHost: boolean;
   readonly isReady: boolean;
+  readonly role: RoomRole;
+  readonly state: MembershipState;
+  /** Host-applied voice mute for this viewer (Sprint H6). */
+  readonly isMutedByHost: boolean;
   /**
    * Whether a seat is still available for this viewer. Decided by Domain
    * (ADR-002 lifecycle, ADR-013 capacity) and only carried here.

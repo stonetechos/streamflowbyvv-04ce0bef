@@ -94,6 +94,7 @@ export function toMemberViews(
         isHost: member.role === "host" || member.profileId === snapshot.room.hostProfileId,
         isReady: isReady(member),
         isViewer: member.profileId === viewerProfileId,
+        isMutedByHost: member.isMutedByHost,
         presence: presenceView,
         lastSeenAt: observed?.lastSeenAt ?? null,
         lastSeenMinutes:
@@ -142,6 +143,9 @@ export function toViewerView(
     isMember: membership?.state === "joined",
     isHost: membership?.role === "host" || snapshot.room.hostProfileId === viewerProfileId,
     isReady: membership ? isReady(membership) : false,
+    role: membership?.role ?? "participant",
+    state: membership?.state ?? "left",
+    isMutedByHost: membership?.isMutedByHost ?? false,
     // Carried verbatim from the Domain snapshot: Presentation never evaluates
     // lifecycle or capacity for itself (Milestone D.5).
     canJoin: snapshot.canViewerJoin,
