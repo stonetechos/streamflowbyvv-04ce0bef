@@ -57,7 +57,7 @@ const BRANDS: readonly BrandSeed[] = [
     catalogKeys: ["disney_hotstar", "disney_plus", "hotstar"],
   },
   { key: "jiohotstar", name: "JioHotstar", monogram: "JH", accent: "primary" },
-  { key: "sonyliv", name: "SonyLIV", monogram: "SL", accent: "accent" },
+  { key: "sonyliv", name: "Sony LIV", monogram: "SL", accent: "accent" },
   {
     key: "mx_player",
     name: "MX Player",

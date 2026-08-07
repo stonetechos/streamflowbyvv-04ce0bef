@@ -34,7 +34,7 @@ const MARKS: Record<string, WordmarkStyle> = {
   prime_video: { text: "prime video", weight: 700, tracking: 0.5 },
   disney_hotstar: { text: "Disney", weight: 700, glyph: "plus" },
   jiohotstar: { text: "JioHotstar", weight: 700 },
-  sonyliv: { text: "SonyLIV", uppercase: true, weight: 800, tracking: 1 },
+  sonyliv: { text: "Sony LIV", uppercase: true, weight: 800, tracking: 1 },
   mx_player: { text: "MX Player", weight: 800, tracking: 0.5, glyph: "play" },
   discovery_plus: { text: "discovery", weight: 700, glyph: "plus" },
   jiotv: { text: "JioTV", weight: 800, tracking: 0.5 },
