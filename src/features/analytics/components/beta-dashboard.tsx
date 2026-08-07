@@ -360,6 +360,78 @@ export function BetaDashboard() {
         </details>
       </section>
 
+      <section className="mt-8" aria-labelledby="beta-join-speed">
+        <h2 id="beta-join-speed" className="text-sm font-semibold">
+          {t("beta.section.join_speed")}
+        </h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Stat
+            label={t("beta.join.attempts")}
+            value={String(snapshot.joinSpeed.attempts)}
+            hint={t("beta.join.attempts_hint")}
+          />
+          <Stat
+            label={t("beta.join.success_rate")}
+            value={percent(snapshot.joinSpeed.successRate)}
+          />
+          <Stat
+            label={t("beta.join.code_share")}
+            value={percent(snapshot.joinSpeed.codeShare)}
+            hint={t("beta.join.code_share_hint")}
+          />
+          <Stat
+            label={t("beta.join.median")}
+            value={duration(snapshot.joinSpeed.medianMsToJoin)}
+          />
+        </div>
+      </section>
+
+      <section className="mt-8" aria-labelledby="beta-personalization">
+        <h2 id="beta-personalization" className="text-sm font-semibold">
+          {t("beta.section.personalization")}
+        </h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Stat
+            label={t("beta.personalization.rate")}
+            value={percent(snapshot.personalization.customizationRate)}
+          />
+          <Stat
+            label={t("beta.personalization.favorite_rate")}
+            value={percent(snapshot.personalization.favoriteSelectionRate)}
+          />
+          <Stat
+            label={t("beta.personalization.reorders")}
+            value={String(snapshot.personalization.reorders)}
+            hint={t("beta.personalization.resets", {
+              count: snapshot.personalization.resets,
+            })}
+          />
+          <Stat
+            label={t("beta.personalization.favorite_speed")}
+            value={duration(snapshot.personalization.medianSelectionMsFromFavorite)}
+            hint={t("beta.personalization.other_speed", {
+              value: duration(snapshot.personalization.medianSelectionMsOther),
+            })}
+          />
+        </div>
+        {snapshot.personalization.mostPinned.length > 0 ? (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {t("beta.personalization.most_pinned")}:{" "}
+            {snapshot.personalization.mostPinned
+              .map((entry) => `${entry.key} (${entry.count})`)
+              .join(" · ")}
+          </p>
+        ) : null}
+        {snapshot.personalization.mostHidden.length > 0 ? (
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t("beta.personalization.most_hidden")}:{" "}
+            {snapshot.personalization.mostHidden
+              .map((entry) => `${entry.key} (${entry.count})`)
+              .join(" · ")}
+          </p>
+        ) : null}
+      </section>
+
       <section className="mt-8" aria-labelledby="beta-events">
         <h2 id="beta-events" className="text-sm font-semibold">
           {t("beta.section.events")}
