@@ -14,7 +14,7 @@ export interface ConnectionBannerProps {
 
 export function ConnectionBanner({ phase }: ConnectionBannerProps) {
   const { t } = useTranslation();
-  if (phase === "steady") return null;
+  if (phase === "online") return null;
 
   const tone =
     phase === "offline"
