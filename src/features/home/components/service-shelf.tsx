@@ -155,7 +155,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
       <ul
         className={cn(
           "-mx-4 flex snap-x snap-mandatory scroll-pl-4 gap-3 overflow-x-auto px-4 pb-3",
-          "sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6",
+          "sm:mx-0 sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6",
         )}
       >
         {cards.map((card, index) => {
@@ -165,7 +165,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
           return (
             <li
               key={card.key}
-              className="sf-rail-enter w-36 shrink-0 snap-start sm:w-auto"
+              className="sf-rail-enter flex w-36 shrink-0 flex-col snap-start sm:w-auto"
               style={{ ["--sf-rail-index" as string]: Math.min(index, 8) }}
             >
               <button
