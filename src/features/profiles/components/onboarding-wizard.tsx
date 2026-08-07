@@ -10,7 +10,7 @@
  * Po appears at each step as encouragement, never as an assistant (Po Rule).
  */
 import { useNavigate } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   ActionButton,
@@ -20,6 +20,7 @@ import {
   TextField,
   type AvatarPreset,
 } from "@/design-system/components";
+import { useAnalytics } from "@/features/analytics";
 import { claimDestination, validateDisplayName } from "@/features/auth";
 import { PoCompanion, type PoMood } from "@/features/po";
 import { useProviderCatalog } from "@/features/providers";
@@ -31,11 +32,28 @@ import { cn } from "@/lib/utils";
 
 import { useProfile } from "../use-profile";
 
-const STEPS = ["welcome", "name", "avatar", "language", "providers", "accessibility"] as const;
+const STEPS = [
+  "welcome",
+  "how_it_works",
+  "handoff",
+  "invites",
+  "voice_chat",
+  "name",
+  "avatar",
+  "language",
+  "providers",
+  "accessibility",
+  "start",
+] as const;
 type Step = (typeof STEPS)[number];
 
 const STEP_MOOD: Record<Step, PoMood> = {
   welcome: "happy",
+  how_it_works: "encouraging",
+  handoff: "observing",
+  invites: "happy",
+  voice_chat: "calm",
+  start: "happy",
   name: "calm",
   avatar: "focused",
   language: "thinking",
@@ -62,6 +80,18 @@ export function OnboardingWizard({
   const [nameError, setNameError] = useState<string | null>(null);
   const [preset, setPreset] = useState<AvatarPreset>(AVATAR_PRESETS[0]);
   const [favorites, setFavorites] = useState<readonly string[]>([]);
+  const [handoffRead, setHandoffRead] = useState(false);
+  const analytics = useAnalytics();
+
+  // Skipping is allowed only once the streaming-service handoff has been read:
+  // a person who skips before it is a person who will be surprised in the room.
+  const handoffIndex = STEPS.indexOf("handoff");
+  const canSkip = stepIndex > handoffIndex || (step === "handoff" && handoffRead);
+
+  useEffect(() => {
+    analytics.track("onboarding_started");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const step = STEPS[stepIndex] as Step;
   const progress = Math.round(((stepIndex + 1) / STEPS.length) * 100);
@@ -75,6 +105,7 @@ export function OnboardingWizard({
   }, []);
 
   function next() {
+    if (step === "handoff" && !handoffRead) return;
     if (step === "name") {
       const key = validateDisplayName(displayName);
       setNameError(key ? t(key) : null);
@@ -92,7 +123,7 @@ export function OnboardingWizard({
   // surfaces as a conflict, so entry is guarded here.
   const finishing = useRef(false);
 
-  async function finish() {
+  async function finish(destination?: string) {
     if (finishing.current) return;
     finishing.current = true;
     const name = displayName.trim();
@@ -107,9 +138,10 @@ export function OnboardingWizard({
     // Onboarding is complete for this device even when persistence is not
     // configured; the profile write is the authority, this is only a hint.
     writeLocalPreference(LOCAL_PREFERENCE_KEYS.ONBOARDING, ok ? "complete" : "skipped");
-    const destination = claimDestination() ?? "/home";
+    analytics.track(step === "start" ? "onboarding_completed" : "onboarding_skipped");
+    const target = destination ?? claimDestination() ?? "/home";
     finishing.current = false;
-    void navigate({ to: destination, replace: true });
+    void navigate({ to: target, replace: true });
   }
 
   function toggleFavorite(providerId: string) {
@@ -130,7 +162,9 @@ export function OnboardingWizard({
         <button
           type="button"
           onClick={() => void finish()}
-          className="min-h-11 rounded-xl px-3 text-sm text-muted-foreground underline-offset-4 hover:underline"
+          disabled={!canSkip}
+          title={canSkip ? undefined : t("onboarding.skip_locked")}
+          className="min-h-11 rounded-xl px-3 text-sm text-muted-foreground underline-offset-4 hover:underline disabled:opacity-50 disabled:hover:no-underline"
         >
           {t("onboarding.action.skip")}
         </button>
@@ -173,6 +207,40 @@ export function OnboardingWizard({
                 </li>
               ))}
             </ul>
+          ) : null}
+
+          {step === "how_it_works" ? (
+            <PointList step="how_it_works" points={["room", "countdown", "private"]} />
+          ) : null}
+
+          {step === "handoff" ? (
+            <div className="space-y-4">
+              <PointList step="handoff" points={["subscription", "launch", "control"]} />
+              <ToggleRow
+                label={t("onboarding.handoff.acknowledge")}
+                checked={handoffRead}
+                onChange={setHandoffRead}
+              />
+            </div>
+          ) : null}
+
+          {step === "invites" ? (
+            <PointList step="invites" points={["link", "join", "lock"]} />
+          ) : null}
+
+          {step === "voice_chat" ? (
+            <PointList step="voice_chat" points={["permission", "volume", "chat"]} />
+          ) : null}
+
+          {step === "start" ? (
+            <div className="flex flex-col gap-2">
+              <ActionButton className="min-h-11" onClick={() => void finish("/home")}>
+                {t("onboarding.start.create")}
+              </ActionButton>
+              <ActionButton tone="secondary" className="min-h-11" onClick={() => void finish("/join")}>
+                {t("onboarding.start.join")}
+              </ActionButton>
+            </div>
           ) : null}
 
           {step === "name" ? (
@@ -302,6 +370,7 @@ export function OnboardingWizard({
             </ActionButton>
           ) : (
             <ActionButton
+              tone="ghost"
               loading={profile.isSaving}
               onClick={() => void finish()}
               className="flex-1"
@@ -348,5 +417,19 @@ function ToggleRow({
         />
       </span>
     </button>
+  );
+}
+
+function PointList({ step, points }: { step: string; points: readonly string[] }) {
+  const { t } = useTranslation();
+  return (
+    <ul className="space-y-3 text-sm text-muted-foreground">
+      {points.map((point) => (
+        <li key={point} className="flex items-start gap-3">
+          <span aria-hidden="true" className="mt-1.5 size-1.5 rounded-full bg-primary" />
+          <span>{t(`onboarding.${step}.point.${point}`)}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
