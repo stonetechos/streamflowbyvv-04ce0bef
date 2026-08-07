@@ -154,8 +154,11 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
 
       <ul
         className={cn(
-          "-mx-4 flex snap-x snap-mandatory scroll-pl-4 gap-3 overflow-x-auto px-4 pb-3",
-          "sm:mx-0 sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6",
+          "-mx-4 flex snap-x snap-mandatory scroll-pl-4 items-stretch gap-3 overflow-x-auto px-4 pb-3",
+          // Sprint H9.1 — auto rows sized to content and stretched items: a
+          // tile that grows for its arrange controls grows its whole row, so
+          // nothing can reach into the row below.
+          "sm:mx-0 sm:grid sm:auto-rows-auto sm:grid-cols-4 sm:items-stretch sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6",
         )}
       >
         {cards.map((card, index) => {
@@ -165,7 +168,8 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
           return (
             <li
               key={card.key}
-              className="sf-rail-enter flex w-36 shrink-0 flex-col snap-start sm:w-auto"
+              data-sf-service-tile={card.key}
+              className="sf-rail-enter flex h-full w-36 min-w-0 shrink-0 flex-col snap-start sm:w-auto"
               style={{ ["--sf-rail-index" as string]: Math.min(index, 8) }}
             >
               <button
@@ -176,7 +180,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                 disabled={!card.isChoosable || busy}
                 onClick={() => onChoose(card)}
                 className={cn(
-                  "group flex h-full w-full flex-col gap-2 text-left",
+                  "group flex w-full grow flex-col gap-2 text-left",
                   "rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   !card.isChoosable && "opacity-60",
                 )}
@@ -215,7 +219,10 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
               </button>
 
               {editing ? (
-                <div className="mt-2 flex items-center justify-between gap-1">
+                <div
+                  data-sf-arrange-controls={card.key}
+                  className="mt-2 flex flex-wrap items-center justify-between gap-1"
+                >
                   <div className="flex items-center gap-1">
                     <ArrangeButton
                       label={t("home.services.arrange.move_earlier", { service: card.name })}
@@ -344,7 +351,7 @@ function ArrangeButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "flex size-8 items-center justify-center rounded-lg border border-border text-xs",
+        "flex size-8 shrink-0 items-center justify-center rounded-lg border border-border text-xs",
         "transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         pressed && "border-primary text-primary",
         disabled && "cursor-not-allowed opacity-40",

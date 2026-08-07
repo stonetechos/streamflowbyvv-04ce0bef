@@ -166,6 +166,27 @@ const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
     "movies",
     "shows",
   ]),
+  // Sprint H9.1 — India-first intake. Each is launch-only for the same honest
+  // reason as every other premium OTT service: StreamFlow may open a public
+  // page and nothing more (ADR-014).
+  ottProvider(
+    "mxplayer",
+    "MX Player",
+    /(^|\.)mxplayer\.in$/i,
+    "https://www.mxplayer.in",
+    ["movie", "show", "detail"],
+  ),
+  ottProvider(
+    "discovery_plus",
+    "discovery+",
+    /(^|\.)discoveryplus\.(in|com)$/i,
+    "https://www.discoveryplus.in",
+    ["video", "show", "movie"],
+  ),
+  ottProvider("jiotv", "JioTV", /(^|\.)jiotv\.com$/i, "https://www.jiotv.com", [
+    "channels",
+    "shows",
+  ]),
   ottProvider("zee5", "ZEE5", /(^|\.)zee5\.com$/i, "https://www.zee5.com", ["movies", "tvshows"]),
   ottProvider("appletv", "Apple TV+", /(^|\.)tv\.apple\.com$/i, "https://tv.apple.com", [
     "movie",
