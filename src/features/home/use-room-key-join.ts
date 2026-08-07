@@ -147,8 +147,7 @@ export function useRoomKeyJoin(
       value,
       state,
       isBusy: state === "validating" || home.pending === "join",
-      messageKey:
-        state === "empty" || state === "typing" ? null : roomKeyStateMessageKey(state),
+      messageKey: state === "empty" || state === "typing" ? null : roomKeyStateMessageKey(state),
       canSubmit: value.length >= ROOM_KEY_LENGTH && state !== "validating",
       setValue,
       clear,

@@ -68,11 +68,10 @@ export function RoomKeyField({
       onChange(value);
       return;
     }
-    const next = (
-      value.slice(0, index) +
-      typed +
-      value.slice(index + typed.length)
-    ).slice(0, ROOM_KEY_LENGTH);
+    const next = (value.slice(0, index) + typed + value.slice(index + typed.length)).slice(
+      0,
+      ROOM_KEY_LENGTH,
+    );
     onChange(next);
     focusCell(index + typed.length);
   }
@@ -110,7 +109,8 @@ export function RoomKeyField({
     onPasted?.();
   }
 
-  const cellSize = size === "lg" ? "h-16 w-12 text-2xl sm:h-20 sm:w-14 sm:text-3xl" : "h-12 w-10 text-lg";
+  const cellSize =
+    size === "lg" ? "h-16 w-12 text-2xl sm:h-20 sm:w-14 sm:text-3xl" : "h-12 w-10 text-lg";
 
   return (
     <div

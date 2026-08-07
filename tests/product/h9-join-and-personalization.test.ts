@@ -59,8 +59,7 @@ describe("room key", () => {
 
   test("a single wrong character is refused rather than sent to another room", () => {
     const key = encodeRoomKey("ROM-000123")!;
-    const swapped =
-      (key[0] === "2" ? "3" : "2") + key.slice(1);
+    const swapped = (key[0] === "2" ? "3" : "2") + key.slice(1);
     expect(decodeRoomKey(swapped)).toBeNull();
   });
 
@@ -212,7 +211,9 @@ describe("H9 measurement", () => {
     const metrics = summarizeJoinSpeed([]);
     expect(metrics.codeSuccessRate).toBeNull();
     expect(metrics.medianTimeToCodeJoinMs).toBeNull();
-    expect(summarizePersonalization([], [], { customized: false }).favoriteSelectionRate).toBeNull();
+    expect(
+      summarizePersonalization([], [], { customized: false }).favoriteSelectionRate,
+    ).toBeNull();
   });
 });
 

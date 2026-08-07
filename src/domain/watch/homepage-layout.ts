@@ -124,11 +124,7 @@ export function moveApp(layout: HomepageLayout, key: string, toIndex: number): H
 }
 
 /** Keyboard and menu affordance: one step left or right within its block. */
-export function shiftApp(
-  layout: HomepageLayout,
-  key: string,
-  direction: -1 | 1,
-): HomepageLayout {
+export function shiftApp(layout: HomepageLayout, key: string, direction: -1 | 1): HomepageLayout {
   const sequence = visibleOrder(layout);
   const index = sequence.indexOf(key);
   if (index < 0) return layout;

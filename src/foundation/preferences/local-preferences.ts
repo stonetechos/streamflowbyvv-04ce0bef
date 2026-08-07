@@ -21,6 +21,7 @@ export const LOCAL_PREFERENCE_KEYS = Object.freeze({
   LAST_EMAIL: "last-email",
   LAST_ROOM: "last-room",
   ONBOARDING: "onboarding",
+  HOME_APPS: "home-apps",
 });
 
 function storage(): Storage | null {

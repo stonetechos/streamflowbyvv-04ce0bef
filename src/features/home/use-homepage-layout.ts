@@ -27,9 +27,9 @@ import {
   type HomepageLayout,
 } from "@/domain";
 import { noteCustomized, recordPersonalization, trackEvent } from "@/features/analytics";
-import { readLocalJson, writeLocalJson } from "@/foundation/preferences";
+import { LOCAL_PREFERENCE_KEYS, readLocalJson, writeLocalJson } from "@/foundation/preferences";
 
-const STORAGE_KEY = "home-apps";
+const STORAGE_KEY = LOCAL_PREFERENCE_KEYS.HOME_APPS;
 
 export interface HomepageLayoutModel<T extends { readonly key: string }> {
   readonly layout: HomepageLayout;
@@ -66,15 +66,9 @@ export function useHomepageLayout<T extends { readonly key: string }>(
     setLoaded(true);
   }, [profileId]);
 
-  const layout = useMemo(
-    () => normalizeLayout(stored, availableKeys),
-    [stored, availableKeys],
-  );
+  const layout = useMemo(() => normalizeLayout(stored, availableKeys), [stored, availableKeys]);
 
-  const customized = useMemo(
-    () => isCustomized(layout, availableKeys),
-    [layout, availableKeys],
-  );
+  const customized = useMemo(() => isCustomized(layout, availableKeys), [layout, availableKeys]);
 
   useEffect(() => {
     noteCustomized(customized);
@@ -125,8 +119,7 @@ export function useHomepageLayout<T extends { readonly key: string }>(
       unpin: (key) => change(unpinApp(layout, key), "unpinned", "provider_unpinned", key),
       hide: (key) => change(hideApp(layout, key), "hidden", "provider_hidden", key),
       unhide: (key) => change(unhideApp(layout, key), "unhidden", "provider_unhidden", key),
-      reset: () =>
-        change(resetLayout(availableKeys), "reset", "provider_order_reset", null),
+      reset: () => change(resetLayout(availableKeys), "reset", "provider_order_reset", null),
     }),
     [arranged, availableKeys, change, customized, isEditing, layout],
   );

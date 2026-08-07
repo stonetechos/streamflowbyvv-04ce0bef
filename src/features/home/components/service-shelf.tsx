@@ -280,9 +280,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
               </li>
             ))}
           </ul>
-          <p className="text-xs text-muted-foreground">
-            {t("home.services.arrange.hidden_note")}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("home.services.arrange.hidden_note")}</p>
         </div>
       ) : null}
 
