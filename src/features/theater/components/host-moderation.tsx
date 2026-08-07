@@ -86,7 +86,7 @@ export function HostModeration({
               <p className="text-xs text-muted-foreground">{t("room.host.close_confirm")}</p>
               <div className="flex gap-2">
                 <ActionButton
-                  tone="danger"
+                  tone="destructive"
                   size="sm"
                   className="min-h-11"
                   loading={governance.pending === "close"}
