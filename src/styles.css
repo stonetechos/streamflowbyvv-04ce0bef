@@ -1088,6 +1088,15 @@
 [data-sf-brand="sonyliv"] {
   --sf-brand: #0a2a5e;
 }
+[data-sf-brand="mx_player"] {
+  --sf-brand: #c8102e;
+}
+[data-sf-brand="discovery_plus"] {
+  --sf-brand: #0f4bd8;
+}
+[data-sf-brand="jiotv"] {
+  --sf-brand: #6b1f9c;
+}
 [data-sf-brand="apple_tv_plus"] {
   --sf-brand: #1c1c1e;
 }
