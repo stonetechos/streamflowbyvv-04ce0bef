@@ -313,8 +313,8 @@ export function Theater({ roomId }: TheaterProps) {
   // Presence and a person's own tap are the only readiness inputs: the room
   // never infers that somebody is watching.
   const voiceProfileIds = useMemo(
-    () => new Set(voice.members.filter((member) => member.isConnected).map((m) => m.profileId)),
-    [voice.members],
+    () => new Set(voice.isConnected ? voice.members.map((member) => member.profileId) : []),
+    [voice.isConnected, voice.members],
   );
 
   const isWatchPhase = runtime.playback.status === "playing";
