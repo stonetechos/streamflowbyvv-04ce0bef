@@ -164,16 +164,20 @@ export function Theater({ roomId }: TheaterProps) {
     roomStatus: room.room?.status ?? "lobby",
     snapshotSettings: room.room?.governance ?? null,
     onChanged: room.refresh,
-    onModeration: (action) => analytics.track("room.moderation", { action }),
+    onModeration: (action) => action === "close_room"
+        ? analytics.track("room_closed")
+        : action === "remove_participant"
+          ? analytics.track("participant_removed")
+          : undefined,
   });
 
   const recovery = useConnectionRecovery({
     enabled,
     onResume: () => {
       room.refresh();
-      analytics.track("room.recovered");
+      analytics.track("reconnect_recovered");
     },
-    onInterrupted: () => analytics.track("room.interrupted"),
+    onInterrupted: () => analytics.track("reconnect_started"),
   });
 
   // The banner only clears once a snapshot has actually landed again.
@@ -202,14 +206,14 @@ export function Theater({ roomId }: TheaterProps) {
       if (!granted) return;
       setVoiceRequested(true);
       voice.join();
-      analytics.track("voice.joined");
+      analytics.track("voice_connected");
     });
   }, [microphone, voice, analytics]);
 
   const leaveVoice = useCallback(() => {
     voice.leave();
     setVoiceRequested(false);
-    analytics.track("voice.left");
+    analytics.track("voice_join_requested", { left: true });
   }, [voice, analytics]);
 
   // Keep the transport clock and duration fresh for the host's own readout.
