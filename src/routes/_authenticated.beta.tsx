@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { BetaDashboard } from "@/features/analytics/components/beta-dashboard";
-import { ProtectedRoute } from "@/features/auth";
+import { RequireAuth } from "@/features/auth";
 
 /**
  * Beta dashboard — Sprint H7.
@@ -31,8 +31,8 @@ export const Route = createFileRoute("/_authenticated/beta")({
 
 function BetaRoute() {
   return (
-    <ProtectedRoute roles={["admin"]}>
+    <RequireAuth roles={["admin"]}>
       <BetaDashboard />
-    </ProtectedRoute>
+    </RequireAuth>
   );
 }
