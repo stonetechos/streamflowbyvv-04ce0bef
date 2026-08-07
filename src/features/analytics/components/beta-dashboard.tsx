@@ -367,12 +367,12 @@ export function BetaDashboard() {
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Stat
             label={t("beta.join.attempts")}
-            value={String(snapshot.joinSpeed.attempts)}
+            value={String(snapshot.joinSpeed.codeAttempts)}
             hint={t("beta.join.attempts_hint")}
           />
           <Stat
             label={t("beta.join.success_rate")}
-            value={percent(snapshot.joinSpeed.successRate)}
+            value={percent(snapshot.joinSpeed.codeSuccessRate)}
           />
           <Stat
             label={t("beta.join.code_share")}
@@ -381,7 +381,7 @@ export function BetaDashboard() {
           />
           <Stat
             label={t("beta.join.median")}
-            value={duration(snapshot.joinSpeed.medianMsToJoin)}
+            value={duration(snapshot.joinSpeed.medianTimeToCodeJoinMs)}
           />
         </div>
       </section>
