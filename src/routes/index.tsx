@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { ActionButton, Surface } from "@/design-system/components";
+import { useTrackOnce } from "@/features/analytics";
 import { useAuth } from "@/features/auth";
 import { ServiceLogo } from "@/features/home";
 import { PoCompanion } from "@/features/po";
@@ -59,6 +60,7 @@ const FEATURE_CARDS = ["together", "subscription", "voice"] as const;
 const STEPS = [1, 2, 3] as const;
 
 function LandingPage() {
+  useTrackOnce("landing_viewed");
   const { t } = useTranslation();
   const auth = useAuth();
   const navigate = useNavigate();

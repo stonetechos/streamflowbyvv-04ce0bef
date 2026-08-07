@@ -19,6 +19,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
+import { trackEvent } from "@/features/analytics";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -82,7 +83,10 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
       card.providerId,
     );
     setChoosingKey(null);
-    if (roomId) void navigate({ to: "/rooms/$roomId", params: { roomId } });
+    if (roomId) {
+      trackEvent("room_created", {}, { role: "host", providerId: card.providerId, roomKey: roomId });
+      void navigate({ to: "/rooms/$roomId", params: { roomId } });
+    }
   }
 
   function onChoose(card: ServiceCardView) {
