@@ -8,13 +8,13 @@
 import {
   COUNTDOWN_SECONDS_METADATA_KEY,
   normalizeCountdownSeconds,
+  readGovernance,
   readRoomMediaRef,
   type MemberPresence,
   type MetadataBag,
   type RoomMember,
   type WaitingRoomSnapshot,
 } from "@/domain";
-import { readGovernance } from "@/domain";
 import { AppError } from "@/shared/constants/error-taxonomy";
 
 import type {
