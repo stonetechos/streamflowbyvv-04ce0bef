@@ -183,6 +183,8 @@ export function Theater({ roomId }: TheaterProps) {
 
   const microphone = useMicrophonePermission();
   const voiceDevices = useVoiceDevices();
+  const [inputDeviceId, setInputDeviceId] = useState<string | null>(null);
+  const [outputDeviceId, setOutputDeviceId] = useState<string | null>(null);
   const [voiceRequested, setVoiceRequested] = useState(false);
   const voice = useVoiceSession({
     roomId,
@@ -191,8 +193,8 @@ export function Theater({ roomId }: TheaterProps) {
     enabled: enabled && voiceRequested && !room.viewer.isMutedByHost,
     autoJoin: voiceRequested,
     joinMuted: true,
-    inputDeviceId: voiceDevices.selectedInputId,
-    outputDeviceId: voiceDevices.selectedOutputId,
+    inputDeviceId,
+    outputDeviceId,
   });
 
   const joinVoice = useCallback(() => {
