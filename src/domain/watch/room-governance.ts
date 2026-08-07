@@ -73,7 +73,10 @@ export function readGovernance(metadata: MetadataBag | null | undefined): RoomGo
     isPlaybackLocked: bool(bag["isPlaybackLocked"], DEFAULT_GOVERNANCE.isPlaybackLocked),
     isInviteActive: bool(bag["isInviteActive"], DEFAULT_GOVERNANCE.isInviteActive),
     inviteExpiresAt: typeof expiry === "string" && expiry.length > 0 ? expiry : null,
-    requiresHostApproval: bool(bag["requiresHostApproval"], DEFAULT_GOVERNANCE.requiresHostApproval),
+    requiresHostApproval: bool(
+      bag["requiresHostApproval"],
+      DEFAULT_GOVERNANCE.requiresHostApproval,
+    ),
     maxParticipants: typeof max === "number" && Number.isFinite(max) && max > 0 ? max : null,
   };
 }

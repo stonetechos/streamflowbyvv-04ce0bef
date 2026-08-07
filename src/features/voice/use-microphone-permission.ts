@@ -31,10 +31,16 @@ export function useMicrophonePermission(): MicrophonePermissionModel {
       .query({ name: "microphone" as PermissionName })
       .then((status) => {
         if (cancelled) return;
-        setPermission(status.state === "granted" ? "granted" : status.state === "denied" ? "denied" : "prompt");
+        setPermission(
+          status.state === "granted" ? "granted" : status.state === "denied" ? "denied" : "prompt",
+        );
         status.onchange = () => {
           setPermission(
-            status.state === "granted" ? "granted" : status.state === "denied" ? "denied" : "prompt",
+            status.state === "granted"
+              ? "granted"
+              : status.state === "denied"
+                ? "denied"
+                : "prompt",
           );
         };
       })

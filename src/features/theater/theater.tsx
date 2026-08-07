@@ -164,7 +164,8 @@ export function Theater({ roomId }: TheaterProps) {
     roomStatus: room.room?.status ?? "lobby",
     snapshotSettings: room.room?.governance ?? null,
     onChanged: room.refresh,
-    onModeration: (action) => action === "close_room"
+    onModeration: (action) =>
+      action === "close_room"
         ? analytics.track("room_closed")
         : action === "remove_participant"
           ? analytics.track("participant_removed")

@@ -582,7 +582,8 @@ export const hiINBundle: LocaleBundle = {
     "voice.room.input_device": "माइक्रोफ़ोन",
     "voice.room.output_device": "स्पीकर",
     "voice.room.unavailable_help": "इस कमरे में वॉइस अभी उपलब्ध नहीं है। चैट काम करती है।",
-    "voice.room.denied_help": "ब्राउज़र ने माइक्रोफ़ोन रोक दिया। साइट सेटिंग में अनुमति दें, फिर कोशिश करें।",
+    "voice.room.denied_help":
+      "ब्राउज़र ने माइक्रोफ़ोन रोक दिया। साइट सेटिंग में अनुमति दें, फिर कोशिश करें।",
     "voice.room.state.unsupported": "यहाँ समर्थित नहीं",
     "voice.room.state.unavailable": "उपलब्ध नहीं",
     "voice.room.state.permission": "अनुमति चाहिए",

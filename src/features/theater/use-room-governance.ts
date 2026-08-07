@@ -27,14 +27,7 @@ import { logger } from "@/foundation/logging";
 const MODULE = "room-governance";
 
 export type GovernancePending =
-  | "lock"
-  | "chat"
-  | "close"
-  | "invite"
-  | "mute"
-  | "remove"
-  | "playback"
-  | null;
+  "lock" | "chat" | "close" | "invite" | "mute" | "remove" | "playback" | null;
 
 export interface RoomGovernanceModel {
   readonly isAvailable: boolean;
@@ -69,7 +62,8 @@ export interface UseRoomGovernanceInput {
 
 export function useRoomGovernance(input: UseRoomGovernanceInput): RoomGovernanceModel {
   const service = useMemo(
-    () => (isServiceBound(ROOM_GOVERNANCE_SERVICE) ? resolveService(ROOM_GOVERNANCE_SERVICE) : null),
+    () =>
+      isServiceBound(ROOM_GOVERNANCE_SERVICE) ? resolveService(ROOM_GOVERNANCE_SERVICE) : null,
     [],
   );
   const [settings, setSettings] = useState<RoomGovernanceSettings>(
@@ -166,8 +160,7 @@ export function useRoomGovernance(input: UseRoomGovernanceInput): RoomGovernance
       patch(locked ? "lock_room" : "unlock_room", "lock", { isLocked: locked }),
     setChatEnabled: (enabled) =>
       patch(enabled ? "enable_chat" : "disable_chat", "chat", { isChatEnabled: enabled }),
-    setPlaybackLocked: (locked) =>
-      patch("lock_playback", "playback", { isPlaybackLocked: locked }),
+    setPlaybackLocked: (locked) => patch("lock_playback", "playback", { isPlaybackLocked: locked }),
     setInviteActive: (active) => patch("lock_room", "invite", { isInviteActive: active }),
     setInviteExpiry: (iso) => patch("lock_room", "invite", { inviteExpiresAt: iso }),
     closeRoom: () =>

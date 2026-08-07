@@ -37,7 +37,10 @@ export interface RoomGovernanceService {
     readonly patch: Partial<RoomGovernanceSettings>;
   }): Promise<RoomGovernanceSettings>;
   /** Host-only: end the room for everybody. */
-  closeRoom(input: { readonly roomId: EntityId; readonly context: PermissionContext }): Promise<void>;
+  closeRoom(input: {
+    readonly roomId: EntityId;
+    readonly context: PermissionContext;
+  }): Promise<void>;
   /** Silences a participant in voice; their own device controls are unaffected. */
   setParticipantMuted(input: {
     readonly memberId: EntityId;

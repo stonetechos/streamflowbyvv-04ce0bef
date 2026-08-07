@@ -92,7 +92,12 @@ export function useConnectionRecovery({
   }, []);
 
   return {
-    phase: nextRecoveryPhase({ isOnline, isDocumentVisible: isVisible, wasInterrupted, hasFreshSnapshot }),
+    phase: nextRecoveryPhase({
+      isOnline,
+      isDocumentVisible: isVisible,
+      wasInterrupted,
+      hasFreshSnapshot,
+    }),
     isOnline,
     isVisible,
     markRecovered,

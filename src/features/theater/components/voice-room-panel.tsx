@@ -89,12 +89,7 @@ export function VoiceRoomPanel(props: VoiceRoomPanelProps) {
                 >
                   {voice.isMuted ? t("voice.room.unmute") : t("voice.room.mute")}
                 </ActionButton>
-                <ActionButton
-                  tone="ghost"
-                  size="sm"
-                  className="min-h-11"
-                  onClick={props.onLeave}
-                >
+                <ActionButton tone="ghost" size="sm" className="min-h-11" onClick={props.onLeave}>
                   {t("voice.room.leave")}
                 </ActionButton>
               </>
@@ -112,7 +107,12 @@ export function VoiceRoomPanel(props: VoiceRoomPanelProps) {
             )}
 
             {voice.state === "error" || voice.isReconnecting ? (
-              <ActionButton tone="secondary" size="sm" className="min-h-11" onClick={props.onReconnect}>
+              <ActionButton
+                tone="secondary"
+                size="sm"
+                className="min-h-11"
+                onClick={props.onReconnect}
+              >
                 {t("voice.room.reconnect")}
               </ActionButton>
             ) : null}

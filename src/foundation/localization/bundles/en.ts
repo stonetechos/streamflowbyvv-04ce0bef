@@ -558,7 +558,8 @@ export const enBundle: LocaleBundle = {
     "room.host.error.forbidden": "You can't do that in this room.",
     "room.host.error.failed": "That didn't go through. Try again.",
     "room.privacy.locked": "This room is locked — no one new can join.",
-    "room.recovery.offline": "You're offline. We'll pick things back up when the connection returns.",
+    "room.recovery.offline":
+      "You're offline. We'll pick things back up when the connection returns.",
     "room.recovery.suspended": "Paused while this tab is in the background.",
     "room.recovery.recovering": "Reconnecting and catching up with the room…",
     "room.recovery.recovered": "Back in sync with the room.",
@@ -580,7 +581,8 @@ export const enBundle: LocaleBundle = {
     "voice.room.input_device": "Microphone",
     "voice.room.output_device": "Speakers",
     "voice.room.unavailable_help": "Voice isn't available in this room yet. Chat still works.",
-    "voice.room.denied_help": "Your browser blocked microphone access. Allow it in site settings, then try again.",
+    "voice.room.denied_help":
+      "Your browser blocked microphone access. Allow it in site settings, then try again.",
     "voice.room.state.unsupported": "Not supported here",
     "voice.room.state.unavailable": "Unavailable",
     "voice.room.state.permission": "Permission needed",

@@ -82,7 +82,11 @@ export function HostModeration({
       {governance.can("close_room") ? (
         <div className="flex flex-col gap-2 border-t border-border pt-3">
           {confirming === "close" ? (
-            <div className="flex flex-col gap-2" role="alertdialog" aria-label={t("room.host.close")}>
+            <div
+              className="flex flex-col gap-2"
+              role="alertdialog"
+              aria-label={t("room.host.close")}
+            >
               <p className="text-xs text-muted-foreground">{t("room.host.close_confirm")}</p>
               <div className="flex gap-2">
                 <ActionButton
