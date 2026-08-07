@@ -9,6 +9,7 @@ import { describe, expect, test } from "bun:test";
 import {
   DEFAULT_HOMEPAGE_LAYOUT,
   ROOM_KEY_ALPHABET,
+  ROOM_KEY_JOIN_STATES,
   ROOM_KEY_LENGTH,
   arrangeApps,
   decodeRoomKey,
@@ -96,9 +97,11 @@ describe("room key", () => {
 describe("join refusals", () => {
   test("each refusal keeps its own meaning", () => {
     expect(roomKeyStateFromRefusal("SF-ROOM-ENDED")).toBe("expired");
-    expect(roomKeyStateFromRefusal("SF-ROOM-FULL")).toBe("full");
+    expect(roomKeyStateFromRefusal("SF-ROOM-CAPACITY-EXCEEDED")).toBe("full");
     expect(roomKeyStateFromRefusal("SF-ROOM-FORBIDDEN")).toBe("locked");
-    expect(roomKeyStateFromRefusal("SF-ROOM-NOT-FOUND")).toBe("not_found");
+    expect(roomKeyStateFromRefusal("SF-ROOM-DELETED")).toBe("revoked");
+    expect(roomKeyStateFromRefusal("SF-ROOM-ALREADY-IN-ANOTHER-ROOM")).toBe("already_in_room");
+    expect(roomKeyStateFromRefusal("SF-NET-TIMEOUT")).toBe("network_error");
   });
 
   test("an unknown refusal never reads as success", () => {
@@ -107,20 +110,10 @@ describe("join refusals", () => {
   });
 
   test("every refusal state has wording in both bundles", () => {
-    const states = [
-      "invalid",
-      "not_found",
-      "expired",
-      "revoked",
-      "locked",
-      "full",
-      "already_in_room",
-      "beta_blocked",
-      "error",
-    ];
-    for (const state of states) {
-      expect(en[`room.key.state.${state}`]).toBeTruthy();
-      expect(hi[`room.key.state.${state}`]).toBeTruthy();
+    for (const state of ROOM_KEY_JOIN_STATES) {
+      if (state === "empty" || state === "typing") continue;
+      expect(en.strings[`room.key.state.${state}`]).toBeTruthy();
+      expect(hi.strings[`room.key.state.${state}`]).toBeTruthy();
     }
   });
 });
@@ -225,17 +218,17 @@ describe("H9 measurement", () => {
 
 describe("wording", () => {
   test("the room key is explained as a shortcut, not a secret credential", () => {
-    expect(en["room.key.description"]).toContain("link");
-    expect(en["room.key.title"]).toBeTruthy();
+    expect(en.strings["room.key.description"]).toContain("link");
+    expect(en.strings["room.key.title"]).toBeTruthy();
   });
 
   test("arranging the homepage is described as a personal view only", () => {
-    expect(en["home.services.arrange.hint"]).toContain("homepage only");
-    expect(en["home.services.arrange.hidden_note"]).toContain("still work");
+    expect(en.strings["home.services.arrange.hint"]).toContain("homepage only");
+    expect(en.strings["home.services.arrange.hidden_note"]).toContain("still work");
   });
 
   test("both bundles carry every H9 key", () => {
-    const h9 = Object.keys(en).filter(
+    const h9 = Object.keys(en.strings).filter(
       (key) =>
         key.startsWith("room.key.") ||
         key.startsWith("home.services.arrange.") ||
@@ -243,6 +236,6 @@ describe("wording", () => {
         key.startsWith("beta.personalization."),
     );
     expect(h9.length).toBeGreaterThan(20);
-    for (const key of h9) expect(hi[key]).toBeTruthy();
+    for (const key of h9) expect(hi.strings[key]).toBeTruthy();
   });
 });
