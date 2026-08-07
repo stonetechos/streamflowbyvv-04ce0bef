@@ -410,6 +410,51 @@ export function Theater({ roomId }: TheaterProps) {
     roomEnded: room.room?.status === "ended",
   });
 
+  const canSendChat = chat.isAvailable && enabled && governance.can("send_chat");
+  const chatDisabledReason = canSendChat
+    ? null
+    : governance.seat === "removed"
+      ? ("left" as const)
+      : !governance.settings.isChatEnabled
+        ? ("chat_disabled" as const)
+        : !enabled
+          ? ("left" as const)
+          : null;
+
+  const moderation =
+    governance.can("mute_participant") || governance.can("remove_participant")
+      ? {
+          canMute: governance.can("mute_participant"),
+          canRemove: governance.can("remove_participant"),
+          mutedProfileIds: new Set(
+            room.members.filter((m) => m.isMutedByHost).map((m) => m.profileId),
+          ),
+          memberIdByProfileId: new Map(room.members.map((m) => [m.profileId, m.id])),
+          busy: governance.pending === "mute" || governance.pending === "remove",
+          onMute: governance.muteParticipant,
+          onRemove: governance.removeParticipant,
+        }
+      : null;
+
+  const chatPanel = (
+    <ChatPanel
+      chat={chat}
+      nameFor={nameFor}
+      canSend={canSendChat}
+      disabledReason={chatDisabledReason}
+    />
+  );
+
+  const participantRail = (
+    <ParticipantRail
+      participants={participants}
+      readiness={readiness}
+      showReadiness={!runtime.isAutomatic}
+      moderation={moderation}
+      voiceProfileIds={voiceProfileIds}
+    />
+  );
+
   if (!room.room) {
     return (
       <main className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4">
@@ -449,6 +494,14 @@ export function Theater({ roomId }: TheaterProps) {
           </ActionButton>
         </div>
       </header>
+
+      <ConnectionBanner phase={recovery.phase} />
+
+      {governance.settings.isLocked ? (
+        <p className="text-xs text-muted-foreground" data-sf-room-locked>
+          {t("room.privacy.locked")}
+        </p>
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex min-w-0 flex-col gap-4">
@@ -512,17 +565,31 @@ export function Theater({ roomId }: TheaterProps) {
             />
           )}
 
-          <RoomDrawer
-            chat={<ChatPanel chat={chat} nameFor={nameFor} canSend={chat.isAvailable && enabled} />}
-            people={
-              <ParticipantRail
-                participants={participants}
-                readiness={readiness}
-                showReadiness={!runtime.isAutomatic}
-              />
-            }
-            unreadHint={chat.lines.length}
+          <VoiceRoomPanel
+            voice={voice}
+            permission={microphone.permission}
+            isMicSupported={microphone.isSupported}
+            isMutedByHost={room.viewer.isMutedByHost}
+            onJoin={joinVoice}
+            onLeave={leaveVoice}
+            onReconnect={voice.recover}
+            inputDevices={voiceDevices.inputs}
+            outputDevices={voiceDevices.outputs}
+            inputDeviceId={inputDeviceId}
+            outputDeviceId={outputDeviceId}
+            onInputDevice={setInputDeviceId}
+            onOutputDevice={setOutputDeviceId}
           />
+
+          <HostModeration
+            governance={governance}
+            onCancelCountdown={countdownSeconds !== null ? countdown.cancel : null}
+            onRestartCountdown={
+              countdownSeconds === null && countdown.isAvailable ? countdown.start : null
+            }
+          />
+
+          <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
 
           {isHost ? (
             <div className="flex flex-col gap-3">
@@ -546,14 +613,8 @@ export function Theater({ roomId }: TheaterProps) {
         </div>
 
         <aside className="hidden min-h-[24rem] flex-col gap-4 lg:flex lg:h-[calc(100vh-12rem)]">
-          <ParticipantRail
-            participants={participants}
-            readiness={readiness}
-            showReadiness={!runtime.isAutomatic}
-          />
-          <div className="min-h-0 flex-1">
-            <ChatPanel chat={chat} nameFor={nameFor} canSend={chat.isAvailable && enabled} />
-          </div>
+          {participantRail}
+          <div className="min-h-0 flex-1">{chatPanel}</div>
         </aside>
       </div>
     </main>
