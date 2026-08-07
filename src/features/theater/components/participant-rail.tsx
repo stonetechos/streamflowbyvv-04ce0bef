@@ -6,7 +6,7 @@
  * never infers that somebody is watching, and never renders speaking status,
  * because no voice telemetry exists to support that claim.
  */
-import { Avatar, Surface } from "@/design-system/components";
+import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import type { ParticipantRuntime, ReadinessSummary } from "@/domain";
 import { useTranslation } from "@/foundation/localization";
 
@@ -15,6 +15,21 @@ export interface ParticipantRailProps {
   readonly readiness: ReadinessSummary;
   /** Readiness is only meaningful when the room coordinates manually. */
   readonly showReadiness: boolean;
+  /**
+   * Sprint H6 — moderation affordances, rendered only for a seat that may act.
+   * Voice and mute state come from observation, never from inference.
+   */
+  readonly moderation?: {
+    readonly canMute: boolean;
+    readonly canRemove: boolean;
+    readonly mutedProfileIds: ReadonlySet<string>;
+    readonly memberIdByProfileId: ReadonlyMap<string, string>;
+    readonly busy: boolean;
+    onMute(memberId: string, muted: boolean): void;
+    onRemove(memberId: string): void;
+  } | null;
+  /** Profile ids the voice transport reports as connected. */
+  readonly voiceProfileIds?: ReadonlySet<string>;
 }
 
 const STATE_KEY: Record<ParticipantRuntime["state"], string> = {
@@ -27,7 +42,13 @@ const STATE_KEY: Record<ParticipantRuntime["state"], string> = {
   left: "room.participant.left",
 };
 
-export function ParticipantRail({ participants, readiness, showReadiness }: ParticipantRailProps) {
+export function ParticipantRail({
+  participants,
+  readiness,
+  showReadiness,
+  moderation = null,
+  voiceProfileIds,
+}: ParticipantRailProps) {
   const { t } = useTranslation();
 
   return (
@@ -63,8 +84,53 @@ export function ParticipantRail({ participants, readiness, showReadiness }: Part
               {participant.isHost ? ` · ${t("theater.header.host")}` : ""}
             </span>
             <span className="shrink-0 text-xs text-muted-foreground">
-              {t(STATE_KEY[participant.state])}
+              {voiceProfileIds?.has(participant.participantId)
+                ? t("room.participant.in_voice")
+                : t(STATE_KEY[participant.state])}
             </span>
+            {moderation && !participant.isHost ? (
+              <span className="flex shrink-0 gap-1">
+                {moderation.canMute ? (
+                  <ActionButton
+                    tone="ghost"
+                    size="sm"
+                    className="min-h-11"
+                    disabled={moderation.busy}
+                    onClick={() => {
+                      const memberId = moderation.memberIdByProfileId.get(
+                        participant.participantId,
+                      );
+                      if (memberId) {
+                        moderation.onMute(
+                          memberId,
+                          !moderation.mutedProfileIds.has(participant.participantId),
+                        );
+                      }
+                    }}
+                  >
+                    {moderation.mutedProfileIds.has(participant.participantId)
+                      ? t("room.host.unmute_member")
+                      : t("room.host.mute_member")}
+                  </ActionButton>
+                ) : null}
+                {moderation.canRemove ? (
+                  <ActionButton
+                    tone="ghost"
+                    size="sm"
+                    className="min-h-11"
+                    disabled={moderation.busy}
+                    onClick={() => {
+                      const memberId = moderation.memberIdByProfileId.get(
+                        participant.participantId,
+                      );
+                      if (memberId) moderation.onRemove(memberId);
+                    }}
+                  >
+                    {t("room.host.remove_member")}
+                  </ActionButton>
+                ) : null}
+              </span>
+            ) : null}
           </li>
         ))}
       </ul>
