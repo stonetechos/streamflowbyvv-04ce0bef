@@ -1230,15 +1230,21 @@ export const enBundle: LocaleBundle = {
     "voice.short.speaker": "Speaker",
     "voice.short.leave": "Leave",
     "onboarding.how_it_works.title": "Watch together, from your own screens",
-    "onboarding.how_it_works.description": "StreamFlow creates a private room where everyone presses play at the same moment.",
+    "onboarding.how_it_works.description":
+      "StreamFlow creates a private room where everyone presses play at the same moment.",
     "onboarding.how_it_works.point.room": "Create a room and share one link with your friends.",
     "onboarding.how_it_works.point.countdown": "A shared countdown gets everyone started together.",
-    "onboarding.how_it_works.point.private": "Rooms are private. Only people with your link can join.",
+    "onboarding.how_it_works.point.private":
+      "Rooms are private. Only people with your link can join.",
     "onboarding.handoff.title": "How streaming services work here",
-    "onboarding.handoff.description": "This is the one thing worth reading before your first party.",
-    "onboarding.handoff.point.subscription": "Everyone needs their own subscription to the service you pick.",
-    "onboarding.handoff.point.launch": "Most services open in their own app or website. StreamFlow keeps the room, the countdown and the chat.",
-    "onboarding.handoff.point.control": "Play, pause and skip are only handled for you when the source supports it. Otherwise you press play yourself when the countdown ends.",
+    "onboarding.handoff.description":
+      "This is the one thing worth reading before your first party.",
+    "onboarding.handoff.point.subscription":
+      "Everyone needs their own subscription to the service you pick.",
+    "onboarding.handoff.point.launch":
+      "Most services open in their own app or website. StreamFlow keeps the room, the countdown and the chat.",
+    "onboarding.handoff.point.control":
+      "Play, pause and skip are only handled for you when the source supports it. Otherwise you press play yourself when the countdown ends.",
     "onboarding.handoff.acknowledge": "Got it — I'll press play on my own service when needed",
     "onboarding.invites.title": "Inviting people",
     "onboarding.invites.description": "One link is all it takes.",
@@ -1247,8 +1253,10 @@ export const enBundle: LocaleBundle = {
     "onboarding.invites.point.lock": "Lock the room once everyone is in.",
     "onboarding.voice_chat.title": "Talking and typing",
     "onboarding.voice_chat.description": "Chat is always there. Voice is yours to switch on.",
-    "onboarding.voice_chat.point.permission": "Voice only starts after you allow microphone access.",
-    "onboarding.voice_chat.point.volume": "Volume is yours alone — changing it never affects anyone else.",
+    "onboarding.voice_chat.point.permission":
+      "Voice only starts after you allow microphone access.",
+    "onboarding.voice_chat.point.volume":
+      "Volume is yours alone — changing it never affects anyone else.",
     "onboarding.voice_chat.point.chat": "Text chat works even when voice does not.",
     "onboarding.start.title": "Start your first party",
     "onboarding.start.description": "Finish setup, then create a room or join one with a link.",
@@ -1324,7 +1332,8 @@ export const enBundle: LocaleBundle = {
     "room.failure.voice_failed.what": "Voice could not connect.",
     "room.failure.voice_failed.next": "Continue with text chat, or try voice again.",
     "room.failure.voice_permission_denied.what": "Microphone access was declined.",
-    "room.failure.voice_permission_denied.next": "Allow the microphone in your browser to use voice.",
+    "room.failure.voice_permission_denied.next":
+      "Allow the microphone in your browser to use voice.",
     "room.failure.chat_send_failed.what": "That message didn't send.",
     "room.failure.chat_send_failed.next": "Retry it from the chat.",
     "room.failure.room_start_failed.what": "The countdown couldn't start.",
@@ -1368,6 +1377,5 @@ export const enBundle: LocaleBundle = {
     "beta.count.reconnects": "Reconnects started",
     "beta.count.reconnectsRecovered": "Reconnects recovered",
     "beta.count.roomStartFailed": "Room starts failed",
-
   },
 };

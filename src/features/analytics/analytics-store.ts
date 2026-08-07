@@ -90,7 +90,13 @@ export function trackEvent(
     appVersion: APP_VERSION,
     roomPhase: options.roomPhase ?? null,
   };
-  const event = recorder.record(name, context, props, new Date().toISOString(), options.roomKey ?? null);
+  const event = recorder.record(
+    name,
+    context,
+    props,
+    new Date().toISOString(),
+    options.roomKey ?? null,
+  );
   if (event === null) return;
   logger.debug("product_event", {
     module: MODULE,

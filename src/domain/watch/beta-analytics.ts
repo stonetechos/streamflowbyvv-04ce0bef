@@ -278,7 +278,8 @@ export function createBetaAnalytics(): BetaAnalyticsRecorder {
       bump(name);
       if (name === "room_created") roomsCreated += 1;
       if (roomKey !== null) {
-        if (name === "invite_copied" || name === "native_share_opened") roomsWithInvite.add(roomKey);
+        if (name === "invite_copied" || name === "native_share_opened")
+          roomsWithInvite.add(roomKey);
         if (name === "guest_joined") roomsWithGuest.add(roomKey);
       }
       recent = [event, ...recent].slice(0, RECENT_LIMIT);

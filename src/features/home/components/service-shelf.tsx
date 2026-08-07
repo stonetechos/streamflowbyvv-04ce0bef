@@ -84,7 +84,11 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
     );
     setChoosingKey(null);
     if (roomId) {
-      trackEvent("room_created", {}, { role: "host", providerId: card.providerId, roomKey: roomId });
+      trackEvent(
+        "room_created",
+        {},
+        { role: "host", providerId: card.providerId, roomKey: roomId },
+      );
       void navigate({ to: "/rooms/$roomId", params: { roomId } });
     }
   }

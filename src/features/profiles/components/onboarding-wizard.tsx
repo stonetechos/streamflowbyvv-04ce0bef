@@ -96,7 +96,6 @@ export function OnboardingWizard({
   const handoffIndex = STEPS.indexOf("handoff");
   const canSkip = stepIndex > handoffIndex || (step === "handoff" && handoffRead);
 
-
   const timezone = useMemo(() => {
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";

@@ -119,7 +119,12 @@ describe("feedback", () => {
 
   test("dismissal is a final answer", () => {
     expect(
-      shouldPromptFeedback({ phase: "ended", hasLeft: true, alreadyAnswered: false, dismissed: true }),
+      shouldPromptFeedback({
+        phase: "ended",
+        hasLeft: true,
+        alreadyAnswered: false,
+        dismissed: true,
+      }),
     ).toBe(false);
   });
 
@@ -241,9 +246,7 @@ describe("copy", () => {
   });
 
   test("no beta copy mentions a service the product does not support", () => {
-    const youtube = Object.entries(enBundle.strings).filter(([, value]) =>
-      /youtube/i.test(value),
-    );
+    const youtube = Object.entries(enBundle.strings).filter(([, value]) => /youtube/i.test(value));
     expect(youtube).toEqual([]);
   });
 });

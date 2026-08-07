@@ -1371,15 +1371,19 @@ export const hiINBundle: LocaleBundle = {
     "voice.short.speaker": "स्पीकर",
     "voice.short.leave": "छोड़ें",
     "onboarding.how_it_works.title": "अपनी-अपनी स्क्रीन पर, साथ में देखें",
-    "onboarding.how_it_works.description": "StreamFlow एक निजी रूम बनाता है जहाँ सब एक ही पल में प्ले दबाते हैं।",
+    "onboarding.how_it_works.description":
+      "StreamFlow एक निजी रूम बनाता है जहाँ सब एक ही पल में प्ले दबाते हैं।",
     "onboarding.how_it_works.point.room": "रूम बनाएँ और एक लिंक दोस्तों को भेजें।",
     "onboarding.how_it_works.point.countdown": "साझा काउंटडाउन सबको साथ शुरू कराता है।",
     "onboarding.how_it_works.point.private": "रूम निजी हैं। सिर्फ़ लिंक वाले ही जुड़ सकते हैं।",
     "onboarding.handoff.title": "स्ट्रीमिंग सेवाएँ यहाँ कैसे काम करती हैं",
     "onboarding.handoff.description": "पहली पार्टी से पहले यही एक बात पढ़ लें।",
-    "onboarding.handoff.point.subscription": "चुनी गई सेवा का सब्सक्रिप्शन हर व्यक्ति के पास होना चाहिए।",
-    "onboarding.handoff.point.launch": "ज़्यादातर सेवाएँ अपने ऐप या वेबसाइट में खुलती हैं। रूम, काउंटडाउन और चैट StreamFlow में रहते हैं।",
-    "onboarding.handoff.point.control": "प्ले, पॉज़ और स्किप तभी अपने आप चलते हैं जब स्रोत इसकी अनुमति दे। वरना काउंटडाउन खत्म होते ही आप खुद प्ले दबाते हैं।",
+    "onboarding.handoff.point.subscription":
+      "चुनी गई सेवा का सब्सक्रिप्शन हर व्यक्ति के पास होना चाहिए।",
+    "onboarding.handoff.point.launch":
+      "ज़्यादातर सेवाएँ अपने ऐप या वेबसाइट में खुलती हैं। रूम, काउंटडाउन और चैट StreamFlow में रहते हैं।",
+    "onboarding.handoff.point.control":
+      "प्ले, पॉज़ और स्किप तभी अपने आप चलते हैं जब स्रोत इसकी अनुमति दे। वरना काउंटडाउन खत्म होते ही आप खुद प्ले दबाते हैं।",
     "onboarding.handoff.acknowledge": "समझ गया — ज़रूरत पड़ने पर मैं खुद प्ले दबाऊँगा",
     "onboarding.invites.title": "लोगों को बुलाना",
     "onboarding.invites.description": "बस एक लिंक काफ़ी है।",
@@ -1388,8 +1392,10 @@ export const hiINBundle: LocaleBundle = {
     "onboarding.invites.point.lock": "सब आ जाएँ तो रूम लॉक कर दें।",
     "onboarding.voice_chat.title": "बात करना और लिखना",
     "onboarding.voice_chat.description": "चैट हमेशा है। वॉइस आपकी मर्ज़ी से।",
-    "onboarding.voice_chat.point.permission": "माइक्रोफ़ोन की अनुमति देने के बाद ही वॉइस शुरू होती है।",
-    "onboarding.voice_chat.point.volume": "वॉल्यूम सिर्फ़ आपका है — बदलने से किसी और पर असर नहीं पड़ता।",
+    "onboarding.voice_chat.point.permission":
+      "माइक्रोफ़ोन की अनुमति देने के बाद ही वॉइस शुरू होती है।",
+    "onboarding.voice_chat.point.volume":
+      "वॉल्यूम सिर्फ़ आपका है — बदलने से किसी और पर असर नहीं पड़ता।",
     "onboarding.voice_chat.point.chat": "वॉइस न चले तब भी टेक्स्ट चैट चलती है।",
     "onboarding.start.title": "अपनी पहली पार्टी शुरू करें",
     "onboarding.start.description": "सेटअप पूरा करें, फिर रूम बनाएँ या लिंक से जुड़ें।",
@@ -1465,7 +1471,8 @@ export const hiINBundle: LocaleBundle = {
     "room.failure.voice_failed.what": "वॉइस नहीं जुड़ सकी।",
     "room.failure.voice_failed.next": "टेक्स्ट चैट जारी रखें, या वॉइस फिर आज़माएँ।",
     "room.failure.voice_permission_denied.what": "माइक्रोफ़ोन की अनुमति नहीं मिली।",
-    "room.failure.voice_permission_denied.next": "वॉइस के लिए ब्राउज़र में माइक्रोफ़ोन की अनुमति दें।",
+    "room.failure.voice_permission_denied.next":
+      "वॉइस के लिए ब्राउज़र में माइक्रोफ़ोन की अनुमति दें।",
     "room.failure.chat_send_failed.what": "वह संदेश नहीं गया।",
     "room.failure.chat_send_failed.next": "चैट से दोबारा भेजें।",
     "room.failure.room_start_failed.what": "काउंटडाउन शुरू नहीं हो सका।",
@@ -1509,6 +1516,5 @@ export const hiINBundle: LocaleBundle = {
     "beta.count.reconnects": "शुरू हुए रीकनेक्ट",
     "beta.count.reconnectsRecovered": "सफल रीकनेक्ट",
     "beta.count.roomStartFailed": "विफल रूम स्टार्ट",
-
   },
 };

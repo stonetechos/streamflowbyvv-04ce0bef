@@ -34,7 +34,12 @@ export function ActivationPanel({ plan, onAct, busy = false }: ActivationPanelPr
   const isActionable = ACTIONABLE.has(plan.primary);
 
   return (
-    <Surface tone="card" padding="md" className="flex flex-col gap-3" data-sf-activation={plan.primary}>
+    <Surface
+      tone="card"
+      padding="md"
+      className="flex flex-col gap-3"
+      data-sf-activation={plan.primary}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           {t("room.activation.title")}

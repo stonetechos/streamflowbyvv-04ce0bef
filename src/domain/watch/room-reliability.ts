@@ -39,22 +39,23 @@ export interface FailureGuidance {
   readonly tone: "warning" | "info";
 }
 
-const GUIDANCE: Readonly<Record<FailureKind, Omit<FailureGuidance, "kind" | "whatKey" | "nextKey">>> =
-  {
-    connection_lost: { roomStillActive: true, retrySafe: true, tone: "warning" },
-    backgrounded: { roomStillActive: true, retrySafe: true, tone: "info" },
-    snapshot_stale: { roomStillActive: true, retrySafe: true, tone: "info" },
-    provider_launched_elsewhere: { roomStillActive: true, retrySafe: true, tone: "info" },
-    provider_launch_failed: { roomStillActive: true, retrySafe: true, tone: "warning" },
-    manual_sync_required: { roomStillActive: true, retrySafe: true, tone: "info" },
-    voice_failed: { roomStillActive: true, retrySafe: true, tone: "warning" },
-    voice_permission_denied: { roomStillActive: true, retrySafe: true, tone: "info" },
-    chat_send_failed: { roomStillActive: true, retrySafe: true, tone: "warning" },
-    room_start_failed: { roomStillActive: true, retrySafe: true, tone: "warning" },
-    room_full: { roomStillActive: true, retrySafe: false, tone: "warning" },
-    room_locked: { roomStillActive: true, retrySafe: false, tone: "warning" },
-    invite_expired: { roomStillActive: false, retrySafe: false, tone: "warning" },
-  };
+const GUIDANCE: Readonly<
+  Record<FailureKind, Omit<FailureGuidance, "kind" | "whatKey" | "nextKey">>
+> = {
+  connection_lost: { roomStillActive: true, retrySafe: true, tone: "warning" },
+  backgrounded: { roomStillActive: true, retrySafe: true, tone: "info" },
+  snapshot_stale: { roomStillActive: true, retrySafe: true, tone: "info" },
+  provider_launched_elsewhere: { roomStillActive: true, retrySafe: true, tone: "info" },
+  provider_launch_failed: { roomStillActive: true, retrySafe: true, tone: "warning" },
+  manual_sync_required: { roomStillActive: true, retrySafe: true, tone: "info" },
+  voice_failed: { roomStillActive: true, retrySafe: true, tone: "warning" },
+  voice_permission_denied: { roomStillActive: true, retrySafe: true, tone: "info" },
+  chat_send_failed: { roomStillActive: true, retrySafe: true, tone: "warning" },
+  room_start_failed: { roomStillActive: true, retrySafe: true, tone: "warning" },
+  room_full: { roomStillActive: true, retrySafe: false, tone: "warning" },
+  room_locked: { roomStillActive: true, retrySafe: false, tone: "warning" },
+  invite_expired: { roomStillActive: false, retrySafe: false, tone: "warning" },
+};
 
 export function describeFailure(kind: FailureKind): FailureGuidance {
   return {
