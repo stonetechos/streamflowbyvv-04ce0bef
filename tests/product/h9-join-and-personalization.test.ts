@@ -30,8 +30,8 @@ import {
   validateRoomKeyShape,
 } from "@/domain";
 
-import en from "@/foundation/localization/bundles/en";
-import hi from "@/foundation/localization/bundles/hi-IN";
+import { enBundle as en } from "@/foundation/localization/bundles/en";
+import { hiINBundle as hi } from "@/foundation/localization/bundles/hi-IN";
 
 const CODES = ["ROM-000001", "ROM-000123", "ROM-004096", "ROM-999999"];
 
