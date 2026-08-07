@@ -12,6 +12,11 @@ import {
   WATCH_CHAT_SERVICE,
 } from "./watch-chat-service";
 import {
+  createRoomGovernanceService,
+  resolveRoomGovernanceDependencies,
+  ROOM_GOVERNANCE_SERVICE,
+} from "./room-governance-service";
+import {
   createWatchSourceService,
   resolveWatchSourceDependencies,
   WATCH_SOURCE_SERVICE,
@@ -28,6 +33,11 @@ export function registerWatchServices(): void {
   }
   if (!isServiceBound(WATCH_SYNC_SERVICE)) {
     bindService(WATCH_SYNC_SERVICE, () => createWatchSyncService(resolveWatchSyncDependencies()));
+  }
+  if (!isServiceBound(ROOM_GOVERNANCE_SERVICE)) {
+    bindService(ROOM_GOVERNANCE_SERVICE, () =>
+      createRoomGovernanceService(resolveRoomGovernanceDependencies()),
+    );
   }
   if (!isServiceBound(WATCH_SOURCE_SERVICE)) {
     bindService(WATCH_SOURCE_SERVICE, () =>
@@ -135,3 +145,40 @@ export {
   createWatchSourceService,
   type WatchSourceService,
 } from "./watch-source-service";
+export {
+  DEFAULT_GOVERNANCE,
+  GOVERNANCE_METADATA_KEY,
+  canPerform,
+  classifyPresence,
+  nextRecoveryPhase,
+  readGovernance,
+  resolveInvite,
+  seatRole,
+  shouldAdoptSnapshot,
+  writeGovernance,
+  type InviteFacts,
+  type InviteResolution,
+  type ModerationAction,
+  type PermissionContext,
+  type PresenceFacts,
+  type RecoveryPhase,
+  type RoomGovernanceSettings,
+  type RoomSeatRole,
+  type SocialPresence,
+} from "./room-governance";
+export {
+  ROOM_GOVERNANCE_SERVICE,
+  createRoomGovernanceService,
+  type RoomGovernanceService,
+} from "./room-governance-service";
+export {
+  PRODUCT_EVENTS,
+  createDevMetricsRecorder,
+  productEvent,
+  sanitizeProps,
+  type DevMetricsRecorder,
+  type DevMetricsSnapshot,
+  type ProductEvent,
+  type ProductEventName,
+  type ProductEventProps,
+} from "./room-analytics";
