@@ -11,6 +11,10 @@ jobs:
       CERT_RUN_ID: RUN-CI-${{ github.run_id }}-${{ github.run_attempt }}
       CERT_ENVIRONMENT: ci
       CERT_REGION: github-hosted
+      # Boot requirement only: the auth email webhook route constructs its
+      # handler at module scope and throws "Missing Lovable API key" when this
+      # is absent. CI never receives a signed webhook.
+      LOVABLE_API_KEY: ${{ secrets.LOVABLE_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
