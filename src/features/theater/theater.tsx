@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import {
   DEFAULT_READINESS_THRESHOLD,
+  classifyPresence,
   deriveRoomPhase,
   providerBrowseUrl,
   summarizeReadiness,
@@ -19,6 +20,8 @@ import {
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
+import { useVoiceSession, useVoiceDevices } from "@/features/voice";
+import { useMicrophonePermission } from "@/features/voice/use-microphone-permission";
 import {
   useMemberNames,
   useRoomCountdown,
@@ -29,6 +32,9 @@ import {
 import { useTranslation } from "@/foundation/localization";
 
 import { ChatPanel } from "./components/chat-panel";
+import { ConnectionBanner } from "./components/connection-banner";
+import { HostModeration } from "./components/host-moderation";
+import { VoiceRoomPanel } from "./components/voice-room-panel";
 import { ManualCoordination } from "./components/manual-coordination";
 import { ParticipantRail } from "./components/participant-rail";
 import { RoomDrawer } from "./components/room-drawer";
@@ -42,6 +48,9 @@ import { useRoomChat } from "./use-room-chat";
 import { useWatchSource } from "./use-watch-source";
 import { useRoomRuntime } from "./use-room-runtime";
 import { useDirectPlayer } from "./use-direct-player";
+import { useConnectionRecovery } from "./use-connection-recovery";
+import { useProductAnalytics } from "./use-product-analytics";
+import { useRoomGovernance } from "./use-room-governance";
 
 export interface TheaterProps {
   readonly roomId: string;
@@ -144,6 +153,69 @@ export function Theater({ roomId }: TheaterProps) {
   });
 
   const chat = useRoomChat({ roomId, profileId, enabled });
+  const analytics = useProductAnalytics();
+
+  const governance = useRoomGovernance({
+    roomId,
+    enabled,
+    viewerRole: room.viewer.role,
+    viewerState: room.viewer.state,
+    viewerMutedByHost: room.viewer.isMutedByHost,
+    roomStatus: room.room?.status ?? "lobby",
+    snapshotSettings: room.room?.governance ?? null,
+    onChanged: room.refresh,
+    onModeration: (action) =>
+      action === "close_room"
+        ? analytics.track("room_closed")
+        : action === "remove_participant"
+          ? analytics.track("participant_removed")
+          : undefined,
+  });
+
+  const recovery = useConnectionRecovery({
+    enabled,
+    onResume: () => {
+      room.refresh();
+      analytics.track("reconnect_recovered");
+    },
+    onInterrupted: () => analytics.track("reconnect_started"),
+  });
+
+  // The banner only clears once a snapshot has actually landed again.
+  useEffect(() => {
+    if (room.status === "ready") recovery.markRecovered();
+  }, [room.status, room.room?.status, recovery]);
+
+  const microphone = useMicrophonePermission();
+  const voiceDevices = useVoiceDevices();
+  const [inputDeviceId, setInputDeviceId] = useState<string | null>(null);
+  const [outputDeviceId, setOutputDeviceId] = useState<string | null>(null);
+  const [voiceRequested, setVoiceRequested] = useState(false);
+  const voice = useVoiceSession({
+    roomId,
+    profileId,
+    displayName: profileId ? (names.get(profileId) ?? memberLabel(profileId)) : "",
+    enabled: enabled && voiceRequested && !room.viewer.isMutedByHost,
+    autoJoin: voiceRequested,
+    joinMuted: true,
+    inputDeviceId,
+    outputDeviceId,
+  });
+
+  const joinVoice = useCallback(() => {
+    void microphone.request().then((granted) => {
+      if (!granted) return;
+      setVoiceRequested(true);
+      voice.join();
+      analytics.track("voice_connected");
+    });
+  }, [microphone, voice, analytics]);
+
+  const leaveVoice = useCallback(() => {
+    voice.leave();
+    setVoiceRequested(false);
+    analytics.track("voice_join_requested", { left: true });
+  }, [voice, analytics]);
 
   // Keep the transport clock and duration fresh for the host's own readout.
   useEffect(() => {
@@ -241,26 +313,48 @@ export function Theater({ roomId }: TheaterProps) {
 
   // Presence and a person's own tap are the only readiness inputs: the room
   // never infers that somebody is watching.
+  const voiceProfileIds = useMemo(
+    () => new Set(voice.isConnected ? voice.members.map((member) => member.profileId) : []),
+    [voice.isConnected, voice.members],
+  );
+
+  const isWatchPhase = runtime.playback.status === "playing";
+
   const participants = useMemo<readonly ParticipantRuntime[]>(
     () =>
       room.members
-        .filter((member) => member.state !== "left")
-        .map((member) => ({
-          participantId: member.profileId,
-          displayName: nameFor(member.profileId),
-          isHost: member.isHost,
-          state:
-            member.presence === "unknown"
-              ? ("disconnected" as const)
-              : member.presence === "away"
-                ? ("reconnecting" as const)
-                : member.isViewer && selfReady
-                  ? ("ready" as const)
-                  : member.isReady
-                    ? ("ready" as const)
-                    : ("joined" as const),
-        })),
-    [room.members, nameFor, selfReady],
+        .filter((member) => member.state !== "left" && member.state !== "removed")
+        .map((member) => {
+          const presence = classifyPresence({
+            membership: member.state,
+            liveness: member.presence,
+            // Only the one plane we actually observe counts as watching.
+            isWatching: isWatchPhase && member.presence === "online" && isEmbedded,
+            hasSelfDeclaredReady: member.isViewer ? selfReady : member.isReady,
+            voice: voiceProfileIds.has(member.profileId)
+              ? member.isMutedByHost || (member.isViewer && voice.isMuted)
+                ? "muted"
+                : "connected"
+              : "off",
+          });
+          const state: ParticipantRuntime["state"] =
+            presence === "watching"
+              ? "watching"
+              : presence === "reconnecting"
+                ? "reconnecting"
+                : presence === "disconnected"
+                  ? "disconnected"
+                  : presence === "ready"
+                    ? "ready"
+                    : "joined";
+          return {
+            participantId: member.profileId,
+            displayName: nameFor(member.profileId),
+            isHost: member.isHost,
+            state,
+          };
+        }),
+    [room.members, nameFor, selfReady, voiceProfileIds, voice.isMuted, isWatchPhase, isEmbedded],
   );
 
   const readiness = useMemo(
@@ -317,6 +411,51 @@ export function Theater({ roomId }: TheaterProps) {
     roomEnded: room.room?.status === "ended",
   });
 
+  const canSendChat = chat.isAvailable && enabled && governance.can("send_chat");
+  const chatDisabledReason = canSendChat
+    ? null
+    : governance.seat === "removed"
+      ? ("left" as const)
+      : !governance.settings.isChatEnabled
+        ? ("chat_disabled" as const)
+        : !enabled
+          ? ("left" as const)
+          : null;
+
+  const moderation =
+    governance.can("mute_participant") || governance.can("remove_participant")
+      ? {
+          canMute: governance.can("mute_participant"),
+          canRemove: governance.can("remove_participant"),
+          mutedProfileIds: new Set(
+            room.members.filter((m) => m.isMutedByHost).map((m) => m.profileId),
+          ),
+          memberIdByProfileId: new Map(room.members.map((m) => [m.profileId, m.id])),
+          busy: governance.pending === "mute" || governance.pending === "remove",
+          onMute: governance.muteParticipant,
+          onRemove: governance.removeParticipant,
+        }
+      : null;
+
+  const chatPanel = (
+    <ChatPanel
+      chat={chat}
+      nameFor={nameFor}
+      canSend={canSendChat}
+      disabledReason={chatDisabledReason}
+    />
+  );
+
+  const participantRail = (
+    <ParticipantRail
+      participants={participants}
+      readiness={readiness}
+      showReadiness={!runtime.isAutomatic}
+      moderation={moderation}
+      voiceProfileIds={voiceProfileIds}
+    />
+  );
+
   if (!room.room) {
     return (
       <main className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4">
@@ -356,6 +495,14 @@ export function Theater({ roomId }: TheaterProps) {
           </ActionButton>
         </div>
       </header>
+
+      <ConnectionBanner phase={recovery.phase} />
+
+      {governance.settings.isLocked ? (
+        <p className="text-xs text-muted-foreground" data-sf-room-locked>
+          {t("room.privacy.locked")}
+        </p>
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex min-w-0 flex-col gap-4">
@@ -419,17 +566,31 @@ export function Theater({ roomId }: TheaterProps) {
             />
           )}
 
-          <RoomDrawer
-            chat={<ChatPanel chat={chat} nameFor={nameFor} canSend={chat.isAvailable && enabled} />}
-            people={
-              <ParticipantRail
-                participants={participants}
-                readiness={readiness}
-                showReadiness={!runtime.isAutomatic}
-              />
-            }
-            unreadHint={chat.lines.length}
+          <VoiceRoomPanel
+            voice={voice}
+            permission={microphone.permission}
+            isMicSupported={microphone.isSupported}
+            isMutedByHost={room.viewer.isMutedByHost}
+            onJoin={joinVoice}
+            onLeave={leaveVoice}
+            onReconnect={voice.recover}
+            inputDevices={voiceDevices.inputs}
+            outputDevices={voiceDevices.outputs}
+            inputDeviceId={inputDeviceId}
+            outputDeviceId={outputDeviceId}
+            onInputDevice={setInputDeviceId}
+            onOutputDevice={setOutputDeviceId}
           />
+
+          <HostModeration
+            governance={governance}
+            onCancelCountdown={countdownSeconds !== null ? countdown.cancel : null}
+            onRestartCountdown={
+              countdownSeconds === null && countdown.isAvailable ? countdown.start : null
+            }
+          />
+
+          <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
 
           {isHost ? (
             <div className="flex flex-col gap-3">
@@ -453,14 +614,8 @@ export function Theater({ roomId }: TheaterProps) {
         </div>
 
         <aside className="hidden min-h-[24rem] flex-col gap-4 lg:flex lg:h-[calc(100vh-12rem)]">
-          <ParticipantRail
-            participants={participants}
-            readiness={readiness}
-            showReadiness={!runtime.isAutomatic}
-          />
-          <div className="min-h-0 flex-1">
-            <ChatPanel chat={chat} nameFor={nameFor} canSend={chat.isAvailable && enabled} />
-          </div>
+          {participantRail}
+          <div className="min-h-0 flex-1">{chatPanel}</div>
         </aside>
       </div>
     </main>

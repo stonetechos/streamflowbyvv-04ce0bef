@@ -5,7 +5,13 @@
  * anything: derivation is mechanical, and every rule that matters already
  * lives in the Sprint 1.6 services (Build Rules §1).
  */
-import type { MembershipState, RoomMediaRef, RoomRole, RoomStatus } from "@/domain";
+import type {
+  MembershipState,
+  RoomGovernanceSettings,
+  RoomMediaRef,
+  RoomRole,
+  RoomStatus,
+} from "@/domain";
 
 export type WaitingRoomStatus = "loading" | "ready" | "error";
 
@@ -31,6 +37,8 @@ export interface MemberView {
   readonly isHost: boolean;
   readonly isReady: boolean;
   readonly isViewer: boolean;
+  /** Host-applied voice mute, as stored on the membership row (Sprint H6). */
+  readonly isMutedByHost: boolean;
   readonly presence: MemberPresenceView;
   /** ISO-8601 of the last heartbeat; null while presence is untracked. */
   readonly lastSeenAt: string | null;
@@ -58,6 +66,8 @@ export interface RoomSummaryView {
   readonly mediaRef: RoomMediaRef | null;
   /** Stored countdown length in seconds; clamped to the system envelope. */
   readonly countdownSeconds: number;
+  /** Privacy and moderation settings, shared by every member (Sprint H6). */
+  readonly governance: RoomGovernanceSettings;
 }
 
 export interface ViewerView {
@@ -66,6 +76,10 @@ export interface ViewerView {
   readonly isMember: boolean;
   readonly isHost: boolean;
   readonly isReady: boolean;
+  readonly role: RoomRole;
+  readonly state: MembershipState;
+  /** Host-applied voice mute for this viewer (Sprint H6). */
+  readonly isMutedByHost: boolean;
   /**
    * Whether a seat is still available for this viewer. Decided by Domain
    * (ADR-002 lifecycle, ADR-013 capacity) and only carried here.

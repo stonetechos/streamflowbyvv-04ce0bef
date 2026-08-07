@@ -8,6 +8,7 @@
 import {
   COUNTDOWN_SECONDS_METADATA_KEY,
   normalizeCountdownSeconds,
+  readGovernance,
   readRoomMediaRef,
   type MemberPresence,
   type MetadataBag,
@@ -94,6 +95,7 @@ export function toMemberViews(
         isHost: member.role === "host" || member.profileId === snapshot.room.hostProfileId,
         isReady: isReady(member),
         isViewer: member.profileId === viewerProfileId,
+        isMutedByHost: member.isMutedByHost,
         presence: presenceView,
         lastSeenAt: observed?.lastSeenAt ?? null,
         lastSeenMinutes:
@@ -127,6 +129,7 @@ export function toRoomSummary(snapshot: WaitingRoomSnapshot): RoomSummaryView {
     contentReference: snapshot.room.contentReference,
     mediaRef: readRoomMediaRef(snapshot.room.metadata),
     countdownSeconds: readCountdownSeconds(snapshot.room.metadata),
+    governance: readGovernance(snapshot.room.metadata),
   };
 }
 
@@ -142,6 +145,9 @@ export function toViewerView(
     isMember: membership?.state === "joined",
     isHost: membership?.role === "host" || snapshot.room.hostProfileId === viewerProfileId,
     isReady: membership ? isReady(membership) : false,
+    role: membership?.role ?? "guest",
+    state: membership?.state ?? "left",
+    isMutedByHost: membership?.isMutedByHost ?? false,
     // Carried verbatim from the Domain snapshot: Presentation never evaluates
     // lifecycle or capacity for itself (Milestone D.5).
     canJoin: snapshot.canViewerJoin,
