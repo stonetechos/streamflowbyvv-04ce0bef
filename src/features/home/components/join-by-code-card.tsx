@@ -8,6 +8,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 
+import { trackEvent } from "@/features/analytics";
 import { ActionButton, Surface, TextField } from "@/design-system/components";
 import { normalizeRoomCode, validateRoomCode } from "@/features/auth";
 import { refusalMessageKey } from "@/features/shared/refusal-message";
@@ -30,6 +31,7 @@ export function JoinByCodeCard({ home }: { home: HomeModel }) {
 
     const roomId = await home.joinByCode(normalizeRoomCode(code));
     if (roomId) {
+      trackEvent("guest_joined", {}, { role: "guest", roomKey: roomId });
       setCode("");
       void navigate({ to: "/rooms/$roomId", params: { roomId } });
     } else {

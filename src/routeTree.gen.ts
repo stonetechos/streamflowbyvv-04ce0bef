@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
+import { Route as AuthenticatedBetaRouteImport } from './routes/_authenticated.beta'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
 import { Route as AuthenticatedInvitesRouteImport } from './routes/_authenticated.invites'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
@@ -54,6 +55,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedBetaRoute = AuthenticatedBetaRouteImport.update({
+  id: '/beta',
+  path: '/beta',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/account': typeof AuthenticatedAccountRoute
+  '/beta': typeof AuthenticatedBetaRoute
   '/home': typeof AuthenticatedHomeRoute
   '/invites': typeof AuthenticatedInvitesRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/beta': typeof AuthenticatedBetaRoute
   '/home': typeof AuthenticatedHomeRoute
   '/invites': typeof AuthenticatedInvitesRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/beta': typeof AuthenticatedBetaRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/invites': typeof AuthenticatedInvitesRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/account'
+    | '/beta'
     | '/home'
     | '/invites'
     | '/onboarding'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account'
+    | '/beta'
     | '/home'
     | '/invites'
     | '/onboarding'
@@ -322,6 +333,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/account'
+    | '/_authenticated/beta'
     | '/_authenticated/home'
     | '/_authenticated/invites'
     | '/_authenticated/onboarding'
@@ -387,6 +399,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/beta': {
+      id: '/_authenticated/beta'
+      path: '/beta'
+      fullPath: '/beta'
+      preLoaderRoute: typeof AuthenticatedBetaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/home': {
@@ -566,6 +585,7 @@ const AuthenticatedPeopleRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedBetaRoute: typeof AuthenticatedBetaRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedInvitesRoute: typeof AuthenticatedInvitesRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -578,6 +598,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedBetaRoute: AuthenticatedBetaRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedInvitesRoute: AuthenticatedInvitesRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
@@ -630,13 +651,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

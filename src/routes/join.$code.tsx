@@ -14,6 +14,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 import { ErrorState, LoadingState } from "@/app-shell";
+import { useTrackOnce } from "@/features/analytics";
 import { useAuth } from "@/features/auth";
 import { useHome } from "@/features/home";
 import { clearPendingInvite, rememberPendingInvite } from "@/features/invitations";
@@ -41,6 +42,7 @@ export const Route = createFileRoute("/join/$code")({
 });
 
 function JoinInvitePage() {
+  useTrackOnce("invite_opened");
   const { t } = useTranslation();
   const { code } = Route.useParams();
   const navigate = useNavigate();
