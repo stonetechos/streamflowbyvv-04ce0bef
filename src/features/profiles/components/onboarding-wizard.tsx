@@ -83,11 +83,6 @@ export function OnboardingWizard({
   const [handoffRead, setHandoffRead] = useState(false);
   const analytics = useAnalytics();
 
-  // Skipping is allowed only once the streaming-service handoff has been read:
-  // a person who skips before it is a person who will be surprised in the room.
-  const handoffIndex = STEPS.indexOf("handoff");
-  const canSkip = stepIndex > handoffIndex || (step === "handoff" && handoffRead);
-
   useEffect(() => {
     analytics.track("onboarding_started");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,6 +90,12 @@ export function OnboardingWizard({
 
   const step = STEPS[stepIndex] as Step;
   const progress = Math.round(((stepIndex + 1) / STEPS.length) * 100);
+
+  // Skipping is allowed only once the streaming-service handoff has been read:
+  // a person who skips before it is a person who will be surprised in the room.
+  const handoffIndex = STEPS.indexOf("handoff");
+  const canSkip = stepIndex > handoffIndex || (step === "handoff" && handoffRead);
+
 
   const timezone = useMemo(() => {
     try {
