@@ -73,7 +73,7 @@ describe("beta access", () => {
     expect(CLOSED_BETA.enabled).toBe(false);
     const decision = evaluateBetaAccess(CLOSED_BETA, { key: "anything" });
     expect(decision.allowed).toBe(false);
-    expect(decision.reason).toBe("beta_closed");
+    expect(decision.reason).toBe("beta_disabled");
   });
 
   test("an allowlist admits only issued keys", () => {
@@ -87,7 +87,7 @@ describe("beta access", () => {
     expect(evaluateBetaAccess(config, { key: "key-a" }).allowed).toBe(true);
     const denied = evaluateBetaAccess(config, { key: "key-b" });
     expect(denied.allowed).toBe(false);
-    expect(denied.reason).toBe("key_not_recognised");
+    expect(denied.reason).toBe("not_allowlisted");
   });
 
   test("a missing key is refused rather than assumed", () => {
@@ -98,7 +98,7 @@ describe("beta access", () => {
       inviteCodes: ["code"],
       internalKeys: [],
     };
-    expect(evaluateBetaAccess(config, { key: null }).reason).toBe("key_missing");
+    expect(evaluateBetaAccess(config, { key: null }).reason).toBe("missing_key");
   });
 
   test("an internal key is marked internal so it can be excluded from metrics", () => {
@@ -147,9 +147,7 @@ describe("activation", () => {
   });
 
   test("a room without a valid title is not activated", () => {
-    expect(missingActivationRequirements(facts({ hasValidMedia: false }))).toContain(
-      "valid_media_selected",
-    );
+    expect(missingActivationRequirements(facts({ hasValidMedia: false }))).toContain("valid_media");
   });
 
   test("a lobby room is not activated even with everyone present", () => {
@@ -164,7 +162,7 @@ describe("activation", () => {
     const tracker = createActivationTracker();
     expect(tracker.observe("room-1", facts())).toBe(true);
     expect(tracker.observe("room-1", facts())).toBe(false);
-    expect(tracker.summary().activatedRooms).toBe(1);
+    expect(tracker.summary().roomsActivated).toBe(1);
   });
 
   test("the activation event has one canonical name", () => {
@@ -183,7 +181,7 @@ describe("activation", () => {
     tracker.note("a", { usedVoice: true, participants: 3 });
     tracker.observe("b", facts({ guestCount: 0 }));
     const summary = tracker.summary();
-    expect(summary.activatedRooms).toBe(1);
+    expect(summary.roomsActivated).toBe(1);
     expect(summary.voiceUsageAmongActivated).toBe(1);
     expect(summary.averageParticipantsPerActivatedRoom).toBe(3);
   });
@@ -255,11 +253,11 @@ describe("session summary and interviews", () => {
   test("a room that never reached watching says so plainly", () => {
     const summary = buildSessionSummary({
       timeline: {
-        createdAt: "2026-01-01T00:00:00.000Z",
+        createdAt: 0,
         firstGuestAt: null,
         mediaSelectedAt: null,
         watchingAt: null,
-        endedAt: "2026-01-01T00:05:00.000Z",
+        endedAt: 300_000,
       },
       participantCount: 1,
       providerId: null,
@@ -318,19 +316,19 @@ describe("session summary and interviews", () => {
 
 describe("wording", () => {
   test("both bundles carry every H8 key", () => {
-    const en = Object.keys(enBundle);
-    const hi = Object.keys(hiINBundle);
+    const en = Object.keys(enBundle.strings);
+    const hi = Object.keys(hiINBundle.strings);
     expect(hi.length).toBe(en.length);
-    for (const key of en) expect(hiINBundle[key as keyof typeof hiINBundle]).toBeDefined();
+    for (const key of en) expect(hiINBundle.strings[key]).toBeDefined();
   });
 
   test("participant-facing wording avoids experiment jargon", () => {
-    const participantKeys = Object.keys(enBundle).filter(
+    const participantKeys = Object.keys(enBundle.strings).filter(
       (key) => key.startsWith("room.recap.") || key.startsWith("research."),
     );
     expect(participantKeys.length).toBeGreaterThan(0);
     for (const key of participantKeys) {
-      const value = String(enBundle[key as keyof typeof enBundle]).toLowerCase();
+      const value = String(enBundle.strings[key]).toLowerCase();
       for (const jargon of ["cohort", "activation", "funnel", "telemetry", "conversion"]) {
         expect(value.includes(jargon)).toBe(false);
       }
@@ -338,6 +336,6 @@ describe("wording", () => {
   });
 
   test("the research surface states that nothing is for sale", () => {
-    expect(String(enBundle["research.disclaimer"]).toLowerCase()).toContain("free");
+    expect(String(enBundle.strings["research.disclaimer"]).toLowerCase()).toContain("free");
   });
 });
