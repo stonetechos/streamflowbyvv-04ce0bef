@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import {
   DEFAULT_READINESS_THRESHOLD,
+  classifyPresence,
   deriveRoomPhase,
   providerBrowseUrl,
   summarizeReadiness,
@@ -19,6 +20,8 @@ import {
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
+import { useVoiceSession, useVoiceDevices } from "@/features/voice";
+import { useMicrophonePermission } from "@/features/voice/use-microphone-permission";
 import {
   useMemberNames,
   useRoomCountdown,
@@ -29,6 +32,9 @@ import {
 import { useTranslation } from "@/foundation/localization";
 
 import { ChatPanel } from "./components/chat-panel";
+import { ConnectionBanner } from "./components/connection-banner";
+import { HostModeration } from "./components/host-moderation";
+import { VoiceRoomPanel } from "./components/voice-room-panel";
 import { ManualCoordination } from "./components/manual-coordination";
 import { ParticipantRail } from "./components/participant-rail";
 import { RoomDrawer } from "./components/room-drawer";
@@ -42,6 +48,9 @@ import { useRoomChat } from "./use-room-chat";
 import { useWatchSource } from "./use-watch-source";
 import { useRoomRuntime } from "./use-room-runtime";
 import { useDirectPlayer } from "./use-direct-player";
+import { useConnectionRecovery } from "./use-connection-recovery";
+import { useProductAnalytics } from "./use-product-analytics";
+import { useRoomGovernance } from "./use-room-governance";
 
 export interface TheaterProps {
   readonly roomId: string;
@@ -144,6 +153,62 @@ export function Theater({ roomId }: TheaterProps) {
   });
 
   const chat = useRoomChat({ roomId, profileId, enabled });
+  const analytics = useProductAnalytics();
+
+  const governance = useRoomGovernance({
+    roomId,
+    enabled,
+    viewerRole: room.viewer.role,
+    viewerState: room.viewer.state,
+    viewerMutedByHost: room.viewer.isMutedByHost,
+    roomStatus: room.room?.status ?? "lobby",
+    snapshotSettings: room.room?.governance ?? null,
+    onChanged: room.refresh,
+    onModeration: (action) => analytics.track("room.moderation", { action }),
+  });
+
+  const recovery = useConnectionRecovery({
+    enabled,
+    onResume: () => {
+      room.refresh();
+      analytics.track("room.recovered");
+    },
+    onInterrupted: () => analytics.track("room.interrupted"),
+  });
+
+  // The banner only clears once a snapshot has actually landed again.
+  useEffect(() => {
+    if (room.status === "ready") recovery.markRecovered();
+  }, [room.status, room.room?.status, recovery]);
+
+  const microphone = useMicrophonePermission();
+  const voiceDevices = useVoiceDevices();
+  const [voiceRequested, setVoiceRequested] = useState(false);
+  const voice = useVoiceSession({
+    roomId,
+    profileId,
+    displayName: profileId ? (names.get(profileId) ?? memberLabel(profileId)) : "",
+    enabled: enabled && voiceRequested && !room.viewer.isMutedByHost,
+    autoJoin: voiceRequested,
+    joinMuted: true,
+    inputDeviceId: voiceDevices.selectedInputId,
+    outputDeviceId: voiceDevices.selectedOutputId,
+  });
+
+  const joinVoice = useCallback(() => {
+    void microphone.request().then((granted) => {
+      if (!granted) return;
+      setVoiceRequested(true);
+      voice.join();
+      analytics.track("voice.joined");
+    });
+  }, [microphone, voice, analytics]);
+
+  const leaveVoice = useCallback(() => {
+    voice.leave();
+    setVoiceRequested(false);
+    analytics.track("voice.left");
+  }, [voice, analytics]);
 
   // Keep the transport clock and duration fresh for the host's own readout.
   useEffect(() => {
