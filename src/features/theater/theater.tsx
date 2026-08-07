@@ -13,13 +13,17 @@ import {
   DEFAULT_READINESS_THRESHOLD,
   classifyPresence,
   deriveRoomPhase,
+  shouldPromptFeedback,
   providerBrowseUrl,
   summarizeReadiness,
   watchProviderById,
+  type ActivationAction,
   type CoordinationKind,
+  type FailureKind,
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
+import { recordFeedback, useAnalytics, useTrackOnce } from "@/features/analytics";
 import { useVoiceSession, useVoiceDevices } from "@/features/voice";
 import { useMicrophonePermission } from "@/features/voice/use-microphone-permission";
 import {
@@ -31,7 +35,11 @@ import {
 } from "@/features/waiting-room";
 import { useTranslation } from "@/foundation/localization";
 
+import { ActivationPanel } from "./components/activation-panel";
+import { BetaFeedback } from "./components/beta-feedback";
 import { ChatPanel } from "./components/chat-panel";
+import { FailureNotice } from "./components/failure-notice";
+import { InvitePanel } from "./components/invite-panel";
 import { ConnectionBanner } from "./components/connection-banner";
 import { HostModeration } from "./components/host-moderation";
 import { VoiceRoomPanel } from "./components/voice-room-panel";
@@ -50,6 +58,7 @@ import { useRoomRuntime } from "./use-room-runtime";
 import { useDirectPlayer } from "./use-direct-player";
 import { useConnectionRecovery } from "./use-connection-recovery";
 import { useProductAnalytics } from "./use-product-analytics";
+import { useRoomActivation } from "./use-room-activation";
 import { useRoomGovernance } from "./use-room-governance";
 
 export interface TheaterProps {
@@ -116,6 +125,12 @@ export function Theater({ roomId }: TheaterProps) {
 
   const [isBuffering, setIsBuffering] = useState(false);
   const [selfReady, setSelfReady] = useState(false);
+  const [hasOpenedProvider, setHasOpenedProvider] = useState(false);
+  const [failure, setFailure] = useState<FailureKind | null>(null);
+  const [feedbackState, setFeedbackState] = useState<"pending" | "answered" | "dismissed">(
+    "pending",
+  );
+  const [hasLeft, setHasLeft] = useState(false);
 
   const runtime = useRoomRuntime({
     roomId,
@@ -154,6 +169,12 @@ export function Theater({ roomId }: TheaterProps) {
 
   const chat = useRoomChat({ roomId, profileId, enabled });
   const analytics = useProductAnalytics();
+  const beta = useAnalytics({
+    role: isHost ? "host" : "guest",
+    providerId: source.capability.providerId,
+    syncMode: source.capability.playbackControlMode,
+    roomKey: roomId,
+  });
 
   const governance = useRoomGovernance({
     roomId,
@@ -285,11 +306,12 @@ export function Theater({ roomId }: TheaterProps) {
     void navigator.clipboard?.writeText(link).then(
       () => {
         setCopied(true);
+        beta.track("invite_copied");
         window.setTimeout(() => setCopied(false), 2_000);
       },
       () => undefined,
     );
-  }, [room.room]);
+  }, [room.room, beta]);
 
   const selectProvider = useCallback(
     (provider: WatchProviderCapability) => {
@@ -380,6 +402,12 @@ export function Theater({ roomId }: TheaterProps) {
     [chat, t],
   );
 
+  const leaveRoom = useCallback(() => {
+    beta.track("room_left");
+    setHasLeft(true);
+    room.leave();
+  }, [beta, room]);
+
   const toggleReady = useCallback(() => {
     setSelfReady((current) => {
       if (!current) chat.sendCoordination("ready", t("room.manual.sent.ready"));
@@ -391,8 +419,12 @@ export function Theater({ roomId }: TheaterProps) {
     const url = source.source?.url ?? providerBrowseUrl(capabilityProviderId);
     if (!url) return;
     chat.sendCoordination("provider-launched", t("room.manual.sent.provider-launched"));
-    window.open(url, "_blank", "noopener,noreferrer");
-  }, [source.source, capabilityProviderId, chat, t]);
+    beta.track("provider_launch_clicked");
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    setHasOpenedProvider(true);
+    // A blocked pop-up is a real failure, and the person needs a next step.
+    setFailure(opened === null ? "provider_launch_failed" : null);
+  }, [source.source, capabilityProviderId, chat, t, beta]);
 
   // One derivation, one snapshot: the host and every guest read the same phase.
   const mediaRef = room.room?.mediaRef ?? null;
@@ -409,6 +441,62 @@ export function Theater({ roomId }: TheaterProps) {
             : null,
     roomClosed: room.room?.status === "abandoned",
     roomEnded: room.room?.status === "ended",
+  });
+
+  const guestCount = Math.max(0, presentMembers.length - 1);
+
+  const activation = useRoomActivation({
+    isHost,
+    guestCount,
+    hasContent: source.source !== null,
+    isCountingDown: countdownSeconds !== null,
+    phase,
+    isEmbedded,
+    hasOpenedProvider,
+    isSelfReady: selfReady,
+    isVoiceConnected: voice.isConnected,
+    isVoiceAvailable: microphone.isSupported && !room.viewer.isMutedByHost,
+  });
+
+  const inviteLink = `${typeof window === "undefined" ? "" : window.location.origin}/join/${encodeURIComponent(room.room?.code ?? "")}`;
+
+  const inviteBlocked = governance.settings.isLocked
+    ? ("locked" as const)
+    : phase === "closed" || phase === "ended"
+      ? ("expired" as const)
+      : null;
+
+  const handleActivation = useCallback(
+    (action: ActivationAction) => {
+      switch (action) {
+        case "invite_someone":
+          copyInvite();
+          break;
+        case "start_countdown":
+          beta.track("countdown_started");
+          countdown.start();
+          break;
+        case "open_provider":
+          openProvider();
+          break;
+        case "join_voice":
+          joinVoice();
+          break;
+        case "mark_ready":
+          toggleReady();
+          break;
+        default:
+          break;
+      }
+    },
+    [copyInvite, countdown, openProvider, joinVoice, toggleReady, beta],
+  );
+
+  const showFeedback = shouldPromptFeedback({
+    phase,
+    hasLeft,
+    alreadyAnswered: feedbackState === "answered",
+    dismissed: feedbackState === "dismissed",
   });
 
   const canSendChat = chat.isAvailable && enabled && governance.can("send_chat");
@@ -436,6 +524,10 @@ export function Theater({ roomId }: TheaterProps) {
           onRemove: governance.removeParticipant,
         }
       : null;
+
+  useEffect(() => {
+    if (phase === "watching") beta.track("watching_started");
+  }, [phase, beta]);
 
   const chatPanel = (
     <ChatPanel
@@ -488,7 +580,7 @@ export function Theater({ roomId }: TheaterProps) {
           <ActionButton
             tone="ghost"
             size="sm"
-            onClick={room.leave}
+            onClick={leaveRoom}
             loading={room.pending === "leave"}
           >
             {t("theater.action.leave")}
@@ -506,6 +598,31 @@ export function Theater({ roomId }: TheaterProps) {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex min-w-0 flex-col gap-4">
+          <ActivationPanel
+            plan={activation}
+            onAct={handleActivation}
+            busy={countdown.pending === "start"}
+          />
+
+          {failure ? (
+            <FailureNotice
+              kind={failure}
+              onRetry={failure === "provider_launch_failed" ? openProvider : null}
+              onDismiss={() => setFailure(null)}
+            />
+          ) : null}
+
+          {showFeedback ? (
+            <BetaFeedback
+              onSubmit={(input) => {
+                recordFeedback(input);
+                beta.track("session_ended", { outcome: input.outcome });
+                setFeedbackState("answered");
+              }}
+              onDismiss={() => setFeedbackState("dismissed")}
+            />
+          ) : null}
+
           <WatchStage
             source={source.source}
             capability={capability}
@@ -562,7 +679,7 @@ export function Theater({ roomId }: TheaterProps) {
               onOpenProvider={openProvider}
               onToggleReady={toggleReady}
               onRequest={requestCoordination}
-              onLeave={room.leave}
+              onLeave={leaveRoom}
             />
           )}
 
@@ -588,6 +705,14 @@ export function Theater({ roomId }: TheaterProps) {
             onRestartCountdown={
               countdownSeconds === null && countdown.isAvailable ? countdown.start : null
             }
+          />
+
+          <InvitePanel
+            link={inviteLink}
+            participantCount={presentMembers.length}
+            blocked={inviteBlocked}
+            onCopied={() => beta.track("invite_copied")}
+            onShared={() => beta.track("native_share_opened")}
           />
 
           <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
