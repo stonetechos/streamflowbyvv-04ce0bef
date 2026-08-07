@@ -10,7 +10,8 @@
  * observed. "Watching" is never inferred from an open browser tab, and voice
  * states are only reported by the voice transport itself.
  */
-import type { MembershipState, MetadataBag, RoomRole, RoomStatus } from "@/domain";
+import type { MetadataBag } from "@/domain/rooms/room.types";
+import type { MembershipState, RoomRole, RoomStatus } from "@/domain/shared/domain-enums";
 
 /** The role vocabulary the room UI speaks. `muted` is a participant state. */
 export type RoomSeatRole = "host" | "co_host" | "participant" | "muted" | "removed";
