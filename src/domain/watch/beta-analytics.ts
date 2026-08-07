@@ -34,7 +34,9 @@ export const BETA_ACTIVATION_EVENTS = [
   "media_selection_started",
   "media_selected",
   "countdown_started",
+  "countdown_completed",
   "watching_started",
+  "room_reached_watching_with_host_and_guest",
 ] as const;
 
 export const BETA_SOCIAL_EVENTS = [
@@ -45,6 +47,7 @@ export const BETA_SOCIAL_EVENTS = [
   "voice_failed",
   "chat_opened",
   "chat_message_sent",
+  "chat_send_failed",
   "participant_ready",
   "participant_removed",
   "room_locked",
@@ -66,6 +69,15 @@ export const BETA_COMPLETION_EVENTS = [
   "room_left",
   "host_closed_room",
   "repeat_room_created",
+  "session_summary_shown",
+] as const;
+
+/** Beta programme events: admission and research, never billing. */
+export const BETA_PROGRAMME_EVENTS = [
+  "beta_access_granted",
+  "beta_access_denied",
+  "research_prompt_shown",
+  "research_response_submitted",
 ] as const;
 
 export const BETA_EVENTS = [
@@ -74,6 +86,7 @@ export const BETA_EVENTS = [
   ...BETA_SOCIAL_EVENTS,
   ...BETA_RELIABILITY_EVENTS,
   ...BETA_COMPLETION_EVENTS,
+  ...BETA_PROGRAMME_EVENTS,
 ] as const;
 
 export type BetaEventName = (typeof BETA_EVENTS)[number];
@@ -128,9 +141,12 @@ const ONCE_PER_ROOM: ReadonlySet<string> = new Set([
   "guest_joined",
   "media_selected",
   "countdown_started",
+  "countdown_completed",
   "watching_started",
+  "room_reached_watching_with_host_and_guest",
   "room_closed",
   "room_left",
+  "session_summary_shown",
 ]);
 
 export function dedupeKey(name: AnalyticsEventName, roomKey: string | null): string | null {
@@ -151,7 +167,13 @@ export interface FunnelCounts {
   readonly mediaSelected: number;
   readonly countdownsStarted: number;
   readonly watchingStarted: number;
+  readonly countdownsCompleted: number;
+  readonly roomsActivated: number;
   readonly voiceConnected: number;
+  readonly voiceAttempts: number;
+  readonly chatSends: number;
+  readonly chatFailures: number;
+  readonly providerLaunches: number;
   readonly reconnectsStarted: number;
   readonly reconnectsRecovered: number;
   readonly repeatRoomsCreated: number;
@@ -167,7 +189,13 @@ export const EMPTY_FUNNEL: FunnelCounts = Object.freeze({
   mediaSelected: 0,
   countdownsStarted: 0,
   watchingStarted: 0,
+  countdownsCompleted: 0,
+  roomsActivated: 0,
   voiceConnected: 0,
+  voiceAttempts: 0,
+  chatSends: 0,
+  chatFailures: 0,
+  providerLaunches: 0,
   reconnectsStarted: 0,
   reconnectsRecovered: 0,
   repeatRoomsCreated: 0,
@@ -297,7 +325,16 @@ export function createBetaAnalytics(): BetaAnalyticsRecorder {
         mediaSelected: counters["media_selected"] ?? 0,
         countdownsStarted: counters["countdown_started"] ?? 0,
         watchingStarted: counters["watching_started"] ?? 0,
+        countdownsCompleted: counters["countdown_completed"] ?? 0,
+        roomsActivated: counters["room_reached_watching_with_host_and_guest"] ?? 0,
         voiceConnected: counters["voice_connected"] ?? 0,
+        voiceAttempts:
+          (counters["voice_connected"] ?? 0) +
+          (counters["voice_failed"] ?? 0) +
+          (counters["voice_permission_denied"] ?? 0),
+        chatSends: counters["chat_message_sent"] ?? 0,
+        chatFailures: counters["chat_send_failed"] ?? 0,
+        providerLaunches: counters["provider_launch_clicked"] ?? 0,
         reconnectsStarted: counters["reconnect_started"] ?? 0,
         reconnectsRecovered: counters["reconnect_recovered"] ?? 0,
         repeatRoomsCreated: counters["repeat_room_created"] ?? 0,
@@ -314,4 +351,37 @@ export function createBetaAnalytics(): BetaAnalyticsRecorder {
       recent = [];
     },
   };
+}
+
+/* ------------------------------------------------ reliability and engagement */
+
+/**
+ * Reliability rates the beta watches for regressions. Same rule as the funnel:
+ * an undefined denominator is `null`, never a reassuring zero.
+ */
+export interface ReliabilityMetrics {
+  readonly inviteOpenSuccess: number | null;
+  readonly guestJoinSuccess: number | null;
+  readonly countdownCompletion: number | null;
+  readonly reconnectRecovery: number | null;
+  readonly voiceConnectionSuccess: number | null;
+  readonly chatSendFailure: number | null;
+  readonly providerLaunchAction: number | null;
+}
+
+export function computeReliability(counts: FunnelCounts): ReliabilityMetrics {
+  return {
+    inviteOpenSuccess: rate(counts.invitesOpened, counts.roomsWithInvite),
+    guestJoinSuccess: rate(counts.guestsJoined, counts.invitesOpened),
+    countdownCompletion: rate(counts.countdownsCompleted, counts.countdownsStarted),
+    reconnectRecovery: rate(counts.reconnectsRecovered, counts.reconnectsStarted),
+    voiceConnectionSuccess: rate(counts.voiceConnected, counts.voiceAttempts),
+    chatSendFailure: rate(counts.chatFailures, counts.chatSends),
+    providerLaunchAction: rate(counts.providerLaunches, counts.mediaSelected),
+  };
+}
+
+/** The activation rate as the beta defines it: activated rooms over rooms. */
+export function activationRate(counts: FunnelCounts): number | null {
+  return rate(counts.roomsActivated, counts.roomsCreated);
 }

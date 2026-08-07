@@ -23,7 +23,16 @@ import {
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
-import { recordFeedback, useAnalytics } from "@/features/analytics";
+import {
+  dismissFeedback,
+  markRoomMoment,
+  noteRoomFact,
+  observeActivation,
+  readSessionSummary,
+  recordFeedback,
+  recordResearch,
+  useAnalytics,
+} from "@/features/analytics";
 import { useVoiceSession, useVoiceDevices } from "@/features/voice";
 import { useMicrophonePermission } from "@/features/voice/use-microphone-permission";
 import {
@@ -37,6 +46,8 @@ import { useTranslation } from "@/foundation/localization";
 
 import { ActivationPanel } from "./components/activation-panel";
 import { BetaFeedback } from "./components/beta-feedback";
+import { ResearchPanel } from "./components/research-panel";
+import { SessionSummaryCard } from "./components/session-summary-card";
 import { ChatPanel } from "./components/chat-panel";
 import { FailureNotice } from "./components/failure-notice";
 import { InvitePanel } from "./components/invite-panel";
@@ -131,6 +142,10 @@ export function Theater({ roomId }: TheaterProps) {
     "pending",
   );
   const [hasLeft, setHasLeft] = useState(false);
+  const [researchState, setResearchState] = useState<"pending" | "done">("pending");
+  const [reconnectCount, setReconnectCount] = useState(0);
+  // A countdown that was cancelled must not count as completed.
+  const countdownCompletedRef = useRef(false);
 
   const runtime = useRoomRuntime({
     roomId,
@@ -492,6 +507,10 @@ export function Theater({ roomId }: TheaterProps) {
     [copyInvite, countdown, openProvider, joinVoice, toggleReady, beta],
   );
 
+  useEffect(() => {
+    if (countdownRemaining === 0) countdownCompletedRef.current = true;
+  }, [countdownRemaining]);
+
   const showFeedback = shouldPromptFeedback({
     phase,
     hasLeft,
@@ -528,6 +547,66 @@ export function Theater({ roomId }: TheaterProps) {
   useEffect(() => {
     if (phase === "watching") beta.track("watching_started");
   }, [phase, beta]);
+
+  // Activation is observed, never asserted: the domain tracker decides whether
+  // this room actually reached a host and a guest watching together.
+  useEffect(() => {
+    if (!enabled) return;
+    observeActivation(
+      roomId,
+      {
+        hasHost: presentMembers.length > 0,
+        guestCount,
+        hasValidMedia: source.source !== null && (mediaRef?.validity ?? "valid") !== "invalid",
+        countdownCompleted: countdownCompletedRef.current,
+        phase,
+      },
+      { role: isHost ? "host" : "guest", providerId: capabilityProviderId },
+    );
+  }, [
+    enabled,
+    roomId,
+    presentMembers.length,
+    guestCount,
+    source.source,
+    mediaRef?.validity,
+    phase,
+    isHost,
+    capabilityProviderId,
+  ]);
+
+  useEffect(() => {
+    if (enabled) markRoomMoment(roomId, "createdAt");
+  }, [enabled, roomId]);
+
+  useEffect(() => {
+    if (guestCount > 0) markRoomMoment(roomId, "firstGuestAt");
+    noteRoomFact(roomId, { participants: presentMembers.length });
+  }, [guestCount, presentMembers.length, roomId]);
+
+  useEffect(() => {
+    if (source.source !== null) markRoomMoment(roomId, "mediaSelectedAt");
+  }, [source.source, roomId]);
+
+  useEffect(() => {
+    if (phase === "watching") markRoomMoment(roomId, "watchingAt");
+    if (phase === "ended" || phase === "closed") markRoomMoment(roomId, "endedAt");
+  }, [phase, roomId]);
+
+  useEffect(() => {
+    if (voice.isConnected) noteRoomFact(roomId, { usedVoice: true });
+  }, [voice.isConnected, roomId]);
+
+  useEffect(() => {
+    if (chat.lines.length > 0) noteRoomFact(roomId, { usedChat: true });
+  }, [chat.lines.length, roomId]);
+
+  useEffect(() => {
+    if (recovery.phase === "recovering") {
+      noteRoomFact(roomId, { reconnectFailure: true });
+      setReconnectCount((current) => current + 1);
+    }
+  }, [recovery.phase, roomId]);
 
   const chatPanel = (
     <ChatPanel
@@ -619,7 +698,33 @@ export function Theater({ roomId }: TheaterProps) {
                 beta.track("session_ended", { outcome: input.outcome });
                 setFeedbackState("answered");
               }}
-              onDismiss={() => setFeedbackState("dismissed")}
+              onDismiss={() => {
+                dismissFeedback();
+                setFeedbackState("dismissed");
+              }}
+            />
+          ) : null}
+
+          {(phase === "ended" || phase === "closed") && !hasLeft ? (
+            <SessionSummaryCard
+              summary={readSessionSummary(roomId, {
+                providerId: capabilityProviderId,
+                chatAvailable: chat.isAvailable,
+                voiceAvailable: microphone.isSupported,
+                reconnects: reconnectCount,
+              })}
+              providerName={capability.displayName}
+            />
+          ) : null}
+
+          {(phase === "ended" || phase === "closed") &&
+          feedbackState !== "pending" &&
+          researchState === "pending" ? (
+            <ResearchPanel
+              onRespond={(input) =>
+                recordResearch({ concept: input.concept, value: input.value, pay: input.pay })
+              }
+              onDismiss={() => setResearchState("done")}
             />
           ) : null}
 
