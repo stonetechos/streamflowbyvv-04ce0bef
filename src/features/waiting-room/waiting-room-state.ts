@@ -145,7 +145,7 @@ export function toViewerView(
     isMember: membership?.state === "joined",
     isHost: membership?.role === "host" || snapshot.room.hostProfileId === viewerProfileId,
     isReady: membership ? isReady(membership) : false,
-    role: membership?.role ?? "participant",
+    role: membership?.role ?? "guest",
     state: membership?.state ?? "left",
     isMutedByHost: membership?.isMutedByHost ?? false,
     // Carried verbatim from the Domain snapshot: Presentation never evaluates

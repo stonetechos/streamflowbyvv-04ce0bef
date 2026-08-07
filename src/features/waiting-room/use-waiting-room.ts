@@ -84,6 +84,9 @@ const ABSENT_VIEWER: ViewerView = {
   isMember: false,
   isHost: false,
   isReady: false,
+  role: "guest",
+  state: "left",
+  isMutedByHost: false,
   canJoin: false,
 };
 
