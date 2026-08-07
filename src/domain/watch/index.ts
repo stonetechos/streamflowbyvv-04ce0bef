@@ -185,6 +185,8 @@ export {
 export {
   BETA_ACQUISITION_EVENTS,
   BETA_ACTIVATION_EVENTS,
+  BETA_JOIN_CODE_EVENTS,
+  BETA_PERSONALIZATION_EVENTS,
   BETA_COMPLETION_EVENTS,
   BETA_EVENTS,
   BETA_RELIABILITY_EVENTS,
@@ -322,3 +324,33 @@ export {
   type FailureGuidance,
   type FailureKind,
 } from "./room-reliability";
+// Sprint H9 — homepage app arrangement. Discovery preference only; it never
+// touches a provider's capability or sync mode.
+export {
+  DEFAULT_HOMEPAGE_LAYOUT,
+  arrangeApps,
+  hideApp,
+  isCustomized,
+  moveApp,
+  normalizeLayout,
+  pinApp,
+  resetLayout,
+  shiftApp,
+  unhideApp,
+  unpinApp,
+  visibleOrder,
+  type ArrangedApps,
+  type HomepageLayout,
+} from "./homepage-layout";
+export {
+  EMPTY_JOIN_SPEED,
+  EMPTY_PERSONALIZATION,
+  summarizeJoinSpeed,
+  summarizePersonalization,
+  type JoinAttemptFact,
+  type JoinPath,
+  type JoinSpeedMetrics,
+  type PersonalizationFact,
+  type PersonalizationMetrics,
+  type SelectionFact,
+} from "./join-metrics";

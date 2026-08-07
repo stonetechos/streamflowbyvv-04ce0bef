@@ -80,6 +80,36 @@ export const BETA_PROGRAMME_EVENTS = [
   "research_response_submitted",
 ] as const;
 
+/**
+ * Sprint H9 — joining by room code. The code itself never travels with these
+ * events; only the shape of what happened does.
+ */
+export const BETA_JOIN_CODE_EVENTS = [
+  "join_by_code_opened",
+  "room_code_viewed",
+  "room_code_copied",
+  "room_code_pasted",
+  "room_code_submitted",
+  "room_code_valid",
+  "room_code_invalid",
+  "room_code_expired",
+  "room_code_revoked",
+  "room_code_joined",
+  "room_code_join_blocked",
+] as const;
+
+/** Sprint H9 — homepage arrangement. A provider key is not personal data. */
+export const BETA_PERSONALIZATION_EVENTS = [
+  "homepage_customize_opened",
+  "provider_reordered",
+  "provider_pinned",
+  "provider_unpinned",
+  "provider_hidden",
+  "provider_unhidden",
+  "provider_order_reset",
+  "favorites_used_for_selection",
+] as const;
+
 export const BETA_EVENTS = [
   ...BETA_ACQUISITION_EVENTS,
   ...BETA_ACTIVATION_EVENTS,
@@ -87,6 +117,8 @@ export const BETA_EVENTS = [
   ...BETA_RELIABILITY_EVENTS,
   ...BETA_COMPLETION_EVENTS,
   ...BETA_PROGRAMME_EVENTS,
+  ...BETA_JOIN_CODE_EVENTS,
+  ...BETA_PERSONALIZATION_EVENTS,
 ] as const;
 
 export type BetaEventName = (typeof BETA_EVENTS)[number];
