@@ -169,13 +169,18 @@ describe("recovery", () => {
   });
 
   test("phases follow reachability and visibility", () => {
-    const base = { isOnline: true, isDocumentVisible: true, wasInterrupted: false, hasFreshSnapshot: true };
+    const base = {
+      isOnline: true,
+      isDocumentVisible: true,
+      wasInterrupted: false,
+      hasFreshSnapshot: true,
+    };
     expect(nextRecoveryPhase(base)).toBe("online");
     expect(nextRecoveryPhase({ ...base, isOnline: false })).toBe("offline");
     expect(nextRecoveryPhase({ ...base, isDocumentVisible: false })).toBe("suspended");
-    expect(
-      nextRecoveryPhase({ ...base, wasInterrupted: true, hasFreshSnapshot: false }),
-    ).toBe("recovering");
+    expect(nextRecoveryPhase({ ...base, wasInterrupted: true, hasFreshSnapshot: false })).toBe(
+      "recovering",
+    );
     expect(nextRecoveryPhase({ ...base, wasInterrupted: true })).toBe("recovered");
   });
 });

@@ -23,11 +23,11 @@ Every state added in this sprint is observed, never inferred:
 
 ## 2. Domain additions (pure, testable)
 
-| Module | Responsibility |
-| --- | --- |
-| `src/domain/watch/room-governance.ts` | Seat roles, permission matrix, room settings read/write, invite resolution ordering, presence classification, recovery phases, stale-snapshot rule |
-| `src/domain/watch/room-governance-service.ts` | The one place a moderation act becomes durable; authorizes before it writes |
-| `src/domain/watch/room-analytics.ts` | Privacy-safe product events and a session-only dev metrics recorder |
+| Module                                        | Responsibility                                                                                                                                     |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/domain/watch/room-governance.ts`         | Seat roles, permission matrix, room settings read/write, invite resolution ordering, presence classification, recovery phases, stale-snapshot rule |
+| `src/domain/watch/room-governance-service.ts` | The one place a moderation act becomes durable; authorizes before it writes                                                                        |
+| `src/domain/watch/room-analytics.ts`          | Privacy-safe product events and a session-only dev metrics recorder                                                                                |
 
 Seat vocabulary: `host`, `co_host`, `participant`, `muted`, `removed`.
 Only the host may close a room; hosts and co-hosts may mute, remove, lock, control
@@ -44,17 +44,17 @@ expired → room_locked → room_full → valid`. A revoked link is never report
 
 ## 3. Feature and presentation additions
 
-| File | Role |
-| --- | --- |
-| `src/features/theater/use-room-governance.ts` | Carries settings and authorized moderation calls to the UI |
-| `src/features/theater/use-connection-recovery.ts` | Online/offline and visibility → one honest recovery phase |
-| `src/features/theater/use-product-analytics.ts` | Emits privacy-safe events; session-only metrics |
-| `src/features/voice/use-microphone-permission.ts` | Permission asked only on a deliberate tap |
-| `src/features/theater/components/voice-room-panel.tsx` | Voice states, mute, device pickers, honest unavailability |
-| `src/features/theater/components/host-moderation.tsx` | Lock, chat, invite, countdown, close (with confirmation) |
-| `src/features/theater/components/connection-banner.tsx` | Offline / suspended / recovering / recovered |
-| `src/features/theater/components/chat-panel.tsx` | Timestamps, delivery status, retry and discard |
-| `src/features/theater/components/participant-rail.tsx` | Presence, in-voice, per-member mute and remove |
+| File                                                    | Role                                                       |
+| ------------------------------------------------------- | ---------------------------------------------------------- |
+| `src/features/theater/use-room-governance.ts`           | Carries settings and authorized moderation calls to the UI |
+| `src/features/theater/use-connection-recovery.ts`       | Online/offline and visibility → one honest recovery phase  |
+| `src/features/theater/use-product-analytics.ts`         | Emits privacy-safe events; session-only metrics            |
+| `src/features/voice/use-microphone-permission.ts`       | Permission asked only on a deliberate tap                  |
+| `src/features/theater/components/voice-room-panel.tsx`  | Voice states, mute, device pickers, honest unavailability  |
+| `src/features/theater/components/host-moderation.tsx`   | Lock, chat, invite, countdown, close (with confirmation)   |
+| `src/features/theater/components/connection-banner.tsx` | Offline / suspended / recovering / recovered               |
+| `src/features/theater/components/chat-panel.tsx`        | Timestamps, delivery status, retry and discard             |
+| `src/features/theater/components/participant-rail.tsx`  | Presence, in-voice, per-member mute and remove             |
 
 The room snapshot now also carries `governance` and each member's `isMutedByHost`, so
 guests see a lock or a chat freeze the moment the host applies it — the same shared
