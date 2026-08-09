@@ -62,6 +62,7 @@ import { ParticipantRail } from "./components/participant-rail";
 import { RoomDrawer } from "./components/room-drawer";
 import { HostTransport } from "./components/host-transport";
 import { MediaCard } from "./components/media-card";
+import { CapabilityNote } from "./components/capability-note";
 import { ProviderBar } from "./components/provider-bar";
 import { SourcePicker } from "./components/source-picker";
 import { SyncBadge } from "./components/sync-badge";
@@ -759,6 +760,10 @@ export function Theater({ roomId }: TheaterProps) {
             onChooseContent={chooseContent}
             onOpenProvider={openProvider}
           />
+
+          {/* Capability limits belong in the room, on screen, for everyone —
+              not only in a specification document. */}
+          {source.source ? <CapabilityNote capability={capability} /> : null}
 
           {/* A scoped room never shows a launcher grid: it already is that
               service's room. Only an open room asks which service, and the

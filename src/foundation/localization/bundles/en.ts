@@ -494,6 +494,7 @@ export const enBundle: LocaleBundle = {
     "theater.stage.reopen_provider": "Reopen {provider}",
     "theater.stage.start_party": "Start watch party on {provider}",
     "theater.stage.join_provider": "Join on {provider}",
+    "theater.stage.host_live": "Host is watching on {provider}",
     "theater.stage.status.host_launched":
       "The host has opened it — open it here too and play on the countdown.",
     "theater.source.advanced": "Have a direct link? Add it (optional)",
@@ -525,6 +526,14 @@ export const enBundle: LocaleBundle = {
       "This room was started for {provider}, so it stays on {provider}.",
     "theater.provider.host_chooses": "The host picks the service for the room.",
     "theater.capability.automatic": "Plays in sync here",
+    "theater.capability.title": "What this room can do with {provider}",
+    "theater.capability.can.coordinate":
+      "Keeps everyone together: chat, presence, and a shared countdown.",
+    "theater.capability.can.embed": "Plays right here, in sync for everyone.",
+    "theater.capability.can.countdown": "Counts everyone in so you press play at the same moment.",
+    "theater.capability.cannot.control": "Cannot play, pause, or seek {provider} for you.",
+    "theater.capability.cannot.subscription": "Everyone needs their own {provider} account.",
+    "theater.capability.cannot.fullscreen": "Fullscreen belongs to the provider's own player.",
     "theater.capability.assisted": "Assisted handoff",
     "theater.capability.manual": "Manual sync",
     "theater.capability.launch_only": "Launch only",
