@@ -164,7 +164,9 @@ export function useDirectPlayer({
     const sync = () => {
       const buffered =
         video.buffered.length > 0 ? video.buffered.end(video.buffered.length - 1) * 1000 : 0;
-      const active = Array.from(video.textTracks ?? []).find((track) => track.mode === "showing");
+      const all = Array.from(video.textTracks ?? []);
+      const activeIndex = all.findIndex((track) => track.mode === "showing");
+      const active = activeIndex >= 0 ? all[activeIndex] : undefined;
       setState((current) => ({
         ...current,
         positionMs: Math.round((video.currentTime || 0) * 1000),
