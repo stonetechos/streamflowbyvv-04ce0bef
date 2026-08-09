@@ -285,9 +285,12 @@ describe("coordination requests", () => {
 });
 
 describe("provider honesty", () => {
-  test("YouTube is absent from the product provider registry", () => {
-    expect(watchProviderById("youtube")).toBeNull();
+  test("YouTube is present precisely because the room can drive it", () => {
+    const youtube = watchProviderById("youtube");
+    expect(youtube?.playbackControlMode).toBe("automatic");
+    expect(resolveDriftPolicy({ playbackControlMode: youtube!.playbackControlMode })).not.toBeNull();
   });
+
 
   test("Netflix stays launch-only, so no drift correction applies", () => {
     const netflix = watchProviderById("netflix");
