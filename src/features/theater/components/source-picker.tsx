@@ -152,12 +152,7 @@ export function SourcePicker({
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
-        <ActionButton
-          type="submit"
-          size="sm"
-          loading={isSaving}
-          disabled={value.trim().length === 0}
-        >
+        <ActionButton type="submit" size="sm" loading={isSaving} disabled={!canSubmit}>
           {t("theater.source.save")}
         </ActionButton>
       </form>
