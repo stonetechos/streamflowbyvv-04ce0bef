@@ -67,6 +67,11 @@ export interface HomeSnapshot {
   readonly liveRooms: readonly HomeRoomSummary[];
   /** Rooms that have finished, newest first. */
   readonly recentRooms: readonly HomeRoomSummary[];
+  /**
+   * Live rows that have gone quiet: a solo lobby nobody touched. They are not
+   * offered as "continue" and are not surfaced on Home.
+   */
+  readonly dormantRooms: readonly HomeRoomSummary[];
   readonly pendingInvites: readonly HomeInviteSummary[];
   /**
    * Milestone F.0 — invitations already answered or lapsed, newest first, so a
