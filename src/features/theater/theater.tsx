@@ -934,9 +934,26 @@ export function Theater({ roomId }: TheaterProps) {
             }
           />
 
+          {/* The live room console: what the room can honestly say about
+              itself while playback happens where we cannot see it. */}
+          {source.source ? (
+            <RoomConsole
+              view={consoleView}
+              providerName={capability.displayName}
+              title={source.selection.title ?? source.label}
+              participantCount={presentMembers.length}
+              readyCount={readiness.readyCount}
+              launchedCount={railFacts.launchedProfileIds.size}
+              countdownSeconds={countdownSeconds}
+              busy={chat.isSending}
+              onAct={declare}
+            />
+          ) : null}
+
           {/* Capability limits belong in the room, on screen, for everyone —
               not only in a specification document. */}
           {source.source ? <CapabilityNote capability={capability} /> : null}
+
 
           {/* A scoped room never shows a launcher grid: it already is that
               service's room. Only an open room asks which service, and the
