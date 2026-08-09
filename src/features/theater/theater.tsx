@@ -756,20 +756,26 @@ export function Theater({ roomId }: TheaterProps) {
             countdownSeconds={countdownSeconds}
             isPreparing={source.isSaving}
             hasLaunched={hasOpenedProvider}
+            hostLaunched={hostLaunched}
             onChooseContent={chooseContent}
             onOpenProvider={openProvider}
           />
 
+          {/* A scoped room never shows a launcher grid: it already is that
+              service's room. Only an open room asks which service, and the
+              link field is a fallback, not a step. */}
           {isHost && (isPicking || source.source === null) ? (
             <div className="flex flex-col gap-3" ref={pickerRef} data-sf-selection-flow>
-              <ProviderBar
-                activeProviderId={activeProviderId}
-                isHost={isHost}
-                providers={scope.providers}
-                isScoped={scope.isScoped}
-                onSelect={selectProvider}
-              />
-              {activeProvider ? (
+              {scope.isScoped ? null : (
+                <ProviderBar
+                  activeProviderId={activeProviderId}
+                  isHost={isHost}
+                  providers={scope.providers}
+                  isScoped={scope.isScoped}
+                  onSelect={selectProvider}
+                />
+              )}
+              {activeProvider && activeProvider.selectionMode !== "browse" ? (
                 <SourcePicker
                   provider={activeProvider}
                   currentUrl={source.source?.url ?? ""}
@@ -781,6 +787,25 @@ export function Theater({ roomId }: TheaterProps) {
                     setIsPicking(false);
                   }}
                 />
+              ) : activeProvider ? (
+                <details className="rounded-2xl border border-border/60 px-4 py-3">
+                  <summary className="cursor-pointer text-sm text-muted-foreground">
+                    {t("theater.source.advanced")}
+                  </summary>
+                  <div className="pt-3">
+                    <SourcePicker
+                      provider={activeProvider}
+                      currentUrl={source.source?.url ?? ""}
+                      currentTitle={source.selection.title ?? ""}
+                      isSaving={source.isSaving}
+                      error={source.error ? t("theater.source.error") : null}
+                      onSubmit={(url, title) => {
+                        source.save(url, title);
+                        setIsPicking(false);
+                      }}
+                    />
+                  </div>
+                </details>
               ) : null}
             </div>
           ) : null}
