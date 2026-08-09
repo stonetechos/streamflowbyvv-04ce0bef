@@ -14,9 +14,11 @@ import type { ReactNode } from "react";
 export interface PartyShellProps {
   /** Call-style cluster: leave, microphone, extras. */
   readonly controls: ReactNode;
+  /** The room's subject, kept small in the top bar. */
+  readonly title: ReactNode;
   /** Participant avatars plus the invite affordance. */
   readonly rail: ReactNode;
-  /** Right-hand utilities: people count, room menu. */
+  /** Right-hand utilities: sync verdict, people count. */
   readonly utilities: ReactNode;
   /** The stage itself — the only element that owns the middle. */
   readonly stage: ReactNode;
@@ -30,6 +32,7 @@ export interface PartyShellProps {
 
 export function PartyShell({
   controls,
+  title,
   rail,
   utilities,
   stage,
@@ -45,12 +48,14 @@ export function PartyShell({
       data-sf-party-shell
       className="fixed inset-0 z-50 flex flex-col bg-background text-foreground"
     >
-      <div className="flex items-start justify-between gap-3 px-3 pt-3 sm:px-4 sm:pt-4">
+      <div className="flex items-center justify-between gap-3 px-3 pt-3 sm:px-4 sm:pt-4">
         {controls}
-        <div className="flex items-center gap-1.5">{utilities}</div>
+        <div className="min-w-0 flex-1 text-center max-sm:hidden">{title}</div>
+        <div className="flex shrink-0 items-center gap-1.5">{utilities}</div>
       </div>
 
       <div className="px-3 pb-1 pt-2 sm:px-4">{rail}</div>
+
 
       <div className="relative min-h-0 flex-1 overflow-hidden border-y border-border/40">
         <div className="absolute inset-0 overflow-y-auto overscroll-contain">{stage}</div>
