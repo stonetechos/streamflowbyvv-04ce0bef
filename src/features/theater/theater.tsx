@@ -25,6 +25,10 @@ import {
   type ActivationAction,
   type CoordinationKind,
   type FailureKind,
+  type HostDeclaration,
+  type HostDeclarationKind,
+  type RoomConsoleAction,
+
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
