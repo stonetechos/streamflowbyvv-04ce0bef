@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as H12VerifyRouteImport } from './routes/h12-verify'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as AuthenticatedBetaRouteImport } from './routes/_authenticated.beta'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
@@ -51,11 +50,6 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const H12VerifyRoute = H12VerifyRouteImport.update({
-  id: '/h12-verify',
-  path: '/h12-verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
@@ -190,7 +184,6 @@ const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/h12-verify': typeof H12VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
   '/beta': typeof AuthenticatedBetaRoute
   '/home': typeof AuthenticatedHomeRoute
@@ -219,7 +212,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/h12-verify': typeof H12VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
   '/beta': typeof AuthenticatedBetaRoute
   '/home': typeof AuthenticatedHomeRoute
@@ -251,7 +243,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
-  '/h12-verify': typeof H12VerifyRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/beta': typeof AuthenticatedBetaRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
@@ -283,7 +274,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/h12-verify'
     | '/account'
     | '/beta'
     | '/home'
@@ -312,7 +302,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/h12-verify'
     | '/account'
     | '/beta'
     | '/home'
@@ -343,7 +332,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/h12-verify'
     | '/_authenticated/account'
     | '/_authenticated/beta'
     | '/_authenticated/home'
@@ -375,7 +363,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
-  H12VerifyRoute: typeof H12VerifyRoute
   JoinCodeRoute: typeof JoinCodeRoute
   ApiDebugConfigRoute: typeof ApiDebugConfigRoute
   ApiPublicTimeRoute: typeof ApiPublicTimeRoute
@@ -405,13 +392,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/h12-verify': {
-      id: '/h12-verify'
-      path: '/h12-verify'
-      fullPath: '/h12-verify'
-      preLoaderRoute: typeof H12VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/account': {
@@ -661,7 +641,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
-  H12VerifyRoute: H12VerifyRoute,
   JoinCodeRoute: JoinCodeRoute,
   ApiDebugConfigRoute: ApiDebugConfigRoute,
   ApiPublicTimeRoute: ApiPublicTimeRoute,
