@@ -50,6 +50,14 @@ export {
   type HomeRoomSummary,
   type HomeSnapshot,
 } from "./home-read-model";
+export {
+  DORMANT_AFTER_MS,
+  DORMANT_EMPTY_AFTER_MS,
+  classifyRoomActivity,
+  isResumableActivity,
+  type RoomActivity,
+  type RoomActivityInput,
+} from "./room-activity";
 
 export {
   createRoomSetupService,
