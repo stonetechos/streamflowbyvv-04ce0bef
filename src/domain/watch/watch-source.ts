@@ -662,7 +662,13 @@ export function readRoomMediaRef(metadata: Readonly<Record<string, unknown>>): R
             typeof parsed.providerName === "string" && parsed.providerName.length > 0
               ? parsed.providerName
               : (registry?.displayName ?? parsed.providerId),
-          kind: parsed.kind === "ott" || parsed.kind === "direct" ? parsed.kind : "external",
+          kind:
+            parsed.kind === "ott" ||
+            parsed.kind === "direct" ||
+            parsed.kind === "youtube" ||
+            parsed.kind === "local"
+              ? parsed.kind
+              : "external",
           url,
           titleId: typeof parsed.titleId === "string" ? parsed.titleId : null,
           title: typeof parsed.title === "string" && parsed.title.length > 0 ? parsed.title : null,
