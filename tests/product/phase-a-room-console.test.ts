@@ -16,8 +16,8 @@ import {
   type RoomConsoleInput,
 } from "@/domain";
 
-import en from "@/foundation/localization/bundles/en";
-import hi from "@/foundation/localization/bundles/hi-IN";
+import { enBundle as en } from "@/foundation/localization/bundles/en";
+import { hiINBundle as hi } from "@/foundation/localization/bundles/hi-IN";
 
 const NOW = 1_700_000_000_000;
 
@@ -197,16 +197,16 @@ describe("presence freshness", () => {
 
 describe("copy", () => {
   test("both bundles carry every console key", () => {
-    const keys = Object.keys(en.strings ?? en).filter((key) =>
+    const keys = Object.keys(en.strings).filter((key) =>
       key.startsWith("room.console.") || key.startsWith("room.participant.badge."),
     );
     expect(keys.length).toBeGreaterThan(15);
-    const target = (hi.strings ?? hi) as Record<string, string>;
+    const target = hi.strings as Record<string, string>;
     for (const key of keys) expect(typeof target[key]).toBe("string");
   });
 
   test("no console string promises automatic synchronization", () => {
-    const strings = (en.strings ?? en) as Record<string, string>;
+    const strings = en.strings as Record<string, string>;
     for (const [key, value] of Object.entries(strings)) {
       if (!key.startsWith("room.console.")) continue;
       expect(value.toLowerCase()).not.toContain("automatically sync");
