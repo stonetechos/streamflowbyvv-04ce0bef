@@ -38,6 +38,11 @@ export interface ActivationInput {
   readonly isHost: boolean;
   /** People other than the viewer who are present in the room. */
   readonly guestCount: number;
+  /**
+   * True only once an invitation has actually been handed out. Presence is not
+   * a substitute: a room can have guests from a link shared in a past session.
+   */
+  readonly inviteSent?: boolean;
   readonly hasContent: boolean;
   readonly isCountingDown: boolean;
   readonly phase: RoomPhase;

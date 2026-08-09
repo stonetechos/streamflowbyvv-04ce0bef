@@ -553,7 +553,10 @@ export function Theater({ roomId }: TheaterProps) {
   const activation = useRoomActivation({
     isHost,
     guestCount,
-    hasContent: source.source !== null,
+    // A link with no name is not a chosen title; the trail must not claim it.
+    hasContent:
+      source.source !== null && (source.selection.title ?? source.label ?? "").trim().length > 0,
+    inviteSent,
     isCountingDown: countdownSeconds !== null,
     phase,
     isEmbedded,
@@ -871,8 +874,14 @@ export function Theater({ roomId }: TheaterProps) {
             link={inviteLink}
             participantCount={presentMembers.length}
             blocked={inviteBlocked}
-            onCopied={() => beta.track("invite_copied")}
-            onShared={() => beta.track("native_share_opened")}
+            onCopied={() => {
+              setInviteSent(true);
+              beta.track("invite_copied");
+            }}
+            onShared={() => {
+              setInviteSent(true);
+              beta.track("native_share_opened");
+            }}
           />
 
           <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
