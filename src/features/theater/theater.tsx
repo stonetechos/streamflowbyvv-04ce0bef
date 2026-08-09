@@ -93,6 +93,7 @@ interface OrientationLock {
 
 export function Theater({ roomId }: TheaterProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const room = useWaitingRoom(roomId);
   const names = useMemberNames(room.members.map((member) => member.profileId));
 
