@@ -863,45 +863,74 @@ export function Theater({ roomId }: TheaterProps) {
     );
   }
 
+  const faces: readonly PartyFace[] = room.members
+    .filter((member) => member.state !== "left" && member.state !== "removed")
+    .map((member) => ({
+      profileId: member.profileId,
+      name: nameFor(member.profileId),
+      isHost: member.isHost,
+      isReady: railFacts.readyProfileIds.has(member.profileId),
+      hasLaunched: railFacts.launchedProfileIds.has(member.profileId),
+      freshness: railFacts.freshnessByProfileId.get(member.profileId) ?? "live",
+      isSpeaking: voiceProfileIds.has(member.profileId),
+    }));
+
+  const roomTitle = source.label ?? room.room.name;
+
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6" data-sf-phase={phase}>
-      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:flex-wrap sm:justify-between">
-        <div className="flex min-w-0 flex-col">
-          <h1 className="truncate text-xl font-semibold sm:text-2xl">
-            {source.label ?? room.room.name}
-          </h1>
-          <p className="truncate text-sm text-muted-foreground">
-            {t("theater.header.people", { count: presentMembers.length })}
-            {source.source ? ` · ${capability.displayName}` : ""}
+    <PartyShell
+      phase={phase}
+      regionLabel={t("theater.region_label", { name: room.room.name })}
+      controls={
+        <PartyControls
+          isVoiceConnected={voice.isConnected}
+          isMuted={voice.isMuted}
+          canUseVoice={microphone.isSupported && !room.viewer.isMutedByHost}
+          isLeaving={room.pending === "leave"}
+          onLeave={leaveRoom}
+          onToggleVoice={voice.isConnected ? leaveVoice : joinVoice}
+          onOpenMenu={() => setSheet(sheet === "room" ? null : "room")}
+        />
+      }
+      title={
+        <div className="min-w-0">
+          <h1 className="truncate text-sm font-semibold">{roomTitle}</h1>
+          <p className="truncate text-xs text-muted-foreground">
+            {source.source ? capability.displayName : t("theater.stage.status.waiting")}
           </p>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+      }
+      utilities={
+        <>
           <SyncBadge
             verdict={runtime.syncStatus}
             driftMs={runtime.isAutomatic ? runtime.driftMs : null}
             isLive={runtime.isLive}
           />
-          <ActionButton
-            tone="ghost"
-            size="sm"
-            onClick={leaveRoom}
-            loading={room.pending === "leave"}
+          <button
+            type="button"
+            onClick={() => setSheet(sheet === "people" ? null : "people")}
+            aria-pressed={sheet === "people"}
+            aria-label={t("theater.header.people", { count: presentMembers.length })}
+            data-sf-party-people
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-muted/60 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
           >
-            {t("theater.action.leave")}
-          </ActionButton>
-        </div>
-      </header>
+            <Users className="size-3.5" aria-hidden="true" />
+            {presentMembers.length}
+          </button>
+        </>
+      }
+      rail={
+        <PartyRail
+          faces={faces}
+          canInvite={inviteBlocked === null}
+          onInvite={() => setInviteOpen(true)}
+        />
+      }
+      stage={
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 p-3 sm:p-4">
+          <ConnectionBanner phase={recovery.phase} />
 
-      <ConnectionBanner phase={recovery.phase} />
-
-      {governance.settings.isLocked ? (
-        <p className="text-xs text-muted-foreground" data-sf-room-locked>
-          {t("room.privacy.locked")}
-        </p>
-      ) : null}
-
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
-        <div className="flex min-w-0 flex-col gap-4">
           <WatchStage
             source={source.source}
             capability={capability}
@@ -954,7 +983,6 @@ export function Theater({ roomId }: TheaterProps) {
           {/* Capability limits belong in the room, on screen, for everyone —
               not only in a specification document. */}
           {source.source ? <CapabilityNote capability={capability} /> : null}
-
 
           {/* A scoped room never shows a launcher grid: it already is that
               service's room. Only an open room asks which service, and the
@@ -1017,24 +1045,6 @@ export function Theater({ roomId }: TheaterProps) {
               </ActionButton>
             </div>
           ) : null}
-
-          {/* Inviting people belongs with the room's start-of-session work,
-              not in the top-right utility strip. */}
-          <InvitePanel
-            link={inviteLink}
-            participantCount={presentMembers.length}
-            blocked={inviteBlocked}
-            onCopied={() => {
-              setInviteSent(true);
-              beta.track("invite_copied");
-            }}
-            onShared={() => {
-              setInviteSent(true);
-              beta.track("native_share_opened");
-            }}
-          />
-
-          <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
 
           <ActivationPanel
             plan={activation}
@@ -1126,39 +1136,99 @@ export function Theater({ roomId }: TheaterProps) {
               onLeave={leaveRoom}
             />
           )}
-
-          <VoiceRoomPanel
-            voice={voice}
-            permission={microphone.permission}
-            isMicSupported={microphone.isSupported}
-            isMutedByHost={room.viewer.isMutedByHost}
-            onJoin={joinVoice}
-            onLeave={leaveVoice}
-            onReconnect={voice.recover}
-            inputDevices={voiceDevices.inputs}
-            outputDevices={voiceDevices.outputs}
-            inputDeviceId={inputDeviceId}
-            outputDeviceId={outputDeviceId}
-            onInputDevice={setInputDeviceId}
-            onOutputDevice={setOutputDeviceId}
-          />
-
-          <HostModeration
-            governance={governance}
-            onCancelCountdown={countdownSeconds !== null ? countdown.cancel : null}
-            onRestartCountdown={
-              countdownSeconds === null && countdown.isAvailable ? countdown.start : null
-            }
-          />
-
-          <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
         </div>
+      }
+      overlay={
+        <>
+          <PartySheet
+            name="chat"
+            open={sheet === "chat"}
+            title={t("theater.chat.title")}
+            onClose={() => setSheet(null)}
+          >
+            <div className="h-full min-h-[20rem]">{chatPanel}</div>
+          </PartySheet>
 
-        <aside className="hidden min-h-[24rem] flex-col gap-4 lg:flex lg:h-[calc(100vh-12rem)]">
-          {participantRail}
-          <div className="min-h-0 flex-1">{chatPanel}</div>
-        </aside>
-      </div>
-    </main>
+          <PartySheet
+            name="people"
+            open={sheet === "people"}
+            title={t("room.drawer.people")}
+            onClose={() => setSheet(null)}
+          >
+            {participantRail}
+          </PartySheet>
+
+          <PartySheet
+            name="room"
+            open={sheet === "room"}
+            title={t("party.sheet.room")}
+            onClose={() => setSheet(null)}
+          >
+            <div className="flex flex-col gap-4">
+              {governance.settings.isLocked ? (
+                <p className="text-xs text-muted-foreground" data-sf-room-locked>
+                  {t("room.privacy.locked")}
+                </p>
+              ) : null}
+
+              <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
+
+              <VoiceRoomPanel
+                voice={voice}
+                permission={microphone.permission}
+                isMicSupported={microphone.isSupported}
+                isMutedByHost={room.viewer.isMutedByHost}
+                onJoin={joinVoice}
+                onLeave={leaveVoice}
+                onReconnect={voice.recover}
+                inputDevices={voiceDevices.inputs}
+                outputDevices={voiceDevices.outputs}
+                inputDeviceId={inputDeviceId}
+                outputDeviceId={outputDeviceId}
+                onInputDevice={setInputDeviceId}
+                onOutputDevice={setOutputDeviceId}
+              />
+
+              <HostModeration
+                governance={governance}
+                onCancelCountdown={countdownSeconds !== null ? countdown.cancel : null}
+                onRestartCountdown={
+                  countdownSeconds === null && countdown.isAvailable ? countdown.start : null
+                }
+              />
+            </div>
+          </PartySheet>
+
+          <InviteDialog
+            open={inviteOpen}
+            link={inviteLink}
+            roomCode={room.room?.code ?? null}
+            participantCount={presentMembers.length}
+            blocked={inviteBlocked}
+            onClose={() => setInviteOpen(false)}
+            onCopied={() => {
+              setInviteSent(true);
+              beta.track("invite_copied");
+            }}
+            onShared={() => {
+              setInviteSent(true);
+              beta.track("native_share_opened");
+            }}
+          />
+        </>
+      }
+      messageBar={
+        <PartyMessageBar
+          canSend={canSendChat}
+          maxLength={CHAT_MAX_LENGTH}
+          unreadCount={Math.max(0, chat.lines.length - readLineCount)}
+          isTranscriptOpen={sheet === "chat"}
+          disabledReason={chatDisabledReason}
+          onSend={(body) => chat.send(body)}
+          onToggleTranscript={() => setSheet(sheet === "chat" ? null : "chat")}
+        />
+      }
+    />
   );
 }
+
