@@ -8,13 +8,17 @@
  */
 import type { RoomPhase, WatchProviderCapability, WatchSource } from "@/domain";
 
-export type StageKind = "empty" | "handoff" | "embedded";
+export type StageKind = "empty" | "preparing" | "handoff" | "embedded";
 
 export interface StageViewInput {
   readonly source: WatchSource | null;
   readonly capability: WatchProviderCapability;
   readonly isHost: boolean;
   readonly phase: RoomPhase;
+  /** A choice is being written or opened: the stage waits, it never blanks. */
+  readonly isPreparing?: boolean;
+  /** This person has already opened the service in their own browser. */
+  readonly hasLaunched?: boolean;
 }
 
 export interface StageView {
@@ -40,9 +44,28 @@ const STATUS_KEYS: Readonly<Record<RoomPhase, string>> = {
   closed: "theater.stage.status.closed",
 };
 
-export function deriveStageView({ source, capability, isHost, phase }: StageViewInput): StageView {
+export function deriveStageView({
+  source,
+  capability,
+  isHost,
+  phase,
+  isPreparing = false,
+  hasLaunched = false,
+}: StageViewInput): StageView {
   const role = isHost ? ("host" as const) : ("guest" as const);
   const statusKey = STATUS_KEYS[phase] ?? "theater.stage.status.selected";
+
+  // A selection in flight is a real state of the room, not a blank panel.
+  if (isPreparing && !source) {
+    return {
+      kind: "preparing",
+      role,
+      showsChooseCta: false,
+      showsWaitingLine: false,
+      showsMediaCard: false,
+      statusKey: "theater.stage.status.preparing",
+    };
+  }
 
   if (!source) {
     return {
@@ -57,12 +80,19 @@ export function deriveStageView({ source, capability, isHost, phase }: StageView
 
   const embedded = source.kind === "direct" && capability.allowsEmbeddedPlayback;
 
+  // Once the service has been opened externally, the room says so plainly
+  // rather than pretending it is waiting for something.
+  const handoffStatusKey =
+    hasLaunched && phase !== "ended" && phase !== "closed"
+      ? "theater.stage.status.launched"
+      : statusKey;
+
   return {
     kind: embedded ? "embedded" : "handoff",
     role,
     showsChooseCta: false,
     showsWaitingLine: false,
     showsMediaCard: true,
-    statusKey,
+    statusKey: embedded ? statusKey : handoffStatusKey,
   };
 }

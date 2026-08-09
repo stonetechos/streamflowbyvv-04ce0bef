@@ -22,7 +22,8 @@ export function SessionSummaryCard({ summary, providerName }: SessionSummaryCard
     {
       key: "duration",
       label: t("room.recap.duration"),
-      value: minutes === null ? t("room.recap.duration.unknown") : t("room.recap.minutes", { minutes }),
+      value:
+        minutes === null ? t("room.recap.duration.unknown") : t("room.recap.minutes", { minutes }),
     },
     {
       key: "people",

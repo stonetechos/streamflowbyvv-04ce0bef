@@ -29,6 +29,7 @@ const EMPTY_SNAPSHOT: HomeSnapshot = Object.freeze({
   continueRoom: null,
   liveRooms: [],
   recentRooms: [],
+  dormantRooms: [],
   pendingInvites: [],
   answeredInvites: [],
   hostedRoomCount: 0,

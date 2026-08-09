@@ -13,6 +13,7 @@ import {
   DEFAULT_READINESS_THRESHOLD,
   classifyPresence,
   deriveRoomPhase,
+  deriveRoomScope,
   shouldPromptFeedback,
   providerBrowseUrl,
   summarizeReadiness,
@@ -33,6 +34,7 @@ import {
   recordResearch,
   useAnalytics,
 } from "@/features/analytics";
+import { useProviderCatalog } from "@/features/providers";
 import { useVoiceSession, useVoiceDevices } from "@/features/voice";
 import { useMicrophonePermission } from "@/features/voice/use-microphone-permission";
 import {
@@ -103,8 +105,23 @@ export function Theater({ roomId }: TheaterProps) {
     mediaRef: room.room?.mediaRef ?? null,
   });
 
+  // A room created from a service tile belongs to that service. The catalog
+  // key behind the room's provider is translated once, and the room offers
+  // that service and nothing else (product correction pass).
+  const catalog = useProviderCatalog(profileId);
+  const scopeKey = useMemo(() => {
+    const id = room.room?.providerId ?? null;
+    if (!id) return null;
+    return catalog.options.find((option) => option.id === id)?.key ?? null;
+  }, [catalog.options, room.room?.providerId]);
+  const scope = useMemo(
+    () => deriveRoomScope({ scopeKey, mediaRef: room.room?.mediaRef ?? null }),
+    [scopeKey, room.room?.mediaRef],
+  );
+
   const [providerId, setProviderId] = useState<string | null>(null);
-  const activeProviderId = providerId ?? source.source?.providerId ?? null;
+  const [isPicking, setIsPicking] = useState(false);
+  const activeProviderId = scope.providerId ?? providerId ?? source.source?.providerId ?? null;
   const activeProvider: WatchProviderCapability | null = useMemo(
     () => (activeProviderId ? watchProviderById(activeProviderId) : null),
     [activeProviderId],
@@ -114,7 +131,6 @@ export function Theater({ roomId }: TheaterProps) {
   const [localPositionMs, setLocalPositionMs] = useState<number | null>(null);
   const [durationMs, setDurationMs] = useState<number | null>(null);
   const [volume, setVolume] = useState(80);
-  const [copied, setCopied] = useState(false);
   const suppressUntil = useRef(0);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const pickerRef = useRef<HTMLDivElement | null>(null);
@@ -322,24 +338,26 @@ export function Theater({ roomId }: TheaterProps) {
     if (!room.room) return;
     const link = `${window.location.origin}/join/${encodeURIComponent(room.room.code)}`;
     void navigator.clipboard?.writeText(link).then(
-      () => {
-        setCopied(true);
-        beta.track("invite_copied");
-        window.setTimeout(() => setCopied(false), 2_000);
-      },
+      () => beta.track("invite_copied"),
       () => undefined,
     );
   }, [room.room, beta]);
 
+  /**
+   * Choosing a service is a room decision, not a private one. It is written to
+   * the shared selection immediately, so the stage leaves its empty state for
+   * an honest handoff instead of staying blank while the host is off in
+   * another tab (product correction pass).
+   */
   const selectProvider = useCallback(
     (provider: WatchProviderCapability) => {
       setProviderId(provider.providerId);
       const browseUrl = providerBrowseUrl(provider.providerId);
       if (provider.selectionMode === "browse" && browseUrl && !source.source) {
-        window.open(browseUrl, "_blank", "noopener,noreferrer");
+        if (isHost) source.save(browseUrl, null);
       }
     },
-    [source.source],
+    [source, isHost],
   );
 
   const nameFor = useCallback((id: string) => names.get(id) ?? memberLabel(id), [names]);
@@ -467,10 +485,15 @@ export function Theater({ roomId }: TheaterProps) {
 
   // The host's stage CTA is the entry point into the app/provider picker.
   const chooseContent = useCallback(() => {
-    const node = pickerRef.current;
-    if (!node) return;
-    node.scrollIntoView({ behavior: "smooth", block: "center" });
-    node.querySelector<HTMLElement>("button, input")?.focus({ preventScroll: true });
+    setIsPicking(true);
+    // The picker sits directly under the stage, so the room never scrolls into
+    // an empty page while a choice is being made.
+    window.requestAnimationFrame(() => {
+      const node = pickerRef.current;
+      if (!node) return;
+      node.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      node.querySelector<HTMLElement>("button, input")?.focus({ preventScroll: true });
+    });
   }, []);
 
   const guestCount = Math.max(0, presentMembers.length - 1);
@@ -656,7 +679,9 @@ export function Theater({ roomId }: TheaterProps) {
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6" data-sf-phase={phase}>
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:flex-wrap sm:justify-between">
         <div className="flex min-w-0 flex-col">
-          <h1 className="truncate text-xl font-semibold sm:text-2xl">{room.room.name}</h1>
+          <h1 className="truncate text-xl font-semibold sm:text-2xl">
+            {source.label ?? room.room.name}
+          </h1>
           <p className="truncate text-sm text-muted-foreground">
             {t("theater.header.people", { count: presentMembers.length })}
             {source.source ? ` · ${capability.displayName}` : ""}
@@ -668,9 +693,6 @@ export function Theater({ roomId }: TheaterProps) {
             driftMs={runtime.isAutomatic ? runtime.driftMs : null}
             isLive={runtime.isLive}
           />
-          <ActionButton tone="secondary" size="sm" onClick={copyInvite} data-sf-copy-invite>
-            {copied ? t("invite.share.copied") : t("room.invite.copy_link")}
-          </ActionButton>
           <ActionButton
             tone="ghost"
             size="sm"
@@ -703,17 +725,67 @@ export function Theater({ roomId }: TheaterProps) {
             phase={phase}
             title={source.label}
             countdownSeconds={countdownSeconds}
+            isPreparing={source.isSaving}
+            hasLaunched={hasOpenedProvider}
             onChooseContent={chooseContent}
             onOpenProvider={openProvider}
           />
+
+          {isHost && (isPicking || source.source === null) ? (
+            <div className="flex flex-col gap-3" ref={pickerRef} data-sf-selection-flow>
+              <ProviderBar
+                activeProviderId={activeProviderId}
+                isHost={isHost}
+                providers={scope.providers}
+                isScoped={scope.isScoped}
+                onSelect={selectProvider}
+              />
+              {activeProvider ? (
+                <SourcePicker
+                  provider={activeProvider}
+                  currentUrl={source.source?.url ?? ""}
+                  currentTitle={source.selection.title ?? ""}
+                  isSaving={source.isSaving}
+                  error={source.error ? t("theater.source.error") : null}
+                  onSubmit={(url, title) => {
+                    source.save(url, title);
+                    setIsPicking(false);
+                  }}
+                />
+              ) : null}
+            </div>
+          ) : null}
+
+          {isHost && !isPicking && source.source !== null ? (
+            <div>
+              <ActionButton
+                tone="ghost"
+                size="sm"
+                onClick={chooseContent}
+                data-sf-stage-cta="change-content"
+              >
+                {t("theater.stage.change_cta")}
+              </ActionButton>
+            </div>
+          ) : null}
+
+          {/* Inviting people belongs with the room's start-of-session work,
+              not in the top-right utility strip. */}
+          <InvitePanel
+            link={inviteLink}
+            participantCount={presentMembers.length}
+            blocked={inviteBlocked}
+            onCopied={() => beta.track("invite_copied")}
+            onShared={() => beta.track("native_share_opened")}
+          />
+
+          <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
 
           <ActivationPanel
             plan={activation}
             onAct={handleActivation}
             busy={countdown.pending === "start"}
           />
-
-
 
           {failure ? (
             <FailureNotice
@@ -759,9 +831,6 @@ export function Theater({ roomId }: TheaterProps) {
               onDismiss={() => setResearchState("done")}
             />
           ) : null}
-
-
-
 
           {stageView.showsMediaCard ? (
             <MediaCard
@@ -840,37 +909,7 @@ export function Theater({ roomId }: TheaterProps) {
             }
           />
 
-          <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
-
-          <InvitePanel
-            link={inviteLink}
-            participantCount={presentMembers.length}
-            blocked={inviteBlocked}
-            onCopied={() => beta.track("invite_copied")}
-            onShared={() => beta.track("native_share_opened")}
-          />
-
           <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
-
-          {isHost ? (
-            <div className="flex flex-col gap-3" ref={pickerRef} data-sf-selection-flow>
-              <ProviderBar
-                activeProviderId={activeProviderId}
-                isHost={isHost}
-                onSelect={selectProvider}
-              />
-              {activeProvider ? (
-                <SourcePicker
-                  provider={activeProvider}
-                  currentUrl={source.source?.url ?? ""}
-                  currentTitle={source.selection.title ?? ""}
-                  isSaving={source.isSaving}
-                  error={source.error ? t("theater.source.error") : null}
-                  onSubmit={(url, title) => source.save(url, title)}
-                />
-              ) : null}
-            </div>
-          ) : null}
         </div>
 
         <aside className="hidden min-h-[24rem] flex-col gap-4 lg:flex lg:h-[calc(100vh-12rem)]">

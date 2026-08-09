@@ -486,8 +486,13 @@ export const enBundle: LocaleBundle = {
     "theater.stage.status.paused": "Paused.",
     "theater.stage.status.ended": "This session has ended.",
     "theater.stage.status.closed": "This room is closed.",
+    "theater.stage.status.preparing": "Setting the stage…",
+    "theater.stage.status.launched":
+      "Opened in your browser — come back here and play on the countdown.",
     "theater.stage.external_title": "StreamFlow can't play {provider} for you",
     "theater.stage.open_provider": "Open {provider} in a new tab",
+    "theater.stage.reopen_provider": "Reopen {provider}",
+    "theater.stage.change_cta": "Change what we're watching",
     "theater.stage.blocked":
       "This video can't be played inside StreamFlow. The host can pick another one.",
     "theater.transport.play": "Play",
@@ -510,6 +515,9 @@ export const enBundle: LocaleBundle = {
     "theater.chat.error.too_long": "That message is too long.",
     "theater.chat.error.failed": "That message didn't send. Try again.",
     "theater.provider.title": "Where are we watching?",
+    "theater.provider.scoped_title": "This room's service",
+    "theater.provider.scoped_note":
+      "This room was started for {provider}, so it stays on {provider}.",
     "theater.provider.host_chooses": "The host picks the service for the room.",
     "theater.capability.automatic": "Plays in sync here",
     "theater.capability.assisted": "Assisted handoff",
@@ -801,7 +809,7 @@ export const enBundle: LocaleBundle = {
     "home.services.status.unverified": "Beta",
     "home.services.status.unavailable": "Unavailable",
     "home.services.status.coming_soon": "Coming soon",
-    "home.services.room_name": "{service} night",
+    "home.services.room_name": "Watch party on {service}",
     "home.services.footnote":
       "StreamFlow never plays or re-streams content. You watch in your own app, we keep everyone in step.",
     "home.live.badge": "Live",

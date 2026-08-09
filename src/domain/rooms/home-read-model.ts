@@ -27,6 +27,9 @@ import {
   type RoomRepository,
 } from "@/repository";
 
+import { readRoomMediaRef } from "@/domain/watch/watch-source";
+
+import { classifyRoomActivity, type RoomActivity } from "./room-activity";
 import type { Invite, Room, RoomMember } from "./room.types";
 
 /** Rooms a person can still walk back into (ADR-002). */
@@ -47,6 +50,8 @@ export interface HomeRoomSummary {
   readonly isHost: boolean;
   /** True when the room is still live and the viewer has actually joined it. */
   readonly isResumable: boolean;
+  /** Live / dormant / closed, decided by `classifyRoomActivity`. */
+  readonly activity: RoomActivity;
 }
 
 export interface HomeInviteSummary {
@@ -62,6 +67,11 @@ export interface HomeSnapshot {
   readonly liveRooms: readonly HomeRoomSummary[];
   /** Rooms that have finished, newest first. */
   readonly recentRooms: readonly HomeRoomSummary[];
+  /**
+   * Live rows that have gone quiet: a solo lobby nobody touched. They are not
+   * offered as "continue" and are not surfaced on Home.
+   */
+  readonly dormantRooms: readonly HomeRoomSummary[];
   readonly pendingInvites: readonly HomeInviteSummary[];
   /**
    * Milestone F.0 — invitations already answered or lapsed, newest first, so a
@@ -102,6 +112,7 @@ export function createHomeReadModel(deps: HomeReadModelDependencies): HomeReadMo
     async loadHome(viewerProfileId) {
       const roomPage = await rooms.list({ memberProfileId: viewerProfileId });
       const candidates = roomPage.items.slice(0, ROOM_SCAN_LIMIT);
+      const now = Date.now();
 
       // Per-room membership and seat count. Bounded by ROOM_SCAN_LIMIT and
       // issued concurrently; the repository layer owns any batching it wants.
@@ -110,20 +121,35 @@ export function createHomeReadModel(deps: HomeReadModelDependencies): HomeReadMo
           const membership = await members.findByRoomAndProfile(room.id, viewerProfileId);
           if (!membership) return null;
           const memberCount = await members.countByRoom(room.id, ["invited", "joined"]);
+          const mediaRef = readRoomMediaRef(room.metadata);
+          const activity = classifyRoomActivity({
+            status: room.status,
+            hasMedia: mediaRef !== null && mediaRef.validity !== "invalid",
+            memberCount,
+            updatedAt: room.updatedAt,
+            now,
+          });
           return {
             room,
             membership,
             memberCount,
             isHost: room.hostProfileId === viewerProfileId,
-            isResumable: membership.state === "joined" && LIVE_STATUSES.includes(room.status),
+            // A dormant lobby is not something to "continue": nobody is there
+            // and nothing is happening in it.
+            isResumable:
+              membership.state === "joined" &&
+              LIVE_STATUSES.includes(room.status) &&
+              activity === "live",
+            activity,
           };
         }),
       );
 
       const present = summaries.filter((entry): entry is HomeRoomSummary => entry !== null);
       const live = present
-        .filter((entry) => LIVE_STATUSES.includes(entry.room.status))
+        .filter((entry) => LIVE_STATUSES.includes(entry.room.status) && entry.activity === "live")
         .sort(newestFirst);
+      const dormant = present.filter((entry) => entry.activity === "dormant").sort(newestFirst);
       const closed = present
         .filter((entry) => CLOSED_STATUSES.includes(entry.room.status))
         .sort(newestFirst);
@@ -153,6 +179,7 @@ export function createHomeReadModel(deps: HomeReadModelDependencies): HomeReadMo
         continueRoom,
         liveRooms: live.filter((entry) => entry !== continueRoom),
         recentRooms: closed,
+        dormantRooms: dormant,
         pendingInvites,
         answeredInvites: [...answeredInvites].sort((a, b) =>
           b.invite.createdAt.localeCompare(a.invite.createdAt),

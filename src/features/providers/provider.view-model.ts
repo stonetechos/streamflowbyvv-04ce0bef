@@ -5,6 +5,7 @@
  * decided here: selectability, sync mode, and the compliance verdict were all
  * adjudicated in Domain (Build Rules §1). This module only chooses labels.
  */
+import { isBlockedProviderKey } from "@/domain";
 import type { ProviderSelectionClass, ProviderSelectionOption, SyncMode } from "@/domain";
 
 export interface ProviderOptionView {
@@ -50,8 +51,14 @@ export function toProviderOptionView(option: ProviderSelectionOption): ProviderO
   };
 }
 
+/**
+ * Product correction pass: a service the product has removed never reaches a
+ * surface, even if a catalog row for it still exists.
+ */
 export function toProviderOptionViews(
   options: readonly ProviderSelectionOption[],
 ): readonly ProviderOptionView[] {
-  return options.map(toProviderOptionView);
+  return options
+    .filter((option) => !isBlockedProviderKey(option.provider.key))
+    .map(toProviderOptionView);
 }

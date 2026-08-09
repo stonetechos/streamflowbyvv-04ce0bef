@@ -30,6 +30,10 @@ export interface WatchStageProps {
   readonly title?: string | null;
   /** Seconds left in a running countdown, or null. */
   readonly countdownSeconds?: number | null;
+  /** A choice is being written: the stage shows a skeleton, never a blank. */
+  readonly isPreparing?: boolean;
+  /** The service has been opened in this person's own browser. */
+  readonly hasLaunched?: boolean;
   /** Opens the host's app/provider selection flow. */
   onChooseContent?(): void;
   /** Opens the chosen service in a new tab. Launch-only and manual services. */
@@ -47,17 +51,50 @@ export function WatchStage({
   phase,
   title = null,
   countdownSeconds = null,
+  isPreparing = false,
+  hasLaunched = false,
   onChooseContent,
   onOpenProvider,
 }: WatchStageProps) {
   const { t } = useTranslation();
-  const view = deriveStageView({ source, capability, isHost, phase });
+  const view = deriveStageView({ source, capability, isHost, phase, isPreparing, hasLaunched });
 
   // One shared frame keeps every stage state the same size and weight, so a
   // change of state reads as a transition inside the room rather than a
   // re-layout of the page.
   const frame =
     "sf-stage-enter relative w-full overflow-hidden min-h-[13rem] sm:min-h-0 sm:aspect-video shadow-e2 ring-1 ring-border/50";
+
+  if (view.kind === "preparing") {
+    return (
+      <Surface
+        key="stage-preparing"
+        tone="glass"
+        padding="lg"
+        className={`${frame} flex items-center justify-center text-center`}
+        data-sf-stage="preparing"
+        data-sf-stage-role={view.role}
+      >
+        <div className="relative flex w-full max-w-sm flex-col items-center gap-3 px-2">
+          <div
+            aria-hidden="true"
+            className="h-3 w-28 rounded-full bg-muted motion-safe:animate-pulse"
+          />
+          <div
+            aria-hidden="true"
+            className="h-6 w-52 rounded-lg bg-muted motion-safe:animate-pulse"
+          />
+          <div
+            aria-hidden="true"
+            className="h-3 w-40 rounded-full bg-muted motion-safe:animate-pulse"
+          />
+          <p role="status" className="text-sm text-muted-foreground" data-sf-stage-status>
+            {t(view.statusKey)}
+          </p>
+        </div>
+      </Surface>
+    );
+  }
 
   if (view.kind === "empty") {
     return (
@@ -114,6 +151,7 @@ export function WatchStage({
         data-sf-stage="handoff"
         data-sf-stage-role={view.role}
         data-sf-stage-provider={capability.providerId}
+        data-sf-stage-launched={hasLaunched ? "true" : "false"}
       >
         <div
           aria-hidden="true"
@@ -152,7 +190,9 @@ export function WatchStage({
               data-sf-stage-open-provider={capability.providerId}
               className="w-full sm:w-auto"
             >
-              {t("theater.stage.open_provider", { provider: capability.displayName })}
+              {t(hasLaunched ? "theater.stage.reopen_provider" : "theater.stage.open_provider", {
+                provider: capability.displayName,
+              })}
             </ActionButton>
           ) : null}
         </div>
@@ -182,4 +222,3 @@ export function WatchStage({
     </div>
   );
 }
-

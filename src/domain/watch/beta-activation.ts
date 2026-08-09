@@ -58,7 +58,9 @@ export function medianOf(values: readonly number[]): number | null {
   if (usable.length === 0) return null;
   const middle = Math.floor(usable.length / 2);
   if (usable.length % 2 === 1) return usable[middle] as number;
-  return Math.round((((usable[middle - 1] as number) + (usable[middle] as number)) / 2) * 100) / 100;
+  return (
+    Math.round((((usable[middle - 1] as number) + (usable[middle] as number)) / 2) * 100) / 100
+  );
 }
 
 export interface RoomTimeline {

@@ -75,7 +75,9 @@ export const CONCEPT_EXTENDS: Readonly<Record<PremiumConcept, CoreCapability>> =
  * research panel and asserted in the test suite, so a future concept cannot
  * quietly paywall the MVP.
  */
-export function validateConcepts(concepts: readonly string[] = PREMIUM_CONCEPTS): readonly string[] {
+export function validateConcepts(
+  concepts: readonly string[] = PREMIUM_CONCEPTS,
+): readonly string[] {
   return concepts.filter((concept) => isCoreCapability(concept));
 }
 
@@ -127,7 +129,11 @@ export function summarizeResearch(
 ): readonly ConceptSummary[] {
   return PREMIUM_CONCEPTS.map((concept) => {
     const mine = responses.filter((response) => response.concept === concept);
-    const valueCounts: Record<ValueAnswer, number> = { not_valuable: 0, maybe: 0, very_valuable: 0 };
+    const valueCounts: Record<ValueAnswer, number> = {
+      not_valuable: 0,
+      maybe: 0,
+      very_valuable: 0,
+    };
     const payCounts: Record<PayAnswer, number> = { no: 0, maybe: 0, yes: 0 };
     for (const response of mine) {
       if (response.value) valueCounts[response.value] += 1;
