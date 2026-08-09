@@ -62,9 +62,12 @@ export function deriveStageView({
   phase,
   isPreparing = false,
   hasLaunched = false,
+  hostLaunched = false,
 }: StageViewInput): StageView {
   const role = isHost ? ("host" as const) : ("guest" as const);
   const statusKey = STATUS_KEYS[phase] ?? "theater.stage.status.selected";
+  // Either this person opened it, or the host did for the party.
+  const launched = hasLaunched || hostLaunched;
 
   // A selection in flight is a real state of the room, not a blank panel.
   if (isPreparing && !source) {
@@ -75,6 +78,7 @@ export function deriveStageView({
       showsWaitingLine: false,
       showsMediaCard: false,
       statusKey: "theater.stage.status.preparing",
+      launchKey: "theater.stage.start_party",
     };
   }
 
@@ -86,6 +90,7 @@ export function deriveStageView({
       showsWaitingLine: !isHost,
       showsMediaCard: false,
       statusKey,
+      launchKey: "theater.stage.start_party",
     };
   }
 
@@ -93,10 +98,13 @@ export function deriveStageView({
 
   // Once the service has been opened externally, the room says so plainly
   // rather than pretending it is waiting for something.
-  const handoffStatusKey =
-    hasLaunched && phase !== "ended" && phase !== "closed"
-      ? "theater.stage.status.launched"
-      : statusKey;
+  const handoffStatusKey = launched
+    ? phase === "ended" || phase === "closed"
+      ? statusKey
+      : hasLaunched
+        ? "theater.stage.status.launched"
+        : "theater.stage.status.host_launched"
+    : statusKey;
 
   return {
     kind: embedded ? "embedded" : "handoff",
@@ -105,5 +113,11 @@ export function deriveStageView({
     showsWaitingLine: false,
     showsMediaCard: true,
     statusKey: embedded ? statusKey : handoffStatusKey,
+    // Before anything is open this is the party's start; after, it is a way back.
+    launchKey: hasLaunched
+      ? "theater.stage.reopen_provider"
+      : launched
+        ? "theater.stage.join_provider"
+        : "theater.stage.start_party",
   };
 }
