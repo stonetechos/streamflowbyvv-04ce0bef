@@ -8,6 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Users } from "lucide-react";
 
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import {
@@ -69,7 +70,12 @@ import { VoiceRoomPanel } from "./components/voice-room-panel";
 import { ManualCoordination } from "./components/manual-coordination";
 import { ParticipantRail } from "./components/participant-rail";
 import { RoomConsole } from "./components/room-console";
-import { RoomDrawer } from "./components/room-drawer";
+import { InviteDialog } from "./components/invite-dialog";
+import { PartyControls } from "./components/party-controls";
+import { PartyMessageBar } from "./components/party-message-bar";
+import { PartyRail, type PartyFace } from "./components/party-rail";
+import { PartySheet } from "./components/party-sheet";
+import { PartyShell } from "./components/party-shell";
 import { HostTransport } from "./components/host-transport";
 import { MediaCard } from "./components/media-card";
 import { CapabilityNote } from "./components/capability-note";
@@ -181,6 +187,11 @@ export function Theater({ roomId }: TheaterProps) {
   const [reconnectCount, setReconnectCount] = useState(0);
   // Inviting is an event, not an inference: the trail only counts a real one.
   const [inviteSent, setInviteSent] = useState(false);
+  // The theatre keeps one middle. Chat, people and room settings arrive as a
+  // sheet over the stage, never as a column that shoves it aside.
+  const [sheet, setSheet] = useState<"chat" | "people" | "room" | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [readLineCount, setReadLineCount] = useState(0);
   // One vetted adapter owns provider hand-off; the raw window handle is never
   // consulted, because `noopener` makes it null even on success.
   const providerLauncher = useMemo(() => createBrowserProviderLauncher(), []);
@@ -880,7 +891,7 @@ export function Theater({ roomId }: TheaterProps) {
   return (
     <PartyShell
       phase={phase}
-      regionLabel={t("theater.region_label", { name: room.room.name })}
+      regionLabel={t("party.region_label", { name: room.room.name })}
       controls={
         <PartyControls
           isVoiceConnected={voice.isConnected}
@@ -1220,11 +1231,11 @@ export function Theater({ roomId }: TheaterProps) {
       messageBar={
         <PartyMessageBar
           canSend={canSendChat}
-          maxLength={CHAT_MAX_LENGTH}
+          maxLength={chat.maxLength}
           unreadCount={Math.max(0, chat.lines.length - readLineCount)}
           isTranscriptOpen={sheet === "chat"}
           disabledReason={chatDisabledReason}
-          onSend={(body) => chat.send(body)}
+          onSend={(body: string) => chat.send(body)}
           onToggleTranscript={() => setSheet(sheet === "chat" ? null : "chat")}
         />
       }
