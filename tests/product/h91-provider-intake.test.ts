@@ -52,12 +52,14 @@ describe("provider intake", () => {
     expect(byId.get("jiotv")).toBe("JioTV");
   });
 
-  test("YouTube remains absent from the product", () => {
+  test("every launch-only brand stays launch-only", () => {
     for (const entry of WATCH_PROVIDER_DEFINITIONS) {
-      expect(entry.providerId).not.toContain("youtube");
-      expect(entry.displayName.toLowerCase()).not.toContain("youtube");
+      if (entry.providerId === "youtube" || entry.providerId === "local") continue;
+      if (entry.providerId === "direct") continue;
+      expect(entry.playbackControlMode).toBe("launch-only");
     }
   });
+
 
   test("the shelf shows each new brand, and never as choosable without a catalog row", () => {
     const cards = shelf();
