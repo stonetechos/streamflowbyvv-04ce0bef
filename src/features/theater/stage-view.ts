@@ -19,6 +19,12 @@ export interface StageViewInput {
   readonly isPreparing?: boolean;
   /** This person has already opened the service in their own browser. */
   readonly hasLaunched?: boolean;
+  /**
+   * The host has opened the service for the party. This is a room fact, so a
+   * guest's stage reflects it too — a guest never sits in a dead shell while
+   * the host is already in front of the provider.
+   */
+  readonly hostLaunched?: boolean;
 }
 
 export interface StageView {
@@ -32,6 +38,11 @@ export interface StageView {
   readonly showsMediaCard: boolean;
   /** Translation key describing where the room is, once something is chosen. */
   readonly statusKey: string;
+  /**
+   * The host's single strong action on a launch-only stage: start the party
+   * (open the service), or reopen it once it is already running.
+   */
+  readonly launchKey: string;
 }
 
 const STATUS_KEYS: Readonly<Record<RoomPhase, string>> = {
