@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Users } from "lucide-react";
 
-import { ActionButton, Avatar, Surface } from "@/design-system/components";
+import { ActionButton } from "@/design-system/components";
 import {
   DEFAULT_READINESS_THRESHOLD,
   classifyFreshness,
@@ -62,7 +62,6 @@ import { ResearchPanel } from "./components/research-panel";
 import { SessionSummaryCard } from "./components/session-summary-card";
 import { ChatPanel } from "./components/chat-panel";
 import { FailureNotice } from "./components/failure-notice";
-import { InvitePanel } from "./components/invite-panel";
 import { RoomKeyCard } from "./components/room-key-card";
 import { ConnectionBanner } from "./components/connection-banner";
 import { HostModeration } from "./components/host-moderation";
@@ -835,6 +834,11 @@ export function Theater({ roomId }: TheaterProps) {
   useEffect(() => {
     if (chat.lines.length > 0) noteRoomFact(roomId, { usedChat: true });
   }, [chat.lines.length, roomId]);
+
+  // Reading the transcript is what clears the unread count — not receiving it.
+  useEffect(() => {
+    if (sheet === "chat") setReadLineCount(chat.lines.length);
+  }, [sheet, chat.lines.length]);
 
   useEffect(() => {
     if (recovery.phase === "recovering") {
