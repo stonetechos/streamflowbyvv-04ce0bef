@@ -7,6 +7,7 @@
  * dressed up as a controlled one (ADR-014).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import {
@@ -92,6 +93,7 @@ interface OrientationLock {
 
 export function Theater({ roomId }: TheaterProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const room = useWaitingRoom(roomId);
   const names = useMemberNames(room.members.map((member) => member.profileId));
 
@@ -470,7 +472,11 @@ export function Theater({ roomId }: TheaterProps) {
     beta.track("room_left");
     setHasLeft(true);
     room.leave();
-  }, [beta, room]);
+    // Leaving is also a navigation: the person goes back to the room's lobby
+    // instead of sitting on a stage they are no longer part of.
+    void navigate({ to: "/rooms/$roomId", params: { roomId } });
+  }, [beta, room, navigate, roomId]);
+
 
   const toggleReady = useCallback(() => {
     setSelfReady((current) => {

@@ -563,6 +563,9 @@ export const enBundle: LocaleBundle = {
     "theater.provider.instruction":
       "Pick the title on {provider}, then come back and paste its link here. StreamFlow never signs in for you and never plays {provider} inside the room.",
     "theater.provider.returned": "Back from the service? Paste the title link below.",
+    "theater.provider.launch_label": "Open {provider}",
+    "theater.provider.launch_description":
+      "Select a specific title after {provider} opens. This link is the service's launch page, not a chosen title.",
     "theater.provider.paste_label": "Title link",
     "theater.provider.paste_description":
       "Everyone opens it on their own account when the countdown ends.",
@@ -691,7 +694,7 @@ export const enBundle: LocaleBundle = {
     "theater.source.error": "That link couldn't be saved.",
     "theater.header.people": "{count} here",
     "theater.header.host": "Host",
-    "theater.action.leave": "Leave",
+    "theater.action.leave": "Leave room",
     "theater.room.unavailable": "This room isn't available.",
     "theater.action.open": "Enter theater",
 
