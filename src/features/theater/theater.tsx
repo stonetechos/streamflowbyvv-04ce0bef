@@ -460,6 +460,19 @@ export function Theater({ roomId }: TheaterProps) {
     roomEnded: room.room?.status === "ended",
   });
 
+  // The centre panel is the room's stage: one derivation decides what it shows
+  // and whether the lower media card would only repeat it.
+  const stageView = deriveStageView({ source: source.source, capability, isHost, phase });
+
+  // The host's stage CTA is the entry point into the app/provider picker.
+  const chooseContent = useCallback(() => {
+    const node = pickerRef.current;
+    if (!node) return;
+    node.scrollIntoView({ behavior: "smooth", block: "center" });
+    node.querySelector<HTMLElement>("button, input")?.focus({ preventScroll: true });
+  }, []);
+
+
   const guestCount = Math.max(0, presentMembers.length - 1);
 
   const activation = useRoomActivation({
