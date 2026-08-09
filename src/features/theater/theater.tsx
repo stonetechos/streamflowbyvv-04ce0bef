@@ -22,6 +22,7 @@ import {
   providerBrowseUrl,
   summarizeReadiness,
   watchProviderById,
+  withExtensionControl,
   type ActivationAction,
   type CoordinationKind,
   type FailureKind,
@@ -76,6 +77,7 @@ import { PartyShell } from "./components/party-shell";
 import { HostTransport } from "./components/host-transport";
 import { MediaCard } from "./components/media-card";
 import { CapabilityNote } from "./components/capability-note";
+import { ExtensionStatus } from "./components/extension-status";
 import { ProviderBar } from "./components/provider-bar";
 import { SourcePicker } from "./components/source-picker";
 import { SyncBadge } from "./components/sync-badge";
@@ -88,6 +90,7 @@ import { useWatchSource } from "./use-watch-source";
 import { useRoomRuntime } from "./use-room-runtime";
 import { useDirectPlayer } from "./use-direct-player";
 import { useYouTubePlayer } from "./use-youtube-player";
+import { useExtensionBridge } from "./use-extension-bridge";
 import { useConnectionRecovery } from "./use-connection-recovery";
 import { useProductAnalytics } from "./use-product-analytics";
 import { useRoomActivation } from "./use-room-activation";
@@ -144,6 +147,10 @@ export function Theater({ roomId }: TheaterProps) {
     () => (activeProviderId ? watchProviderById(activeProviderId) : null),
     [activeProviderId],
   );
+
+  // The companion extension, when the viewer has it. It drives the provider's
+  // own player on this device only; the room keeps every rule (Sprint H13).
+  const bridge = useExtensionBridge({ providerId: activeProviderId, enabled });
 
   // Everyone's own copy of a shared file: the object URL is this device's
   // alone and never leaves it. Only the file's name was ever room state.
@@ -225,23 +232,44 @@ export function Theater({ roomId }: TheaterProps) {
   // A countdown that was cancelled must not count as completed.
   const countdownCompletedRef = useRef(false);
 
+  // A launch-only provider becomes a driven one only while the bridge is
+  // genuinely attached. The claim and the behaviour flip on the same switch.
+  const runtimeCapability = useMemo(
+    () => withExtensionControl(source.capability, bridge.isControllable),
+    [source.capability, bridge.isControllable],
+  );
+
   const runtime = useRoomRuntime({
     roomId,
     profileId,
     isHost,
     enabled,
-    capability: source.capability,
+    capability: runtimeCapability,
     hasMedia: source.source !== null,
     mediaValid: (room.room?.mediaRef?.validity ?? "valid") !== "invalid",
     roomClosed: room.room?.status === "abandoned" || room.room?.status === "ended",
     isCountingDown: countdownRemaining !== null,
     clockOffsetMs: room.clockSync.snapshot?.offset?.offsetMs ?? 0,
     readLocalPositionSeconds: () => {
-      const ms = player.positionMs();
+      const ms = bridge.isControllable ? bridge.positionMs() : player.positionMs();
       return ms === null ? null : ms / 1000;
     },
     isBuffering,
     applyRemote: ({ status, positionSeconds, correction, rate }) => {
+      // Same verbs, different transport: the extension applies them to the
+      // provider's own player on this device.
+      if (bridge.isControllable) {
+        const positionMs = Math.round(positionSeconds * 1000);
+        if (correction === "hard") bridge.seekTo(positionMs);
+        if (status === "playing") {
+          bridge.setRate(rate);
+          bridge.play(positionMs);
+        } else if (status === "paused" || status === "idle") {
+          bridge.setRate(1);
+          bridge.pause(positionMs);
+        }
+        return;
+      }
       if (!player.isReady) return;
       // A local correction must never be read back as a host intent.
       if (Date.now() < suppressUntil.current) return;
@@ -355,7 +383,7 @@ export function Theater({ roomId }: TheaterProps) {
   }, [player.isReady, directUrl]);
 
   const isPlaying = runtime.playback.status === "playing";
-  const capability = source.capability;
+  const capability = runtimeCapability;
   // A source the room can genuinely drive: a reachable file, this device's own
   // copy of a shared file, or YouTube's sanctioned player.
   const isEmbedded =
@@ -1038,6 +1066,16 @@ export function Theater({ roomId }: TheaterProps) {
 
           {/* Capability limits belong in the room, on screen, for everyone —
               not only in a specification document. */}
+          {activeProvider?.providerId === "netflix" ? (
+            <ExtensionStatus
+              status={bridge.status}
+              hasPlayerTab={bridge.hasPlayerTab}
+              isControllable={bridge.isControllable}
+              state={bridge.state}
+              providerName={activeProvider.displayName}
+            />
+          ) : null}
+
           {source.source ? <CapabilityNote capability={capability} /> : null}
 
           {/* A scoped room never shows a launcher grid: it already is that

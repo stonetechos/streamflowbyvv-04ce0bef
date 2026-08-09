@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        width: 260px;
+        margin: 0;
+        padding: 14px;
+        font: 13px/1.45 system-ui, sans-serif;
+        background: #17130f;
+        color: #f5efe7;
+      }
+      h1 {
+        font-size: 14px;
+        margin: 0 0 8px;
+      }
+      p {
+        margin: 0 0 8px;
+        color: #cbbfb2;
+      }
+      .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #6b6058;
+        margin-right: 6px;
+      }
+      .on {
+        background: #ff7a45;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>StreamFlow Sync</h1>
+    <p id="status"><span class="dot" id="dot"></span><span id="label">Checking…</span></p>
+    <p>Open a Netflix title in another tab, then keep your StreamFlow room open.</p>
+    <script src="popup.js"></script>
+  </body>
+</html>

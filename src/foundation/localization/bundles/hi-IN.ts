@@ -552,6 +552,11 @@ export const hiINBundle: LocaleBundle = {
     "theater.provider.scoped_note":
       "यह रूम {provider} के लिए बना था, इसलिए यह {provider} पर ही रहेगा।",
     "theater.provider.host_chooses": "सेवा होस्ट चुनता है।",
+    "theater.extension.connected": "StreamFlow इस डिवाइस पर {provider} चला रहा है।",
+    "theater.extension.waiting": "कंपेनियन जुड़ा है — नियंत्रण देने के लिए अपना {provider} टाइटल शुरू करें।",
+    "theater.extension.no_tab": "कंपेनियन जुड़ा है। दूसरे टैब में अपना {provider} टाइटल खोलें।",
+    "theater.extension.missing": "मैनुअल सिंक: StreamFlow इस डिवाइस पर आपका {provider} प्लेयर नहीं पढ़ सकता।",
+    "theater.extension.hint": "साथ में प्ले, पॉज़ और सीक करने के लिए StreamFlow कंपेनियन एक्सटेंशन इंस्टॉल करें।",
     "theater.capability.automatic": "यहीं सिंक में चलता है",
     "theater.capability.title": "यह रूम {provider} के साथ क्या कर सकता है",
     "theater.capability.can.coordinate": "सबको साथ रखता है: चैट, उपस्थिति और साझा काउंटडाउन।",
