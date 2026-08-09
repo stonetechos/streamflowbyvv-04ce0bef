@@ -132,7 +132,6 @@ export function Theater({ roomId }: TheaterProps) {
   const [localPositionMs, setLocalPositionMs] = useState<number | null>(null);
   const [durationMs, setDurationMs] = useState<number | null>(null);
   const [volume, setVolume] = useState(80);
-  const [copied, setCopied] = useState(false);
   const suppressUntil = useRef(0);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const pickerRef = useRef<HTMLDivElement | null>(null);
@@ -340,11 +339,7 @@ export function Theater({ roomId }: TheaterProps) {
     if (!room.room) return;
     const link = `${window.location.origin}/join/${encodeURIComponent(room.room.code)}`;
     void navigator.clipboard?.writeText(link).then(
-      () => {
-        setCopied(true);
-        beta.track("invite_copied");
-        window.setTimeout(() => setCopied(false), 2_000);
-      },
+      () => beta.track("invite_copied"),
       () => undefined,
     );
   }, [room.room, beta]);
