@@ -47,6 +47,23 @@ export function registerWatchServices(): void {
 }
 
 export {
+  classifyFreshness,
+  deriveRoomConsole,
+  formatRoomClock,
+  latestDeclaration,
+  projectDeclaredClock,
+  type HostDeclaration,
+  type HostDeclarationKind,
+  type PresenceFreshness,
+  type RoomClockKind,
+  type RoomConsoleAction,
+  type RoomConsoleClock,
+  type RoomConsoleInput,
+  type RoomConsolePhase,
+  type RoomConsoleView,
+} from "./room-console";
+
+export {
   COORDINATION_METADATA_KEY,
   DEFAULT_DRIFT_POLICY,
   DEFAULT_READINESS_THRESHOLD,

@@ -12,8 +12,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import {
   DEFAULT_READINESS_THRESHOLD,
+  classifyFreshness,
   classifyPresence,
+  deriveRoomConsole,
   deriveRoomPhase,
+
   deriveRoomScope,
   shouldPromptFeedback,
   providerBrowseUrl,
@@ -22,6 +25,10 @@ import {
   type ActivationAction,
   type CoordinationKind,
   type FailureKind,
+  type HostDeclaration,
+  type HostDeclarationKind,
+  type RoomConsoleAction,
+
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
@@ -61,6 +68,7 @@ import { HostModeration } from "./components/host-moderation";
 import { VoiceRoomPanel } from "./components/voice-room-panel";
 import { ManualCoordination } from "./components/manual-coordination";
 import { ParticipantRail } from "./components/participant-rail";
+import { RoomConsole } from "./components/room-console";
 import { RoomDrawer } from "./components/room-drawer";
 import { HostTransport } from "./components/host-transport";
 import { MediaCard } from "./components/media-card";
@@ -532,6 +540,36 @@ export function Theater({ roomId }: TheaterProps) {
     [chat.events, hostProfileId],
   );
 
+  // Phase A — the room's own clock ticks even when nothing here can be
+  // measured, because a declared clock still has to advance on screen.
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  // The host's statements, read off the coordination stream that already
+  // carries them. Nothing here observes a provider player.
+  const declarations = useMemo<readonly HostDeclaration[]>(
+    () =>
+      chat.events
+        .filter((event) => event.profileId === hostProfileId)
+        .flatMap((event) => {
+          const kind: HostDeclarationKind | null =
+            event.kind === "provider-launched"
+              ? "started"
+              : event.kind === "pause-request"
+                ? "paused"
+                : event.kind === "resume-request"
+                  ? "resumed"
+                  : null;
+          if (!kind) return [];
+          return [{ kind, atMs: new Date(event.createdAt).getTime() }];
+        }),
+    [chat.events, hostProfileId],
+  );
+
+
   // The centre panel is the room's stage: one derivation decides what it shows
   // and whether the lower media card would only repeat it.
   const stageView = deriveStageView({
@@ -543,7 +581,92 @@ export function Theater({ roomId }: TheaterProps) {
     hostLaunched,
   });
 
+  // The live room console: phase, clock and disclosure, all from facts the
+  // room already owns.
+  const consoleView = useMemo(
+    () =>
+      deriveRoomConsole({
+        hasSource: source.source !== null,
+        isAutomatic: runtime.isAutomatic,
+        isHost,
+        countdownSeconds,
+        playbackStatus: runtime.playback.status,
+        positionSeconds: runtime.playback.positionSeconds,
+        declarations,
+        nowMs,
+        roomEnded: phase === "ended" || phase === "closed",
+        canStartCountdown: enabled,
+      }),
+    [
+      source.source,
+      runtime.isAutomatic,
+      runtime.playback.status,
+      runtime.playback.positionSeconds,
+      isHost,
+      countdownSeconds,
+      declarations,
+      nowMs,
+      phase,
+      enabled,
+    ],
+  );
+
+  // Per-person facts for the rail: each one is a statement its owner made.
+  const railFacts = useMemo(() => {
+    const launched = new Set(
+      chat.events.filter((e) => e.kind === "provider-launched").map((e) => e.profileId),
+    );
+    if (hasOpenedProvider) launched.add(room.viewer.profileId ?? "");
+    return {
+      readyProfileIds: new Set(
+        room.members.filter((m) => (m.isViewer ? selfReady : m.isReady)).map((m) => m.profileId),
+      ),
+      launchedProfileIds: launched,
+      freshnessByProfileId: new Map(
+        room.members.map((m) => [
+          m.profileId,
+          classifyFreshness(m.presence, m.lastSeenAt ? new Date(m.lastSeenAt).getTime() : null, nowMs),
+        ]),
+      ),
+      isManual: !runtime.isAutomatic,
+    };
+  }, [
+    chat.events,
+    hasOpenedProvider,
+    room.members,
+    room.viewer.profileId,
+    selfReady,
+    nowMs,
+    runtime.isAutomatic,
+  ]);
+
+
+
+  // A host action is a statement broadcast to the room, never a device command.
+  const declare = useCallback(
+    (action: RoomConsoleAction) => {
+      switch (action) {
+        case "declare-start":
+          chat.sendCoordination("provider-launched", t("room.manual.sent.provider-launched"));
+          break;
+        case "declare-pause":
+          chat.sendCoordination("pause-request", t("room.manual.sent.pause-request"));
+          break;
+        case "declare-resume":
+          chat.sendCoordination("resume-request", t("room.manual.sent.resume-request"));
+          break;
+        case "restart-countdown":
+          countdown.start();
+          break;
+        default:
+          break;
+      }
+    },
+    [chat, countdown, t],
+  );
+
   // The host's stage CTA is the entry point into the app/provider picker.
+
   const chooseContent = useCallback(() => {
     setIsPicking(true);
     // The picker sits directly under the stage, so the room never scrolls into
@@ -723,10 +846,12 @@ export function Theater({ roomId }: TheaterProps) {
       participants={participants}
       readiness={readiness}
       showReadiness={!runtime.isAutomatic}
+      facts={railFacts}
       moderation={moderation}
       voiceProfileIds={voiceProfileIds}
     />
   );
+
 
   if (!room.room) {
     return (
@@ -810,9 +935,26 @@ export function Theater({ roomId }: TheaterProps) {
             }
           />
 
+          {/* The live room console: what the room can honestly say about
+              itself while playback happens where we cannot see it. */}
+          {source.source ? (
+            <RoomConsole
+              view={consoleView}
+              providerName={capability.displayName}
+              title={source.selection.title ?? source.label}
+              participantCount={presentMembers.length}
+              readyCount={readiness.readyCount}
+              launchedCount={railFacts.launchedProfileIds.size}
+              countdownSeconds={countdownSeconds}
+              busy={!chat.isAvailable}
+              onAct={declare}
+            />
+          ) : null}
+
           {/* Capability limits belong in the room, on screen, for everyone —
               not only in a specification document. */}
           {source.source ? <CapabilityNote capability={capability} /> : null}
+
 
           {/* A scoped room never shows a launcher grid: it already is that
               service's room. Only an open room asks which service, and the

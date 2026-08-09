@@ -7,7 +7,7 @@
  * because no voice telemetry exists to support that claim.
  */
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
-import type { ParticipantRuntime, ReadinessSummary } from "@/domain";
+import type { ParticipantRuntime, PresenceFreshness, ReadinessSummary } from "@/domain";
 import { useTranslation } from "@/foundation/localization";
 
 export interface ParticipantRailProps {
@@ -15,6 +15,18 @@ export interface ParticipantRailProps {
   readonly readiness: ReadinessSummary;
   /** Readiness is only meaningful when the room coordinates manually. */
   readonly showReadiness: boolean;
+  /**
+   * Phase A — observed per-person facts. Readiness is a person's own tap,
+   * "launched" is their own announcement, freshness is presence. Nothing here
+   * is inferred from a provider player, because none can be read.
+   */
+  readonly facts?: {
+    readonly readyProfileIds: ReadonlySet<string>;
+    readonly launchedProfileIds: ReadonlySet<string>;
+    readonly freshnessByProfileId: ReadonlyMap<string, PresenceFreshness>;
+    /** True when the room is coordinated by humans, not by the app. */
+    readonly isManual: boolean;
+  } | null;
   /**
    * Sprint H6 — moderation affordances, rendered only for a seat that may act.
    * Voice and mute state come from observation, never from inference.
@@ -32,6 +44,7 @@ export interface ParticipantRailProps {
   readonly voiceProfileIds?: ReadonlySet<string>;
 }
 
+
 const STATE_KEY: Record<ParticipantRuntime["state"], string> = {
   joined: "room.participant.joined",
   selecting: "room.participant.selecting",
@@ -42,10 +55,44 @@ const STATE_KEY: Record<ParticipantRuntime["state"], string> = {
   left: "room.participant.left",
 };
 
+/** A small, uniform status pill. Local to the rail: it states, never infers. */
+function Badge({
+  tone,
+  testId,
+  children,
+}: {
+  readonly tone: "positive" | "neutral" | "warning";
+  readonly testId: string;
+  readonly children: React.ReactNode;
+}) {
+  const toneClass =
+    tone === "positive"
+      ? "border-primary/40 bg-primary/10"
+      : tone === "warning"
+        ? "border-destructive/40 bg-destructive/10"
+        : "border-border/60 bg-muted/50";
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[0.68rem] font-medium ${toneClass}`}
+      data-sf-participant-badge={testId}
+    >
+      {children}
+    </span>
+  );
+}
+
+const FRESHNESS_KEY: Record<PresenceFreshness, string> = {
+
+  live: "room.participant.badge.live",
+  stale: "room.participant.badge.stale",
+  offline: "room.participant.badge.offline",
+};
+
 export function ParticipantRail({
   participants,
   readiness,
   showReadiness,
+  facts = null,
   moderation = null,
   voiceProfileIds,
 }: ParticipantRailProps) {
@@ -72,10 +119,12 @@ export function ParticipantRail({
       ) : null}
 
       <ul className="flex flex-col gap-2">
-        {participants.map((participant) => (
+        {participants.map((participant) => {
+          const freshness = facts?.freshnessByProfileId.get(participant.participantId) ?? null;
+          return (
           <li
             key={participant.participantId}
-            className="flex items-center gap-3"
+            className="flex flex-wrap items-center gap-x-3 gap-y-1"
             data-sf-participant={participant.state}
           >
             <Avatar name={participant.displayName} size="sm" />
@@ -88,6 +137,31 @@ export function ParticipantRail({
                 ? t("room.participant.in_voice")
                 : t(STATE_KEY[participant.state])}
             </span>
+            {facts ? (
+              <span className="flex w-full flex-wrap gap-1 pl-11" data-sf-participant-badges>
+                {facts.readyProfileIds.has(participant.participantId) ? (
+                  <Badge tone="positive" testId="ready">
+                    {t("room.participant.badge.ready")}
+                  </Badge>
+                ) : null}
+                {facts.launchedProfileIds.has(participant.participantId) ? (
+                  <Badge tone="neutral" testId="launched">
+                    {t("room.participant.badge.launched")}
+                  </Badge>
+                ) : null}
+                {freshness && freshness !== "live" ? (
+                  <Badge tone="warning" testId={`freshness-${freshness}`}>
+                    {t(FRESHNESS_KEY[freshness])}
+                  </Badge>
+                ) : null}
+                {facts.isManual ? (
+                  <Badge tone="neutral" testId="manual">
+                    {t("room.participant.badge.manual")}
+                  </Badge>
+                ) : null}
+              </span>
+            ) : null}
+
             {moderation && !participant.isHost ? (
               <span className="flex shrink-0 gap-1">
                 {moderation.canMute ? (
@@ -132,7 +206,9 @@ export function ParticipantRail({
               </span>
             ) : null}
           </li>
-        ))}
+          );
+        })}
+
       </ul>
     </Surface>
   );
