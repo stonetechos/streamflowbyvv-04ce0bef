@@ -134,7 +134,81 @@ const DIRECT: ProviderDefinition = Object.freeze({
   titleSegments: Object.freeze([]),
 });
 
+/**
+ * YouTube — the one large service with a public, sanctioned embed and player
+ * API. StreamFlow drives it the same way any site is permitted to: through the
+ * official IFrame player, on each viewer's own device, with the provider's own
+ * ads and account rules intact. This is a genuine Tier A capability, not an
+ * exception carved out of ADR-014.
+ */
+const YOUTUBE: ProviderDefinition = Object.freeze({
+  capability: Object.freeze({
+    providerId: "youtube",
+    displayName: "YouTube",
+    enabled: true,
+    visibleInLobby: true,
+    supported: true,
+    selectionMode: "paste-link" as const,
+    playbackControlMode: "automatic" as const,
+    allowsEmbeddedPlayback: true,
+    allowsFullscreenFromRoom: true,
+    allowsZoomFromRoom: false,
+    requiresOwnSubscription: false,
+    requiresProviderLogin: false,
+    supportedPlatforms: WEB_PLATFORMS,
+    limitations: Object.freeze([
+      "StreamFlow really does play, pause, and seek this for everyone.",
+      "A video the uploader blocked from embedding can't play here — open it on YouTube instead.",
+      "Ads and availability are YouTube's own, and differ per viewer.",
+    ]),
+  }),
+  hostPattern: /(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be)$/i,
+  browseUrl: "https://www.youtube.com",
+  titleSegments: Object.freeze(["watch", "embed", "shorts", "live"]),
+});
+
+/**
+ * A copy of the same file everyone already has on their own machine. Nothing
+ * is uploaded, shared, or streamed between people — StreamFlow only shares the
+ * *name* and drives each viewer's own local playback in step.
+ */
+const LOCAL: ProviderDefinition = Object.freeze({
+  capability: Object.freeze({
+    providerId: "local",
+    displayName: "A file on your device",
+    enabled: true,
+    visibleInLobby: true,
+    supported: true,
+    selectionMode: "direct-title" as const,
+    playbackControlMode: "automatic" as const,
+    allowsEmbeddedPlayback: true,
+    allowsFullscreenFromRoom: true,
+    allowsZoomFromRoom: false,
+    requiresOwnSubscription: false,
+    requiresProviderLogin: false,
+    supportedPlatforms: WEB_PLATFORMS,
+    limitations: Object.freeze([
+      "Everyone opens their own copy — nothing is uploaded or sent between people.",
+      "Copies have to be the same cut, or the shared clock won't line up.",
+      "Play, pause, and seek are shared for real once everyone has opened a file.",
+    ]),
+  }),
+  hostPattern: /^local\.streamflow\.invalid$/i,
+  browseUrl: null,
+  titleSegments: Object.freeze([]),
+});
+
+/** Host for the synthetic URL that carries a local-file selection. */
+const LOCAL_HOST = "local.streamflow.invalid";
+
+/** Builds the shareable reference for "the file called X, on your own device". */
+export function localFileUrl(fileName: string): string {
+  return `https://${LOCAL_HOST}/${encodeURIComponent(fileName.trim() || "video")}`;
+}
+
 const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
+  YOUTUBE,
+  LOCAL,
   ottProvider("netflix", "Netflix", /(^|\.)netflix\.com$/i, "https://www.netflix.com/browse", [
     "title",
     "watch",
