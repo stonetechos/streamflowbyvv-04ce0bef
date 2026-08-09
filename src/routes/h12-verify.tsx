@@ -8,7 +8,10 @@ import { useState } from "react";
 
 import { TheaterBox } from "@/features/theater/components/theater-box";
 import { useDirectPlayer, type TextTrackSource } from "@/features/theater/use-direct-player";
-import { __setPipSupportOverride, type PipSupport } from "@/features/theater/use-picture-in-picture";
+import {
+  __setPipSupportOverride,
+  type PipSupport,
+} from "@/features/theater/use-picture-in-picture";
 
 export const Route = createFileRoute("/h12-verify")({ component: Harness });
 

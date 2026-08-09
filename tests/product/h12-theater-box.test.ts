@@ -22,11 +22,7 @@ afterEach(() => {
   __setPipSupportOverride(null);
 });
 
-function environment(options: {
-  documentPip?: boolean;
-  elementPip?: boolean;
-  headless?: boolean;
-}) {
+function environment(options: { documentPip?: boolean; elementPip?: boolean; headless?: boolean }) {
   if (options.headless) {
     globals.window = undefined;
     globals.document = undefined;

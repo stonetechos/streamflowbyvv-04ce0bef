@@ -32,7 +32,6 @@ export interface TextTrackSource {
   readonly default?: boolean;
 }
 
-
 export interface DirectPlayerState {
   readonly positionMs: number;
   readonly durationMs: number | null;
@@ -78,7 +77,6 @@ export interface UseDirectPlayerInput {
   readonly textTracks?: readonly TextTrackSource[];
   onPhase?(phase: PlayerEventName, positionMs: number): void;
 }
-
 
 const INITIAL_STATE: DirectPlayerState = {
   positionMs: 0,
@@ -160,7 +158,6 @@ export function useDirectPlayer({
     video.textTracks?.addEventListener?.("removetrack", readTracks);
     readTracks();
 
-
     const sync = () => {
       const buffered =
         video.buffered.length > 0 ? video.buffered.end(video.buffered.length - 1) * 1000 : 0;
@@ -241,8 +238,12 @@ export function useDirectPlayer({
     };
     // The track list is part of the source: a different list is a different element.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, textTracks.map((track) => `${track.kind ?? "subtitles"}:${track.srclang}:${track.src}`).join("|")]);
-
+  }, [
+    url,
+    textTracks
+      .map((track) => `${track.kind ?? "subtitles"}:${track.srclang}:${track.src}`)
+      .join("|"),
+  ]);
 
   // Legacy attach point: when a plain container is supplied, host lands in it.
   useEffect(() => {
