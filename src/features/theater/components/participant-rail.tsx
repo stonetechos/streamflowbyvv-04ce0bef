@@ -7,7 +7,7 @@
  * because no voice telemetry exists to support that claim.
  */
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
-import type { ParticipantRuntime, ReadinessSummary } from "@/domain";
+import type { ParticipantRuntime, PresenceFreshness, ReadinessSummary } from "@/domain";
 import { useTranslation } from "@/foundation/localization";
 
 export interface ParticipantRailProps {
@@ -15,6 +15,18 @@ export interface ParticipantRailProps {
   readonly readiness: ReadinessSummary;
   /** Readiness is only meaningful when the room coordinates manually. */
   readonly showReadiness: boolean;
+  /**
+   * Phase A — observed per-person facts. Readiness is a person's own tap,
+   * "launched" is their own announcement, freshness is presence. Nothing here
+   * is inferred from a provider player, because none can be read.
+   */
+  readonly facts?: {
+    readonly readyProfileIds: ReadonlySet<string>;
+    readonly launchedProfileIds: ReadonlySet<string>;
+    readonly freshnessByProfileId: ReadonlyMap<string, PresenceFreshness>;
+    /** True when the room is coordinated by humans, not by the app. */
+    readonly isManual: boolean;
+  } | null;
   /**
    * Sprint H6 — moderation affordances, rendered only for a seat that may act.
    * Voice and mute state come from observation, never from inference.
@@ -31,6 +43,7 @@ export interface ParticipantRailProps {
   /** Profile ids the voice transport reports as connected. */
   readonly voiceProfileIds?: ReadonlySet<string>;
 }
+
 
 const STATE_KEY: Record<ParticipantRuntime["state"], string> = {
   joined: "room.participant.joined",
