@@ -760,20 +760,8 @@ export function Theater({ roomId }: TheaterProps) {
             />
           ) : null}
 
-          <WatchStage
-            source={source.source}
-            capability={capability}
-            containerRef={player.containerRef}
-            stageRef={stageRef}
-            hasFailed={player.hasFailed}
-            isReady={player.isReady}
-            isHost={isHost}
-            phase={phase}
-            title={source.label}
-            countdownSeconds={countdownSeconds}
-            onChooseContent={chooseContent}
-            onOpenProvider={openProvider}
-          />
+
+
 
           {stageView.showsMediaCard ? (
             <MediaCard
