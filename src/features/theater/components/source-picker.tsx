@@ -47,6 +47,8 @@ const PLACEHOLDER: Readonly<Record<string, string>> = {
   paramount_plus: "https://www.paramountplus.com/movies/video/abcdef",
   crunchyroll: "https://www.crunchyroll.com/series/ABCDEF",
   google_drive: "https://drive.google.com/file/d/abcdef/view",
+  youtube: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  local: "The Grand Budapest Hotel.mp4",
   direct: "https://example.com/clip.mp4",
 };
 
