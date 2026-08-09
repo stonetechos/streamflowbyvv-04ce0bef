@@ -74,8 +74,11 @@ export interface DirectPlayerHandle {
 
 export interface UseDirectPlayerInput {
   readonly url: string | null;
+  /** Sidecar WebVTT files the source publishes. Empty means no captions exist. */
+  readonly textTracks?: readonly TextTrackSource[];
   onPhase?(phase: PlayerEventName, positionMs: number): void;
 }
+
 
 const INITIAL_STATE: DirectPlayerState = {
   positionMs: 0,
