@@ -134,9 +134,7 @@ export function PlayerControls({
           className={ICON_BUTTON}
           onClick={onTogglePlay}
           disabled={!canControlTransport}
-          aria-label={
-            state.isPaused ? t("theater.transport.play") : t("theater.transport.pause")
-          }
+          aria-label={state.isPaused ? t("theater.transport.play") : t("theater.transport.pause")}
           data-sf-player-action={state.isPaused ? "play" : "pause"}
         >
           {state.isPaused ? <Play className="size-5" /> : <Pause className="size-5" />}

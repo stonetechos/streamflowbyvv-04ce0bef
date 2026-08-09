@@ -24,8 +24,10 @@ interface DocumentPipApi {
 
 function documentPip(): DocumentPipApi | null {
   if (typeof window === "undefined") return null;
-  return (window as unknown as { documentPictureInPicture?: DocumentPipApi })
-    .documentPictureInPicture ?? null;
+  return (
+    (window as unknown as { documentPictureInPicture?: DocumentPipApi }).documentPictureInPicture ??
+    null
+  );
 }
 
 export function detectPipSupport(): PipSupport {
