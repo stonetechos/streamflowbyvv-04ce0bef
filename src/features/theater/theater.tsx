@@ -7,6 +7,7 @@
  * dressed up as a controlled one (ADR-014).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import {
