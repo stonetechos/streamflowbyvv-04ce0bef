@@ -163,6 +163,7 @@ export function WatchStage({
         data-sf-stage-role={view.role}
         data-sf-stage-provider={capability.providerId}
         data-sf-stage-launched={hasLaunched ? "true" : "false"}
+        data-sf-stage-host-launched={hostLaunched ? "true" : "false"}
       >
         <div
           aria-hidden="true"
@@ -173,6 +174,17 @@ export function WatchStage({
           <p className="text-balance text-lg font-semibold sm:text-2xl" data-sf-stage-title>
             {title ?? capability.displayName}
           </p>
+          {/* A guest must be able to see, at a glance, that the host is already
+              in front of the service — not infer it from a status sentence. */}
+          {hostLaunched && !hasLaunched ? (
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium"
+              data-sf-stage-host-badge
+            >
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-primary" />
+              {t("theater.stage.host_live", { provider: capability.displayName })}
+            </span>
+          ) : null}
           {countdownSeconds !== null ? (
             <p
               className="text-4xl font-semibold tabular-nums sm:text-5xl"
@@ -188,11 +200,8 @@ export function WatchStage({
           <p className="text-xs text-muted-foreground">
             {t("theater.stage.external_title", { provider: capability.displayName })}
           </p>
-          <ul className="hidden space-y-1 text-xs text-muted-foreground sm:block">
-            {capability.limitations.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
+          {/* Capability limits are part of the room, on every screen size. */}
+          <CapabilityNote capability={capability} variant="compact" />
           {source?.url || onOpenProvider ? (
             <ActionButton
               tone={hasLaunched ? "secondary" : "primary"}
