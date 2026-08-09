@@ -640,7 +640,32 @@ export function Theater({ roomId }: TheaterProps) {
   ]);
 
 
+
+  // A host action is a statement broadcast to the room, never a device command.
+  const declare = useCallback(
+    (action: RoomConsoleAction) => {
+      switch (action) {
+        case "declare-start":
+          chat.sendCoordination("provider-launched", t("room.manual.sent.provider-launched"));
+          break;
+        case "declare-pause":
+          chat.sendCoordination("pause-request", t("room.manual.sent.pause-request"));
+          break;
+        case "declare-resume":
+          chat.sendCoordination("resume-request", t("room.manual.sent.resume-request"));
+          break;
+        case "restart-countdown":
+          countdown.start();
+          break;
+        default:
+          break;
+      }
+    },
+    [chat, countdown, t],
+  );
+
   // The host's stage CTA is the entry point into the app/provider picker.
+
   const chooseContent = useCallback(() => {
     setIsPicking(true);
     // The picker sits directly under the stage, so the room never scrolls into
