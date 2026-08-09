@@ -219,6 +219,8 @@ export function useDirectPlayer({
     video.addEventListener("durationchange", sync);
 
     return () => {
+      video.textTracks?.removeEventListener?.("addtrack", readTracks);
+      video.textTracks?.removeEventListener?.("removetrack", readTracks);
       video.removeEventListener("loadedmetadata", onLoaded);
       video.removeEventListener("playing", onPlaying);
       video.removeEventListener("pause", onPause);
@@ -237,7 +239,10 @@ export function useDirectPlayer({
       host.replaceChildren();
       elementRef.current = null;
     };
-  }, [url]);
+    // The track list is part of the source: a different list is a different element.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url, textTracks.map((track) => `${track.kind ?? "subtitles"}:${track.srclang}:${track.src}`).join("|")]);
+
 
   // Legacy attach point: when a plain container is supplied, host lands in it.
   useEffect(() => {
