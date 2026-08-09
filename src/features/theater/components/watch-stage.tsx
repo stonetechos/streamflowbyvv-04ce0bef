@@ -195,15 +195,14 @@ export function WatchStage({
           </ul>
           {source?.url || onOpenProvider ? (
             <ActionButton
-              tone="secondary"
-              size="md"
+              tone={hasLaunched ? "secondary" : "primary"}
+              size="lg"
               onClick={onOpenProvider}
               data-sf-stage-open-provider={capability.providerId}
+              data-sf-stage-launch={view.launchKey}
               className="w-full sm:w-auto"
             >
-              {t(hasLaunched ? "theater.stage.reopen_provider" : "theater.stage.open_provider", {
-                provider: capability.displayName,
-              })}
+              {t(view.launchKey, { provider: capability.displayName })}
             </ActionButton>
           ) : null}
         </div>
