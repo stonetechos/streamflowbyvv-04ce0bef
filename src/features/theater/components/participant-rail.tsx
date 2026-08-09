@@ -55,7 +55,34 @@ const STATE_KEY: Record<ParticipantRuntime["state"], string> = {
   left: "room.participant.left",
 };
 
+/** A small, uniform status pill. Local to the rail: it states, never infers. */
+function Badge({
+  tone,
+  testId,
+  children,
+}: {
+  readonly tone: "positive" | "neutral" | "warning";
+  readonly testId: string;
+  readonly children: React.ReactNode;
+}) {
+  const toneClass =
+    tone === "positive"
+      ? "border-primary/40 bg-primary/10"
+      : tone === "warning"
+        ? "border-destructive/40 bg-destructive/10"
+        : "border-border/60 bg-muted/50";
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[0.68rem] font-medium ${toneClass}`}
+      data-sf-participant-badge={testId}
+    >
+      {children}
+    </span>
+  );
+}
+
 const FRESHNESS_KEY: Record<PresenceFreshness, string> = {
+
   live: "room.participant.badge.live",
   stale: "room.participant.badge.stale",
   offline: "room.participant.badge.offline",
