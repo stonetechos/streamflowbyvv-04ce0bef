@@ -360,6 +360,16 @@ export function Theater({ roomId }: TheaterProps) {
     [source, isHost],
   );
 
+  // A room created from a service tile already knows its service. The host
+  // never re-picks it from a grid: the session opens on that service's stage.
+  useEffect(() => {
+    if (!isHost || !scope.isScoped || !scope.providerId) return;
+    if (source.source || source.isSaving) return;
+    const browseUrl = providerBrowseUrl(scope.providerId);
+    if (browseUrl) source.save(browseUrl, null);
+  }, [isHost, scope.isScoped, scope.providerId, source]);
+
+
   const nameFor = useCallback((id: string) => names.get(id) ?? memberLabel(id), [names]);
 
   const presentMembers: readonly MemberView[] = useMemo(
