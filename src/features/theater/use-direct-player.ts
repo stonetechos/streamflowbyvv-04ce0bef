@@ -1,10 +1,16 @@
 /**
- * Direct video player hook — Sprint H3.
+ * Direct video player hook — Sprint H3, extended in H12 for the theatre box.
  *
  * The only player StreamFlow drives. It plays a directly reachable video file
  * the host pasted, on the viewer's own device, through the browser's own
- * `<video>` element. It exposes the four verbs the sync loop needs: play,
- * pause, seek, read. Nothing here decides *when* to use them.
+ * `<video>` element. It exposes the verbs the sync loop and the in-app theatre
+ * controls need: play, pause, seek, rate, volume, mute, captions, read.
+ *
+ * The media element lives inside a detached host `<div>` owned by this hook,
+ * never inside a React-rendered node. That is what makes Picture-in-Picture
+ * honest: the same single element is *moved* between the theatre box and the
+ * PiP window, so there is exactly one playback instance and nothing to keep in
+ * sync by hand.
  *
  * No premium service is embedded, driven, or proxied (ADR-014).
  */
@@ -12,21 +18,47 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 type PlayerEventName = "playing" | "paused" | "ended" | "buffering" | "ready" | "error";
 
+export interface CaptionTrack {
+  readonly id: string;
+  readonly label: string;
+  readonly language: string;
+}
+
+export interface DirectPlayerState {
+  readonly positionMs: number;
+  readonly durationMs: number | null;
+  readonly bufferedMs: number;
+  readonly isPaused: boolean;
+  readonly isEnded: boolean;
+  readonly isBuffering: boolean;
+  readonly isMuted: boolean;
+  /** 0–100, per device. Never shared with the room. */
+  readonly volume: number;
+  readonly rate: number;
+  readonly captionsTrackId: string | null;
+}
+
 export interface DirectPlayerHandle {
-  /** Attach point for the media element. */
+  /** Attach point for the media element (legacy prop shape). */
   readonly containerRef: React.RefObject<HTMLDivElement | null>;
   readonly isReady: boolean;
   readonly hasFailed: boolean;
   /** Last phase the element reported, for the HUD. */
   readonly phase: PlayerEventName | null;
+  readonly state: DirectPlayerState;
+  readonly captionTracks: readonly CaptionTrack[];
+  /** Moves the single media element into `slot`. Null detaches nothing. */
+  mountTo(slot: HTMLElement | null): void;
+  element(): HTMLVideoElement | null;
   play(): void;
   pause(): void;
   seekTo(positionMs: number): void;
   setRate(rate: number): void;
   /** Per-device only. Volume is never shared with the room. */
   setVolume(volume: number): void;
-  positionMs(): number | null;
-  durationMs(): number | null;
+  setMuted(muted: boolean): void;
+  /** Passing null turns captions off. */
+  setCaptionsTrack(trackId: string | null): void;
 }
 
 export interface UseDirectPlayerInput {
@@ -34,8 +66,22 @@ export interface UseDirectPlayerInput {
   onPhase?(phase: PlayerEventName, positionMs: number): void;
 }
 
+const INITIAL_STATE: DirectPlayerState = {
+  positionMs: 0,
+  durationMs: null,
+  bufferedMs: 0,
+  isPaused: true,
+  isEnded: false,
+  isBuffering: false,
+  isMuted: false,
+  volume: 80,
+  rate: 1,
+  captionsTrackId: null,
+};
+
 export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectPlayerHandle {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const hostRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLVideoElement | null>(null);
   const phaseHandler = useRef(onPhase);
   phaseHandler.current = onPhase;
@@ -43,29 +89,86 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
   const [isReady, setIsReady] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
   const [phase, setPhase] = useState<PlayerEventName | null>(null);
+  const [state, setState] = useState<DirectPlayerState>(INITIAL_STATE);
+  const [captionTracks, setCaptionTracks] = useState<readonly CaptionTrack[]>([]);
+
+  if (!hostRef.current && typeof document !== "undefined") {
+    const host = document.createElement("div");
+    host.setAttribute("data-sf-player-host", "");
+    host.style.position = "absolute";
+    host.style.inset = "0";
+    hostRef.current = host;
+  }
+
+  const mountTo = useCallback((slot: HTMLElement | null) => {
+    const host = hostRef.current;
+    if (!slot || !host || host.parentElement === slot) return;
+    slot.appendChild(host);
+  }, []);
 
   useEffect(() => {
-    const host = containerRef.current;
+    const host = hostRef.current;
     if (!url || !host) return;
 
     setIsReady(false);
     setHasFailed(false);
+    setState(INITIAL_STATE);
+    setCaptionTracks([]);
 
     const video = document.createElement("video");
     video.src = url;
     video.playsInline = true;
     video.preload = "auto";
-    video.className = "h-full w-full bg-black";
+    video.crossOrigin = "anonymous";
+    video.setAttribute("data-sf-player", "video");
+    video.className = "h-full w-full bg-black object-contain";
     host.replaceChildren(video);
     elementRef.current = video;
 
+    const readTracks = () => {
+      const list = Array.from(video.textTracks ?? []).filter(
+        (track) => track.kind === "subtitles" || track.kind === "captions",
+      );
+      setCaptionTracks(
+        list.map((track, index) => ({
+          id: track.id || `track-${index}`,
+          label: track.label || track.language || `Track ${index + 1}`,
+          language: track.language,
+        })),
+      );
+    };
+
+    const sync = () => {
+      const buffered =
+        video.buffered.length > 0 ? video.buffered.end(video.buffered.length - 1) * 1000 : 0;
+      const active = Array.from(video.textTracks ?? []).find((track) => track.mode === "showing");
+      setState((current) => ({
+        ...current,
+        positionMs: Math.round((video.currentTime || 0) * 1000),
+        durationMs:
+          Number.isFinite(video.duration) && video.duration > 0
+            ? Math.round(video.duration * 1000)
+            : null,
+        bufferedMs: Math.round(buffered),
+        isPaused: video.paused,
+        isEnded: video.ended,
+        isMuted: video.muted,
+        volume: Math.round(video.volume * 100),
+        rate: video.playbackRate,
+        captionsTrackId: active ? active.id || active.label : null,
+      }));
+    };
+
     const report = (next: PlayerEventName) => {
       setPhase(next);
+      setState((current) => ({ ...current, isBuffering: next === "buffering" }));
+      sync();
       phaseHandler.current?.(next, Math.round((video.currentTime || 0) * 1000));
     };
 
     const onLoaded = () => {
       setIsReady(true);
+      readTracks();
       report("ready");
     };
     const onPlaying = () => report("playing");
@@ -83,6 +186,12 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
     video.addEventListener("ended", onEnded);
     video.addEventListener("waiting", onWaiting);
     video.addEventListener("error", onError);
+    video.addEventListener("timeupdate", sync);
+    video.addEventListener("progress", sync);
+    video.addEventListener("volumechange", sync);
+    video.addEventListener("ratechange", sync);
+    video.addEventListener("seeked", sync);
+    video.addEventListener("durationchange", sync);
 
     return () => {
       video.removeEventListener("loadedmetadata", onLoaded);
@@ -91,6 +200,12 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
       video.removeEventListener("ended", onEnded);
       video.removeEventListener("waiting", onWaiting);
       video.removeEventListener("error", onError);
+      video.removeEventListener("timeupdate", sync);
+      video.removeEventListener("progress", sync);
+      video.removeEventListener("volumechange", sync);
+      video.removeEventListener("ratechange", sync);
+      video.removeEventListener("seeked", sync);
+      video.removeEventListener("durationchange", sync);
       video.pause();
       video.removeAttribute("src");
       video.load();
@@ -98,6 +213,11 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
       elementRef.current = null;
     };
   }, [url]);
+
+  // Legacy attach point: when a plain container is supplied, host lands in it.
+  useEffect(() => {
+    if (containerRef.current) mountTo(containerRef.current);
+  });
 
   const play = useCallback(() => {
     void elementRef.current?.play().catch(() => undefined);
@@ -113,7 +233,22 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
   }, []);
   const setVolume = useCallback((volume: number) => {
     const video = elementRef.current;
-    if (video) video.volume = Math.max(0, Math.min(100, volume)) / 100;
+    if (!video) return;
+    video.volume = Math.max(0, Math.min(100, volume)) / 100;
+    if (volume > 0 && video.muted) video.muted = false;
+  }, []);
+  const setMuted = useCallback((muted: boolean) => {
+    const video = elementRef.current;
+    if (video) video.muted = muted;
+  }, []);
+  const setCaptionsTrack = useCallback((trackId: string | null) => {
+    const video = elementRef.current;
+    if (!video) return;
+    Array.from(video.textTracks ?? []).forEach((track, index) => {
+      const id = track.id || `track-${index}`;
+      track.mode = trackId !== null && id === trackId ? "showing" : "disabled";
+    });
+    setState((current) => ({ ...current, captionsTrackId: trackId }));
   }, []);
   const positionMs = useCallback(() => {
     const video = elementRef.current;
@@ -131,12 +266,21 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
     isReady,
     hasFailed,
     phase,
+    state,
+    captionTracks,
+    mountTo,
+    element: () => elementRef.current,
     play,
     pause,
     seekTo,
     setRate,
     setVolume,
+    setMuted,
+    setCaptionsTrack,
     positionMs,
     durationMs,
+  } as DirectPlayerHandle & {
+    positionMs(): number | null;
+    durationMs(): number | null;
   };
 }
