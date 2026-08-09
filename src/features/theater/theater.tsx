@@ -369,7 +369,6 @@ export function Theater({ roomId }: TheaterProps) {
     if (browseUrl) source.save(browseUrl, null);
   }, [isHost, scope.isScoped, scope.providerId, source]);
 
-
   const nameFor = useCallback((id: string) => names.get(id) ?? memberLabel(id), [names]);
 
   const presentMembers: readonly MemberView[] = useMemo(
