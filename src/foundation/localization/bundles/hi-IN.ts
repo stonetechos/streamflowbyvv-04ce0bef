@@ -488,8 +488,13 @@ export const hiINBundle: LocaleBundle = {
     "theater.stage.status.paused": "रुका हुआ है।",
     "theater.stage.status.ended": "यह सेशन समाप्त हो गया।",
     "theater.stage.status.closed": "यह रूम बंद है।",
+    "theater.stage.status.preparing": "स्टेज तैयार हो रहा है…",
+    "theater.stage.status.launched":
+      "आपके ब्राउज़र में खुल गया — काउंटडाउन पर यहीं लौटकर प्ले करें।",
     "theater.stage.external_title": "StreamFlow आपके लिए {provider} नहीं चला सकता",
     "theater.stage.open_provider": "{provider} नए टैब में खोलें",
+    "theater.stage.reopen_provider": "{provider} फिर से खोलें",
+    "theater.stage.change_cta": "हम क्या देख रहे हैं, बदलें",
     "theater.stage.blocked": "यह वीडियो StreamFlow के अंदर नहीं चल सकता। होस्ट कोई और चुन सकता है।",
     "theater.transport.play": "चलाएँ",
     "theater.transport.pause": "रोकें",
@@ -511,6 +516,9 @@ export const hiINBundle: LocaleBundle = {
     "theater.chat.error.too_long": "यह संदेश बहुत लंबा है।",
     "theater.chat.error.failed": "संदेश नहीं भेजा जा सका। फिर कोशिश करें।",
     "theater.provider.title": "हम कहाँ देख रहे हैं?",
+    "theater.provider.scoped_title": "इस रूम की सेवा",
+    "theater.provider.scoped_note":
+      "यह रूम {provider} के लिए बना था, इसलिए यह {provider} पर ही रहेगा।",
     "theater.provider.host_chooses": "सेवा होस्ट चुनता है।",
     "theater.capability.automatic": "यहीं सिंक में चलता है",
     "theater.capability.assisted": "सहायक हैंडऑफ़",
@@ -796,7 +804,7 @@ export const hiINBundle: LocaleBundle = {
     "home.services.status.unavailable": "अनुपलब्ध",
     "home.services.status.coming_soon":
       "\u091c\u0932\u094d\u0926 \u0906 \u0930\u0939\u093e \u0939\u0948",
-    "home.services.room_name": "{service} \u0928\u093e\u0907\u091f",
+    "home.services.room_name": "{service} \u092a\u0930 \u0935\u0949\u091a \u092a\u093e\u0930\u094d\u091f\u0940",
     "home.services.footnote":
       "StreamFlow \u0915\u0902\u091f\u0947\u0902\u091f \u0928\u0939\u0940\u0902 \u091a\u0932\u093e\u0924\u093e \u2014 \u0906\u092a \u0905\u092a\u0928\u0947 \u0910\u092a \u092e\u0947\u0902 \u0926\u0947\u0916\u0924\u0947 \u0939\u0948\u0902\u0964",
     "home.live.badge": "\u0932\u093e\u0907\u0935",
