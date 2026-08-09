@@ -1,51 +1,39 @@
-# CI Failure Review — "Missing Lovable API key"
+# Content-Launch Flow — Root Cause Audit (13 bugs)
 
-Review only. No files, secrets, or workflows were changed.
+Analysis only. No code was changed. Every "current state" claim below is backed by a file read; three bugs could **not** be confirmed from the code and are marked as such rather than guessed.
 
-## Missing variable
+## Findings table
 
-- `LOVABLE_API_KEY` — the only variable whose absence aborts application startup.
+| Bug | Root cause | File(s) | Line(s) | Fix strategy | Priority |
+|---|---|---|---|---|---|
+| 1. Auth flash | `AppNav` branches on `isAuthenticated` only. Before the async session resolves, status is `unknown`, so the signed-out branch renders. `AppNav` sits in the shared header, outside `RequireAuth`, so nothing gates it. | `src/features/navigation/components/app-nav.tsx`; mounted at `src/app-shell/app-layout.tsx` | 34; 36 | Gate on `auth.isSettled` — render a neutral placeholder while unsettled, sign-in links only when settled + unauthenticated. Do NOT touch `RequireAuth` or the auth reducer; both are correct. | P0 |
+| 2. Ready resets on reload | **Unconfirmed.** Readiness is written to Supabase member metadata and re-read on mount — not in-memory. Likely the room repository is unbound (no data connection) in the affected environment, so nothing persists. | `src/domain/rooms/room-read-model.ts`; `src/infrastructure/supabase/rooms/index.ts`; `src/features/waiting-room/use-room-ready.ts` | 109–170; 51–52; 70, 109–136 | Verify first: check `DataConnection.isAvailable()` and whether the ready write actually reaches the DB at runtime. Fix only after the failing layer is identified. | P1 |
+| 3. Background-pause banner sticks | **Unconfirmed.** Visibility is read live from `document.visibilityState` on mount and `suspended` is returned only when currently hidden. Nothing is persisted to localStorage. | `src/features/theater/use-connection-recovery.ts`; `src/domain/watch/room-governance.ts`; `.../components/connection-banner.tsx` | 31–33, 41–42; 242–255; 16 | Reproduce in the browser and log the live `phase` + `isDocumentVisible`. Suspect a stale/memoized `phase` prop from `theater.tsx`, not persistence. | P1 |
+| 4. "Rooms" nav → /invites | Label/destination mismatch: nav entry id `invites` points at `/invites`, but its string was renamed to "Rooms". **No rooms-list route exists.** | `src/features/navigation/nav-destinations.tsx`; `src/foundation/localization/bundles/en.ts` | 91–97; 830 | Either rename the label back to "Invites" (1-line, no new route), or add a real rooms-list route and repoint. Product decision needed — see question below. | P1 |
+| 5. "Recent rooms" empty | `recentRooms` is hard-wired to **closed** rooms only. A still-open room that has gone quiet is classified `dormant` and dropped from Home entirely — it appears in neither `liveRooms` nor `recentRooms`. Thresholds are 5 min (with media) / 2 min (solo, no media). | `src/domain/rooms/home-read-model.ts`; `src/domain/rooms/room-activity.ts` | 148–155, 178–182; 15, 18, 38–56 | Decide what "Recent" means, then change the one derivation line. Shares a root cause with the dormancy rules tightened in H11 — do NOT loosen dormancy globally; fix the Home bucket instead. | P1 |
+| 6. Back does nothing from theatre | **Partially confirmed.** No history manipulation, `useBlocker`, or redirect loop exists in `src/features/theater/**`. The one real interceptor is fullscreen: the browser consumes the first Back press to exit fullscreen. | `src/features/theater/components/theater-box.tsx`; `theater.tsx` | 109–117; 337–340, 937 | If a *second* Back press works, this is native browser behaviour — add an explicit "Leave room" affordance rather than fighting it. If Back fails repeatedly, needs live reproduction; the cause is not in the theater feature. | P2 |
+| 7. Rejoin → waiting room | Link target is a hardcoded string; the card never reads room phase/activity to choose a destination. | `src/features/home/components/continue-watching-card.tsx` | 64–70 | Route on phase: `/theater/$roomId` when the room is actively watching, `/rooms/$roomId` otherwise. Do NOT change `HomeReadModel`. | P0 |
+| 8. Popup false-positive | `window.open(..., "noopener")` legitimately returns `null` on success under noopener/COOP. Code treats `null` as failure and sets `provider_launch_failed`. | `src/features/theater/theater.tsx` | 477–483 | Use the existing vetted adapter `browser-provider-launcher.ts` (lines 46–57), which correctly ignores the return value. Same pattern also at `source-picker.tsx:81–87` (harmless there). | P0 |
+| 9. Literal `{service}` | `t()` supports interpolation, but this call passes no params — unlike the sibling title call two lines above it. | `src/features/home/components/service-shelf.tsx`; `en.ts` | 305 (compare 303); 456 | Pass `{ service: pendingConnect?.name ?? "" }`. One-line fix; do not change the localization service. | P0 |
+| 10. Blank title accepted | Submit guard checks only the URL field (`value.trim()`); `title` is passed through unvalidated. | `src/features/theater/components/source-picker.tsx` | 89–92, 151–158 | Add `title.trim()` to the disabled predicate and the submit guard. | P1 |
+| 11. Default link is /browse | Netflix's catalog entry registers the generic browse page as its canonical URL; every fallback path resolves to it. | `src/domain/watch/watch-source.ts`; consumed at `theater.tsx:478`, `source-picker.tsx:79,83` | 138, 306 | Expected behaviour for launch-only providers (ADR-014 — no title deep-linking). Treat as a copy/UX issue: label it "Open Netflix" rather than presenting it as selected content. | P2 |
+| 12. "Netflix night" | **Not found in the codebase.** No time-of-day logic exists anywhere in `src/`. The generated default is "Watch party on {service}". The only day-of-week string, "Friday night film", is an unused placeholder with no call site. | `en.ts:868` (dead), `en.ts:847` + `service-shelf.tsx:90` (actual) | — | Likely a stale room name already saved in the database from an earlier build. Needs a DB check, not a code fix. | P2 |
+| 13. Progress tracker premature | Steps are derived from proxy facts, not real events. "Friend invited" fires on `guestCount > 0` (presence, not invites — no invite-sent field exists in `ActivationInput`). "Content selected" fires on `hasContent`, which any URL satisfies. | `src/domain/watch/room-activation.ts`; `.../components/activation-panel.tsx` | 52–108; 77 | Add an explicit invite-sent fact to `ActivationInput`; tighten `hasContent` to require a non-empty title (depends on bug 10). | P1 |
 
-## Where it is read
+## Shared root causes
 
-| Variable | Source file | Read timing | Present? |
-| --- | --- | --- | --- |
-| `LOVABLE_API_KEY` | `src/routes/lovable/email/auth/webhook.ts:20` (`process.env["LOVABLE_API_KEY"]!` passed to `createAuthEmailHandler` at **module scope**) | Import time — throws before any request | Absent in repo, absent in GitHub Actions |
-| `LOVABLE_API_KEY` | `src/routes/lovable/email/auth/preview.ts:69` | Inside handler — harmless in CI | Absent in CI |
-| `LOVABLE_SEND_URL` | `src/routes/lovable/email/auth/webhook.ts:23` | Module scope, optional (`undefined` allowed) | Absent, not required |
-| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | `src/integrations/supabase/auth-middleware.ts`, `src/config/server-env.server.ts` | Inside handlers, optional in schema | Present in `.env` (tracked) |
-| `SUPABASE_SERVICE_ROLE_KEY` | `src/integrations/supabase/client.server.ts`, `server-client.server.ts` | Inside handlers | Absent — not needed for boot |
-| `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID` | `.env`, `src/config/env.ts` (all optional with defaults) | Build/import time | Present in tracked `.env` |
-| `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | `src/config/server-env.server.ts` | Lazy, optional | Absent — not needed for boot |
+- **Bugs 10 + 13 + 11** are one cluster: there is no single definition of "content is selected." Blank titles pass validation, a generic browse URL counts as content, and the tracker keys off that same loose boolean. Fix bug 10 first; 13's step 3 follows from it.
+- **Bugs 8 + 9** are both in the provider-handoff surface and are one-line-class fixes with a correct implementation already present elsewhere in the repo (`browser-provider-launcher.ts`, and the sibling `t()` call).
+- **Bugs 5 + 7** both stem from Home's room-phase model: `HomeReadModel` decides bucketing, but the card decides routing independently, with no shared notion of which room state means "walk back into the theatre."
+- **Bugs 2 + 3 are NOT a shared persistence bug.** Neither readiness nor the pause banner routes through `local-preferences.ts` (keys: `theme`, `last-email`, `last-room`, `onboarding`, `home-apps`). The "localStorage persistence" theory is not supported by the code.
 
-## Root cause
+## Recommended fix order
 
-`createAuthEmailHandler` (`node_modules/@lovable.dev/email-js/dist/index.js:192`) throws `Missing Lovable API key` immediately when `apiKey` is falsy. The call sits at module top level in the webhook route, so the whole SSR route graph fails to evaluate as soon as the app boots.
+1. **P0, safe and isolated:** 9 (interpolation), 8 (launcher adapter), 7 (rejoin target), 1 (nav gating).
+2. **P1, needs a small decision:** 10 → 13, then 5 and 4.
+3. **P1, needs live reproduction before any edit:** 2 and 3.
+4. **P2, likely not code:** 6 (native fullscreen), 11 (ADR-014 constraint), 12 (stale DB row).
 
-Expected source of the value: **Node `process.env` on the server** (`vite.config.ts` also copies non-`VITE_` `.env` values into `process.env`). It is **not** a Vite client variable.
+## Out of scope
 
-Where it exists today:
-- Lovable project secrets — injected into preview/published runtimes only.
-- Local dev — only if the developer's untracked env provides it; the tracked `.env` does **not** contain it.
-- Repository configuration — **absent** (`.env` has 6 Supabase vars only).
-- GitHub Actions — **absent**; no workflow sets `env:` or references `secrets.LOVABLE_API_KEY`.
-
-Only the workflow that boots the app fails: `.github/workflows/playwright.yml`, whose Playwright `webServer` runs `bun run dev`. `format`, `lint`, `typecheck`, `architecture`, `certification-guard` and `docs-validate` never evaluate the route.
-
-## Required env vars for startup
-
-Hard requirement: `LOVABLE_API_KEY` (non-empty string).
-Everything else is lazy/optional and does not block boot.
-
-## Smallest action to make GitHub Actions boot
-
-Add a repository secret `LOVABLE_API_KEY` and expose it to the Playwright job only:
-
-```yaml
-# .github/workflows/playwright.yml -> jobs.playwright.env
-LOVABLE_API_KEY: ${{ secrets.LOVABLE_API_KEY }}
-```
-
-CI never receives a real signed webhook, so the value only needs to be non-empty for the boot guard; using the real project key is unnecessary and avoidable in CI.
-
-Not proposed here (and not done): moving the handler construction inside the request handler, which would remove the boot-time dependency entirely — that is a code change requiring its own sprint authorization.
+No changes to the Architecture Constitution, ADR-014's launch-only OTT boundary, the certification harness, the player/theatre box architecture, or dormancy semantics beyond Home's display bucket.
