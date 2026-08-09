@@ -34,6 +34,8 @@ export interface WatchStageProps {
   readonly isPreparing?: boolean;
   /** The service has been opened in this person's own browser. */
   readonly hasLaunched?: boolean;
+  /** The host has opened the service for the party — a room fact. */
+  readonly hostLaunched?: boolean;
   /** Opens the host's app/provider selection flow. */
   onChooseContent?(): void;
   /** Opens the chosen service in a new tab. Launch-only and manual services. */
@@ -53,11 +55,20 @@ export function WatchStage({
   countdownSeconds = null,
   isPreparing = false,
   hasLaunched = false,
+  hostLaunched = false,
   onChooseContent,
   onOpenProvider,
 }: WatchStageProps) {
   const { t } = useTranslation();
-  const view = deriveStageView({ source, capability, isHost, phase, isPreparing, hasLaunched });
+  const view = deriveStageView({
+    source,
+    capability,
+    isHost,
+    phase,
+    isPreparing,
+    hasLaunched,
+    hostLaunched,
+  });
 
   // One shared frame keeps every stage state the same size and weight, so a
   // change of state reads as a transition inside the room rather than a
