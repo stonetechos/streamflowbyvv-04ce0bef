@@ -1155,7 +1155,8 @@ export function Theater({ roomId }: TheaterProps) {
               onLeave={leaveRoom}
             />
           )}
-        </div>
+        </>
+
       }
       overlay={
         <>
