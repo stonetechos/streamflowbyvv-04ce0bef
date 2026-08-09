@@ -68,6 +68,7 @@ import { HostModeration } from "./components/host-moderation";
 import { VoiceRoomPanel } from "./components/voice-room-panel";
 import { ManualCoordination } from "./components/manual-coordination";
 import { ParticipantRail } from "./components/participant-rail";
+import { RoomConsole } from "./components/room-console";
 import { RoomDrawer } from "./components/room-drawer";
 import { HostTransport } from "./components/host-transport";
 import { MediaCard } from "./components/media-card";
@@ -945,7 +946,7 @@ export function Theater({ roomId }: TheaterProps) {
               readyCount={readiness.readyCount}
               launchedCount={railFacts.launchedProfileIds.size}
               countdownSeconds={countdownSeconds}
-              busy={chat.isSending}
+              busy={!chat.isAvailable}
               onAct={declare}
             />
           ) : null}
