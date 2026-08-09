@@ -523,6 +523,11 @@ export const hiINBundle: LocaleBundle = {
     "theater.player.close": "प्लेयर बंद करें",
     "theater.player.error": "यह स्रोत नहीं चला। लिंक जाँचें और दोबारा कोशिश करें।",
     "theater.player.ended": "समाप्त।",
+    "theater.local.eyebrow": "हर कोई अपनी कॉपी खोलता है",
+    "theater.local.explainer":
+      "साझा प्लेबैक में शामिल होने के लिए इस फ़ाइल की अपनी कॉपी खोलें। उसके बाद प्ले, पॉज़ और सीक सचमुच साझा होते हैं।",
+    "theater.local.pick": "मेरी कॉपी खोलें",
+    "theater.local.privacy": "आपकी फ़ाइल आपके डिवाइस पर ही रहती है। कुछ भी अपलोड या साझा नहीं होता।",
     "theater.transport.play": "चलाएँ",
     "theater.transport.pause": "रोकें",
     "theater.transport.back": "10 सेकंड पीछे",
