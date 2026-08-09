@@ -12,8 +12,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { ActionButton, Avatar, Surface } from "@/design-system/components";
 import {
   DEFAULT_READINESS_THRESHOLD,
+  classifyFreshness,
   classifyPresence,
+  deriveRoomConsole,
   deriveRoomPhase,
+
   deriveRoomScope,
   shouldPromptFeedback,
   providerBrowseUrl,
