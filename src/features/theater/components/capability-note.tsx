@@ -51,7 +51,7 @@ export function CapabilityNote({ capability, variant = "full" }: CapabilityNoteP
 
   return (
     <Surface
-      tone="muted"
+      tone="card"
       padding="md"
       className="flex flex-col gap-2"
       data-sf-capability-note="full"
