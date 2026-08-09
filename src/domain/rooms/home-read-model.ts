@@ -180,6 +180,7 @@ export function createHomeReadModel(deps: HomeReadModelDependencies): HomeReadMo
         continueRoom,
         liveRooms: live.filter((entry) => entry !== continueRoom),
         recentRooms: closed,
+        dormantRooms: dormant,
         pendingInvites,
         answeredInvites: [...answeredInvites].sort((a, b) =>
           b.invite.createdAt.localeCompare(a.invite.createdAt),
