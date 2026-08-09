@@ -839,6 +839,7 @@ export const hiINBundle: LocaleBundle = {
     "home.services.status.manual_sync": "मैन्युअल सिंक",
     "home.services.status.unverified": "बीटा",
     "home.services.status.unavailable": "अनुपलब्ध",
+    "home.services.live_now": "{service}: \u0905\u092d\u0940 \u090f\u0915 \u0935\u0949\u091a \u092a\u093e\u0930\u094d\u091f\u0940 \u091a\u0932 \u0930\u0939\u0940 \u0939\u0948",
     "home.services.status.coming_soon":
       "\u091c\u0932\u094d\u0926 \u0906 \u0930\u0939\u093e \u0939\u0948",
     "home.services.room_name":

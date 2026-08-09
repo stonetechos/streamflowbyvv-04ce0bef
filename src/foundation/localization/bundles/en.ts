@@ -847,6 +847,7 @@ export const enBundle: LocaleBundle = {
     "home.services.status.unverified": "Beta",
     "home.services.status.unavailable": "Unavailable",
     "home.services.status.coming_soon": "Coming soon",
+    "home.services.live_now": "{service}: a watch party is happening now",
     "home.services.room_name": "Watch party on {service}",
     "home.services.footnote":
       "StreamFlow never plays or re-streams content. You watch in your own app, we keep everyone in step.",
