@@ -126,3 +126,29 @@ Zero Tier A, zero Tier B. All OTT rows remain Tier C, coordinated manual sync.
   `tests/product/h11-launch-model.test.ts` (9 assertions on dormancy, scope, and
   stage launch states).
 - `tsgo --noEmit` — clean.
+
+---
+
+## 9. H11.1 addendum — limits on screen, guests, and regression coverage
+
+**Capability limits are now in the UI, not only here.** `CapabilityNote`
+(`src/features/theater/components/capability-note.tsx`) renders every claim
+straight from the capability record: a compact "cannot control" line inside the
+stage on all screen sizes, and a full can/cannot panel under the stage whenever
+a selection exists. The previous `hidden sm:block` limitation list — invisible
+on mobile — is gone.
+
+**Guest clarity.** A guest whose host has launched sees a live badge
+("Host is watching on {provider}"), the host-launched status line, and a
+**Join on {provider}** action. The stage carries `data-sf-stage-host-launched`
+for certification selectors.
+
+**Regression coverage** — `tests/product/h11-1-regression.test.ts`, 15 tests:
+
+| Failure class | Guarded by |
+| --- | --- |
+| Scoped-room leakage | every provider scopes to exactly one service; catalog aliases resolve; the room's selection beats a stale creation key; blocked services never resolve, in any case; unknown keys fall back to an open room rather than a wrong one |
+| Stale rejoin state | 6-minute solo lobby is dormant and non-resumable; 3-minute empty lobby is dormant; occupied and active rooms stay live; ended/abandoned rooms are never resumable |
+| Empty stage after launch | across host/guest × self-launched × host-launched, the stage is always `handoff` with a status and a launch action; guest reflects host launch; guest transitions to their own launched state; ended rooms stay honest; countdown reads identically for host and guest |
+
+Suite: `bun test tests/product/` — **178 pass**. `tsgo --noEmit` clean.
