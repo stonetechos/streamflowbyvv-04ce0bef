@@ -551,6 +551,11 @@ export const enBundle: LocaleBundle = {
     "theater.provider.scoped_note":
       "This room was started for {provider}, so it stays on {provider}.",
     "theater.provider.host_chooses": "The host picks the service for the room.",
+    "theater.extension.connected": "StreamFlow is driving {provider} on this device.",
+    "theater.extension.waiting": "Companion connected — start your {provider} title to hand over control.",
+    "theater.extension.no_tab": "Companion connected. Open your {provider} title in another tab.",
+    "theater.extension.missing": "Manual sync: StreamFlow can't reach your {provider} player on this device.",
+    "theater.extension.hint": "Install the StreamFlow companion extension to play, pause, and seek together.",
     "theater.capability.automatic": "Plays in sync here",
     "theater.capability.title": "What this room can do with {provider}",
     "theater.capability.can.coordinate":
