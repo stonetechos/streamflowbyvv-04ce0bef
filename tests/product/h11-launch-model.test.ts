@@ -67,9 +67,10 @@ describe("a scoped room offers one service", () => {
     expect(scope.providerId).toBe("netflix");
   });
 
-  it("never resolves a removed service", () => {
-    expect(deriveRoomScope({ scopeKey: "youtube", mediaRef: null }).isScoped).toBe(false);
+  it("never resolves a service the product doesn't carry", () => {
+    expect(deriveRoomScope({ scopeKey: "not-a-service", mediaRef: null }).isScoped).toBe(false);
   });
+
 });
 
 describe("the stage leads with starting the party", () => {
