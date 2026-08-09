@@ -482,11 +482,10 @@ export function Theater({ roomId }: TheaterProps) {
 
 
   const toggleReady = useCallback(() => {
-    setSelfReady((current) => {
-      if (!current) chat.sendCoordination("ready", t("room.manual.sent.ready"));
-      return !current;
-    });
-  }, [chat, t]);
+    const next = !selfReady;
+    if (next) chat.sendCoordination("ready", t("room.manual.sent.ready"));
+    room.setReady(next);
+  }, [chat, room, selfReady, t]);
 
   const openProvider = useCallback(() => {
     const url = source.source?.url ?? providerBrowseUrl(capabilityProviderId);
