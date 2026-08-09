@@ -10,7 +10,7 @@ import { useCallback, useState } from "react";
 import { TheaterBox } from "@/features/theater/components/theater-box";
 import { useDirectPlayer } from "@/features/theater/use-direct-player";
 
-export const Route = createFileRoute("/__h12-verify")({
+export const Route = createFileRoute("/h12-verify")({
   head: () => ({ meta: [{ title: "H12 verification harness" }, { name: "robots", content: "noindex" }] }),
   component: Harness,
 });
