@@ -16,13 +16,22 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { captionTrackId, toCaptionTracks } from "./caption-tracks";
+import type { CaptionTrack } from "./caption-track-types";
+
 type PlayerEventName = "playing" | "paused" | "ended" | "buffering" | "ready" | "error";
 
-export interface CaptionTrack {
-  readonly id: string;
+export type { CaptionTrack } from "./caption-track-types";
+
+/** A sidecar subtitle file the source publishes alongside the video. */
+export interface TextTrackSource {
+  readonly src: string;
+  readonly srclang: string;
   readonly label: string;
-  readonly language: string;
+  readonly kind?: "subtitles" | "captions";
+  readonly default?: boolean;
 }
+
 
 export interface DirectPlayerState {
   readonly positionMs: number;
