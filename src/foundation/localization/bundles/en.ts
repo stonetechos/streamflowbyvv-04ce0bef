@@ -492,6 +492,11 @@ export const enBundle: LocaleBundle = {
     "theater.stage.external_title": "StreamFlow can't play {provider} for you",
     "theater.stage.open_provider": "Open {provider} in a new tab",
     "theater.stage.reopen_provider": "Reopen {provider}",
+    "theater.stage.start_party": "Start watch party on {provider}",
+    "theater.stage.join_provider": "Join on {provider}",
+    "theater.stage.status.host_launched":
+      "The host has opened it — open it here too and play on the countdown.",
+    "theater.source.advanced": "Have a direct link? Add it (optional)",
     "theater.stage.change_cta": "Change what we're watching",
     "theater.stage.blocked":
       "This video can't be played inside StreamFlow. The host can pick another one.",
