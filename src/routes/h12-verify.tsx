@@ -16,7 +16,7 @@ export const Route = createFileRoute("/h12-verify")({
 });
 
 function Harness() {
-  const [url, setUrl] = useState<string | null>("/__h12-verify.mp4");
+  const [url, setUrl] = useState<string | null>("/__h12-verify.webm");
   const player = useDirectPlayer({ url });
 
   const togglePlay = useCallback(() => {
@@ -38,13 +38,13 @@ function Harness() {
           player.seekTo(0);
           player.play();
         }}
-        onRetry={() => setUrl("/__h12-verify.mp4")}
+        onRetry={() => setUrl("/__h12-verify.webm")}
       />
       <div className="flex gap-2">
-        <button type="button" data-h12="break-source" onClick={() => setUrl("/__h12-missing.mp4")}>
+        <button type="button" data-h12="break-source" onClick={() => setUrl("/__h12-missing.webm")}>
           Break source
         </button>
-        <button type="button" data-h12="fix-source" onClick={() => setUrl("/__h12-verify.mp4")}>
+        <button type="button" data-h12="fix-source" onClick={() => setUrl("/__h12-verify.webm")}>
           Fix source
         </button>
       </div>
