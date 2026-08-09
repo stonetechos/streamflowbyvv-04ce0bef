@@ -142,21 +142,24 @@ export function useDirectPlayer({
     video.crossOrigin = "anonymous";
     video.setAttribute("data-sf-player", "video");
     video.className = "h-full w-full bg-black object-contain";
+    for (const source of textTracks) {
+      const track = document.createElement("track");
+      track.kind = source.kind ?? "subtitles";
+      track.src = source.src;
+      track.srclang = source.srclang;
+      track.label = source.label;
+      video.appendChild(track);
+    }
     host.replaceChildren(video);
     elementRef.current = video;
 
     const readTracks = () => {
-      const list = Array.from(video.textTracks ?? []).filter(
-        (track) => track.kind === "subtitles" || track.kind === "captions",
-      );
-      setCaptionTracks(
-        list.map((track, index) => ({
-          id: track.id || `track-${index}`,
-          label: track.label || track.language || `Track ${index + 1}`,
-          language: track.language,
-        })),
-      );
+      setCaptionTracks(toCaptionTracks(Array.from(video.textTracks ?? [])));
     };
+    video.textTracks?.addEventListener?.("addtrack", readTracks);
+    video.textTracks?.addEventListener?.("removetrack", readTracks);
+    readTracks();
+
 
     const sync = () => {
       const buffered =
