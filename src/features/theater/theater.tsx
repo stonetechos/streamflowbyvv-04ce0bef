@@ -532,6 +532,36 @@ export function Theater({ roomId }: TheaterProps) {
     [chat.events, hostProfileId],
   );
 
+  // Phase A — the room's own clock ticks even when nothing here can be
+  // measured, because a declared clock still has to advance on screen.
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  // The host's statements, read off the coordination stream that already
+  // carries them. Nothing here observes a provider player.
+  const declarations = useMemo<readonly HostDeclaration[]>(
+    () =>
+      chat.events
+        .filter((event) => event.profileId === hostProfileId)
+        .flatMap((event) => {
+          const kind: HostDeclarationKind | null =
+            event.kind === "provider-launched"
+              ? "started"
+              : event.kind === "pause-request"
+                ? "paused"
+                : event.kind === "resume-request"
+                  ? "resumed"
+                  : null;
+          if (!kind) return [];
+          return [{ kind, atMs: new Date(event.createdAt).getTime() }];
+        }),
+    [chat.events, hostProfileId],
+  );
+
+
   // The centre panel is the room's stage: one derivation decides what it shows
   // and whether the lower media card would only repeat it.
   const stageView = deriveStageView({
