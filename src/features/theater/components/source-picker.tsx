@@ -13,6 +13,7 @@ import { useEffect, useState, type FormEvent } from "react";
 
 import { ActionButton, Surface, TextField } from "@/design-system/components";
 import {
+  localFileUrl,
   parseWatchSource,
   providerBrowseUrl,
   watchSourceCapability,
