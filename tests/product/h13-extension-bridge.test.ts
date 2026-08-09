@@ -4,7 +4,7 @@
  * The rules that decide whether StreamFlow may claim control of a provider's
  * own player. Everything here is pure, so honesty is testable.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 
 import {
   EXTENSION_PROTOCOL_VERSION,
