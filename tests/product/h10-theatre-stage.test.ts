@@ -5,7 +5,7 @@
  * content state, launch-only honesty, and the removal of the duplicate
  * "nothing chosen" surface.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "bun:test";
 
 import { parseWatchSource, watchProviderById, watchSourceCapability } from "@/domain";
 import { deriveStageView } from "@/features/theater/stage-view";
@@ -14,7 +14,7 @@ const NONE = watchProviderById("netflix")!;
 const emptyCapability = watchSourceCapability(null);
 
 describe("theatre stage empty state", () => {
-  it("gives the host an actionable choose-content CTA", () => {
+  test("gives the host an actionable choose-content CTA", () => {
     const view = deriveStageView({
       source: null,
       capability: emptyCapability,
@@ -27,7 +27,7 @@ describe("theatre stage empty state", () => {
     expect(view.showsWaitingLine).toBe(false);
   });
 
-  it("gives a guest a waiting state and no host-only action", () => {
+  test("gives a guest a waiting state and no host-only action", () => {
     const view = deriveStageView({
       source: null,
       capability: emptyCapability,
@@ -40,7 +40,7 @@ describe("theatre stage empty state", () => {
     expect(view.showsWaitingLine).toBe(true);
   });
 
-  it("does not duplicate the empty state in the lower media card", () => {
+  test("does not duplicate the empty state in the lower media card", () => {
     for (const isHost of [true, false]) {
       const view = deriveStageView({
         source: null,
@@ -54,7 +54,7 @@ describe("theatre stage empty state", () => {
 });
 
 describe("theatre stage selected content", () => {
-  it("replaces the empty state for host and guest alike once content is chosen", () => {
+  test("replaces the empty state for host and guest alike once content is chosen", () => {
     const source = parseWatchSource("https://www.netflix.com/title/81234567");
     expect(source).not.toBeNull();
     const capability = watchSourceCapability(source);
@@ -73,7 +73,7 @@ describe("theatre stage selected content", () => {
     }
   });
 
-  it("never claims embedded playback for a launch-only service", () => {
+  test("never claims embedded playback for a launch-only service", () => {
     for (const key of ["netflix", "jiotv", "mxplayer", "discovery_plus"]) {
       const provider = watchProviderById(key);
       expect(provider, key).not.toBeUndefined();
@@ -95,7 +95,7 @@ describe("theatre stage selected content", () => {
     }
   });
 
-  it("plays inline only for a directly reachable file", () => {
+  test("plays inline only for a directly reachable file", () => {
     const source = parseWatchSource("https://example.com/clip.mp4");
     expect(source?.kind).toBe("direct");
     const capability = watchSourceCapability(source);
@@ -104,7 +104,7 @@ describe("theatre stage selected content", () => {
     expect(view.kind).toBe("embedded");
   });
 
-  it("carries a phase-specific status line", () => {
+  test("carries a phase-specific status line", () => {
     const source = parseWatchSource("https://www.netflix.com/title/81234567");
     const capability = watchSourceCapability(source);
     expect(
@@ -117,7 +117,7 @@ describe("theatre stage selected content", () => {
 });
 
 describe("provider registry sanity", () => {
-  it("still resolves a known provider", () => {
+  test("still resolves a known provider", () => {
     expect(NONE.providerId).toBe("netflix");
   });
 });
