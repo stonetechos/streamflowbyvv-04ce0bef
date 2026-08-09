@@ -736,30 +736,38 @@ export function Theater({ roomId }: TheaterProps) {
             stageRef={stageRef}
             hasFailed={player.hasFailed}
             isReady={player.isReady}
+            isHost={isHost}
+            phase={phase}
+            title={source.label}
+            countdownSeconds={countdownSeconds}
+            onChooseContent={chooseContent}
+            onOpenProvider={openProvider}
           />
 
-          <MediaCard
-            source={source.source}
-            label={source.label}
-            capability={capability}
-            isHost={isHost}
-            participantCount={presentMembers.length}
-            countdownSeconds={countdownSeconds}
-            phase={phase}
-            validity={mediaRef?.validity ?? null}
-            canStart={
-              source.source !== null && mediaRef?.validity !== "invalid" && countdown.isAvailable
-            }
-            isStarting={countdown.pending === "start"}
-            onStart={countdown.start}
-            onCancel={countdown.cancel}
-            onFullscreen={
-              isEmbedded && capability.allowsFullscreenFromRoom ? requestFullscreen : null
-            }
-            volume={volume}
-            onVolumeChange={setVolume}
-            showVolume={isEmbedded}
-          />
+          {stageView.showsMediaCard ? (
+            <MediaCard
+              source={source.source}
+              label={source.label}
+              capability={capability}
+              isHost={isHost}
+              participantCount={presentMembers.length}
+              countdownSeconds={countdownSeconds}
+              phase={phase}
+              validity={mediaRef?.validity ?? null}
+              canStart={
+                source.source !== null && mediaRef?.validity !== "invalid" && countdown.isAvailable
+              }
+              isStarting={countdown.pending === "start"}
+              onStart={countdown.start}
+              onCancel={countdown.cancel}
+              onFullscreen={
+                isEmbedded && capability.allowsFullscreenFromRoom ? requestFullscreen : null
+              }
+              volume={volume}
+              onVolumeChange={setVolume}
+              showVolume={isEmbedded}
+            />
+          ) : null}
 
           {isEmbedded ? (
             <Surface tone="card" padding="md" className="flex flex-col gap-3">
