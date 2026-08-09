@@ -38,13 +38,17 @@ export function SyncBadge({ verdict, driftMs, isLive }: SyncBadgeProps) {
 
   return (
     <span
-      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${TONE[verdict]}`}
+      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-md ${TONE[verdict]}`}
       data-sf-sync-verdict={verdict}
       data-sf-sync-drift-ms={driftMs ?? ""}
       data-sf-sync-live={isLive ? "true" : "false"}
     >
+      {isLive ? (
+        <span aria-hidden="true" className="sf-ember size-1.5 rounded-full bg-current" />
+      ) : null}
       {label}
       {drift ? <span className="tabular-nums opacity-80">{drift}</span> : null}
     </span>
   );
+
 }

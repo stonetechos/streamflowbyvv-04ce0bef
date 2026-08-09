@@ -940,41 +940,48 @@ export function Theater({ roomId }: TheaterProps) {
         />
       }
       stage={
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 p-3 sm:p-4">
+        <div className="flex w-full flex-col gap-3">
           <ConnectionBanner phase={recovery.phase} />
 
-          <WatchStage
-            source={source.source}
-            capability={capability}
-            containerRef={player.containerRef}
-            stageRef={stageRef}
-            hasFailed={player.hasFailed}
-            isReady={player.isReady}
-            isHost={isHost}
-            phase={phase}
-            title={source.label}
-            countdownSeconds={countdownSeconds}
-            isPreparing={source.isSaving}
-            hasLaunched={hasOpenedProvider}
-            hostLaunched={hostLaunched}
-            onChooseContent={chooseContent}
-            onOpenProvider={openProvider}
-            playerBox={
-              isEmbedded ? (
-                <TheaterBox
-                  player={player}
-                  title={source.label}
-                  canControlTransport={isHost && player.isReady && runtime.isAvailable}
-                  transportNote={isHost ? null : t("theater.transport.host_leads")}
-                  canFullscreen={capability.allowsFullscreenFromRoom}
-                  onTogglePlay={togglePlay}
-                  onSeekTo={seekTo}
-                  onSeekBy={seekBy}
-                  onRestart={() => runtime.send({ kind: "restart" })}
-                />
-              ) : undefined
-            }
-          />
+          <div className="overflow-hidden rounded-3xl bg-[color-mix(in_oklab,var(--surface)_55%,transparent)] p-1.5 shadow-e4 ring-1 ring-border/40 backdrop-blur-xl sm:p-2">
+            <WatchStage
+              source={source.source}
+              capability={capability}
+              containerRef={player.containerRef}
+              stageRef={stageRef}
+              hasFailed={player.hasFailed}
+              isReady={player.isReady}
+              isHost={isHost}
+              phase={phase}
+              title={source.label}
+              countdownSeconds={countdownSeconds}
+              isPreparing={source.isSaving}
+              hasLaunched={hasOpenedProvider}
+              hostLaunched={hostLaunched}
+              onChooseContent={chooseContent}
+              onOpenProvider={openProvider}
+              playerBox={
+                isEmbedded ? (
+                  <TheaterBox
+                    player={player}
+                    title={source.label}
+                    canControlTransport={isHost && player.isReady && runtime.isAvailable}
+                    transportNote={isHost ? null : t("theater.transport.host_leads")}
+                    canFullscreen={capability.allowsFullscreenFromRoom}
+                    onTogglePlay={togglePlay}
+                    onSeekTo={seekTo}
+                    onSeekBy={seekBy}
+                    onRestart={() => runtime.send({ kind: "restart" })}
+                  />
+                ) : undefined
+              }
+            />
+          </div>
+        </div>
+      }
+      aside={
+        <>
+
 
           {/* The live room console: what the room can honestly say about
               itself while playback happens where we cannot see it. */}
@@ -1148,7 +1155,8 @@ export function Theater({ roomId }: TheaterProps) {
               onLeave={leaveRoom}
             />
           )}
-        </div>
+        </>
+
       }
       overlay={
         <>
