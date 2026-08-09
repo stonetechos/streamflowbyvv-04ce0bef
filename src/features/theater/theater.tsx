@@ -8,15 +8,15 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Users } from "lucide-react";
 
-import { ActionButton, Avatar, Surface } from "@/design-system/components";
+import { ActionButton } from "@/design-system/components";
 import {
   DEFAULT_READINESS_THRESHOLD,
   classifyFreshness,
   classifyPresence,
   deriveRoomConsole,
   deriveRoomPhase,
-
   deriveRoomScope,
   shouldPromptFeedback,
   providerBrowseUrl,
@@ -28,7 +28,6 @@ import {
   type HostDeclaration,
   type HostDeclarationKind,
   type RoomConsoleAction,
-
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
@@ -61,7 +60,6 @@ import { ResearchPanel } from "./components/research-panel";
 import { SessionSummaryCard } from "./components/session-summary-card";
 import { ChatPanel } from "./components/chat-panel";
 import { FailureNotice } from "./components/failure-notice";
-import { InvitePanel } from "./components/invite-panel";
 import { RoomKeyCard } from "./components/room-key-card";
 import { ConnectionBanner } from "./components/connection-banner";
 import { HostModeration } from "./components/host-moderation";
@@ -69,7 +67,12 @@ import { VoiceRoomPanel } from "./components/voice-room-panel";
 import { ManualCoordination } from "./components/manual-coordination";
 import { ParticipantRail } from "./components/participant-rail";
 import { RoomConsole } from "./components/room-console";
-import { RoomDrawer } from "./components/room-drawer";
+import { InviteDialog } from "./components/invite-dialog";
+import { PartyControls } from "./components/party-controls";
+import { PartyMessageBar } from "./components/party-message-bar";
+import { PartyRail, type PartyFace } from "./components/party-rail";
+import { PartySheet } from "./components/party-sheet";
+import { PartyShell } from "./components/party-shell";
 import { HostTransport } from "./components/host-transport";
 import { MediaCard } from "./components/media-card";
 import { CapabilityNote } from "./components/capability-note";
@@ -181,6 +184,11 @@ export function Theater({ roomId }: TheaterProps) {
   const [reconnectCount, setReconnectCount] = useState(0);
   // Inviting is an event, not an inference: the trail only counts a real one.
   const [inviteSent, setInviteSent] = useState(false);
+  // The theatre keeps one middle. Chat, people and room settings arrive as a
+  // sheet over the stage, never as a column that shoves it aside.
+  const [sheet, setSheet] = useState<"chat" | "people" | "room" | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [readLineCount, setReadLineCount] = useState(0);
   // One vetted adapter owns provider hand-off; the raw window handle is never
   // consulted, because `noopener` makes it null even on success.
   const providerLauncher = useMemo(() => createBrowserProviderLauncher(), []);
@@ -488,7 +496,6 @@ export function Theater({ roomId }: TheaterProps) {
     void navigate({ to: "/rooms/$roomId", params: { roomId } });
   }, [beta, room, navigate, roomId]);
 
-
   const toggleReady = useCallback(() => {
     const next = !selfReady;
     if (next) chat.sendCoordination("ready", t("room.manual.sent.ready"));
@@ -569,7 +576,6 @@ export function Theater({ roomId }: TheaterProps) {
     [chat.events, hostProfileId],
   );
 
-
   // The centre panel is the room's stage: one derivation decides what it shows
   // and whether the lower media card would only repeat it.
   const stageView = deriveStageView({
@@ -625,7 +631,11 @@ export function Theater({ roomId }: TheaterProps) {
       freshnessByProfileId: new Map(
         room.members.map((m) => [
           m.profileId,
-          classifyFreshness(m.presence, m.lastSeenAt ? new Date(m.lastSeenAt).getTime() : null, nowMs),
+          classifyFreshness(
+            m.presence,
+            m.lastSeenAt ? new Date(m.lastSeenAt).getTime() : null,
+            nowMs,
+          ),
         ]),
       ),
       isManual: !runtime.isAutomatic,
@@ -639,8 +649,6 @@ export function Theater({ roomId }: TheaterProps) {
     nowMs,
     runtime.isAutomatic,
   ]);
-
-
 
   // A host action is a statement broadcast to the room, never a device command.
   const declare = useCallback(
@@ -825,6 +833,11 @@ export function Theater({ roomId }: TheaterProps) {
     if (chat.lines.length > 0) noteRoomFact(roomId, { usedChat: true });
   }, [chat.lines.length, roomId]);
 
+  // Reading the transcript is what clears the unread count — not receiving it.
+  useEffect(() => {
+    if (sheet === "chat") setReadLineCount(chat.lines.length);
+  }, [sheet, chat.lines.length]);
+
   useEffect(() => {
     if (recovery.phase === "recovering") {
       noteRoomFact(roomId, { reconnectFailure: true });
@@ -852,7 +865,6 @@ export function Theater({ roomId }: TheaterProps) {
     />
   );
 
-
   if (!room.room) {
     return (
       <main className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4">
@@ -863,45 +875,74 @@ export function Theater({ roomId }: TheaterProps) {
     );
   }
 
+  const faces: readonly PartyFace[] = room.members
+    .filter((member) => member.state !== "left" && member.state !== "removed")
+    .map((member) => ({
+      profileId: member.profileId,
+      name: nameFor(member.profileId),
+      isHost: member.isHost,
+      isReady: railFacts.readyProfileIds.has(member.profileId),
+      hasLaunched: railFacts.launchedProfileIds.has(member.profileId),
+      freshness: railFacts.freshnessByProfileId.get(member.profileId) ?? "live",
+      isSpeaking: voiceProfileIds.has(member.profileId),
+    }));
+
+  const roomTitle = source.label ?? room.room.name;
+
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6" data-sf-phase={phase}>
-      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:flex-wrap sm:justify-between">
-        <div className="flex min-w-0 flex-col">
-          <h1 className="truncate text-xl font-semibold sm:text-2xl">
-            {source.label ?? room.room.name}
-          </h1>
-          <p className="truncate text-sm text-muted-foreground">
-            {t("theater.header.people", { count: presentMembers.length })}
-            {source.source ? ` · ${capability.displayName}` : ""}
+    <PartyShell
+      phase={phase}
+      regionLabel={t("party.region_label", { name: room.room.name })}
+      controls={
+        <PartyControls
+          isVoiceConnected={voice.isConnected}
+          isMuted={voice.isMuted}
+          canUseVoice={microphone.isSupported && !room.viewer.isMutedByHost}
+          isLeaving={room.pending === "leave"}
+          onLeave={leaveRoom}
+          onToggleVoice={voice.isConnected ? leaveVoice : joinVoice}
+          onOpenMenu={() => setSheet(sheet === "room" ? null : "room")}
+        />
+      }
+      title={
+        <div className="min-w-0">
+          <h1 className="truncate text-sm font-semibold">{roomTitle}</h1>
+          <p className="truncate text-xs text-muted-foreground">
+            {source.source ? capability.displayName : t("theater.stage.status.waiting")}
           </p>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+      }
+      utilities={
+        <>
           <SyncBadge
             verdict={runtime.syncStatus}
             driftMs={runtime.isAutomatic ? runtime.driftMs : null}
             isLive={runtime.isLive}
           />
-          <ActionButton
-            tone="ghost"
-            size="sm"
-            onClick={leaveRoom}
-            loading={room.pending === "leave"}
+          <button
+            type="button"
+            onClick={() => setSheet(sheet === "people" ? null : "people")}
+            aria-pressed={sheet === "people"}
+            aria-label={t("theater.header.people", { count: presentMembers.length })}
+            data-sf-party-people
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-muted/60 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
           >
-            {t("theater.action.leave")}
-          </ActionButton>
-        </div>
-      </header>
+            <Users className="size-3.5" aria-hidden="true" />
+            {presentMembers.length}
+          </button>
+        </>
+      }
+      rail={
+        <PartyRail
+          faces={faces}
+          canInvite={inviteBlocked === null}
+          onInvite={() => setInviteOpen(true)}
+        />
+      }
+      stage={
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 p-3 sm:p-4">
+          <ConnectionBanner phase={recovery.phase} />
 
-      <ConnectionBanner phase={recovery.phase} />
-
-      {governance.settings.isLocked ? (
-        <p className="text-xs text-muted-foreground" data-sf-room-locked>
-          {t("room.privacy.locked")}
-        </p>
-      ) : null}
-
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
-        <div className="flex min-w-0 flex-col gap-4">
           <WatchStage
             source={source.source}
             capability={capability}
@@ -954,7 +995,6 @@ export function Theater({ roomId }: TheaterProps) {
           {/* Capability limits belong in the room, on screen, for everyone —
               not only in a specification document. */}
           {source.source ? <CapabilityNote capability={capability} /> : null}
-
 
           {/* A scoped room never shows a launcher grid: it already is that
               service's room. Only an open room asks which service, and the
@@ -1017,24 +1057,6 @@ export function Theater({ roomId }: TheaterProps) {
               </ActionButton>
             </div>
           ) : null}
-
-          {/* Inviting people belongs with the room's start-of-session work,
-              not in the top-right utility strip. */}
-          <InvitePanel
-            link={inviteLink}
-            participantCount={presentMembers.length}
-            blocked={inviteBlocked}
-            onCopied={() => {
-              setInviteSent(true);
-              beta.track("invite_copied");
-            }}
-            onShared={() => {
-              setInviteSent(true);
-              beta.track("native_share_opened");
-            }}
-          />
-
-          <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
 
           <ActivationPanel
             plan={activation}
@@ -1126,39 +1148,98 @@ export function Theater({ roomId }: TheaterProps) {
               onLeave={leaveRoom}
             />
           )}
-
-          <VoiceRoomPanel
-            voice={voice}
-            permission={microphone.permission}
-            isMicSupported={microphone.isSupported}
-            isMutedByHost={room.viewer.isMutedByHost}
-            onJoin={joinVoice}
-            onLeave={leaveVoice}
-            onReconnect={voice.recover}
-            inputDevices={voiceDevices.inputs}
-            outputDevices={voiceDevices.outputs}
-            inputDeviceId={inputDeviceId}
-            outputDeviceId={outputDeviceId}
-            onInputDevice={setInputDeviceId}
-            onOutputDevice={setOutputDeviceId}
-          />
-
-          <HostModeration
-            governance={governance}
-            onCancelCountdown={countdownSeconds !== null ? countdown.cancel : null}
-            onRestartCountdown={
-              countdownSeconds === null && countdown.isAvailable ? countdown.start : null
-            }
-          />
-
-          <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
         </div>
+      }
+      overlay={
+        <>
+          <PartySheet
+            name="chat"
+            open={sheet === "chat"}
+            title={t("theater.chat.title")}
+            onClose={() => setSheet(null)}
+          >
+            <div className="h-full min-h-[20rem]">{chatPanel}</div>
+          </PartySheet>
 
-        <aside className="hidden min-h-[24rem] flex-col gap-4 lg:flex lg:h-[calc(100vh-12rem)]">
-          {participantRail}
-          <div className="min-h-0 flex-1">{chatPanel}</div>
-        </aside>
-      </div>
-    </main>
+          <PartySheet
+            name="people"
+            open={sheet === "people"}
+            title={t("room.drawer.people")}
+            onClose={() => setSheet(null)}
+          >
+            {participantRail}
+          </PartySheet>
+
+          <PartySheet
+            name="room"
+            open={sheet === "room"}
+            title={t("party.sheet.room")}
+            onClose={() => setSheet(null)}
+          >
+            <div className="flex flex-col gap-4">
+              {governance.settings.isLocked ? (
+                <p className="text-xs text-muted-foreground" data-sf-room-locked>
+                  {t("room.privacy.locked")}
+                </p>
+              ) : null}
+
+              <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
+
+              <VoiceRoomPanel
+                voice={voice}
+                permission={microphone.permission}
+                isMicSupported={microphone.isSupported}
+                isMutedByHost={room.viewer.isMutedByHost}
+                onJoin={joinVoice}
+                onLeave={leaveVoice}
+                onReconnect={voice.recover}
+                inputDevices={voiceDevices.inputs}
+                outputDevices={voiceDevices.outputs}
+                inputDeviceId={inputDeviceId}
+                outputDeviceId={outputDeviceId}
+                onInputDevice={setInputDeviceId}
+                onOutputDevice={setOutputDeviceId}
+              />
+
+              <HostModeration
+                governance={governance}
+                onCancelCountdown={countdownSeconds !== null ? countdown.cancel : null}
+                onRestartCountdown={
+                  countdownSeconds === null && countdown.isAvailable ? countdown.start : null
+                }
+              />
+            </div>
+          </PartySheet>
+
+          <InviteDialog
+            open={inviteOpen}
+            link={inviteLink}
+            roomCode={room.room?.code ?? null}
+            participantCount={presentMembers.length}
+            blocked={inviteBlocked}
+            onClose={() => setInviteOpen(false)}
+            onCopied={() => {
+              setInviteSent(true);
+              beta.track("invite_copied");
+            }}
+            onShared={() => {
+              setInviteSent(true);
+              beta.track("native_share_opened");
+            }}
+          />
+        </>
+      }
+      messageBar={
+        <PartyMessageBar
+          canSend={canSendChat}
+          maxLength={chat.maxLength}
+          unreadCount={Math.max(0, chat.lines.length - readLineCount)}
+          isTranscriptOpen={sheet === "chat"}
+          disabledReason={chatDisabledReason}
+          onSend={(body: string) => chat.send(body)}
+          onToggleTranscript={() => setSheet(sheet === "chat" ? null : "chat")}
+        />
+      }
+    />
   );
 }
