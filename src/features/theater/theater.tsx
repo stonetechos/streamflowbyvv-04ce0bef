@@ -845,10 +845,12 @@ export function Theater({ roomId }: TheaterProps) {
       participants={participants}
       readiness={readiness}
       showReadiness={!runtime.isAutomatic}
+      facts={railFacts}
       moderation={moderation}
       voiceProfileIds={voiceProfileIds}
     />
   );
+
 
   if (!room.room) {
     return (
