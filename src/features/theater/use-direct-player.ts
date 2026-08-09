@@ -93,7 +93,13 @@ const INITIAL_STATE: DirectPlayerState = {
   captionsTrackId: null,
 };
 
-export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectPlayerHandle {
+const NO_TEXT_TRACKS: readonly TextTrackSource[] = [];
+
+export function useDirectPlayer({
+  url,
+  textTracks = NO_TEXT_TRACKS,
+  onPhase,
+}: UseDirectPlayerInput): DirectPlayerHandle {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLVideoElement | null>(null);
