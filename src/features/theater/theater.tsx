@@ -45,6 +45,7 @@ import {
   type MemberView,
 } from "@/features/waiting-room";
 import { useTranslation } from "@/foundation/localization";
+import { createBrowserProviderLauncher } from "@/infrastructure/providers";
 
 import { ActivationPanel } from "./components/activation-panel";
 import { BetaFeedback } from "./components/beta-feedback";
@@ -165,6 +166,11 @@ export function Theater({ roomId }: TheaterProps) {
   const [hasLeft, setHasLeft] = useState(false);
   const [researchState, setResearchState] = useState<"pending" | "done">("pending");
   const [reconnectCount, setReconnectCount] = useState(0);
+  // Inviting is an event, not an inference: the trail only counts a real one.
+  const [inviteSent, setInviteSent] = useState(false);
+  // One vetted adapter owns provider hand-off; the raw window handle is never
+  // consulted, because `noopener` makes it null even on success.
+  const providerLauncher = useMemo(() => createBrowserProviderLauncher(), []);
   // A countdown that was cancelled must not count as completed.
   const countdownCompletedRef = useRef(false);
 
