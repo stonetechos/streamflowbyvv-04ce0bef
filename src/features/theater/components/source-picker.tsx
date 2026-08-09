@@ -136,9 +136,15 @@ export function SourcePicker({
 
       <form className="flex flex-col gap-3" onSubmit={submit}>
         <TextField
-          label={isHandoff ? t("theater.provider.paste_label") : t("theater.source.label")}
+          label={
+            isHandoff
+              ? t("theater.provider.launch_label", { provider: provider.displayName })
+              : t("theater.source.label")
+          }
           description={
-            isHandoff ? t("theater.provider.paste_description") : t("theater.source.description")
+            isHandoff
+              ? t("theater.provider.launch_description", { provider: provider.displayName })
+              : t("theater.source.description")
           }
           placeholder={PLACEHOLDER[provider.providerId] ?? PLACEHOLDER["direct"]}
           value={value}
