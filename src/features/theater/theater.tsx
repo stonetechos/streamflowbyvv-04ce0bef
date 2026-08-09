@@ -492,7 +492,7 @@ export function Theater({ roomId }: TheaterProps) {
   // The host opening the service is a room fact, announced once through the
   // coordination stream, so a guest's stage never sits blank while the host is
   // already watching.
-  const hostProfileId = room.room?.hostProfileId ?? null;
+  const hostProfileId = room.members.find((member) => member.role === "host")?.profileId ?? null;
   const hostLaunched = useMemo(
     () =>
       chat.events.some(
