@@ -849,7 +849,7 @@ export function Theater({ roomId }: TheaterProps) {
           <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
 
           {isHost ? (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3" ref={pickerRef} data-sf-selection-flow>
               <ProviderBar
                 activeProviderId={activeProviderId}
                 isHost={isHost}
