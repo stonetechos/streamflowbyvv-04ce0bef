@@ -139,7 +139,6 @@ export function WatchStage({
     );
   }
 
-
   const statusLine = `${capability.displayName} · ${t(providerModeKey(capability.playbackControlMode))}`;
 
   if (view.kind === "handoff") {
@@ -223,4 +222,3 @@ export function WatchStage({
     </div>
   );
 }
-

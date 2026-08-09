@@ -804,7 +804,8 @@ export const hiINBundle: LocaleBundle = {
     "home.services.status.unavailable": "अनुपलब्ध",
     "home.services.status.coming_soon":
       "\u091c\u0932\u094d\u0926 \u0906 \u0930\u0939\u093e \u0939\u0948",
-    "home.services.room_name": "{service} \u092a\u0930 \u0935\u0949\u091a \u092a\u093e\u0930\u094d\u091f\u0940",
+    "home.services.room_name":
+      "{service} \u092a\u0930 \u0935\u0949\u091a \u092a\u093e\u0930\u094d\u091f\u0940",
     "home.services.footnote":
       "StreamFlow \u0915\u0902\u091f\u0947\u0902\u091f \u0928\u0939\u0940\u0902 \u091a\u0932\u093e\u0924\u093e \u2014 \u0906\u092a \u0905\u092a\u0928\u0947 \u0910\u092a \u092e\u0947\u0902 \u0926\u0947\u0916\u0924\u0947 \u0939\u0948\u0902\u0964",
     "home.live.badge": "\u0932\u093e\u0907\u0935",

@@ -121,8 +121,7 @@ export function Theater({ roomId }: TheaterProps) {
 
   const [providerId, setProviderId] = useState<string | null>(null);
   const [isPicking, setIsPicking] = useState(false);
-  const activeProviderId =
-    scope.providerId ?? providerId ?? source.source?.providerId ?? null;
+  const activeProviderId = scope.providerId ?? providerId ?? source.source?.providerId ?? null;
   const activeProvider: WatchProviderCapability | null = useMemo(
     () => (activeProviderId ? watchProviderById(activeProviderId) : null),
     [activeProviderId],
@@ -788,8 +787,6 @@ export function Theater({ roomId }: TheaterProps) {
             busy={countdown.pending === "start"}
           />
 
-
-
           {failure ? (
             <FailureNotice
               kind={failure}
@@ -834,9 +831,6 @@ export function Theater({ roomId }: TheaterProps) {
               onDismiss={() => setResearchState("done")}
             />
           ) : null}
-
-
-
 
           {stageView.showsMediaCard ? (
             <MediaCard
@@ -916,7 +910,6 @@ export function Theater({ roomId }: TheaterProps) {
           />
 
           <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
-
         </div>
 
         <aside className="hidden min-h-[24rem] flex-col gap-4 lg:flex lg:h-[calc(100vh-12rem)]">

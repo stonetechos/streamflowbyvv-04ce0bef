@@ -158,7 +158,6 @@ export function createHomeReadModel(deps: HomeReadModelDependencies): HomeReadMo
       // belongs in the invitations rail, not in a resume affordance.
       const continueRoom = live.find((entry) => entry.isResumable) ?? null;
 
-
       const hydrate = async (invite: Invite): Promise<HomeInviteSummary> => ({
         invite,
         room: await rooms.findById(invite.roomId).catch(() => null),
