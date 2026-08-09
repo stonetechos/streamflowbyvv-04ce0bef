@@ -13,6 +13,13 @@ import { cn } from "@/lib/utils";
 export interface ProviderBarProps {
   readonly activeProviderId: string | null;
   readonly isHost: boolean;
+  /**
+   * Exactly what this room may offer. A provider-scoped room passes one
+   * service; an open room passes the whole registry. The bar never widens
+   * what it was given (product correction pass).
+   */
+  readonly providers?: readonly WatchProviderCapability[];
+  readonly isScoped?: boolean;
   onSelect(provider: WatchProviderCapability): void;
 }
 
@@ -28,16 +35,27 @@ export function providerModeKey(mode: string): string {
   return MODE_KEYS[mode] ?? "theater.capability.unavailable";
 }
 
-export function ProviderBar({ activeProviderId, isHost, onSelect }: ProviderBarProps) {
+export function ProviderBar({
+  activeProviderId,
+  isHost,
+  providers = WATCH_PROVIDERS,
+  isScoped = false,
+  onSelect,
+}: ProviderBarProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-2" data-sf-provider-bar>
+    <div
+      className="flex flex-col gap-2"
+      data-sf-provider-bar
+      data-sf-provider-scope={isScoped ? "scoped" : "open"}
+      data-sf-provider-count={providers.length}
+    >
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {t("theater.provider.title")}
+        {t(isScoped ? "theater.provider.scoped_title" : "theater.provider.title")}
       </p>
       <ul className="flex flex-wrap gap-2">
-        {WATCH_PROVIDERS.map((provider) => {
+        {providers.map((provider) => {
           const isActive = provider.providerId === activeProviderId;
           return (
             <li key={provider.providerId}>
@@ -65,6 +83,11 @@ export function ProviderBar({ activeProviderId, isHost, onSelect }: ProviderBarP
           );
         })}
       </ul>
+      {isScoped ? (
+        <p className="text-xs text-muted-foreground" data-sf-provider-scope-note>
+          {t("theater.provider.scoped_note", { provider: providers[0]?.displayName ?? "" })}
+        </p>
+      ) : null}
       {!isHost ? (
         <p className="text-xs text-muted-foreground">{t("theater.provider.host_chooses")}</p>
       ) : null}
