@@ -473,7 +473,6 @@ export function Theater({ roomId }: TheaterProps) {
     node.querySelector<HTMLElement>("button, input")?.focus({ preventScroll: true });
   }, []);
 
-
   const guestCount = Math.max(0, presentMembers.length - 1);
 
   const activation = useRoomActivation({

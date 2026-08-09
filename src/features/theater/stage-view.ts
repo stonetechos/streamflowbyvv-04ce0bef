@@ -40,12 +40,7 @@ const STATUS_KEYS: Readonly<Record<RoomPhase, string>> = {
   closed: "theater.stage.status.closed",
 };
 
-export function deriveStageView({
-  source,
-  capability,
-  isHost,
-  phase,
-}: StageViewInput): StageView {
+export function deriveStageView({ source, capability, isHost, phase }: StageViewInput): StageView {
   const role = isHost ? ("host" as const) : ("guest" as const);
   const statusKey = STATUS_KEYS[phase] ?? "theater.stage.status.selected";
 

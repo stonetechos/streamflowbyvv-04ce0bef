@@ -829,7 +829,8 @@ export const hiINBundle: LocaleBundle = {
     "home.services.arrange.action": "ऐप्स व्यवस्थित करें",
     "home.services.arrange.done": "हो गया",
     "home.services.arrange.reset": "क्रम रीसेट करें",
-    "home.services.arrange.hint": "क्रम बदलें, पसंदीदा पिन करें, या जिन ऐप्स का उपयोग नहीं करते उन्हें छिपाएँ। यह केवल आपके होमपेज को बदलता है।",
+    "home.services.arrange.hint":
+      "क्रम बदलें, पसंदीदा पिन करें, या जिन ऐप्स का उपयोग नहीं करते उन्हें छिपाएँ। यह केवल आपके होमपेज को बदलता है।",
     "home.services.arrange.move_earlier": "{service} को पहले ले जाएँ",
     "home.services.arrange.move_later": "{service} को बाद में ले जाएँ",
     "home.services.arrange.pin": "{service} को सबसे आगे पिन करें",
@@ -837,7 +838,8 @@ export const hiINBundle: LocaleBundle = {
     "home.services.arrange.hide": "{service} को होमपेज से छिपाएँ",
     "home.services.arrange.unhide": "{service} दिखाएँ",
     "home.services.arrange.hidden_title": "छिपे हुए ऐप्स",
-    "home.services.arrange.hidden_note": "छिपे हुए ऐप्स StreamFlow में बाकी जगह पहले जैसे ही काम करते हैं।",
+    "home.services.arrange.hidden_note":
+      "छिपे हुए ऐप्स StreamFlow में बाकी जगह पहले जैसे ही काम करते हैं।",
     "beta.section.join_speed": "जुड़ना",
     "beta.join.attempts": "जुड़ने के प्रयास",
     "beta.join.attempts_hint": "केवल इसी सत्र के लिए।",
@@ -855,7 +857,8 @@ export const hiINBundle: LocaleBundle = {
     "beta.personalization.most_pinned": "सबसे अधिक पिन",
     "beta.personalization.most_hidden": "सबसे अधिक छिपाए",
     "room.key.title": "रूम की",
-    "room.key.description": "इसे {group}-{group} के समूह में बोलें। जिसके पास यह है, वह लिंक वाले उसी रूम में आता है।",
+    "room.key.description":
+      "इसे {group}-{group} के समूह में बोलें। जिसके पास यह है, वह लिंक वाले उसी रूम में आता है।",
     "room.key.blocked": "यह रूम अभी किसी नए व्यक्ति को नहीं ले रहा है।",
     "room.key.copy": "की कॉपी करें",
     "room.key.copied": "की कॉपी हो गई",
@@ -1574,7 +1577,8 @@ export const hiINBundle: LocaleBundle = {
     "beta.cohort.label": "समूह",
     "beta.cohort.in": "बीटा में",
     "beta.cohort.out": "प्रवेश नहीं",
-    "beta.cohort.matching": "इस फ़िल्टर से मेल: {rooms} रूम बने, {activated} में साथ देखना शुरू हुआ।",
+    "beta.cohort.matching":
+      "इस फ़िल्टर से मेल: {rooms} रूम बने, {activated} में साथ देखना शुरू हुआ।",
     "beta.empty.title": "इस सत्र में कोई बीटा डेटा नहीं",
     "beta.empty.description": "एक रूम बनाएँ और दूसरे टैब से किसी को बुलाएँ।",
     "beta.section.cohorts": "समूह",
@@ -1588,7 +1592,8 @@ export const hiINBundle: LocaleBundle = {
     "beta.dimension.providerId": "सेवा",
     "beta.dimension.syncMode": "सिंक मोड",
     "beta.dimension.inviteSource": "निमंत्रण स्रोत",
-    "beta.activation.definition": "सक्रिय का अर्थ: होस्ट और कम से कम एक मेहमान, चुना हुआ टाइटल, पूरी हुई गिनती, और साथ देखना शुरू।",
+    "beta.activation.definition":
+      "सक्रिय का अर्थ: होस्ट और कम से कम एक मेहमान, चुना हुआ टाइटल, पूरी हुई गिनती, और साथ देखना शुरू।",
     "beta.count.roomsActivated": "सक्रिय रूम",
     "beta.metric.activationRate": "सक्रियण दर",
     "beta.metric.medianTimeToFirstGuest": "पहले मेहमान तक औसत समय",
@@ -1624,7 +1629,8 @@ export const hiINBundle: LocaleBundle = {
     "beta.interview.everyone_knew_next_step": "क्या सबको अगला कदम पता था?",
     "beta.interview.chat_or_voice_value": "क्या चैट या बातचीत से शाम बेहतर हुई?",
     "beta.interview.what_would_bring_you_back": "आप दोबारा क्यों आएँगे?",
-    "beta.interview.what_would_you_pay_for": "क्या ऐसा कुछ है जिसके लिए आप भुगतान करेंगे? ना कहना ठीक है।",
+    "beta.interview.what_would_you_pay_for":
+      "क्या ऐसा कुछ है जिसके लिए आप भुगतान करेंगे? ना कहना ठीक है।",
     "room.recap.title": "वॉच पार्टी कैसी रही",
     "room.recap.duration": "साथ बिताया समय",
     "room.recap.duration.unknown": "दर्ज नहीं",
@@ -1643,7 +1649,8 @@ export const hiINBundle: LocaleBundle = {
     "room.recap.chat.unavailable": "उपलब्ध नहीं थी",
     "room.recap.reconnects": "पार्टी के दौरान किसी ने {count} बार दोबारा जुड़ना पड़ा।",
     "research.title": "दो छोटे सवाल",
-    "research.disclaimer": "ये विचाराधीन विचार हैं। कुछ भी बिक्री पर नहीं है, और आज जो आप उपयोग करते हैं वह मुफ़्त रहेगा।",
+    "research.disclaimer":
+      "ये विचाराधीन विचार हैं। कुछ भी बिक्री पर नहीं है, और आज जो आप उपयोग करते हैं वह मुफ़्त रहेगा।",
     "research.question.value": "क्या यह आपके लिए उपयोगी होगा?",
     "research.question.pay": "क्या आप इसके लिए भुगतान करेंगे?",
     "research.value.not_valuable": "उपयोगी नहीं",
@@ -1656,13 +1663,15 @@ export const hiINBundle: LocaleBundle = {
     "research.action.skip": "छोड़ें",
     "research.thanks": "धन्यवाद। इससे हमें आगे की दिशा तय करने में मदद मिलती है।",
     "research.concept.video_chat": "एक-दूसरे को कैमरे पर देखें",
-    "research.concept.video_chat.description": "केवल आवाज़ के बजाय शो के साथ छोटी वीडियो खिड़कियाँ।",
+    "research.concept.video_chat.description":
+      "केवल आवाज़ के बजाय शो के साथ छोटी वीडियो खिड़कियाँ।",
     "research.concept.larger_rooms": "बड़े रूम",
     "research.concept.larger_rooms.description": "छोटे समूह से ज़्यादा लोगों के साथ वॉच पार्टी।",
     "research.concept.longer_rooms": "लंबे सत्र",
     "research.concept.longer_rooms.description": "पूरी सीरीज़ मैराथन के लिए खुले रहने वाले रूम।",
     "research.concept.advanced_moderation": "अधिक होस्ट नियंत्रण",
-    "research.concept.advanced_moderation.description": "कौन बोले, चैट करे और बुलाए—इस पर बेहतर नियंत्रण।",
+    "research.concept.advanced_moderation.description":
+      "कौन बोले, चैट करे और बुलाए—इस पर बेहतर नियंत्रण।",
     "research.concept.recurring_rooms": "नियमित वॉच नाइट",
     "research.concept.recurring_rooms.description": "हर हफ़्ते उन्हीं लोगों के साथ लौटने वाला रूम।",
     "research.concept.room_themes": "रूम की सजावट",
@@ -1670,6 +1679,7 @@ export const hiINBundle: LocaleBundle = {
     "research.concept.session_history": "देखने का इतिहास",
     "research.concept.session_history.description": "आपके समूह ने साथ में क्या देखा, इसका रिकॉर्ड।",
     "research.concept.community_rooms": "कम्युनिटी रूम",
-    "research.concept.community_rooms.description": "आमंत्रित मित्रों से आगे बड़े सार्वजनिक-जैसे रूम।",
+    "research.concept.community_rooms.description":
+      "आमंत्रित मित्रों से आगे बड़े सार्वजनिक-जैसे रूम।",
   },
 };
