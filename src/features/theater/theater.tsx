@@ -80,12 +80,14 @@ import { ProviderBar } from "./components/provider-bar";
 import { SourcePicker } from "./components/source-picker";
 import { SyncBadge } from "./components/sync-badge";
 import { TheaterBox } from "./components/theater-box";
+import { LocalFilePrompt } from "./components/local-file-prompt";
 import { WatchStage } from "./components/watch-stage";
 import { deriveStageView } from "./stage-view";
 import { useRoomChat } from "./use-room-chat";
 import { useWatchSource } from "./use-watch-source";
 import { useRoomRuntime } from "./use-room-runtime";
 import { useDirectPlayer } from "./use-direct-player";
+import { useYouTubePlayer } from "./use-youtube-player";
 import { useConnectionRecovery } from "./use-connection-recovery";
 import { useProductAnalytics } from "./use-product-analytics";
 import { useRoomActivation } from "./use-room-activation";
@@ -143,13 +145,38 @@ export function Theater({ roomId }: TheaterProps) {
     [activeProviderId],
   );
 
-  const directUrl = source.source?.kind === "direct" ? source.source.url : null;
+  // Everyone's own copy of a shared file: the object URL is this device's
+  // alone and never leaves it. Only the file's name was ever room state.
+  const [localObjectUrl, setLocalObjectUrl] = useState<string | null>(null);
+  const localFileName = source.source?.kind === "local" ? source.source.fileName : null;
+  const youtubeVideoId = source.source?.kind === "youtube" ? source.source.videoId : null;
+  const directUrl =
+    source.source?.kind === "direct"
+      ? source.source.url
+      : source.source?.kind === "local"
+        ? localObjectUrl
+        : null;
   const [localPositionMs, setLocalPositionMs] = useState<number | null>(null);
   const [durationMs, setDurationMs] = useState<number | null>(null);
   const [volume, setVolume] = useState(80);
   const suppressUntil = useRef(0);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const pickerRef = useRef<HTMLDivElement | null>(null);
+
+  // A different file selection releases the previous copy's handle.
+  useEffect(() => {
+    setLocalObjectUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return null;
+    });
+  }, [localFileName]);
+
+  const pickLocalFile = useCallback((file: File) => {
+    setLocalObjectUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return URL.createObjectURL(file);
+    });
+  }, []);
 
   const countdown = useRoomCountdown({
     roomId,
@@ -161,13 +188,16 @@ export function Theater({ roomId }: TheaterProps) {
   const countdownRemaining =
     countdown.state === "counting_down" ? Math.max(0, countdown.remainingSeconds) : null;
 
-  const player = useDirectPlayer({
-    url: directUrl,
-    onPhase: (phase, positionMs) => {
-      setLocalPositionMs(positionMs);
-      setIsBuffering(phase === "buffering");
-    },
-  });
+  const onPlayerPhase = useCallback((phase: string, positionMs: number) => {
+    setLocalPositionMs(positionMs);
+    setIsBuffering(phase === "buffering");
+  }, []);
+
+  const html5Player = useDirectPlayer({ url: directUrl, onPhase: onPlayerPhase });
+  const youtubePlayer = useYouTubePlayer({ videoId: youtubeVideoId, onPhase: onPlayerPhase });
+  // One handle, two engines. Nothing downstream — sync loop, transport, HUD —
+  // knows or needs to know which one is behind the stage.
+  const player = youtubeVideoId ? youtubePlayer : html5Player;
 
   const [isBuffering, setIsBuffering] = useState(false);
   // Readiness is durable room state, not a local flag: it is stored on the
@@ -326,7 +356,12 @@ export function Theater({ roomId }: TheaterProps) {
 
   const isPlaying = runtime.playback.status === "playing";
   const capability = source.capability;
-  const isEmbedded = capability.allowsEmbeddedPlayback && directUrl !== null;
+  // A source the room can genuinely drive: a reachable file, this device's own
+  // copy of a shared file, or YouTube's sanctioned player.
+  const isEmbedded =
+    capability.allowsEmbeddedPlayback && (directUrl !== null || youtubeVideoId !== null);
+  // The room is on a file, and this person hasn't opened their copy yet.
+  const needsLocalCopy = localFileName !== null && localObjectUrl === null;
   const capabilityProviderId = capability.providerId;
 
   const togglePlay = useCallback(() => {
@@ -961,7 +996,9 @@ export function Theater({ roomId }: TheaterProps) {
               onChooseContent={chooseContent}
               onOpenProvider={openProvider}
               playerBox={
-                isEmbedded ? (
+                needsLocalCopy ? (
+                  <LocalFilePrompt fileName={localFileName} onPick={pickLocalFile} />
+                ) : isEmbedded ? (
                   <TheaterBox
                     player={player}
                     title={source.label}

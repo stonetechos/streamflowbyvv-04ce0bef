@@ -20,8 +20,12 @@ import {
 /**
  * Services removed from the product. A blocked key never becomes a scope,
  * never reaches a shelf, and never reaches a room's provider list.
+ *
+ * Empty today. YouTube was blocked while it was only another launch-only
+ * tile that could not be controlled; it returns as a source the room genuinely
+ * drives through the official player, so the block no longer applies.
  */
-export const BLOCKED_PROVIDER_KEYS: readonly string[] = Object.freeze(["youtube"]);
+export const BLOCKED_PROVIDER_KEYS: readonly string[] = Object.freeze([]);
 
 export function isBlockedProviderKey(key: string | null | undefined): boolean {
   return key !== null && key !== undefined && BLOCKED_PROVIDER_KEYS.includes(key.toLowerCase());

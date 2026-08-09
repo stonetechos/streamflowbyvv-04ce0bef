@@ -37,18 +37,26 @@ const capability = (overrides: Record<string, unknown> = {}) =>
     ...overrides,
   }) as never;
 
-describe("YouTube removal", () => {
-  it("blocks the youtube key everywhere", () => {
-    expect(BLOCKED_PROVIDER_KEYS).toContain("youtube");
-    expect(isBlockedProviderKey("youtube")).toBe(true);
-    expect(isBlockedProviderKey("YouTube")).toBe(true);
-    expect(resolveWatchProviderId("youtube")).toBeNull();
+describe("YouTube's return as a controllable source", () => {
+  it("no longer blocks the youtube key", () => {
+    expect(BLOCKED_PROVIDER_KEYS).not.toContain("youtube");
+    expect(isBlockedProviderKey("youtube")).toBe(false);
+    expect(resolveWatchProviderId("youtube")).toBe("youtube");
   });
 
-  it("keeps youtube out of the watch registry", () => {
-    expect(WATCH_PROVIDERS.some((p) => p.providerId === "youtube")).toBe(false);
+  it("carries youtube as a source the room actually drives", () => {
+    const youtube = WATCH_PROVIDERS.find((p) => p.providerId === "youtube");
+    expect(youtube).toBeDefined();
+    expect(youtube?.playbackControlMode).toBe("automatic");
+    expect(youtube?.allowsEmbeddedPlayback).toBe(true);
+  });
+
+  // The blocklist machinery stays honest even with nothing on it.
+  it("still refuses an unknown service", () => {
+    expect(resolveWatchProviderId("not-a-service")).toBeNull();
   });
 });
+
 
 describe("provider scope in a scoped room", () => {
   it("offers exactly one service when the room was created for a service", () => {

@@ -13,6 +13,7 @@ import { useEffect, useState, type FormEvent } from "react";
 
 import { ActionButton, Surface, TextField } from "@/design-system/components";
 import {
+  localFileUrl,
   parseWatchSource,
   providerBrowseUrl,
   watchSourceCapability,
@@ -47,6 +48,8 @@ const PLACEHOLDER: Readonly<Record<string, string>> = {
   paramount_plus: "https://www.paramountplus.com/movies/video/abcdef",
   crunchyroll: "https://www.crunchyroll.com/series/ABCDEF",
   google_drive: "https://drive.google.com/file/d/abcdef/view",
+  youtube: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  local: "The Grand Budapest Hotel.mp4",
   direct: "https://example.com/clip.mp4",
 };
 
@@ -70,7 +73,11 @@ export function SourcePicker({
     setTitle(currentTitle);
   }, [currentTitle]);
 
-  const parsed = parseWatchSource(value);
+  // A file everyone already owns is named, not linked: the name is the only
+  // thing that travels between people.
+  const isLocalFile = provider.providerId === "local";
+  const reference = isLocalFile ? (value.trim() ? localFileUrl(value) : "") : value;
+  const parsed = parseWatchSource(reference);
   const capability = watchSourceCapability(parsed);
   const showPreview = value.trim().length > 0;
   // Every OTT service is chosen the same way: browse there, come back with
@@ -92,8 +99,9 @@ export function SourcePicker({
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!canSubmit) return;
-    onSubmit(value, title);
+    onSubmit(reference, title);
   };
+
 
   return (
     <Surface

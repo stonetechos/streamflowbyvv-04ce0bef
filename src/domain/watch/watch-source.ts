@@ -134,7 +134,81 @@ const DIRECT: ProviderDefinition = Object.freeze({
   titleSegments: Object.freeze([]),
 });
 
+/**
+ * YouTube — the one large service with a public, sanctioned embed and player
+ * API. StreamFlow drives it the same way any site is permitted to: through the
+ * official IFrame player, on each viewer's own device, with the provider's own
+ * ads and account rules intact. This is a genuine Tier A capability, not an
+ * exception carved out of ADR-014.
+ */
+const YOUTUBE: ProviderDefinition = Object.freeze({
+  capability: Object.freeze({
+    providerId: "youtube",
+    displayName: "YouTube",
+    enabled: true,
+    visibleInLobby: true,
+    supported: true,
+    selectionMode: "paste-link" as const,
+    playbackControlMode: "automatic" as const,
+    allowsEmbeddedPlayback: true,
+    allowsFullscreenFromRoom: true,
+    allowsZoomFromRoom: false,
+    requiresOwnSubscription: false,
+    requiresProviderLogin: false,
+    supportedPlatforms: WEB_PLATFORMS,
+    limitations: Object.freeze([
+      "StreamFlow really does play, pause, and seek this for everyone.",
+      "A video the uploader blocked from embedding can't play here — open it on YouTube instead.",
+      "Ads and availability are YouTube's own, and differ per viewer.",
+    ]),
+  }),
+  hostPattern: /(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be)$/i,
+  browseUrl: "https://www.youtube.com",
+  titleSegments: Object.freeze(["watch", "embed", "shorts", "live"]),
+});
+
+/**
+ * A copy of the same file everyone already has on their own machine. Nothing
+ * is uploaded, shared, or streamed between people — StreamFlow only shares the
+ * *name* and drives each viewer's own local playback in step.
+ */
+const LOCAL: ProviderDefinition = Object.freeze({
+  capability: Object.freeze({
+    providerId: "local",
+    displayName: "A file on your device",
+    enabled: true,
+    visibleInLobby: true,
+    supported: true,
+    selectionMode: "direct-title" as const,
+    playbackControlMode: "automatic" as const,
+    allowsEmbeddedPlayback: true,
+    allowsFullscreenFromRoom: true,
+    allowsZoomFromRoom: false,
+    requiresOwnSubscription: false,
+    requiresProviderLogin: false,
+    supportedPlatforms: WEB_PLATFORMS,
+    limitations: Object.freeze([
+      "Everyone opens their own copy — nothing is uploaded or sent between people.",
+      "Copies have to be the same cut, or the shared clock won't line up.",
+      "Play, pause, and seek are shared for real once everyone has opened a file.",
+    ]),
+  }),
+  hostPattern: /^local\.streamflow\.invalid$/i,
+  browseUrl: null,
+  titleSegments: Object.freeze([]),
+});
+
+/** Host for the synthetic URL that carries a local-file selection. */
+const LOCAL_HOST = "local.streamflow.invalid";
+
+/** Builds the shareable reference for "the file called X, on your own device". */
+export function localFileUrl(fileName: string): string {
+  return `https://${LOCAL_HOST}/${encodeURIComponent(fileName.trim() || "video")}`;
+}
+
 const DEFINITIONS: readonly ProviderDefinition[] = Object.freeze([
+  YOUTUBE,
+  LOCAL,
   ottProvider("netflix", "Netflix", /(^|\.)netflix\.com$/i, "https://www.netflix.com/browse", [
     "title",
     "watch",
@@ -293,11 +367,48 @@ export type WatchSource =
       readonly label: string;
     }
   | {
+      /** Driven for real, through YouTube's own sanctioned IFrame player. */
+      readonly kind: "youtube";
+      readonly providerId: "youtube";
+      readonly videoId: string;
+      readonly url: string;
+      readonly label: string;
+    }
+  | {
+      /** Everyone's own copy of the same file. `fileName` is all that travels. */
+      readonly kind: "local";
+      readonly providerId: "local";
+      readonly fileName: string;
+      readonly url: string;
+      readonly label: string;
+    }
+  | {
       readonly kind: "external";
       readonly providerId: string;
       readonly url: string | null;
       readonly label: string;
     };
+
+const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
+
+/**
+ * Reads a video id out of any public YouTube address. Nothing is fetched and
+ * no page is parsed: this is pure URL reading.
+ */
+export function parseYouTubeVideoId(input: string): string | null {
+  const raw = input.trim();
+  if (YOUTUBE_ID.test(raw)) return raw;
+  const url = toUrl(raw);
+  if (!url || !YOUTUBE.hostPattern?.test(url.hostname)) return null;
+  const v = url.searchParams.get("v");
+  if (v && YOUTUBE_ID.test(v)) return v;
+  const segments = url.pathname.split("/").filter(Boolean);
+  for (const segment of segments) {
+    if (YOUTUBE_ID.test(segment)) return segment;
+  }
+  return null;
+}
+
 
 const DIRECT_VIDEO = /\.(mp4|webm|ogg|ogv|m3u8)$/i;
 const TITLE_ID = /^[A-Za-z0-9._-]{2,64}$/;
@@ -356,6 +467,30 @@ export function parseWatchSource(input: string): WatchSource | null {
   const url = toUrl(raw);
   if (!url) return null;
 
+  // The two sources StreamFlow can genuinely drive are recognised first, so
+  // neither is mistaken for a launch-only page.
+  const videoId = parseYouTubeVideoId(url.toString());
+  if (videoId) {
+    return {
+      kind: "youtube",
+      providerId: "youtube",
+      videoId,
+      url: `https://www.youtube.com/watch?v=${videoId}`,
+      label: YOUTUBE.capability.displayName,
+    };
+  }
+
+  if (LOCAL.hostPattern?.test(url.hostname)) {
+    const fileName = decodeURIComponent(url.pathname.replace(/^\//, "")) || "video";
+    return {
+      kind: "local",
+      providerId: "local",
+      fileName,
+      url: url.toString(),
+      label: fileName,
+    };
+  }
+
   for (const definition of DEFINITIONS) {
     if (!definition.hostPattern?.test(url.hostname)) continue;
     return {
@@ -366,6 +501,7 @@ export function parseWatchSource(input: string): WatchSource | null {
       label: definition.capability.displayName,
     };
   }
+
 
   if (url.protocol === "https:" && DIRECT_VIDEO.test(url.pathname)) {
     return {
@@ -526,7 +662,13 @@ export function readRoomMediaRef(metadata: Readonly<Record<string, unknown>>): R
             typeof parsed.providerName === "string" && parsed.providerName.length > 0
               ? parsed.providerName
               : (registry?.displayName ?? parsed.providerId),
-          kind: parsed.kind === "ott" || parsed.kind === "direct" ? parsed.kind : "external",
+          kind:
+            parsed.kind === "ott" ||
+            parsed.kind === "direct" ||
+            parsed.kind === "youtube" ||
+            parsed.kind === "local"
+              ? parsed.kind
+              : "external",
           url,
           titleId: typeof parsed.titleId === "string" ? parsed.titleId : null,
           title: typeof parsed.title === "string" && parsed.title.length > 0 ? parsed.title : null,
