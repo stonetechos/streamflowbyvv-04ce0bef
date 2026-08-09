@@ -19,6 +19,18 @@ export function BottomNav() {
   const auth = useAuth();
   const badges = useNotifications();
 
+  // Before the session resolves we know nothing: a signed-out bar here would
+  // be a visible wrong guess on an authenticated page (parity item #31).
+  if (!auth.isSettled) {
+    return (
+      <div
+        aria-hidden="true"
+        className="fixed inset-x-0 bottom-0 z-40 h-14 border-t border-border/70 bg-surface/85 backdrop-blur-xl md:hidden"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      />
+    );
+  }
+
   if (!auth.isAuthenticated) return null;
 
   return (
