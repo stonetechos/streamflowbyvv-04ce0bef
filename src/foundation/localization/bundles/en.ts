@@ -527,7 +527,8 @@ export const enBundle: LocaleBundle = {
     "theater.provider.host_chooses": "The host picks the service for the room.",
     "theater.capability.automatic": "Plays in sync here",
     "theater.capability.title": "What this room can do with {provider}",
-    "theater.capability.can.coordinate": "Keeps everyone together: chat, presence, and a shared countdown.",
+    "theater.capability.can.coordinate":
+      "Keeps everyone together: chat, presence, and a shared countdown.",
     "theater.capability.can.embed": "Plays right here, in sync for everyone.",
     "theater.capability.can.countdown": "Counts everyone in so you press play at the same moment.",
     "theater.capability.cannot.control": "Cannot play, pause, or seek {provider} for you.",
