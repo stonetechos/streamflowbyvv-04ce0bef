@@ -737,6 +737,56 @@ export function Theater({ roomId }: TheaterProps) {
             onOpenProvider={openProvider}
           />
 
+          {isHost && (isPicking || source.source === null) ? (
+            <div className="flex flex-col gap-3" ref={pickerRef} data-sf-selection-flow>
+              <ProviderBar
+                activeProviderId={activeProviderId}
+                isHost={isHost}
+                providers={scope.providers}
+                isScoped={scope.isScoped}
+                onSelect={selectProvider}
+              />
+              {activeProvider ? (
+                <SourcePicker
+                  provider={activeProvider}
+                  currentUrl={source.source?.url ?? ""}
+                  currentTitle={source.selection.title ?? ""}
+                  isSaving={source.isSaving}
+                  error={source.error ? t("theater.source.error") : null}
+                  onSubmit={(url, title) => {
+                    source.save(url, title);
+                    setIsPicking(false);
+                  }}
+                />
+              ) : null}
+            </div>
+          ) : null}
+
+          {isHost && !isPicking && source.source !== null ? (
+            <div>
+              <ActionButton
+                tone="ghost"
+                size="sm"
+                onClick={chooseContent}
+                data-sf-stage-cta="change-content"
+              >
+                {t("theater.stage.change_cta")}
+              </ActionButton>
+            </div>
+          ) : null}
+
+          {/* Inviting people belongs with the room's start-of-session work,
+              not in the top-right utility strip. */}
+          <InvitePanel
+            link={inviteLink}
+            participantCount={presentMembers.length}
+            blocked={inviteBlocked}
+            onCopied={() => beta.track("invite_copied")}
+            onShared={() => beta.track("native_share_opened")}
+          />
+
+          <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
+
           <ActivationPanel
             plan={activation}
             onAct={handleActivation}
@@ -870,37 +920,8 @@ export function Theater({ roomId }: TheaterProps) {
             }
           />
 
-          <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />
-
-          <InvitePanel
-            link={inviteLink}
-            participantCount={presentMembers.length}
-            blocked={inviteBlocked}
-            onCopied={() => beta.track("invite_copied")}
-            onShared={() => beta.track("native_share_opened")}
-          />
-
           <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
 
-          {isHost ? (
-            <div className="flex flex-col gap-3" ref={pickerRef} data-sf-selection-flow>
-              <ProviderBar
-                activeProviderId={activeProviderId}
-                isHost={isHost}
-                onSelect={selectProvider}
-              />
-              {activeProvider ? (
-                <SourcePicker
-                  provider={activeProvider}
-                  currentUrl={source.source?.url ?? ""}
-                  currentTitle={source.selection.title ?? ""}
-                  isSaving={source.isSaving}
-                  error={source.error ? t("theater.source.error") : null}
-                  onSubmit={(url, title) => source.save(url, title)}
-                />
-              ) : null}
-            </div>
-          ) : null}
         </div>
 
         <aside className="hidden min-h-[24rem] flex-col gap-4 lg:flex lg:h-[calc(100vh-12rem)]">
