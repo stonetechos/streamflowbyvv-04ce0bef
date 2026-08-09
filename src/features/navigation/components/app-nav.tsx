@@ -31,6 +31,20 @@ export function AppNav() {
     </Link>
   );
 
+  // Before the session resolves we know nothing: showing "Sign in" here would
+  // be a guess, and on an authenticated page it is a visible wrong guess.
+  if (!auth.isSettled) {
+    return (
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-2 px-4">
+        {brand}
+        <div
+          aria-hidden="true"
+          className="h-9 w-36 rounded-xl bg-muted/40 motion-safe:animate-pulse"
+        />
+      </div>
+    );
+  }
+
   if (!auth.isAuthenticated) {
     return (
       <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-2 px-4">

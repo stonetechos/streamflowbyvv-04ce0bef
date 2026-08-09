@@ -302,7 +302,9 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
             <DialogTitle>
               {t("provider.connect.title", { service: pendingConnect?.name ?? "" })}
             </DialogTitle>
-            <DialogDescription>{t("provider.connect.description")}</DialogDescription>
+            <DialogDescription>
+              {t("provider.connect.description", { service: pendingConnect?.name ?? "" })}
+            </DialogDescription>
           </DialogHeader>
           <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
             <li>{t("provider.connect.point_sign_in")}</li>

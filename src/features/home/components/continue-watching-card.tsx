@@ -19,6 +19,9 @@ export interface ContinueWatchingCardProps {
 export function ContinueWatchingCard({ summary }: ContinueWatchingCardProps) {
   const { t } = useTranslation();
   const { room, memberCount, isHost } = summary;
+  // A room that is already watching resumes in the theatre; a lobby resumes
+  // where it left off, in the waiting room.
+  const isWatching = room.status === "active" || room.status === "paused";
 
   return (
     <Surface
@@ -61,13 +64,23 @@ export function ContinueWatchingCard({ summary }: ContinueWatchingCardProps) {
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Link
-              to="/rooms/$roomId"
-              params={{ roomId: room.id }}
-              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground shadow-e1 transition-colors hover:bg-primary/90"
-            >
-              {t("home.continue.action")}
-            </Link>
+            {isWatching ? (
+              <Link
+                to="/theater/$roomId"
+                params={{ roomId: room.id }}
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground shadow-e1 transition-colors hover:bg-primary/90"
+              >
+                {t("home.continue.action")}
+              </Link>
+            ) : (
+              <Link
+                to="/rooms/$roomId"
+                params={{ roomId: room.id }}
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground shadow-e1 transition-colors hover:bg-primary/90"
+              >
+                {t("home.continue.action")}
+              </Link>
+            )}
             <span className="font-mono text-xs text-muted-foreground">{room.code}</span>
           </div>
         </div>

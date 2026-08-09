@@ -86,8 +86,12 @@ export function SourcePicker({
     window.open(target, "_blank", "noopener,noreferrer");
   };
 
+  // A room's choice needs a name people recognise, not just an address.
+  const canSubmit = value.trim().length > 0 && title.trim().length > 0;
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    if (!canSubmit) return;
     onSubmit(value, title);
   };
 
@@ -148,12 +152,7 @@ export function SourcePicker({
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
-        <ActionButton
-          type="submit"
-          size="sm"
-          loading={isSaving}
-          disabled={value.trim().length === 0}
-        >
+        <ActionButton type="submit" size="sm" loading={isSaving} disabled={!canSubmit}>
           {t("theater.source.save")}
         </ActionButton>
       </form>

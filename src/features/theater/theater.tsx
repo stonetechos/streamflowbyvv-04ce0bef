@@ -45,6 +45,7 @@ import {
   type MemberView,
 } from "@/features/waiting-room";
 import { useTranslation } from "@/foundation/localization";
+import { createBrowserProviderLauncher } from "@/infrastructure/providers";
 
 import { ActivationPanel } from "./components/activation-panel";
 import { BetaFeedback } from "./components/beta-feedback";
@@ -165,6 +166,11 @@ export function Theater({ roomId }: TheaterProps) {
   const [hasLeft, setHasLeft] = useState(false);
   const [researchState, setResearchState] = useState<"pending" | "done">("pending");
   const [reconnectCount, setReconnectCount] = useState(0);
+  // Inviting is an event, not an inference: the trail only counts a real one.
+  const [inviteSent, setInviteSent] = useState(false);
+  // One vetted adapter owns provider hand-off; the raw window handle is never
+  // consulted, because `noopener` makes it null even on success.
+  const providerLauncher = useMemo(() => createBrowserProviderLauncher(), []);
   // A countdown that was cancelled must not count as completed.
   const countdownCompletedRef = useRef(false);
 
@@ -478,11 +484,16 @@ export function Theater({ roomId }: TheaterProps) {
     if (!url) return;
     chat.sendCoordination("provider-launched", t("room.manual.sent.provider-launched"));
     beta.track("provider_launch_clicked");
-    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    // The vetted adapter owns the hand-off: under `noopener` a successful open
+    // still returns null, so only a refused request counts as a failure.
+    const opened = providerLauncher.open({
+      kind: "web",
+      url,
+      labelKey: "theater.provider.open",
+    });
     setHasOpenedProvider(true);
-    // A blocked pop-up is a real failure, and the person needs a next step.
-    setFailure(opened === null ? "provider_launch_failed" : null);
-  }, [source.source, capabilityProviderId, chat, t, beta]);
+    setFailure(opened ? null : "provider_launch_failed");
+  }, [source.source, capabilityProviderId, chat, t, beta, providerLauncher]);
 
   // One derivation, one snapshot: the host and every guest read the same phase.
   const mediaRef = room.room?.mediaRef ?? null;
@@ -542,7 +553,10 @@ export function Theater({ roomId }: TheaterProps) {
   const activation = useRoomActivation({
     isHost,
     guestCount,
-    hasContent: source.source !== null,
+    // A link with no name is not a chosen title; the trail must not claim it.
+    hasContent:
+      source.source !== null && (source.selection.title ?? source.label ?? "").trim().length > 0,
+    inviteSent,
     isCountingDown: countdownSeconds !== null,
     phase,
     isEmbedded,
@@ -860,8 +874,14 @@ export function Theater({ roomId }: TheaterProps) {
             link={inviteLink}
             participantCount={presentMembers.length}
             blocked={inviteBlocked}
-            onCopied={() => beta.track("invite_copied")}
-            onShared={() => beta.track("native_share_opened")}
+            onCopied={() => {
+              setInviteSent(true);
+              beta.track("invite_copied");
+            }}
+            onShared={() => {
+              setInviteSent(true);
+              beta.track("native_share_opened");
+            }}
           />
 
           <RoomKeyCard roomCode={room.room?.code ?? null} blocked={inviteBlocked !== null} />

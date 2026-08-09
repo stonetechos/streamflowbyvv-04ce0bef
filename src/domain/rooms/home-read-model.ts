@@ -178,7 +178,9 @@ export function createHomeReadModel(deps: HomeReadModelDependencies): HomeReadMo
       return Object.freeze({
         continueRoom,
         liveRooms: live.filter((entry) => entry !== continueRoom),
-        recentRooms: closed,
+        // "Recent" means a room that is no longer happening — closed, or open
+        // but gone quiet. A dormant room must still be findable from Home.
+        recentRooms: [...dormant, ...closed].sort(newestFirst),
         dormantRooms: dormant,
         pendingInvites,
         answeredInvites: [...answeredInvites].sort((a, b) =>
