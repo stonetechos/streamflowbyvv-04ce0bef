@@ -27,6 +27,9 @@ import {
   type RoomRepository,
 } from "@/repository";
 
+import { readRoomMediaRef } from "@/domain/watch/watch-source";
+
+import { classifyRoomActivity, type RoomActivity } from "./room-activity";
 import type { Invite, Room, RoomMember } from "./room.types";
 
 /** Rooms a person can still walk back into (ADR-002). */
