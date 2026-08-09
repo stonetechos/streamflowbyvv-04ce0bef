@@ -522,6 +522,11 @@ export const enBundle: LocaleBundle = {
     "theater.player.close": "Close the player",
     "theater.player.error": "This source didn't play. Check the link and try again.",
     "theater.player.ended": "That's the end.",
+    "theater.local.eyebrow": "Everyone opens their own copy",
+    "theater.local.explainer":
+      "Open your copy of this file to join the shared playback. Play, pause and seek are shared for real once you do.",
+    "theater.local.pick": "Open my copy",
+    "theater.local.privacy": "Your file stays on your device. Nothing is uploaded or shared.",
     "theater.transport.play": "Play",
     "theater.transport.pause": "Pause",
     "theater.transport.back": "Back 10s",
