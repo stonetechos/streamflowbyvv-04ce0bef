@@ -35,13 +35,13 @@ export interface PlayerControlsProps {
   readonly captionTracks: readonly CaptionTrack[];
   /** False for a guest in a host-led room: transport is disabled, not hidden. */
   readonly canControlTransport: boolean;
-  readonly transportNote?: string | null;
+  readonly transportNote?: string | null | undefined;
   readonly isFullscreen: boolean;
   readonly canFullscreen: boolean;
   readonly pipSupport: PipSupport;
   readonly isPipActive: boolean;
   /** Compact form is used inside the PiP window. */
-  readonly variant?: "stage" | "pip";
+  readonly variant?: "stage" | "pip" | undefined;
   onTogglePlay(): void;
   onSeekTo(positionMs: number): void;
   onSeekBy(deltaMs: number): void;
@@ -52,7 +52,7 @@ export interface PlayerControlsProps {
   onCaptions(trackId: string | null): void;
   onToggleFullscreen(): void;
   onTogglePip(): void;
-  onClose?(): void;
+  onClose?: (() => void) | undefined;
 }
 
 function clock(ms: number | null): string {
