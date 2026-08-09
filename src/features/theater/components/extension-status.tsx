@@ -34,7 +34,7 @@ export function ExtensionStatus({
       : t("theater.extension.missing", { provider: providerName });
 
   return (
-    <Surface tone="muted" className="flex items-center gap-3 px-4 py-3">
+    <Surface tone="glass" className="flex items-center gap-3 px-4 py-3">
       <span
         aria-hidden
         className={`h-2 w-2 shrink-0 rounded-full ${

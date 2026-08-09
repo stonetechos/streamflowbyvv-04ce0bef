@@ -381,3 +381,22 @@ export {
   type PersonalizationMetrics,
   type SelectionFact,
 } from "./join-metrics";
+
+// Sprint H13 — companion extension bridge. Transport contract only; the room
+// sync service remains the single authority.
+export {
+  EXTENSION_APP_SOURCE,
+  EXTENSION_HANDSHAKE_TIMEOUT_MS,
+  EXTENSION_PROTOCOL_VERSION,
+  EXTENSION_PROVIDER_ID,
+  EXTENSION_SOURCE,
+  EXTENSION_STALE_AFTER_MS,
+  isBridgeControllable,
+  isExtensionMessage,
+  isPlayerStateFresh,
+  withExtensionControl,
+  type ExtensionCommand,
+  type ExtensionInboundMessage,
+  type ExtensionLinkStatus,
+  type ExtensionPlayerState,
+} from "./extension-bridge";
