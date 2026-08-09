@@ -478,11 +478,16 @@ export function Theater({ roomId }: TheaterProps) {
     if (!url) return;
     chat.sendCoordination("provider-launched", t("room.manual.sent.provider-launched"));
     beta.track("provider_launch_clicked");
-    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    // The vetted adapter owns the hand-off: under `noopener` a successful open
+    // still returns null, so only a refused request counts as a failure.
+    const opened = providerLauncher.open({
+      kind: "web",
+      url,
+      labelKey: "theater.provider.open",
+    });
     setHasOpenedProvider(true);
-    // A blocked pop-up is a real failure, and the person needs a next step.
-    setFailure(opened === null ? "provider_launch_failed" : null);
-  }, [source.source, capabilityProviderId, chat, t, beta]);
+    setFailure(opened ? null : "provider_launch_failed");
+  }, [source.source, capabilityProviderId, chat, t, beta, providerLauncher]);
 
   // One derivation, one snapshot: the host and every guest read the same phase.
   const mediaRef = room.room?.mediaRef ?? null;

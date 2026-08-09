@@ -827,7 +827,7 @@ export const enBundle: LocaleBundle = {
     "landing.services.title": "Works with the services you already use",
 
     "nav.home": "Home",
-    "nav.invites": "Rooms",
+    "nav.invites": "Invites",
     "nav.settings": "Settings",
     "nav.badge.unread": "{count} new in {destination}",
     "nav.primary": "Primary",
