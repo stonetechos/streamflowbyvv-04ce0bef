@@ -47,6 +47,8 @@ export interface HomeRoomSummary {
   readonly isHost: boolean;
   /** True when the room is still live and the viewer has actually joined it. */
   readonly isResumable: boolean;
+  /** Live / dormant / closed, decided by `classifyRoomActivity`. */
+  readonly activity: RoomActivity;
 }
 
 export interface HomeInviteSummary {
