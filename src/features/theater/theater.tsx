@@ -64,6 +64,7 @@ import { ProviderBar } from "./components/provider-bar";
 import { SourcePicker } from "./components/source-picker";
 import { SyncBadge } from "./components/sync-badge";
 import { WatchStage } from "./components/watch-stage";
+import { deriveStageView } from "./stage-view";
 import { useRoomChat } from "./use-room-chat";
 import { useWatchSource } from "./use-watch-source";
 import { useRoomRuntime } from "./use-room-runtime";
