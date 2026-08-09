@@ -19,6 +19,9 @@ export interface ContinueWatchingCardProps {
 export function ContinueWatchingCard({ summary }: ContinueWatchingCardProps) {
   const { t } = useTranslation();
   const { room, memberCount, isHost } = summary;
+  // A room that is already watching resumes in the theatre; a lobby resumes
+  // where it left off, in the waiting room.
+  const isWatching = room.status === "active" || room.status === "paused";
 
   return (
     <Surface

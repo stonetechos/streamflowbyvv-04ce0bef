@@ -82,15 +82,16 @@ export function deriveActivationPlan(input: ActivationInput): ActivationPlan {
   const finished = input.phase === "ended" || input.phase === "closed";
 
   if (input.isHost) {
+    const invited = input.inviteSent === true;
     const reached = finished
       ? HOST_STEPS.length - 1
       : watching
         ? 4
-        : input.isCountingDown || (input.hasContent && input.guestCount > 0)
+        : input.isCountingDown || (input.hasContent && invited)
           ? 3
           : input.hasContent
             ? 2
-            : input.guestCount > 0
+            : invited
               ? 1
               : 0;
 
