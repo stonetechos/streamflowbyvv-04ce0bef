@@ -563,6 +563,9 @@ export const hiINBundle: LocaleBundle = {
     "theater.provider.instruction":
       "{provider} पर टाइटल चुनें, फिर लौटकर उसका लिंक यहाँ चिपकाएँ। StreamFlow आपके लिए साइन-इन नहीं करता और {provider} को रूम के अंदर नहीं चलाता।",
     "theater.provider.returned": "सेवा से लौट आए? नीचे टाइटल लिंक चिपकाएँ।",
+    "theater.provider.launch_label": "{provider} खोलें",
+    "theater.provider.launch_description":
+      "{provider} खुलने के बाद कोई टाइटल चुनें। यह लिंक सेवा का लॉन्च पेज है, चुना हुआ टाइटल नहीं।",
     "theater.provider.paste_label": "टाइटल लिंक",
     "theater.provider.paste_description":
       "काउंटडाउन खत्म होने पर हर कोई इसे अपने अकाउंट पर खोलता है।",
@@ -691,7 +694,7 @@ export const hiINBundle: LocaleBundle = {
     "theater.source.error": "यह लिंक सहेजा नहीं जा सका।",
     "theater.header.people": "{count} यहाँ हैं",
     "theater.header.host": "होस्ट",
-    "theater.action.leave": "छोड़ें",
+    "theater.action.leave": "रूम छोड़ें",
     "theater.room.unavailable": "यह रूम उपलब्ध नहीं है।",
     "theater.action.open": "थिएटर में जाएँ",
 
