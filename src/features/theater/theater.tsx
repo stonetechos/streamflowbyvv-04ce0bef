@@ -64,6 +64,7 @@ import { ProviderBar } from "./components/provider-bar";
 import { SourcePicker } from "./components/source-picker";
 import { SyncBadge } from "./components/sync-badge";
 import { WatchStage } from "./components/watch-stage";
+import { deriveStageView } from "./stage-view";
 import { useRoomChat } from "./use-room-chat";
 import { useWatchSource } from "./use-watch-source";
 import { useRoomRuntime } from "./use-room-runtime";
@@ -116,6 +117,7 @@ export function Theater({ roomId }: TheaterProps) {
   const [copied, setCopied] = useState(false);
   const suppressUntil = useRef(0);
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
 
   const countdown = useRoomCountdown({
     roomId,
@@ -459,6 +461,18 @@ export function Theater({ roomId }: TheaterProps) {
     roomEnded: room.room?.status === "ended",
   });
 
+  // The centre panel is the room's stage: one derivation decides what it shows
+  // and whether the lower media card would only repeat it.
+  const stageView = deriveStageView({ source: source.source, capability, isHost, phase });
+
+  // The host's stage CTA is the entry point into the app/provider picker.
+  const chooseContent = useCallback(() => {
+    const node = pickerRef.current;
+    if (!node) return;
+    node.scrollIntoView({ behavior: "smooth", block: "center" });
+    node.querySelector<HTMLElement>("button, input")?.focus({ preventScroll: true });
+  }, []);
+
   const guestCount = Math.max(0, presentMembers.length - 1);
 
   const activation = useRoomActivation({
@@ -736,30 +750,38 @@ export function Theater({ roomId }: TheaterProps) {
             stageRef={stageRef}
             hasFailed={player.hasFailed}
             isReady={player.isReady}
+            isHost={isHost}
+            phase={phase}
+            title={source.label}
+            countdownSeconds={countdownSeconds}
+            onChooseContent={chooseContent}
+            onOpenProvider={openProvider}
           />
 
-          <MediaCard
-            source={source.source}
-            label={source.label}
-            capability={capability}
-            isHost={isHost}
-            participantCount={presentMembers.length}
-            countdownSeconds={countdownSeconds}
-            phase={phase}
-            validity={mediaRef?.validity ?? null}
-            canStart={
-              source.source !== null && mediaRef?.validity !== "invalid" && countdown.isAvailable
-            }
-            isStarting={countdown.pending === "start"}
-            onStart={countdown.start}
-            onCancel={countdown.cancel}
-            onFullscreen={
-              isEmbedded && capability.allowsFullscreenFromRoom ? requestFullscreen : null
-            }
-            volume={volume}
-            onVolumeChange={setVolume}
-            showVolume={isEmbedded}
-          />
+          {stageView.showsMediaCard ? (
+            <MediaCard
+              source={source.source}
+              label={source.label}
+              capability={capability}
+              isHost={isHost}
+              participantCount={presentMembers.length}
+              countdownSeconds={countdownSeconds}
+              phase={phase}
+              validity={mediaRef?.validity ?? null}
+              canStart={
+                source.source !== null && mediaRef?.validity !== "invalid" && countdown.isAvailable
+              }
+              isStarting={countdown.pending === "start"}
+              onStart={countdown.start}
+              onCancel={countdown.cancel}
+              onFullscreen={
+                isEmbedded && capability.allowsFullscreenFromRoom ? requestFullscreen : null
+              }
+              volume={volume}
+              onVolumeChange={setVolume}
+              showVolume={isEmbedded}
+            />
+          ) : null}
 
           {isEmbedded ? (
             <Surface tone="card" padding="md" className="flex flex-col gap-3">
@@ -826,7 +848,7 @@ export function Theater({ roomId }: TheaterProps) {
           <RoomDrawer chat={chatPanel} people={participantRail} unreadHint={chat.lines.length} />
 
           {isHost ? (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3" ref={pickerRef} data-sf-selection-flow>
               <ProviderBar
                 activeProviderId={activeProviderId}
                 isHost={isHost}

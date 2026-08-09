@@ -477,6 +477,15 @@ export const enBundle: LocaleBundle = {
     "room.invite.qr_caption": "Scan to join this room",
     "room.invite.qr_alt": "QR code to join {room}",
     "theater.stage.empty": "The host hasn't chosen anything to watch yet.",
+    "theater.stage.host_cta": "Choose what to watch",
+    "theater.stage.guest_waiting": "Waiting for the host to choose something.",
+    "theater.stage.status.waiting": "Nothing chosen yet.",
+    "theater.stage.status.selected": "Chosen — the host starts the countdown when everyone's set.",
+    "theater.stage.status.countdown": "Counting down. Get ready to press play.",
+    "theater.stage.status.watching": "Watching together now.",
+    "theater.stage.status.paused": "Paused.",
+    "theater.stage.status.ended": "This session has ended.",
+    "theater.stage.status.closed": "This room is closed.",
     "theater.stage.external_title": "StreamFlow can't play {provider} for you",
     "theater.stage.open_provider": "Open {provider} in a new tab",
     "theater.stage.blocked":
@@ -821,7 +830,8 @@ export const enBundle: LocaleBundle = {
     "home.services.arrange.action": "Arrange apps",
     "home.services.arrange.done": "Done",
     "home.services.arrange.reset": "Reset order",
-    "home.services.arrange.hint": "Reorder, pin favourites, or hide apps you do not use. This changes your homepage only.",
+    "home.services.arrange.hint":
+      "Reorder, pin favourites, or hide apps you do not use. This changes your homepage only.",
     "home.services.arrange.move_earlier": "Move {service} earlier",
     "home.services.arrange.move_later": "Move {service} later",
     "home.services.arrange.pin": "Pin {service} to the front",
@@ -847,13 +857,15 @@ export const enBundle: LocaleBundle = {
     "beta.personalization.most_pinned": "Most pinned",
     "beta.personalization.most_hidden": "Most hidden",
     "room.key.title": "Room key",
-    "room.key.description": "Read it out in groups of {group}. Anyone with it joins the same room as the link.",
+    "room.key.description":
+      "Read it out in groups of {group}. Anyone with it joins the same room as the link.",
     "room.key.blocked": "The room is not accepting anyone new right now.",
     "room.key.copy": "Copy key",
     "room.key.copied": "Key copied",
     "room.key.spoken": "Room key: {characters}",
     "room.key.field.cell": "Room key character {position} of {total}",
-    "room.key.state.invalid": "That key does not look right. Check the six characters and try again.",
+    "room.key.state.invalid":
+      "That key does not look right. Check the six characters and try again.",
     "room.key.state.expired": "That room has already ended.",
     "room.key.state.revoked": "That key is no longer in use.",
     "room.key.state.locked": "The host has locked this room.",
@@ -861,7 +873,8 @@ export const enBundle: LocaleBundle = {
     "room.key.state.already_in_room": "You are already in another room.",
     "room.key.state.beta_blocked": "You need beta access before joining a room.",
     "room.key.state.reconnect": "You are already in this room — taking you back in.",
-    "room.key.state.network_error": "We could not reach the room. Check your connection and try again.",
+    "room.key.state.network_error":
+      "We could not reach the room. Check your connection and try again.",
     "room.key.state.validating": "Checking that key…",
     "room.key.state.success": "Joining the room…",
     "home.join.code_label": "Room code",
@@ -1426,9 +1439,11 @@ export const enBundle: LocaleBundle = {
     "beta.cohort.label": "Cohort",
     "beta.cohort.in": "in the beta",
     "beta.cohort.out": "not admitted",
-    "beta.cohort.matching": "Matching this filter: {rooms} rooms created, {activated} reached watching together.",
+    "beta.cohort.matching":
+      "Matching this filter: {rooms} rooms created, {activated} reached watching together.",
     "beta.empty.title": "No beta data in this session",
-    "beta.empty.description": "Create a room and invite someone in another tab to populate this view.",
+    "beta.empty.description":
+      "Create a room and invite someone in another tab to populate this view.",
     "beta.section.cohorts": "Cohorts",
     "beta.section.activation": "Activation",
     "beta.section.engagement": "Engagement",
@@ -1440,7 +1455,8 @@ export const enBundle: LocaleBundle = {
     "beta.dimension.providerId": "Service",
     "beta.dimension.syncMode": "Sync mode",
     "beta.dimension.inviteSource": "Invite source",
-    "beta.activation.definition": "Activated means a room reached watching with a host and at least one guest, after a completed countdown, with a chosen title.",
+    "beta.activation.definition":
+      "Activated means a room reached watching with a host and at least one guest, after a completed countdown, with a chosen title.",
     "beta.count.roomsActivated": "Rooms activated",
     "beta.metric.activationRate": "Activation rate",
     "beta.metric.medianTimeToFirstGuest": "Median time to first guest",
@@ -1460,7 +1476,8 @@ export const enBundle: LocaleBundle = {
     "beta.comments.show": "Show written feedback",
     "beta.comments.hide": "Hide written feedback",
     "beta.comments.protected": "Written feedback is hidden until you choose to read it.",
-    "beta.research.disclaimer": "Research answers only. No billing exists and no capability is restricted by these responses.",
+    "beta.research.disclaimer":
+      "Research answers only. No billing exists and no capability is restricted by these responses.",
     "beta.research.valuable": "valuable",
     "beta.research.pay": "would pay",
     "beta.interviews.questions": "Interview questions",
@@ -1472,11 +1489,14 @@ export const enBundle: LocaleBundle = {
     "beta.signal.activated": "activated",
     "beta.interview.what_were_you_watching": "What were you trying to watch together?",
     "beta.interview.first_confusing_step": "What was the first step that confused you?",
-    "beta.interview.handoff_understandable": "Was it clear that you open the streaming service yourself?",
+    "beta.interview.handoff_understandable":
+      "Was it clear that you open the streaming service yourself?",
     "beta.interview.everyone_knew_next_step": "Did everyone in the room know what to do next?",
     "beta.interview.chat_or_voice_value": "Did chat or talking add anything to the evening?",
-    "beta.interview.what_would_bring_you_back": "What would bring you back for another watch party?",
-    "beta.interview.what_would_you_pay_for": "Is there anything you would pay for? It is fine to say no.",
+    "beta.interview.what_would_bring_you_back":
+      "What would bring you back for another watch party?",
+    "beta.interview.what_would_you_pay_for":
+      "Is there anything you would pay for? It is fine to say no.",
     "room.recap.title": "How the watch party went",
     "room.recap.duration": "Time together",
     "room.recap.duration.unknown": "Not recorded",
@@ -1495,7 +1515,8 @@ export const enBundle: LocaleBundle = {
     "room.recap.chat.unavailable": "Was not available",
     "room.recap.reconnects": "Someone reconnected {count} times during the party.",
     "research.title": "Two quick questions",
-    "research.disclaimer": "These are ideas we are considering. Nothing here is for sale, and everything you use today stays free.",
+    "research.disclaimer":
+      "These are ideas we are considering. Nothing here is for sale, and everything you use today stays free.",
     "research.question.value": "Would this be useful to you?",
     "research.question.pay": "Would you pay for it?",
     "research.value.not_valuable": "Not useful",
@@ -1508,20 +1529,25 @@ export const enBundle: LocaleBundle = {
     "research.action.skip": "Skip",
     "research.thanks": "Thank you. That helps us decide what to build next.",
     "research.concept.video_chat": "See each other on camera",
-    "research.concept.video_chat.description": "Small video windows beside the show, instead of voice only.",
+    "research.concept.video_chat.description":
+      "Small video windows beside the show, instead of voice only.",
     "research.concept.larger_rooms": "Bigger rooms",
-    "research.concept.larger_rooms.description": "Watch parties with more people than a small group.",
+    "research.concept.larger_rooms.description":
+      "Watch parties with more people than a small group.",
     "research.concept.longer_rooms": "Longer sessions",
     "research.concept.longer_rooms.description": "Rooms that stay open for a full series marathon.",
     "research.concept.advanced_moderation": "More host controls",
-    "research.concept.advanced_moderation.description": "Finer control over who can talk, chat, and invite.",
+    "research.concept.advanced_moderation.description":
+      "Finer control over who can talk, chat, and invite.",
     "research.concept.recurring_rooms": "Repeating watch nights",
-    "research.concept.recurring_rooms.description": "A room that comes back every week with the same people.",
+    "research.concept.recurring_rooms.description":
+      "A room that comes back every week with the same people.",
     "research.concept.room_themes": "Room looks",
     "research.concept.room_themes.description": "Different visual themes for your room.",
     "research.concept.session_history": "Watch history",
     "research.concept.session_history.description": "A record of what your group watched together.",
     "research.concept.community_rooms": "Community rooms",
-    "research.concept.community_rooms.description": "Larger public-style rooms beyond your invited friends.",
+    "research.concept.community_rooms.description":
+      "Larger public-style rooms beyond your invited friends.",
   },
 };
