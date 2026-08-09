@@ -159,7 +159,10 @@ export function Theater({ roomId }: TheaterProps) {
   });
 
   const [isBuffering, setIsBuffering] = useState(false);
-  const [selfReady, setSelfReady] = useState(false);
+  // Readiness is durable room state, not a local flag: it is stored on the
+  // membership row, so it survives a hard reload and every other member sees
+  // the same answer (parity item #22).
+  const selfReady = room.viewer.isReady;
   const [hasOpenedProvider, setHasOpenedProvider] = useState(false);
   const [failure, setFailure] = useState<FailureKind | null>(null);
   const [feedbackState, setFeedbackState] = useState<"pending" | "answered" | "dismissed">(
@@ -479,11 +482,10 @@ export function Theater({ roomId }: TheaterProps) {
 
 
   const toggleReady = useCallback(() => {
-    setSelfReady((current) => {
-      if (!current) chat.sendCoordination("ready", t("room.manual.sent.ready"));
-      return !current;
-    });
-  }, [chat, t]);
+    const next = !selfReady;
+    if (next) chat.sendCoordination("ready", t("room.manual.sent.ready"));
+    room.setReady(next);
+  }, [chat, room, selfReady, t]);
 
   const openProvider = useCallback(() => {
     const url = source.source?.url ?? providerBrowseUrl(capabilityProviderId);

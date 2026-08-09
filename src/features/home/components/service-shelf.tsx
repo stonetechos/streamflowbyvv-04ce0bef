@@ -82,6 +82,20 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
   );
   const providerSessions = useProviderSessions(profileId, sources);
 
+  // Parity item #20 — which services have a watch party happening right now.
+  // Read-only: it reuses the home snapshot already loaded for this screen.
+  const liveProviderIds = useMemo(() => {
+    const rooms = [
+      ...(home.snapshot.continueRoom ? [home.snapshot.continueRoom] : []),
+      ...home.snapshot.liveRooms,
+    ];
+    return new Set(
+      rooms
+        .map((entry) => entry.room.providerId)
+        .filter((id): id is string => typeof id === "string" && id.length > 0),
+    );
+  }, [home.snapshot.continueRoom, home.snapshot.liveRooms]);
+
   async function startRoom(card: ServiceCardView) {
     setChoosingKey(card.key);
     // Remember only that the provider has been connected and last used.
@@ -165,6 +179,7 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
           const busy = choosingKey === card.key;
           const session = providerSessions.session(card.key);
           const isConnected = session?.status === "connected";
+          const isLive = card.providerId !== null && liveProviderIds.has(card.providerId);
           return (
             <li
               key={card.key}
@@ -203,6 +218,17 @@ export function ServiceShelf({ home, profileId }: ServiceShelfProps) {
                       className="relative z-10 h-full w-full"
                     />
                   )}
+                  {isLive ? (
+                    <span
+                      data-sf-service-live={card.key}
+                      title={t("home.services.live_now", { service: card.name })}
+                      className="absolute right-2 top-2 z-10 flex size-2.5 items-center justify-center rounded-full bg-success ring-2 ring-background"
+                    >
+                      <span className="sr-only">
+                        {t("home.services.live_now", { service: card.name })}
+                      </span>
+                    </span>
+                  ) : null}
                 </span>
 
                 <span className="flex items-center gap-1.5 px-0.5">
