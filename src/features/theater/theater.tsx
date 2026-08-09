@@ -471,7 +471,11 @@ export function Theater({ roomId }: TheaterProps) {
     beta.track("room_left");
     setHasLeft(true);
     room.leave();
-  }, [beta, room]);
+    // Leaving is also a navigation: the person goes back to the room's lobby
+    // instead of sitting on a stage they are no longer part of.
+    void navigate({ to: "/rooms/$roomId", params: { roomId } });
+  }, [beta, room, navigate, roomId]);
+
 
   const toggleReady = useCallback(() => {
     setSelfReady((current) => {
