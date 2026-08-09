@@ -8,11 +8,14 @@
  */
 import type { RoomStatus } from "@/domain/shared/domain-enums";
 
-/** A lobby nobody touched for this long, alone and empty-handed, is dormant. */
-export const DORMANT_AFTER_MS = 30 * 60 * 1000;
+/**
+ * A lobby nobody touched for five minutes, alone, is dormant. Five minutes is
+ * the product rule: a watch party that nobody is in stops being "live" fast.
+ */
+export const DORMANT_AFTER_MS = 5 * 60 * 1000;
 
-/** A room that never chose anything goes dormant sooner. */
-export const DORMANT_EMPTY_AFTER_MS = 10 * 60 * 1000;
+/** A room that never chose anything goes dormant sooner still. */
+export const DORMANT_EMPTY_AFTER_MS = 2 * 60 * 1000;
 
 export type RoomActivity = "live" | "dormant" | "closed";
 
