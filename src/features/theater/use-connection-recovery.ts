@@ -49,6 +49,11 @@ export function useConnectionRecovery({
   useEffect(() => {
     if (!enabled || typeof window === "undefined") return;
 
+    // The browser may already be hidden or offline by the time we attach: seed
+    // from the live state instead of trusting what was true at mount.
+    setIsOnline(readOnline());
+    setIsVisible(readVisible());
+
     const interrupt = () => {
       setWasInterrupted(true);
       setHasFreshSnapshot(false);
