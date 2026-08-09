@@ -1,0 +1,1 @@
+UPDATE public.providers SET is_enabled = false, deleted_at = now(), updated_at = now() WHERE key = 'youtube' AND deleted_at IS NULL;
