@@ -5,7 +5,7 @@
  * room is that service's room, a launch is a room fact both sides see, and a
  * quiet lobby stops being offered as "continue watching" after five minutes.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 
 import {
   DORMANT_AFTER_MS,
