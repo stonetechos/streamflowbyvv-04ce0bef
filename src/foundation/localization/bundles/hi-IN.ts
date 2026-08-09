@@ -496,6 +496,7 @@ export const hiINBundle: LocaleBundle = {
     "theater.stage.reopen_provider": "{provider} फिर से खोलें",
     "theater.stage.start_party": "{provider} पर वॉच पार्टी शुरू करें",
     "theater.stage.join_provider": "{provider} पर शामिल हों",
+    "theater.stage.host_live": "होस्ट {provider} पर देख रहे हैं",
     "theater.stage.status.host_launched":
       "होस्ट ने इसे खोल दिया है — आप भी खोलें और काउंटडाउन पर चलाएँ।",
     "theater.source.advanced": "सीधा लिंक है? जोड़ें (वैकल्पिक)",
