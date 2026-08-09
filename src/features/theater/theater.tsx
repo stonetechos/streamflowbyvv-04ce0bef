@@ -760,6 +760,12 @@ export function Theater({ roomId }: TheaterProps) {
             onOpenProvider={openProvider}
           />
 
+          {/* Capability limits belong in the room, on screen, for everyone —
+              not only in a specification document. */}
+          {source.source ? <CapabilityNote capability={capability} /> : null}
+
+
+
           {/* A scoped room never shows a launcher grid: it already is that
               service's room. Only an open room asks which service, and the
               link field is a fallback, not a step. */}
