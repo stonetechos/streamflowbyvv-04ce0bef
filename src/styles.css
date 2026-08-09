@@ -825,6 +825,24 @@
   animation: sf-screen-in 0.36s var(--ease-emphasized) both;
 }
 
+/* Room stage — cross-fade when the centre panel changes state. */
+@keyframes sf-stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sf-stage-enter {
+  animation: sf-stage-in 0.34s var(--ease-emphasized) both;
+}
+
+
+
 /* Po — listening: ears forward, head still, ripples breathing. */
 @keyframes sf-po-listen-ripple {
   0%,

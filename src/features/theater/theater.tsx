@@ -690,13 +690,30 @@ export function Theater({ roomId }: TheaterProps) {
         </p>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
         <div className="flex min-w-0 flex-col gap-4">
+          <WatchStage
+            source={source.source}
+            capability={capability}
+            containerRef={player.containerRef}
+            stageRef={stageRef}
+            hasFailed={player.hasFailed}
+            isReady={player.isReady}
+            isHost={isHost}
+            phase={phase}
+            title={source.label}
+            countdownSeconds={countdownSeconds}
+            onChooseContent={chooseContent}
+            onOpenProvider={openProvider}
+          />
+
           <ActivationPanel
             plan={activation}
             onAct={handleActivation}
             busy={countdown.pending === "start"}
           />
+
+
 
           {failure ? (
             <FailureNotice
@@ -743,20 +760,8 @@ export function Theater({ roomId }: TheaterProps) {
             />
           ) : null}
 
-          <WatchStage
-            source={source.source}
-            capability={capability}
-            containerRef={player.containerRef}
-            stageRef={stageRef}
-            hasFailed={player.hasFailed}
-            isReady={player.isReady}
-            isHost={isHost}
-            phase={phase}
-            title={source.label}
-            countdownSeconds={countdownSeconds}
-            onChooseContent={chooseContent}
-            onOpenProvider={openProvider}
-          />
+
+
 
           {stageView.showsMediaCard ? (
             <MediaCard

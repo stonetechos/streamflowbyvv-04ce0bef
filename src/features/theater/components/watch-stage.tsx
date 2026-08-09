@@ -53,12 +53,19 @@ export function WatchStage({
   const { t } = useTranslation();
   const view = deriveStageView({ source, capability, isHost, phase });
 
+  // One shared frame keeps every stage state the same size and weight, so a
+  // change of state reads as a transition inside the room rather than a
+  // re-layout of the page.
+  const frame =
+    "sf-stage-enter relative w-full overflow-hidden min-h-[13rem] sm:min-h-0 sm:aspect-video shadow-e2 ring-1 ring-border/50";
+
   if (view.kind === "empty") {
     return (
       <Surface
+        key="stage-empty"
         tone="glass"
         padding="lg"
-        className="relative flex aspect-video w-full items-center justify-center overflow-hidden text-center"
+        className={`${frame} flex items-center justify-center text-center`}
         data-sf-stage="empty"
         data-sf-stage-role={view.role}
       >
@@ -66,10 +73,10 @@ export function WatchStage({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,theme(colors.primary/18%),transparent_65%)]"
         />
-        <div className="relative flex max-w-sm flex-col items-center gap-4 px-2">
+        <div className="relative flex w-full max-w-sm flex-col items-center gap-3 px-1 sm:gap-4 sm:px-2">
           <span
             aria-hidden="true"
-            className="flex size-14 items-center justify-center rounded-2xl border border-border/60 bg-background/40 text-2xl shadow-e1"
+            className="flex size-12 items-center justify-center rounded-2xl border border-border/60 bg-background/40 text-xl shadow-e1 sm:size-14 sm:text-2xl"
           >
             ▶
           </span>
@@ -100,9 +107,10 @@ export function WatchStage({
   if (view.kind === "handoff") {
     return (
       <Surface
+        key={`stage-handoff-${capability.providerId}`}
         tone="glass"
         padding="lg"
-        className="relative flex aspect-video w-full flex-col items-center justify-center gap-3 overflow-hidden text-center"
+        className={`${frame} flex flex-col items-center justify-center gap-3 text-center`}
         data-sf-stage="handoff"
         data-sf-stage-role={view.role}
         data-sf-stage-provider={capability.providerId}
@@ -111,14 +119,14 @@ export function WatchStage({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,theme(colors.primary/14%),transparent_65%)]"
         />
-        <div className="relative flex w-full max-w-md flex-col items-center gap-3 px-2">
+        <div className="relative flex w-full max-w-md flex-col items-center gap-2.5 px-1 sm:gap-3 sm:px-2">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">{statusLine}</p>
           <p className="text-balance text-lg font-semibold sm:text-2xl" data-sf-stage-title>
             {title ?? capability.displayName}
           </p>
           {countdownSeconds !== null ? (
             <p
-              className="text-4xl font-semibold tabular-nums"
+              className="text-4xl font-semibold tabular-nums sm:text-5xl"
               data-sf-stage-countdown={countdownSeconds}
             >
               {countdownSeconds}
@@ -131,7 +139,7 @@ export function WatchStage({
           <p className="text-xs text-muted-foreground">
             {t("theater.stage.external_title", { provider: capability.displayName })}
           </p>
-          <ul className="space-y-1 text-xs text-muted-foreground">
+          <ul className="hidden space-y-1 text-xs text-muted-foreground sm:block">
             {capability.limitations.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -142,6 +150,7 @@ export function WatchStage({
               size="md"
               onClick={onOpenProvider}
               data-sf-stage-open-provider={capability.providerId}
+              className="w-full sm:w-auto"
             >
               {t("theater.stage.open_provider", { provider: capability.displayName })}
             </ActionButton>
@@ -153,10 +162,11 @@ export function WatchStage({
 
   return (
     <div
+      key="stage-embedded"
       ref={stageRef}
       data-sf-stage="embedded"
       data-sf-stage-role={view.role}
-      className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-e2"
+      className="sf-stage-enter relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-e2 ring-1 ring-border/50"
     >
       <div ref={containerRef} className="absolute inset-0 [&_iframe]:h-full [&_iframe]:w-full" />
       {hasFailed ? (
@@ -172,3 +182,4 @@ export function WatchStage({
     </div>
   );
 }
+
