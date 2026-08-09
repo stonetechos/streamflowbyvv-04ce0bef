@@ -55,10 +55,17 @@ const STATE_KEY: Record<ParticipantRuntime["state"], string> = {
   left: "room.participant.left",
 };
 
+const FRESHNESS_KEY: Record<PresenceFreshness, string> = {
+  live: "room.participant.badge.live",
+  stale: "room.participant.badge.stale",
+  offline: "room.participant.badge.offline",
+};
+
 export function ParticipantRail({
   participants,
   readiness,
   showReadiness,
+  facts = null,
   moderation = null,
   voiceProfileIds,
 }: ParticipantRailProps) {
@@ -85,10 +92,12 @@ export function ParticipantRail({
       ) : null}
 
       <ul className="flex flex-col gap-2">
-        {participants.map((participant) => (
+        {participants.map((participant) => {
+          const freshness = facts?.freshnessByProfileId.get(participant.participantId) ?? null;
+          return (
           <li
             key={participant.participantId}
-            className="flex items-center gap-3"
+            className="flex flex-wrap items-center gap-x-3 gap-y-1"
             data-sf-participant={participant.state}
           >
             <Avatar name={participant.displayName} size="sm" />
@@ -101,6 +110,31 @@ export function ParticipantRail({
                 ? t("room.participant.in_voice")
                 : t(STATE_KEY[participant.state])}
             </span>
+            {facts ? (
+              <span className="flex w-full flex-wrap gap-1 pl-11" data-sf-participant-badges>
+                {facts.readyProfileIds.has(participant.participantId) ? (
+                  <Badge tone="positive" testId="ready">
+                    {t("room.participant.badge.ready")}
+                  </Badge>
+                ) : null}
+                {facts.launchedProfileIds.has(participant.participantId) ? (
+                  <Badge tone="neutral" testId="launched">
+                    {t("room.participant.badge.launched")}
+                  </Badge>
+                ) : null}
+                {freshness && freshness !== "live" ? (
+                  <Badge tone="warning" testId={`freshness-${freshness}`}>
+                    {t(FRESHNESS_KEY[freshness])}
+                  </Badge>
+                ) : null}
+                {facts.isManual ? (
+                  <Badge tone="neutral" testId="manual">
+                    {t("room.participant.badge.manual")}
+                  </Badge>
+                ) : null}
+              </span>
+            ) : null}
+
             {moderation && !participant.isHost ? (
               <span className="flex shrink-0 gap-1">
                 {moderation.canMute ? (
