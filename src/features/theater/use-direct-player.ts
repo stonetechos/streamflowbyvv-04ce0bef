@@ -59,6 +59,8 @@ export interface DirectPlayerHandle {
   setMuted(muted: boolean): void;
   /** Passing null turns captions off. */
   setCaptionsTrack(trackId: string | null): void;
+  positionMs(): number | null;
+  durationMs(): number | null;
 }
 
 export interface UseDirectPlayerInput {
@@ -279,8 +281,5 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
     setCaptionsTrack,
     positionMs,
     durationMs,
-  } as DirectPlayerHandle & {
-    positionMs(): number | null;
-    durationMs(): number | null;
   };
 }
