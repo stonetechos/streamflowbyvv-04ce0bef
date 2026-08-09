@@ -996,7 +996,9 @@ export function Theater({ roomId }: TheaterProps) {
               onChooseContent={chooseContent}
               onOpenProvider={openProvider}
               playerBox={
-                isEmbedded ? (
+                needsLocalCopy ? (
+                  <LocalFilePrompt fileName={localFileName} onPick={pickLocalFile} />
+                ) : isEmbedded ? (
                   <TheaterBox
                     player={player}
                     title={source.label}
