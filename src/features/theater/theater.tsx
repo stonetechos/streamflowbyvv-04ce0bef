@@ -66,6 +66,7 @@ import { CapabilityNote } from "./components/capability-note";
 import { ProviderBar } from "./components/provider-bar";
 import { SourcePicker } from "./components/source-picker";
 import { SyncBadge } from "./components/sync-badge";
+import { TheaterBox } from "./components/theater-box";
 import { WatchStage } from "./components/watch-stage";
 import { deriveStageView } from "./stage-view";
 import { useRoomChat } from "./use-room-chat";
@@ -320,6 +321,17 @@ export function Theater({ roomId }: TheaterProps) {
       });
     },
     [isPlaying, player, runtime],
+  );
+
+  const seekTo = useCallback(
+    (positionMs: number) => {
+      runtime.send({
+        kind: "seek",
+        positionSeconds: Math.max(0, positionMs) / 1000,
+        playing: isPlaying,
+      });
+    },
+    [isPlaying, runtime],
   );
 
   const requestFullscreen = useCallback(() => {
@@ -759,6 +771,21 @@ export function Theater({ roomId }: TheaterProps) {
             hostLaunched={hostLaunched}
             onChooseContent={chooseContent}
             onOpenProvider={openProvider}
+            playerBox={
+              isEmbedded ? (
+                <TheaterBox
+                  player={player}
+                  title={source.label}
+                  canControlTransport={isHost && player.isReady && runtime.isAvailable}
+                  transportNote={isHost ? null : t("theater.transport.host_leads")}
+                  canFullscreen={capability.allowsFullscreenFromRoom}
+                  onTogglePlay={togglePlay}
+                  onSeekTo={seekTo}
+                  onSeekBy={seekBy}
+                  onRestart={() => runtime.send({ kind: "restart" })}
+                />
+              ) : undefined
+            }
           />
 
           {/* Capability limits belong in the room, on screen, for everyone —
@@ -915,20 +942,7 @@ export function Theater({ roomId }: TheaterProps) {
             />
           ) : null}
 
-          {isEmbedded ? (
-            <Surface tone="card" padding="md" className="flex flex-col gap-3">
-              <HostTransport
-                isHost={isHost}
-                isPlaying={isPlaying}
-                canControl={player.isReady && runtime.isAvailable}
-                positionMs={localPositionMs}
-                durationMs={durationMs}
-                onTogglePlay={togglePlay}
-                onSeekBy={seekBy}
-                onRestart={() => runtime.send({ kind: "restart" })}
-              />
-            </Surface>
-          ) : (
+          {isEmbedded ? null : (
             <ManualCoordination
               capability={capability}
               source={source.source}

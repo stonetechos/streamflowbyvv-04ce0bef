@@ -41,6 +41,8 @@ export interface WatchStageProps {
   onChooseContent?(): void;
   /** Opens the chosen service in a new tab. Launch-only and manual services. */
   onOpenProvider?(): void;
+  /** In-app theatre box. Rendered instead of the bare frame when embeddable. */
+  readonly playerBox?: React.ReactNode | undefined;
 }
 
 export function WatchStage({
@@ -59,6 +61,7 @@ export function WatchStage({
   hostLaunched = false,
   onChooseContent,
   onOpenProvider,
+  playerBox,
 }: WatchStageProps) {
   const { t } = useTranslation();
   const view = deriveStageView({
@@ -219,6 +222,8 @@ export function WatchStage({
       </Surface>
     );
   }
+
+  if (playerBox) return <>{playerBox}</>;
 
   return (
     <div
