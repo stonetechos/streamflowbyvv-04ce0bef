@@ -238,12 +238,7 @@ export function useDirectPlayer({
     };
     // The track list is part of the source: a different list is a different element.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    url,
-    textTracks
-      .map((track) => `${track.kind ?? "subtitles"}:${track.srclang}:${track.src}`)
-      .join("|"),
-  ]);
+  }, [url, trackSignature]);
 
   // Legacy attach point: when a plain container is supplied, host lands in it.
   useEffect(() => {
