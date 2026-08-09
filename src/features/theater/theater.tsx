@@ -580,6 +580,66 @@ export function Theater({ roomId }: TheaterProps) {
     hostLaunched,
   });
 
+  // The live room console: phase, clock and disclosure, all from facts the
+  // room already owns.
+  const consoleView = useMemo(
+    () =>
+      deriveRoomConsole({
+        hasSource: source.source !== null,
+        isAutomatic: runtime.isAutomatic,
+        isHost,
+        countdownSeconds,
+        playbackStatus: runtime.playback.status,
+        positionSeconds: runtime.playback.positionSeconds,
+        declarations,
+        nowMs,
+        roomEnded: phase === "ended" || phase === "closed",
+        canStartCountdown: enabled,
+      }),
+    [
+      source.source,
+      runtime.isAutomatic,
+      runtime.playback.status,
+      runtime.playback.positionSeconds,
+      isHost,
+      countdownSeconds,
+      declarations,
+      nowMs,
+      phase,
+      enabled,
+    ],
+  );
+
+  // Per-person facts for the rail: each one is a statement its owner made.
+  const railFacts = useMemo(() => {
+    const launched = new Set(
+      chat.events.filter((e) => e.kind === "provider-launched").map((e) => e.profileId),
+    );
+    if (hasOpenedProvider) launched.add(room.viewer.profileId ?? "");
+    return {
+      readyProfileIds: new Set(
+        room.members.filter((m) => (m.isViewer ? selfReady : m.isReady)).map((m) => m.profileId),
+      ),
+      launchedProfileIds: launched,
+      freshnessByProfileId: new Map(
+        room.members.map((m) => [
+          m.profileId,
+          classifyFreshness(m.presence, m.lastSeenAt ? new Date(m.lastSeenAt).getTime() : null, nowMs),
+        ]),
+      ),
+      isManual: !runtime.isAutomatic,
+    };
+  }, [
+    chat.events,
+    hasOpenedProvider,
+    room.members,
+    room.viewer.profileId,
+    selfReady,
+    nowMs,
+    runtime.isAutomatic,
+  ]);
+
+
   // The host's stage CTA is the entry point into the app/provider picker.
   const chooseContent = useCallback(() => {
     setIsPicking(true);
