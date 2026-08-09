@@ -47,7 +47,7 @@ describe("YouTube's return as a controllable source", () => {
   it("carries youtube as a source the room actually drives", () => {
     const youtube = WATCH_PROVIDERS.find((p) => p.providerId === "youtube");
     expect(youtube).toBeDefined();
-    expect(youtube?.playbackControl).toBe("automatic");
+    expect(youtube?.playbackControlMode).toBe("automatic");
     expect(youtube?.allowsEmbeddedPlayback).toBe(true);
   });
 
