@@ -489,9 +489,28 @@ export function Theater({ roomId }: TheaterProps) {
     roomEnded: room.room?.status === "ended",
   });
 
+  // The host opening the service is a room fact, announced once through the
+  // coordination stream, so a guest's stage never sits blank while the host is
+  // already watching.
+  const hostProfileId = room.room?.hostProfileId ?? null;
+  const hostLaunched = useMemo(
+    () =>
+      chat.events.some(
+        (event) => event.kind === "provider-launched" && event.profileId === hostProfileId,
+      ),
+    [chat.events, hostProfileId],
+  );
+
   // The centre panel is the room's stage: one derivation decides what it shows
   // and whether the lower media card would only repeat it.
-  const stageView = deriveStageView({ source: source.source, capability, isHost, phase });
+  const stageView = deriveStageView({
+    source: source.source,
+    capability,
+    isHost,
+    phase,
+    hasLaunched: hasOpenedProvider,
+    hostLaunched,
+  });
 
   // The host's stage CTA is the entry point into the app/provider picker.
   const chooseContent = useCallback(() => {
