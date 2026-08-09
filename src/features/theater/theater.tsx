@@ -360,6 +360,15 @@ export function Theater({ roomId }: TheaterProps) {
     [source, isHost],
   );
 
+  // A room created from a service tile already knows its service. The host
+  // never re-picks it from a grid: the session opens on that service's stage.
+  useEffect(() => {
+    if (!isHost || !scope.isScoped || !scope.providerId) return;
+    if (source.source || source.isSaving) return;
+    const browseUrl = providerBrowseUrl(scope.providerId);
+    if (browseUrl) source.save(browseUrl, null);
+  }, [isHost, scope.isScoped, scope.providerId, source]);
+
   const nameFor = useCallback((id: string) => names.get(id) ?? memberLabel(id), [names]);
 
   const presentMembers: readonly MemberView[] = useMemo(
@@ -479,9 +488,28 @@ export function Theater({ roomId }: TheaterProps) {
     roomEnded: room.room?.status === "ended",
   });
 
+  // The host opening the service is a room fact, announced once through the
+  // coordination stream, so a guest's stage never sits blank while the host is
+  // already watching.
+  const hostProfileId = room.members.find((member) => member.role === "host")?.profileId ?? null;
+  const hostLaunched = useMemo(
+    () =>
+      chat.events.some(
+        (event) => event.kind === "provider-launched" && event.profileId === hostProfileId,
+      ),
+    [chat.events, hostProfileId],
+  );
+
   // The centre panel is the room's stage: one derivation decides what it shows
   // and whether the lower media card would only repeat it.
-  const stageView = deriveStageView({ source: source.source, capability, isHost, phase });
+  const stageView = deriveStageView({
+    source: source.source,
+    capability,
+    isHost,
+    phase,
+    hasLaunched: hasOpenedProvider,
+    hostLaunched,
+  });
 
   // The host's stage CTA is the entry point into the app/provider picker.
   const chooseContent = useCallback(() => {
@@ -727,20 +755,26 @@ export function Theater({ roomId }: TheaterProps) {
             countdownSeconds={countdownSeconds}
             isPreparing={source.isSaving}
             hasLaunched={hasOpenedProvider}
+            hostLaunched={hostLaunched}
             onChooseContent={chooseContent}
             onOpenProvider={openProvider}
           />
 
+          {/* A scoped room never shows a launcher grid: it already is that
+              service's room. Only an open room asks which service, and the
+              link field is a fallback, not a step. */}
           {isHost && (isPicking || source.source === null) ? (
             <div className="flex flex-col gap-3" ref={pickerRef} data-sf-selection-flow>
-              <ProviderBar
-                activeProviderId={activeProviderId}
-                isHost={isHost}
-                providers={scope.providers}
-                isScoped={scope.isScoped}
-                onSelect={selectProvider}
-              />
-              {activeProvider ? (
+              {scope.isScoped ? null : (
+                <ProviderBar
+                  activeProviderId={activeProviderId}
+                  isHost={isHost}
+                  providers={scope.providers}
+                  isScoped={scope.isScoped}
+                  onSelect={selectProvider}
+                />
+              )}
+              {activeProvider && activeProvider.selectionMode !== "browse" ? (
                 <SourcePicker
                   provider={activeProvider}
                   currentUrl={source.source?.url ?? ""}
@@ -752,6 +786,25 @@ export function Theater({ roomId }: TheaterProps) {
                     setIsPicking(false);
                   }}
                 />
+              ) : activeProvider ? (
+                <details className="rounded-2xl border border-border/60 px-4 py-3">
+                  <summary className="cursor-pointer text-sm text-muted-foreground">
+                    {t("theater.source.advanced")}
+                  </summary>
+                  <div className="pt-3">
+                    <SourcePicker
+                      provider={activeProvider}
+                      currentUrl={source.source?.url ?? ""}
+                      currentTitle={source.selection.title ?? ""}
+                      isSaving={source.isSaving}
+                      error={source.error ? t("theater.source.error") : null}
+                      onSubmit={(url, title) => {
+                        source.save(url, title);
+                        setIsPicking(false);
+                      }}
+                    />
+                  </div>
+                </details>
               ) : null}
             </div>
           ) : null}

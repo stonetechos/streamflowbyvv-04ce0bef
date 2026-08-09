@@ -19,6 +19,12 @@ export interface StageViewInput {
   readonly isPreparing?: boolean;
   /** This person has already opened the service in their own browser. */
   readonly hasLaunched?: boolean;
+  /**
+   * The host has opened the service for the party. This is a room fact, so a
+   * guest's stage reflects it too — a guest never sits in a dead shell while
+   * the host is already in front of the provider.
+   */
+  readonly hostLaunched?: boolean;
 }
 
 export interface StageView {
@@ -32,6 +38,11 @@ export interface StageView {
   readonly showsMediaCard: boolean;
   /** Translation key describing where the room is, once something is chosen. */
   readonly statusKey: string;
+  /**
+   * The host's single strong action on a launch-only stage: start the party
+   * (open the service), or reopen it once it is already running.
+   */
+  readonly launchKey: string;
 }
 
 const STATUS_KEYS: Readonly<Record<RoomPhase, string>> = {
@@ -51,9 +62,12 @@ export function deriveStageView({
   phase,
   isPreparing = false,
   hasLaunched = false,
+  hostLaunched = false,
 }: StageViewInput): StageView {
   const role = isHost ? ("host" as const) : ("guest" as const);
   const statusKey = STATUS_KEYS[phase] ?? "theater.stage.status.selected";
+  // Either this person opened it, or the host did for the party.
+  const launched = hasLaunched || hostLaunched;
 
   // A selection in flight is a real state of the room, not a blank panel.
   if (isPreparing && !source) {
@@ -64,6 +78,7 @@ export function deriveStageView({
       showsWaitingLine: false,
       showsMediaCard: false,
       statusKey: "theater.stage.status.preparing",
+      launchKey: "theater.stage.start_party",
     };
   }
 
@@ -75,6 +90,7 @@ export function deriveStageView({
       showsWaitingLine: !isHost,
       showsMediaCard: false,
       statusKey,
+      launchKey: "theater.stage.start_party",
     };
   }
 
@@ -82,10 +98,13 @@ export function deriveStageView({
 
   // Once the service has been opened externally, the room says so plainly
   // rather than pretending it is waiting for something.
-  const handoffStatusKey =
-    hasLaunched && phase !== "ended" && phase !== "closed"
-      ? "theater.stage.status.launched"
-      : statusKey;
+  const handoffStatusKey = launched
+    ? phase === "ended" || phase === "closed"
+      ? statusKey
+      : hasLaunched
+        ? "theater.stage.status.launched"
+        : "theater.stage.status.host_launched"
+    : statusKey;
 
   return {
     kind: embedded ? "embedded" : "handoff",
@@ -94,5 +113,11 @@ export function deriveStageView({
     showsWaitingLine: false,
     showsMediaCard: true,
     statusKey: embedded ? statusKey : handoffStatusKey,
+    // Before anything is open this is the party's start; after, it is a way back.
+    launchKey: hasLaunched
+      ? "theater.stage.reopen_provider"
+      : launched
+        ? "theater.stage.join_provider"
+        : "theater.stage.start_party",
   };
 }
