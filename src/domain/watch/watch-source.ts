@@ -467,6 +467,30 @@ export function parseWatchSource(input: string): WatchSource | null {
   const url = toUrl(raw);
   if (!url) return null;
 
+  // The two sources StreamFlow can genuinely drive are recognised first, so
+  // neither is mistaken for a launch-only page.
+  const videoId = parseYouTubeVideoId(url.toString());
+  if (videoId) {
+    return {
+      kind: "youtube",
+      providerId: "youtube",
+      videoId,
+      url: `https://www.youtube.com/watch?v=${videoId}`,
+      label: YOUTUBE.capability.displayName,
+    };
+  }
+
+  if (LOCAL.hostPattern?.test(url.hostname)) {
+    const fileName = decodeURIComponent(url.pathname.replace(/^\//, "")) || "video";
+    return {
+      kind: "local",
+      providerId: "local",
+      fileName,
+      url: url.toString(),
+      label: fileName,
+    };
+  }
+
   for (const definition of DEFINITIONS) {
     if (!definition.hostPattern?.test(url.hostname)) continue;
     return {
@@ -477,6 +501,7 @@ export function parseWatchSource(input: string): WatchSource | null {
       label: definition.capability.displayName,
     };
   }
+
 
   if (url.protocol === "https:" && DIRECT_VIDEO.test(url.pathname)) {
     return {
