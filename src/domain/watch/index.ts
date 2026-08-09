@@ -141,6 +141,14 @@ export {
   type WatchSourceCapability,
 } from "./watch-source";
 export {
+  BLOCKED_PROVIDER_KEYS,
+  deriveRoomScope,
+  isBlockedProviderKey,
+  resolveWatchProviderId,
+  type RoomScope,
+  type RoomScopeInput,
+} from "./room-scope";
+export {
   WATCH_SOURCE_SERVICE,
   createWatchSourceService,
   type WatchSourceService,
