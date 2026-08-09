@@ -30,7 +30,23 @@ function documentPip(): DocumentPipApi | null {
   );
 }
 
+/**
+ * Test seam. Production code never calls this: only the verification harness
+ * and unit tests do, so real feature detection is untouched in a shipped build.
+ * Passing null returns the browser's own answer.
+ */
+let supportOverride: PipSupport | null = null;
+
+export function __setPipSupportOverride(value: PipSupport | null): void {
+  supportOverride = value;
+}
+
+export function __pipSupportOverride(): PipSupport | null {
+  return supportOverride;
+}
+
 export function detectPipSupport(): PipSupport {
+  if (supportOverride !== null) return supportOverride;
   if (typeof window === "undefined" || typeof document === "undefined") return "none";
   if (documentPip()) return "document";
   const canElementPip =
