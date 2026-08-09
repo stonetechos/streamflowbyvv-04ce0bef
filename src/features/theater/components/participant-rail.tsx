@@ -179,7 +179,9 @@ export function ParticipantRail({
               </span>
             ) : null}
           </li>
-        ))}
+          );
+        })}
+
       </ul>
     </Surface>
   );
