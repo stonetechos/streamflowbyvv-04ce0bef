@@ -367,11 +367,48 @@ export type WatchSource =
       readonly label: string;
     }
   | {
+      /** Driven for real, through YouTube's own sanctioned IFrame player. */
+      readonly kind: "youtube";
+      readonly providerId: "youtube";
+      readonly videoId: string;
+      readonly url: string;
+      readonly label: string;
+    }
+  | {
+      /** Everyone's own copy of the same file. `fileName` is all that travels. */
+      readonly kind: "local";
+      readonly providerId: "local";
+      readonly fileName: string;
+      readonly url: string;
+      readonly label: string;
+    }
+  | {
       readonly kind: "external";
       readonly providerId: string;
       readonly url: string | null;
       readonly label: string;
     };
+
+const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
+
+/**
+ * Reads a video id out of any public YouTube address. Nothing is fetched and
+ * no page is parsed: this is pure URL reading.
+ */
+export function parseYouTubeVideoId(input: string): string | null {
+  const raw = input.trim();
+  if (YOUTUBE_ID.test(raw)) return raw;
+  const url = toUrl(raw);
+  if (!url || !YOUTUBE.hostPattern?.test(url.hostname)) return null;
+  const v = url.searchParams.get("v");
+  if (v && YOUTUBE_ID.test(v)) return v;
+  const segments = url.pathname.split("/").filter(Boolean);
+  for (const segment of segments) {
+    if (YOUTUBE_ID.test(segment)) return segment;
+  }
+  return null;
+}
+
 
 const DIRECT_VIDEO = /\.(mp4|webm|ogg|ogv|m3u8)$/i;
 const TITLE_ID = /^[A-Za-z0-9._-]{2,64}$/;
