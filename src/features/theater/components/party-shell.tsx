@@ -1,11 +1,11 @@
 /**
  * Party shell — the theatre takeover frame.
  *
- * The room becomes the whole screen: a dark, chrome-light surface where the
- * stage is the only thing with weight. Everything else floats at the edges —
- * a call-style control cluster top left, the people rail beneath it, a
- * persistent party message bar along the bottom. Panels open over the stage
- * instead of pushing it around.
+ * The room becomes the whole screen: a charcoal cinema lit by a slow ember
+ * wash, where the stage is the only thing with real weight. Everything else
+ * is arranged as a bento of quiet tiles beside it — people, room state, the
+ * things a person glances at without leaving the film. Panels open over the
+ * stage instead of pushing it around.
  *
  * This component is presentation only. It never decides room state.
  */
@@ -22,6 +22,8 @@ export interface PartyShellProps {
   readonly utilities: ReactNode;
   /** The stage itself — the only element that owns the middle. */
   readonly stage: ReactNode;
+  /** Bento companion tiles: room state, coordination, recovery. */
+  readonly aside?: ReactNode;
   /** Sheets, dialogs and drawers that float above the stage. */
   readonly overlay?: ReactNode;
   /** Persistent bottom composer. */
@@ -36,6 +38,7 @@ export function PartyShell({
   rail,
   utilities,
   stage,
+  aside,
   overlay,
   messageBar,
   phase,
@@ -46,22 +49,42 @@ export function PartyShell({
       aria-label={regionLabel}
       data-sf-phase={phase}
       data-sf-party-shell
-      className="fixed inset-0 z-50 flex flex-col bg-background text-foreground"
+      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-background text-foreground"
     >
-      <div className="flex items-center justify-between gap-3 px-3 pt-3 sm:px-4 sm:pt-4">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="sf-ambient" />
+        <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_-10%,transparent,color-mix(in_oklab,var(--background)_88%,black)_78%)]" />
+      </div>
+
+      <div className="relative z-10 flex items-center justify-between gap-3 px-3 pt-3 sm:px-5 sm:pt-4">
         {controls}
         <div className="min-w-0 flex-1 text-center max-sm:hidden">{title}</div>
         <div className="flex shrink-0 items-center gap-1.5">{utilities}</div>
       </div>
 
-      <div className="px-3 pb-1 pt-2 sm:px-4">{rail}</div>
+      <div className="relative z-10 px-3 pb-1 pt-2 sm:px-5">{rail}</div>
 
-      <div className="relative min-h-0 flex-1 overflow-hidden border-y border-border/40">
-        <div className="absolute inset-0 overflow-y-auto overscroll-contain">{stage}</div>
+      <div className="relative z-10 min-h-0 flex-1 overflow-hidden">
+        <div className="absolute inset-0 overflow-y-auto overscroll-contain px-3 pb-4 pt-1 sm:px-5">
+          <div
+            className="mx-auto grid w-full max-w-[110rem] grid-cols-1 items-start gap-3 lg:grid-cols-12 lg:gap-4"
+            data-sf-party-bento
+          >
+            <div className="sf-tile sf-tile-1 min-w-0 lg:col-span-8 xl:col-span-9">{stage}</div>
+            {aside ? (
+              <div
+                className="sf-tile sf-tile-2 flex min-w-0 flex-col gap-3 lg:col-span-4 xl:col-span-3"
+                data-sf-party-aside
+              >
+                {aside}
+              </div>
+            ) : null}
+          </div>
+        </div>
         {overlay}
       </div>
 
-      {messageBar}
+      <div className="relative z-10">{messageBar}</div>
     </section>
   );
 }
