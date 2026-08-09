@@ -356,7 +356,12 @@ export function Theater({ roomId }: TheaterProps) {
 
   const isPlaying = runtime.playback.status === "playing";
   const capability = source.capability;
-  const isEmbedded = capability.allowsEmbeddedPlayback && directUrl !== null;
+  // A source the room can genuinely drive: a reachable file, this device's own
+  // copy of a shared file, or YouTube's sanctioned player.
+  const isEmbedded =
+    capability.allowsEmbeddedPlayback && (directUrl !== null || youtubeVideoId !== null);
+  // The room is on a file, and this person hasn't opened their copy yet.
+  const needsLocalCopy = localFileName !== null && localObjectUrl === null;
   const capabilityProviderId = capability.providerId;
 
   const togglePlay = useCallback(() => {
