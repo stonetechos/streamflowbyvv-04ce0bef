@@ -125,7 +125,13 @@ export function usePictureInPicture({
 
   const request = useCallback(async () => {
     setError(null);
-    const api = documentPip();
+    const capability = detectPipSupport();
+    if (capability === "none") {
+      setError("pip_unsupported");
+      return;
+    }
+
+    const api = capability === "document" ? documentPip() : null;
     if (api) {
       try {
         const win = await api.requestWindow({ width: 480, height: 300 });
@@ -141,6 +147,7 @@ export function usePictureInPicture({
       }
     }
 
+    // Element PiP: the browser draws its own controls in the floating window.
     const video = getVideo();
     if (!video || typeof video.requestPictureInPicture !== "function") {
       setError("pip_unsupported");
