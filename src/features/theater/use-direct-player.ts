@@ -16,12 +16,20 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { captionTrackId, toCaptionTracks } from "./caption-tracks";
+import type { CaptionTrack } from "./caption-track-types";
+
 type PlayerEventName = "playing" | "paused" | "ended" | "buffering" | "ready" | "error";
 
-export interface CaptionTrack {
-  readonly id: string;
+export type { CaptionTrack } from "./caption-track-types";
+
+/** A sidecar subtitle file the source publishes alongside the video. */
+export interface TextTrackSource {
+  readonly src: string;
+  readonly srclang: string;
   readonly label: string;
-  readonly language: string;
+  readonly kind?: "subtitles" | "captions";
+  readonly default?: boolean;
 }
 
 export interface DirectPlayerState {
@@ -65,6 +73,8 @@ export interface DirectPlayerHandle {
 
 export interface UseDirectPlayerInput {
   readonly url: string | null;
+  /** Sidecar WebVTT files the source publishes. Empty means no captions exist. */
+  readonly textTracks?: readonly TextTrackSource[];
   onPhase?(phase: PlayerEventName, positionMs: number): void;
 }
 
@@ -81,7 +91,13 @@ const INITIAL_STATE: DirectPlayerState = {
   captionsTrackId: null,
 };
 
-export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectPlayerHandle {
+const NO_TEXT_TRACKS: readonly TextTrackSource[] = [];
+
+export function useDirectPlayer({
+  url,
+  textTracks = NO_TEXT_TRACKS,
+  onPhase,
+}: UseDirectPlayerInput): DirectPlayerHandle {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLVideoElement | null>(null);
@@ -93,6 +109,11 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
   const [phase, setPhase] = useState<PlayerEventName | null>(null);
   const [state, setState] = useState<DirectPlayerState>(INITIAL_STATE);
   const [captionTracks, setCaptionTracks] = useState<readonly CaptionTrack[]>([]);
+
+  /** A different sidecar track list is a different source. */
+  const trackSignature = textTracks
+    .map((track) => `${track.kind ?? "subtitles"}:${track.srclang}:${track.src}`)
+    .join("|");
 
   if (!hostRef.current && typeof document !== "undefined") {
     const host = document.createElement("div");
@@ -124,26 +145,30 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
     video.crossOrigin = "anonymous";
     video.setAttribute("data-sf-player", "video");
     video.className = "h-full w-full bg-black object-contain";
+    for (const source of textTracks) {
+      const track = document.createElement("track");
+      track.kind = source.kind ?? "subtitles";
+      track.src = source.src;
+      track.srclang = source.srclang;
+      track.label = source.label;
+      video.appendChild(track);
+    }
     host.replaceChildren(video);
     elementRef.current = video;
 
     const readTracks = () => {
-      const list = Array.from(video.textTracks ?? []).filter(
-        (track) => track.kind === "subtitles" || track.kind === "captions",
-      );
-      setCaptionTracks(
-        list.map((track, index) => ({
-          id: track.id || `track-${index}`,
-          label: track.label || track.language || `Track ${index + 1}`,
-          language: track.language,
-        })),
-      );
+      setCaptionTracks(toCaptionTracks(Array.from(video.textTracks ?? [])));
     };
+    video.textTracks?.addEventListener?.("addtrack", readTracks);
+    video.textTracks?.addEventListener?.("removetrack", readTracks);
+    readTracks();
 
     const sync = () => {
       const buffered =
         video.buffered.length > 0 ? video.buffered.end(video.buffered.length - 1) * 1000 : 0;
-      const active = Array.from(video.textTracks ?? []).find((track) => track.mode === "showing");
+      const all = Array.from(video.textTracks ?? []);
+      const activeIndex = all.findIndex((track) => track.mode === "showing");
+      const active = activeIndex >= 0 ? all[activeIndex] : undefined;
       setState((current) => ({
         ...current,
         positionMs: Math.round((video.currentTime || 0) * 1000),
@@ -157,7 +182,7 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
         isMuted: video.muted,
         volume: Math.round(video.volume * 100),
         rate: video.playbackRate,
-        captionsTrackId: active ? active.id || active.label : null,
+        captionsTrackId: active ? captionTrackId(active, activeIndex) : null,
       }));
     };
 
@@ -196,6 +221,8 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
     video.addEventListener("durationchange", sync);
 
     return () => {
+      video.textTracks?.removeEventListener?.("addtrack", readTracks);
+      video.textTracks?.removeEventListener?.("removetrack", readTracks);
       video.removeEventListener("loadedmetadata", onLoaded);
       video.removeEventListener("playing", onPlaying);
       video.removeEventListener("pause", onPause);
@@ -214,7 +241,9 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
       host.replaceChildren();
       elementRef.current = null;
     };
-  }, [url]);
+    // The track list is part of the source: a different list is a different element.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url, trackSignature]);
 
   // Legacy attach point: when a plain container is supplied, host lands in it.
   useEffect(() => {
@@ -247,7 +276,7 @@ export function useDirectPlayer({ url, onPhase }: UseDirectPlayerInput): DirectP
     const video = elementRef.current;
     if (!video) return;
     Array.from(video.textTracks ?? []).forEach((track, index) => {
-      const id = track.id || `track-${index}`;
+      const id = captionTrackId(track, index);
       track.mode = trackId !== null && id === trackId ? "showing" : "disabled";
     });
     setState((current) => ({ ...current, captionsTrackId: trackId }));

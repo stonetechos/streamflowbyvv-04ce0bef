@@ -517,6 +517,8 @@ export const enBundle: LocaleBundle = {
     "theater.player.pip_active": "Playing in the floating window.",
     "theater.player.pip_unsupported":
       "This browser can't float the player. Everything still works in the theatre.",
+    "theater.player.pip_native_controls":
+      "This browser floats the video with its own controls. Full controls stay here in the theatre.",
     "theater.player.close": "Close the player",
     "theater.player.error": "This source didn't play. Check the link and try again.",
     "theater.player.ended": "That's the end.",

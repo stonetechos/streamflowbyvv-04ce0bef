@@ -518,6 +518,8 @@ export const hiINBundle: LocaleBundle = {
     "theater.player.pip_active": "फ़्लोटिंग विंडो में चल रहा है।",
     "theater.player.pip_unsupported":
       "यह ब्राउज़र प्लेयर को फ़्लोट नहीं कर सकता। थिएटर में सब कुछ काम करता है।",
+    "theater.player.pip_native_controls":
+      "यह ब्राउज़र वीडियो को अपने ही कंट्रोल के साथ फ़्लोट करता है। पूरे कंट्रोल थिएटर में ही रहेंगे।",
     "theater.player.close": "प्लेयर बंद करें",
     "theater.player.error": "यह स्रोत नहीं चला। लिंक जाँचें और दोबारा कोशिश करें।",
     "theater.player.ended": "समाप्त।",

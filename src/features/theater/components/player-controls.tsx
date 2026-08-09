@@ -300,6 +300,11 @@ export function PlayerControls({
           {t("theater.player.pip_unsupported")}
         </p>
       ) : null}
+      {pipSupport === "element" ? (
+        <p className="text-[11px] text-white/70" data-sf-pip-native-note>
+          {t("theater.player.pip_native_controls")}
+        </p>
+      ) : null}
       {transportNote ? (
         <p className="text-[11px] text-white/70" data-sf-transport-note>
           {transportNote}
