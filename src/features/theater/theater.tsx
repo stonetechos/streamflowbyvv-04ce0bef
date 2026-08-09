@@ -116,6 +116,7 @@ export function Theater({ roomId }: TheaterProps) {
   const [copied, setCopied] = useState(false);
   const suppressUntil = useRef(0);
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
 
   const countdown = useRoomCountdown({
     roomId,
