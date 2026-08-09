@@ -75,7 +75,7 @@ describe("H11.2 launch-only provider: full host and guest walk", () => {
       phase: "selected",
     });
     expect(view.kind).toBe("handoff");
-    expect(view.launchKey).toBe("theater.stage.open_provider");
+    expect(view.launchKey).toBe("theater.stage.start_party");
   });
 
   it("guest: before the host launches, the guest is told to wait, not to act blindly", () => {
