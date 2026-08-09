@@ -110,6 +110,11 @@ export function useDirectPlayer({
   const [state, setState] = useState<DirectPlayerState>(INITIAL_STATE);
   const [captionTracks, setCaptionTracks] = useState<readonly CaptionTrack[]>([]);
 
+  /** A different sidecar track list is a different source. */
+  const trackSignature = textTracks
+    .map((track) => `${track.kind ?? "subtitles"}:${track.srclang}:${track.src}`)
+    .join("|");
+
   if (!hostRef.current && typeof document !== "undefined") {
     const host = document.createElement("div");
     host.setAttribute("data-sf-player-host", "");
