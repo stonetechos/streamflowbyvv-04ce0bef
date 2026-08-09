@@ -1191,3 +1191,113 @@ body:has([data-sf-screen="room-stage"]) .sf-po-anchor {
     padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem);
   }
 }
+
+/*
+ * ─── Theatre cinema layer ────────────────────────────────────────────────
+ * The Theatre is its own room: charcoal walls, ember signal light. These
+ * tokens are scoped to the party shell so the rest of the app keeps its own
+ * theme while the room always feels like a cinema.
+ */
+[data-sf-party-shell] {
+  --background: oklch(0.16 0.004 60);
+  --foreground: oklch(0.97 0.004 60);
+  --surface: oklch(0.215 0.005 60);
+  --surface-foreground: oklch(0.97 0.004 60);
+  --surface-raised: oklch(0.255 0.006 60);
+  --card: oklch(0.215 0.005 60);
+  --card-foreground: oklch(0.97 0.004 60);
+  --popover: oklch(0.205 0.005 60);
+  --popover-foreground: oklch(0.97 0.004 60);
+  --primary: oklch(0.68 0.168 39);
+  --primary-foreground: oklch(0.18 0.02 40);
+  --secondary: oklch(0.28 0.006 60);
+  --secondary-foreground: oklch(0.97 0.004 60);
+  --muted: oklch(0.27 0.005 60);
+  --muted-foreground: oklch(0.74 0.008 60);
+  --accent: oklch(0.74 0.145 55);
+  --accent-foreground: oklch(0.19 0.03 45);
+  --border: oklch(1 0 0 / 11%);
+  --border-strong: oklch(1 0 0 / 22%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.68 0.168 39);
+  --elevation-tint-soft: oklch(0 0 0 / 40%);
+  --elevation-tint-medium: oklch(0 0 0 / 55%);
+  --elevation-tint-strong: oklch(0 0 0 / 70%);
+  color-scheme: dark;
+}
+
+/* Ambient house light: a slow ember wash behind the stage. */
+@keyframes sf-ambient-drift {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(1.05);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(2%, 1.5%, 0) scale(1.12);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-2%, -1%, 0) scale(1.05);
+    opacity: 0.55;
+  }
+}
+
+.sf-ambient {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    radial-gradient(45% 40% at 22% 12%, color-mix(in oklab, var(--primary) 34%, transparent), transparent 70%),
+    radial-gradient(40% 45% at 82% 82%, color-mix(in oklab, var(--accent) 24%, transparent), transparent 72%);
+  filter: blur(30px);
+  animation: sf-ambient-drift 24s ease-in-out infinite;
+}
+
+/* Staged entrance for bento tiles — each tile arrives a beat after the last. */
+@keyframes sf-tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sf-tile {
+  animation: sf-tile-in 0.42s var(--ease-emphasized) both;
+}
+
+.sf-tile-1 {
+  animation-delay: 60ms;
+}
+.sf-tile-2 {
+  animation-delay: 120ms;
+}
+.sf-tile-3 {
+  animation-delay: 180ms;
+}
+
+/* The ember ring that marks the room as live. */
+@keyframes sf-ember-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 10px color-mix(in oklab, var(--primary) 0%, transparent);
+  }
+}
+
+.sf-ember {
+  animation: sf-ember-pulse 2.6s var(--ease-standard) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-ambient,
+  .sf-tile,
+  .sf-ember {
+    animation: none;
+  }
+}
