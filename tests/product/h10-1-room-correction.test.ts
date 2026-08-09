@@ -6,7 +6,7 @@
  * left the stage empty, and an abandoned lobby kept advertising itself as
  * something to continue. Each rule below is the corrected behaviour.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 
 import {
   BLOCKED_PROVIDER_KEYS,
