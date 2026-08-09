@@ -275,7 +275,7 @@ export function useDirectPlayer({
     const video = elementRef.current;
     if (!video) return;
     Array.from(video.textTracks ?? []).forEach((track, index) => {
-      const id = track.id || `track-${index}`;
+      const id = captionTrackId(track, index);
       track.mode = trackId !== null && id === trackId ? "showing" : "disabled";
     });
     setState((current) => ({ ...current, captionsTrackId: trackId }));
