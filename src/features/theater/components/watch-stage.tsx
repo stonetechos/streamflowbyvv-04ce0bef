@@ -152,6 +152,7 @@ export function WatchStage({
         data-sf-stage="handoff"
         data-sf-stage-role={view.role}
         data-sf-stage-provider={capability.providerId}
+        data-sf-stage-launched={hasLaunched ? "true" : "false"}
       >
         <div
           aria-hidden="true"
@@ -190,7 +191,9 @@ export function WatchStage({
               data-sf-stage-open-provider={capability.providerId}
               className="w-full sm:w-auto"
             >
-              {t("theater.stage.open_provider", { provider: capability.displayName })}
+              {t(hasLaunched ? "theater.stage.reopen_provider" : "theater.stage.open_provider", {
+                provider: capability.displayName,
+              })}
             </ActionButton>
           ) : null}
         </div>
