@@ -494,6 +494,11 @@ export const hiINBundle: LocaleBundle = {
     "theater.stage.external_title": "StreamFlow आपके लिए {provider} नहीं चला सकता",
     "theater.stage.open_provider": "{provider} नए टैब में खोलें",
     "theater.stage.reopen_provider": "{provider} फिर से खोलें",
+    "theater.stage.start_party": "{provider} पर वॉच पार्टी शुरू करें",
+    "theater.stage.join_provider": "{provider} पर शामिल हों",
+    "theater.stage.status.host_launched":
+      "होस्ट ने इसे खोल दिया है — आप भी खोलें और काउंटडाउन पर चलाएँ।",
+    "theater.source.advanced": "सीधा लिंक है? जोड़ें (वैकल्पिक)",
     "theater.stage.change_cta": "हम क्या देख रहे हैं, बदलें",
     "theater.stage.blocked": "यह वीडियो StreamFlow के अंदर नहीं चल सकता। होस्ट कोई और चुन सकता है।",
     "theater.transport.play": "चलाएँ",
