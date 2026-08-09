@@ -180,7 +180,7 @@ export function useDirectPlayer({
         isMuted: video.muted,
         volume: Math.round(video.volume * 100),
         rate: video.playbackRate,
-        captionsTrackId: active ? active.id || active.label : null,
+        captionsTrackId: active ? captionTrackId(active, activeIndex) : null,
       }));
     };
 
