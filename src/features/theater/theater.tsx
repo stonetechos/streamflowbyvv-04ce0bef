@@ -17,7 +17,6 @@ import {
   classifyPresence,
   deriveRoomConsole,
   deriveRoomPhase,
-
   deriveRoomScope,
   shouldPromptFeedback,
   providerBrowseUrl,
@@ -29,7 +28,6 @@ import {
   type HostDeclaration,
   type HostDeclarationKind,
   type RoomConsoleAction,
-
   type ParticipantRuntime,
   type WatchProviderCapability,
 } from "@/domain";
@@ -498,7 +496,6 @@ export function Theater({ roomId }: TheaterProps) {
     void navigate({ to: "/rooms/$roomId", params: { roomId } });
   }, [beta, room, navigate, roomId]);
 
-
   const toggleReady = useCallback(() => {
     const next = !selfReady;
     if (next) chat.sendCoordination("ready", t("room.manual.sent.ready"));
@@ -579,7 +576,6 @@ export function Theater({ roomId }: TheaterProps) {
     [chat.events, hostProfileId],
   );
 
-
   // The centre panel is the room's stage: one derivation decides what it shows
   // and whether the lower media card would only repeat it.
   const stageView = deriveStageView({
@@ -635,7 +631,11 @@ export function Theater({ roomId }: TheaterProps) {
       freshnessByProfileId: new Map(
         room.members.map((m) => [
           m.profileId,
-          classifyFreshness(m.presence, m.lastSeenAt ? new Date(m.lastSeenAt).getTime() : null, nowMs),
+          classifyFreshness(
+            m.presence,
+            m.lastSeenAt ? new Date(m.lastSeenAt).getTime() : null,
+            nowMs,
+          ),
         ]),
       ),
       isManual: !runtime.isAutomatic,
@@ -649,8 +649,6 @@ export function Theater({ roomId }: TheaterProps) {
     nowMs,
     runtime.isAutomatic,
   ]);
-
-
 
   // A host action is a statement broadcast to the room, never a device command.
   const declare = useCallback(
@@ -866,7 +864,6 @@ export function Theater({ roomId }: TheaterProps) {
       voiceProfileIds={voiceProfileIds}
     />
   );
-
 
   if (!room.room) {
     return (
@@ -1246,4 +1243,3 @@ export function Theater({ roomId }: TheaterProps) {
     />
   );
 }
-

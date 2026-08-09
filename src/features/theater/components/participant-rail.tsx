@@ -44,7 +44,6 @@ export interface ParticipantRailProps {
   readonly voiceProfileIds?: ReadonlySet<string>;
 }
 
-
 const STATE_KEY: Record<ParticipantRuntime["state"], string> = {
   joined: "room.participant.joined",
   selecting: "room.participant.selecting",
@@ -82,7 +81,6 @@ function Badge({
 }
 
 const FRESHNESS_KEY: Record<PresenceFreshness, string> = {
-
   live: "room.participant.badge.live",
   stale: "room.participant.badge.stale",
   offline: "room.participant.badge.offline",
@@ -122,93 +120,92 @@ export function ParticipantRail({
         {participants.map((participant) => {
           const freshness = facts?.freshnessByProfileId.get(participant.participantId) ?? null;
           return (
-          <li
-            key={participant.participantId}
-            className="flex flex-wrap items-center gap-x-3 gap-y-1"
-            data-sf-participant={participant.state}
-          >
-            <Avatar name={participant.displayName} size="sm" />
-            <span className="min-w-0 flex-1 truncate text-sm">
-              {participant.displayName}
-              {participant.isHost ? ` · ${t("theater.header.host")}` : ""}
-            </span>
-            <span className="shrink-0 text-xs text-muted-foreground">
-              {voiceProfileIds?.has(participant.participantId)
-                ? t("room.participant.in_voice")
-                : t(STATE_KEY[participant.state])}
-            </span>
-            {facts ? (
-              <span className="flex w-full flex-wrap gap-1 pl-11" data-sf-participant-badges>
-                {facts.readyProfileIds.has(participant.participantId) ? (
-                  <Badge tone="positive" testId="ready">
-                    {t("room.participant.badge.ready")}
-                  </Badge>
-                ) : null}
-                {facts.launchedProfileIds.has(participant.participantId) ? (
-                  <Badge tone="neutral" testId="launched">
-                    {t("room.participant.badge.launched")}
-                  </Badge>
-                ) : null}
-                {freshness && freshness !== "live" ? (
-                  <Badge tone="warning" testId={`freshness-${freshness}`}>
-                    {t(FRESHNESS_KEY[freshness])}
-                  </Badge>
-                ) : null}
-                {facts.isManual ? (
-                  <Badge tone="neutral" testId="manual">
-                    {t("room.participant.badge.manual")}
-                  </Badge>
-                ) : null}
+            <li
+              key={participant.participantId}
+              className="flex flex-wrap items-center gap-x-3 gap-y-1"
+              data-sf-participant={participant.state}
+            >
+              <Avatar name={participant.displayName} size="sm" />
+              <span className="min-w-0 flex-1 truncate text-sm">
+                {participant.displayName}
+                {participant.isHost ? ` · ${t("theater.header.host")}` : ""}
               </span>
-            ) : null}
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {voiceProfileIds?.has(participant.participantId)
+                  ? t("room.participant.in_voice")
+                  : t(STATE_KEY[participant.state])}
+              </span>
+              {facts ? (
+                <span className="flex w-full flex-wrap gap-1 pl-11" data-sf-participant-badges>
+                  {facts.readyProfileIds.has(participant.participantId) ? (
+                    <Badge tone="positive" testId="ready">
+                      {t("room.participant.badge.ready")}
+                    </Badge>
+                  ) : null}
+                  {facts.launchedProfileIds.has(participant.participantId) ? (
+                    <Badge tone="neutral" testId="launched">
+                      {t("room.participant.badge.launched")}
+                    </Badge>
+                  ) : null}
+                  {freshness && freshness !== "live" ? (
+                    <Badge tone="warning" testId={`freshness-${freshness}`}>
+                      {t(FRESHNESS_KEY[freshness])}
+                    </Badge>
+                  ) : null}
+                  {facts.isManual ? (
+                    <Badge tone="neutral" testId="manual">
+                      {t("room.participant.badge.manual")}
+                    </Badge>
+                  ) : null}
+                </span>
+              ) : null}
 
-            {moderation && !participant.isHost ? (
-              <span className="flex shrink-0 gap-1">
-                {moderation.canMute ? (
-                  <ActionButton
-                    tone="ghost"
-                    size="sm"
-                    className="min-h-11"
-                    disabled={moderation.busy}
-                    onClick={() => {
-                      const memberId = moderation.memberIdByProfileId.get(
-                        participant.participantId,
-                      );
-                      if (memberId) {
-                        moderation.onMute(
-                          memberId,
-                          !moderation.mutedProfileIds.has(participant.participantId),
+              {moderation && !participant.isHost ? (
+                <span className="flex shrink-0 gap-1">
+                  {moderation.canMute ? (
+                    <ActionButton
+                      tone="ghost"
+                      size="sm"
+                      className="min-h-11"
+                      disabled={moderation.busy}
+                      onClick={() => {
+                        const memberId = moderation.memberIdByProfileId.get(
+                          participant.participantId,
                         );
-                      }
-                    }}
-                  >
-                    {moderation.mutedProfileIds.has(participant.participantId)
-                      ? t("room.host.unmute_member")
-                      : t("room.host.mute_member")}
-                  </ActionButton>
-                ) : null}
-                {moderation.canRemove ? (
-                  <ActionButton
-                    tone="ghost"
-                    size="sm"
-                    className="min-h-11"
-                    disabled={moderation.busy}
-                    onClick={() => {
-                      const memberId = moderation.memberIdByProfileId.get(
-                        participant.participantId,
-                      );
-                      if (memberId) moderation.onRemove(memberId);
-                    }}
-                  >
-                    {t("room.host.remove_member")}
-                  </ActionButton>
-                ) : null}
-              </span>
-            ) : null}
-          </li>
+                        if (memberId) {
+                          moderation.onMute(
+                            memberId,
+                            !moderation.mutedProfileIds.has(participant.participantId),
+                          );
+                        }
+                      }}
+                    >
+                      {moderation.mutedProfileIds.has(participant.participantId)
+                        ? t("room.host.unmute_member")
+                        : t("room.host.mute_member")}
+                    </ActionButton>
+                  ) : null}
+                  {moderation.canRemove ? (
+                    <ActionButton
+                      tone="ghost"
+                      size="sm"
+                      className="min-h-11"
+                      disabled={moderation.busy}
+                      onClick={() => {
+                        const memberId = moderation.memberIdByProfileId.get(
+                          participant.participantId,
+                        );
+                        if (memberId) moderation.onRemove(memberId);
+                      }}
+                    >
+                      {t("room.host.remove_member")}
+                    </ActionButton>
+                  ) : null}
+                </span>
+              ) : null}
+            </li>
           );
         })}
-
       </ul>
     </Surface>
   );

@@ -631,7 +631,8 @@ export const enBundle: LocaleBundle = {
     "room.console.action.pause": "We paused",
     "room.console.action.resume": "Resume now",
     "room.console.action.restart_countdown": "Restart countdown",
-    "room.console.host_note": "These tell the room what you’re doing on {provider}; they don’t control it.",
+    "room.console.host_note":
+      "These tell the room what you’re doing on {provider}; they don’t control it.",
     "room.host.title": "Host controls",
     "room.host.description": "These apply to everyone in the room.",
     "room.host.lock": "Lock room",

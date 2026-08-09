@@ -632,7 +632,8 @@ export const hiINBundle: LocaleBundle = {
     "room.console.action.pause": "हमने रोका",
     "room.console.action.resume": "अब स्मरण करें",
     "room.console.action.restart_countdown": "काउंटडाउन फिर से",
-    "room.console.host_note": "ये रूम को बताते हैं कि आप {provider} पर क्या कर रहे हैं; ये उसे नियंत्रित नहीं करते।",
+    "room.console.host_note":
+      "ये रूम को बताते हैं कि आप {provider} पर क्या कर रहे हैं; ये उसे नियंत्रित नहीं करते।",
     "room.host.title": "होस्ट नियंत्रण",
     "room.host.description": "ये कमरे के सभी लोगों पर लागू होते हैं।",
     "room.host.lock": "कमरा लॉक करें",
@@ -877,7 +878,8 @@ export const hiINBundle: LocaleBundle = {
     "home.services.status.manual_sync": "मैन्युअल सिंक",
     "home.services.status.unverified": "बीटा",
     "home.services.status.unavailable": "अनुपलब्ध",
-    "home.services.live_now": "{service}: \u0905\u092d\u0940 \u090f\u0915 \u0935\u0949\u091a \u092a\u093e\u0930\u094d\u091f\u0940 \u091a\u0932 \u0930\u0939\u0940 \u0939\u0948",
+    "home.services.live_now":
+      "{service}: \u0905\u092d\u0940 \u090f\u0915 \u0935\u0949\u091a \u092a\u093e\u0930\u094d\u091f\u0940 \u091a\u0932 \u0930\u0939\u0940 \u0939\u0948",
     "home.services.status.coming_soon":
       "\u091c\u0932\u094d\u0926 \u0906 \u0930\u0939\u093e \u0939\u0948",
     "home.services.room_name":

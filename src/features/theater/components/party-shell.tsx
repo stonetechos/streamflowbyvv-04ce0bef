@@ -56,7 +56,6 @@ export function PartyShell({
 
       <div className="px-3 pb-1 pt-2 sm:px-4">{rail}</div>
 
-
       <div className="relative min-h-0 flex-1 overflow-hidden border-y border-border/40">
         <div className="absolute inset-0 overflow-y-auto overscroll-contain">{stage}</div>
         {overlay}

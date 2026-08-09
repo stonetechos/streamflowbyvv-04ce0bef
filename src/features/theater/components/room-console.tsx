@@ -93,7 +93,10 @@ export function RoomConsole({
       </div>
 
       {view.disclosureKeys.length > 0 ? (
-        <div className="flex flex-col gap-1 rounded-xl bg-muted/40 px-3 py-2" data-sf-console-disclosure>
+        <div
+          className="flex flex-col gap-1 rounded-xl bg-muted/40 px-3 py-2"
+          data-sf-console-disclosure
+        >
           {view.disclosureKeys.map((key) => (
             <p key={key} className="text-xs text-muted-foreground">
               {t(key, { provider: providerName })}
