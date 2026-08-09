@@ -72,7 +72,11 @@ export function SourcePicker({
     setTitle(currentTitle);
   }, [currentTitle]);
 
-  const parsed = parseWatchSource(value);
+  // A file everyone already owns is named, not linked: the name is the only
+  // thing that travels between people.
+  const isLocalFile = provider.providerId === "local";
+  const reference = isLocalFile ? (value.trim() ? localFileUrl(value) : "") : value;
+  const parsed = parseWatchSource(reference);
   const capability = watchSourceCapability(parsed);
   const showPreview = value.trim().length > 0;
   // Every OTT service is chosen the same way: browse there, come back with
@@ -94,8 +98,9 @@ export function SourcePicker({
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!canSubmit) return;
-    onSubmit(value, title);
+    onSubmit(reference, title);
   };
+
 
   return (
     <Surface
