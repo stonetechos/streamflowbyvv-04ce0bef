@@ -14,6 +14,7 @@ import { useTranslation } from "@/foundation/localization";
 import type { RoomPhase, WatchProviderCapability, WatchSource } from "@/domain";
 
 import { deriveStageView } from "../stage-view";
+import { CapabilityNote } from "./capability-note";
 import { providerModeKey } from "./provider-bar";
 
 export interface WatchStageProps {
